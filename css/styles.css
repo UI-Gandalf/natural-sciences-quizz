@@ -301,6 +301,18 @@ body[data-subject] .bg-overlay {
     transition: color 0.2s;
 }
 
+.crumb-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.crumb-home .crumb-icon {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
 .crumb-item:hover {
     color: var(--primary);
 }
@@ -435,6 +447,23 @@ body[data-subject] .bg-overlay {
     }
     .nav-container {
         padding: 10px 16px;
+    }
+    .crumb-home .crumb-text {
+        display: none !important;
+    }
+    .crumb-home {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        min-height: 32px;
+        padding: 2px 5px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .crumb-home .crumb-icon {
+        font-size: 1.25rem;
+        line-height: 1;
     }
 }
 
@@ -1375,13 +1404,38 @@ body[data-subject] .bg-overlay {
         font-size: 1.15rem;
     }
     .nav-breadcrumbs {
-        max-width: 160px;
-        font-size: 0.78rem;
+        max-width: 170px;
+        font-size: 0.8rem;
         padding: 4px 0;
         scrollbar-width: none;
     }
     .nav-breadcrumbs::-webkit-scrollbar {
         display: none;
+    }
+    .crumb-home .crumb-text {
+        display: none !important;
+    }
+    .crumb-home {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        min-height: 32px;
+        padding: 2px 6px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .crumb-home:active {
+        transform: scale(0.9);
+        background: rgba(59, 130, 246, 0.25);
+    }
+    .crumb-home .crumb-icon {
+        font-size: 1.25rem;
+        line-height: 1;
     }
     .main-wrapper {
         padding: 14px 12px 40px 12px;
@@ -1947,25 +2001,41 @@ body[data-subject] .bg-overlay {
 }
 
 /* ==========================================================================
-   Mathematical & Physical Formulas Typography
+   Mathematical & Physical Formulas Typography (LaTeX-Flavored)
    ========================================================================== */
 .math-expr {
     display: inline-flex;
     align-items: baseline;
-    font-family: "Cambria Math", "Nimbus Roman No9 L", "Times New Roman", Times, serif;
-    font-size: 1.05em;
-    padding: 0 1px;
+    font-family: 'KaTeX_Math', 'STIX Two Text', 'Cambria Math', 'Latin Modern Math', 'Times New Roman', serif;
+    font-size: 1.08em;
+    padding: 0 1.5px;
     white-space: nowrap;
     vertical-align: baseline;
     color: inherit;
+    font-variant-numeric: tabular-nums;
 }
 
-/* Math variables: italicized, elegant serif */
+/* Math variables: authentic LaTeX math italics */
 .math-var {
     font-style: italic;
-    font-family: "Cambria Math", "Nimbus Roman No9 L", "Times New Roman", Times, serif;
-    letter-spacing: 0.03em;
-    margin-right: 0.5px;
+    font-family: 'KaTeX_Math', 'STIX Two Text', 'Cambria Math', 'Latin Modern Math', 'Times New Roman', serif;
+    letter-spacing: 0.06em;
+    padding-right: 0.5px;
+}
+
+/* Numbers in math equations */
+.math-num-val {
+    font-style: normal;
+    font-family: 'KaTeX_Main', 'STIX Two Text', 'Cambria Math', 'Latin Modern Math', serif;
+    letter-spacing: 0.02em;
+}
+
+/* Mathematical operators (+, -, =, ·, →, ⇒) */
+.math-op {
+    font-style: normal;
+    font-family: 'KaTeX_Main', 'STIX Two Text', 'Cambria Math', serif;
+    margin: 0 3.5px;
+    opacity: 0.95;
 }
 
 /* Math subscripts: small, clean, crisp */
@@ -1986,17 +2056,25 @@ body[data-subject] .bg-overlay {
     line-height: 1;
     vertical-align: 0.38em;
     font-style: normal;
-    font-family: var(--font-family, 'Inter', -apple-system, sans-serif);
+    font-family: 'KaTeX_Main', 'STIX Two Text', var(--font-family, 'Inter', sans-serif);
     font-weight: 600;
     margin-left: 0.5px;
 }
 
-/* Math symbols & deltas */
+/* Math symbols & deltas (Ω, Δ, ∞) */
 .math-sym {
     font-style: normal;
-    font-family: var(--font-family, 'Inter', -apple-system, sans-serif);
-    font-weight: 600;
+    font-family: 'KaTeX_Main', 'STIX Two Text', 'Cambria Math', 'Times New Roman', serif;
+    font-weight: 500;
     margin: 0 1px;
+}
+
+/* Physical units (V, A, W, J, s) */
+.math-unit {
+    font-style: normal;
+    font-family: var(--font-family, 'Inter', -apple-system, sans-serif);
+    font-weight: 500;
+    margin-left: 2px;
 }
 
 /* Fraction rendering (for \frac{A}{B}) */
@@ -2004,7 +2082,7 @@ body[data-subject] .bg-overlay {
     display: inline-flex;
     flex-direction: column;
     vertical-align: -0.6em;
-    padding: 0 3px;
+    padding: 0 4px;
     font-size: 0.88em;
     text-align: center;
     line-height: 1.1;
@@ -2014,23 +2092,26 @@ body[data-subject] .bg-overlay {
     border-bottom: 1.5px solid currentColor;
     padding: 0 2px 1px 2px;
     display: block;
+    font-family: 'KaTeX_Math', 'STIX Two Text', 'Cambria Math', serif;
 }
 
 .math-den {
     padding: 1px 2px 0 2px;
     display: block;
+    font-family: 'KaTeX_Math', 'STIX Two Text', 'Cambria Math', serif;
 }
 
-/* MathJax Custom Theme Integration */
-mjx-container {
+/* MathJax & KaTeX Custom Theme Integration */
+mjx-container, .katex {
     outline: none !important;
     display: inline-block !important;
     margin: 0 2px !important;
     vertical-align: middle !important;
     color: inherit !important;
+    font-size: 1.05em !important;
 }
 
-mjx-container[display="true"] {
+mjx-container[display="true"], .katex-display {
     display: block !important;
     margin: 12px auto !important;
     text-align: center !important;

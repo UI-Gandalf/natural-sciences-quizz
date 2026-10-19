@@ -158,7 +158,7 @@ function updateBreadcrumbs() {
     const breadcrumbs = document.getElementById('nav-breadcrumbs');
     if (!breadcrumbs) return;
 
-    let html = `<a class="crumb-item" onclick="navigateTo('')">🏛️ Αρχική</a>`;
+    let html = `<a class="crumb-item crumb-home" onclick="navigateTo('')" title="Αρχική Σελίδα"><span class="crumb-icon">🏛️</span><span class="crumb-text">Αρχική</span></a>`;
 
     if (AppState.currentClass) {
         const cls = CLASS_CONFIG[AppState.currentClass];
@@ -497,9 +497,10 @@ function switchSubjectTab(tabKey) {
 }
 
 /* ==========================================================================
-   Mathematical & Physical Formulas Typography Engine
+   Mathematical & Physical Formulas Typography Engine (LaTeX-Flavored)
    Handles TeX/LaTeX ($...$, $$...$$, \frac, \Omega, etc.) and
-   Greek physics notations (Vπηγ, R1, Rολ, VAB = VA - VB, etc.)
+   Greek physics notations (Vπηγ, R1, Rολ, VAB = VA - VB, numbers & units)
+   with authentic LaTeX math italics and typography.
    ========================================================================== */
 function formatMathText(text) {
     if (!text || typeof text !== 'string') return text || '';
@@ -512,20 +513,20 @@ function formatMathText(text) {
         s = s.replace(/\\(?:mathrm|text)\s*\{\s*o\\lambda\s*\}/g, 'ολ');
         s = s.replace(/\\(?:mathrm|text)\s*\{\s*\\sigma\\epsilon\\iota\\rho\s*\}/g, 'σειρ');
         s = s.replace(/\\(?:mathrm|text)\s*\{\s*\\pi\\alpha\\rho\s*\}/g, 'παρ');
-        s = s.replace(/\\(?:mathrm|text)\s*\{\s*([^}]+)\s*\}/g, '$1');
+        s = s.replace(/\\(?:mathrm|text)\s*\{\s*([^}]+)\s*\}/g, '<span class="math-unit">$1</span>');
 
-        // Common TeX symbols
-        s = s.replace(/\\Omega\b/g, 'Ω');
-        s = s.replace(/\\cdot\b/g, '·');
-        s = s.replace(/\\(?:to|rightarrow)\b/g, '→');
-        s = s.replace(/\\implies\b/g, '⇒');
-        s = s.replace(/\\infty\b/g, '∞');
-        s = s.replace(/\\Delta\b/g, 'Δ');
-        s = s.replace(/\\approx\b/g, '≈');
-        s = s.replace(/\\(?:le|leq)\b/g, '≤');
-        s = s.replace(/\\(?:ge|geq)\b/g, '≥');
-        s = s.replace(/\\neq\b/g, '≠');
-        s = s.replace(/\\times\b/g, '×');
+        // Common TeX symbols & operators
+        s = s.replace(/\\Omega\b/g, '<span class="math-sym">Ω</span>');
+        s = s.replace(/\\cdot\b/g, '<span class="math-op">·</span>');
+        s = s.replace(/\\(?:to|rightarrow)\b/g, '<span class="math-op">→</span>');
+        s = s.replace(/\\implies\b/g, '<span class="math-op">⇒</span>');
+        s = s.replace(/\\infty\b/g, '<span class="math-sym">∞</span>');
+        s = s.replace(/\\Delta\b/g, '<span class="math-sym">Δ</span>');
+        s = s.replace(/\\approx\b/g, '<span class="math-op">≈</span>');
+        s = s.replace(/\\(?:le|leq)\b/g, '<span class="math-op">≤</span>');
+        s = s.replace(/\\(?:ge|geq)\b/g, '<span class="math-op">≥</span>');
+        s = s.replace(/\\neq\b/g, '<span class="math-op">≠</span>');
+        s = s.replace(/\\times\b/g, '<span class="math-op">×</span>');
         s = s.replace(/\\\s+/g, ' ');
 
         // Nested / simple fractions (support nested braces in numerator / denominator)
@@ -541,8 +542,11 @@ function formatMathText(text) {
         s = s.replace(/([0-9A-Za-zΑ-Ωα-ωΩ\)]+)\^\{([^}]+)\}/g, '$1<sup class="math-sup">$2</sup>');
         s = s.replace(/([0-9A-Za-zΑ-Ωα-ωΩ\)]+)\^([0-9a-zA-Z\+\-]+)/g, '$1<sup class="math-sup">$2</sup>');
 
-        // Italicize single Latin variables (V, I, P, R) inside LaTeX expression
-        s = s.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b([VIPR])\b(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<i class="math-var">$1</i>');
+        // Numbers in LaTeX math mode
+        s = s.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])(\d+(?:[.,]\d+)?)(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<span class="math-num-val">$1</span>');
+
+        // Italicize single Latin variables inside LaTeX expression (V, I, P, R, K, A, B, C, D, etc.)
+        s = s.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b([A-Za-z])\b(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<i class="math-var">$1</i>');
 
         return `<span class="math-expr">${s}</span>`;
     }
@@ -574,9 +578,25 @@ function formatMathText(text) {
     // Delta differences: ΔI, ΔV
     res = res.replace(/\b(Δ)(I|V)\b/g, '<span class="math-expr"><span class="math-sym">$1</span><i class="math-var">$2</i></span>');
 
-    // Arrow operators
-    res = res.replace(/\s*->\s*/g, ' → ');
-    res = res.replace(/\s*=>\s*/g, ' ⇒ ');
+    // Circuit Nodes in context: "κόμβων A και B", "σημεία C και D"
+    res = res.replace(/(κόμβων|κόμβους|κόμβου|κόμβο|σημείων|σημείου|σημεία)\s+([ABCD])\b/g, '$1 <span class="math-expr"><i class="math-var">$2</i></span>');
+    res = res.replace(/(και|έως|προς|μεταξύ)\s+([ABCD])\b(?=\s*[.,;]|\s+και|\s+είναι|\s+μεταξύ)/g, '$1 <span class="math-expr"><i class="math-var">$2</i></span>');
+
+    // Switch K: "διακόπτης K", "διακόπτη K"
+    res = res.replace(/\b(διακόπτης|διακόπτη|διακόπτη\s+)(K)\b/g, '$1<span class="math-expr"><i class="math-var">$2</i></span>');
+
+    // Numbers with physical units: 20 V, 4 Ω, 2 A, 40 W, 120 J, 10 s
+    res = res.replace(/(\d+(?:[.,]\d+)?)\s*(Ω|V|A|W|J|s)\b/g, (m, val, unit) => {
+        const unitHtml = unit === 'Ω' ? '<span class="math-sym">Ω</span>' : `<span class="math-unit">${unit}</span>`;
+        return `<span class="math-expr"><span class="math-num-val">${val}</span> ${unitHtml}</span>`;
+    });
+
+    // Standalone Ohm symbol Ω
+    res = res.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])Ω(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<span class="math-expr"><span class="math-sym">Ω</span></span>');
+
+    // Arrow and logic operators
+    res = res.replace(/\s*->\s*/g, ' <span class="math-op">→</span> ');
+    res = res.replace(/\s*=>\s*/g, ' <span class="math-op">⇒</span> ');
 
     // Powers like I² or R²
     res = res.replace(/\b([VIPR])²\b/g, '<span class="math-expr"><i class="math-var">$1</i><sup class="math-sup">2</sup></span>');
@@ -584,9 +604,12 @@ function formatMathText(text) {
     res = res.replace(/([0-9A-Za-zΑ-Ωα-ω])²/g, '$1<sup class="math-sup">2</sup>');
     res = res.replace(/([0-9A-Za-zΑ-Ωα-ω])³/g, '$1<sup class="math-sup">3</sup>');
 
-    // Standalone variables VIPR directly adjacent to operators (=, ·, +, -, −, /, *, <, >, ⇒, →)
-    res = res.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b([VIPR])\b(?=\s*[=·\+\-−\/\*<>⇒→]|\s+[=·\+\-−\/\*<>⇒→])/g, '<span class="math-expr"><i class="math-var">$1</i></span>');
-    res = res.replace(/([=·\+\-−\/\*<>⇒→]\s*)(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b([VIPR])\b(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '$1<span class="math-expr"><i class="math-var">$2</i></span>');
+    // Middle dot multiplication ·
+    res = res.replace(/\s*·\s*/g, ' <span class="math-op">·</span> ');
+
+    // Standalone math variables VIPRKtqWE directly adjacent to operators (=, ·, +, -, −, /, *, <, >, ⇒, →)
+    res = res.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b([VIPRKtqWE])\b(?=\s*[=·\+\-−\/\*<>⇒→]|\s+[=·\+\-−\/\*<>⇒→])/g, '<span class="math-expr"><i class="math-var">$1</i></span>');
+    res = res.replace(/([=·\+\-−\/\*<>⇒→]\s*)(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b([VIPRKtqWE])\b(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '$1<span class="math-expr"><i class="math-var">$2</i></span>');
 
     // Chemistry ions and formulas
     res = res.replace(/\b(H)\+/g, '<span class="math-expr"><i class="math-var">$1</i><sup class="math-sup">+</sup></span>');
