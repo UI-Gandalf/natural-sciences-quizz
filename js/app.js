@@ -1161,29 +1161,36 @@ function resolveQuestionDiagrams(q) {
         return [formatDiagramObj(q.image)];
     }
 
-    // 3. Auto-detection from question text
-    const text = (q.q || '') + ' ' + (q.exp || '');
-    const hasS1 = /(?:σχήμα|σχημα|σχήματος|σχηματος)\s*1/i.test(text);
-    const hasS2 = /(?:σχήμα|σχημα|σχήματος|σχηματος)\s*2/i.test(text);
+    // 3. User Rule Detection:
+    // "each question in physics Γ class either says σχήμα 1 ή σχήμα 2 ή σειρά ή παράλληλα"
+    const text = ((q.q || '') + ' ' + (q.exp || '')).toLowerCase();
+    
+    // Check for Schema 1 OR Series Circuit
+    const matchS1 = /(?:σχήμα|σχημα|σχήματος|σχηματος)\s*1/i.test(text);
+    const matchSeries = /σειρ[άα]|σειρ[αά]ς|σε\s*σειρά|κύκλωμα\s*σειράς/i.test(text);
+    const isS1 = matchS1 || matchSeries;
+
+    // Check for Schema 2 OR Parallel Circuit
+    const matchS2 = /(?:σχήμα|σχημα|σχήματος|σχηματος)\s*2/i.test(text);
+    const matchParallel = /παράλληλ|παραλληλ/i.test(text);
+    const isS2 = matchS2 || matchParallel;
 
     const diagrams = [];
-    if (hasS1) {
+
+    // Special case: ammeter placed in parallel across R1 in Schema 1 (Q11)
+    const isOnlyS1Ammeter = matchS1 && !matchS2 && /αμπερόμετρο.*παράλληλα/i.test(text);
+
+    // If both keywords/schemas are present (comparison questions)
+    if (isS1 && isS2 && !isOnlyS1Ammeter) {
         diagrams.push(formatDiagramObj('assets/images/sxima_1_series_circuit.png'));
-    }
-    if (hasS2) {
         diagrams.push(formatDiagramObj('assets/images/sxima_2_parallel_circuit.png'));
+        return diagrams;
     }
 
-    // 4. Secondary fallback for Physics Class Γ
-    if (diagrams.length === 0 && AppState.currentSubject === 'physics') {
-        const isSeries = /κύκλωμα\s*σειράς|σύνδεση\s*σε\s*σειρά/i.test(q.q || '');
-        const isParallel = /παράλληλο\s*κύκλωμα|παράλληλη\s*σύνδεση/i.test(q.q || '');
-        if (isSeries) {
-            diagrams.push(formatDiagramObj('assets/images/sxima_1_series_circuit.png'));
-        }
-        if (isParallel) {
-            diagrams.push(formatDiagramObj('assets/images/sxima_2_parallel_circuit.png'));
-        }
+    if (isS1) {
+        diagrams.push(formatDiagramObj('assets/images/sxima_1_series_circuit.png'));
+    } else if (isS2) {
+        diagrams.push(formatDiagramObj('assets/images/sxima_2_parallel_circuit.png'));
     }
 
     return diagrams;
