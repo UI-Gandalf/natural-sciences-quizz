@@ -731,9 +731,15 @@ function loadCurrentQuestion() {
         optionsContainer.appendChild(btn);
     });
 
-    // Reset Hint
+    // Reset Attempts & Hint
+    qr.currentAttempts = 0;
     const hintBox = document.getElementById('hint-box');
+    const hintBtn = document.getElementById('hint-btn');
     hintBox.style.display = 'none';
+    if (hintBtn) {
+        hintBtn.style.display = 'none'; // Hint hidden initially on 1st attempt
+        hintBtn.classList.remove('pulse-ready');
+    }
     document.getElementById('hint-content').innerText = q.hint || q.exp;
     document.getElementById('hint-btn-text').innerText = 'Υπόδειξη';
     document.getElementById('hint-chevron').innerText = '▾';
@@ -835,46 +841,109 @@ function selectQuizOption(idx) {
     const qr = AppState.quizRunner;
     const quiz = AppState.currentQuiz;
     if (qr.answered) return;
-    qr.answered = true;
+
+    const btns = document.querySelectorAll('.option-btn');
+    // If this option was already tried and marked wrong, ignore clicks
+    if (btns[idx] && btns[idx].disabled) return;
 
     const qIndex = qr.activeQueue[qr.currentPos];
     const q = quiz.questions[qIndex];
-    const btns = document.querySelectorAll('.option-btn');
     const feedback = document.getElementById('feedback-box');
     const nextBtn = document.getElementById('next-btn');
-
-    btns.forEach(btn => btn.disabled = true);
+    const hintBtn = document.getElementById('hint-btn');
 
     const isCorrect = checkIsCorrect(q, idx);
     const correctIndex = resolveCorrectIndex(q);
 
+    // Track attempt count for current question
+    qr.currentAttempts = (qr.currentAttempts || 0) + 1;
+
     if (isCorrect) {
+        // Correct answer (either on 1st or 2nd attempt)
+        qr.answered = true;
         qr.score++;
         btns[idx].classList.add('correct');
+        btns.forEach(btn => btn.disabled = true);
+
         feedback.className = 'feedback-box correct';
-        feedback.innerHTML = `<strong>✓ Σωστό!</strong> ${q.exp}`;
-    } else {
-        btns[idx].classList.add('wrong');
-        if (correctIndex >= 0 && btns[correctIndex]) {
-            btns[correctIndex].classList.add('correct');
+        if (qr.currentAttempts === 1) {
+            feedback.innerHTML = `<strong>✓ Σωστό!</strong> ${q.exp}`;
+        } else {
+            feedback.innerHTML = `<strong>✓ Μπράβο! Σωστό στη 2η προσπάθεια!</strong> ${q.exp}`;
         }
-        feedback.className = 'feedback-box wrong';
-        feedback.innerHTML = `<strong>✗ Λάθος!</strong> ${q.exp}`;
+        feedback.style.display = 'block';
+
+        // Save history for review screen
+        qr.userHistory.push({
+            qIndex: qIndex,
+            question: q.q,
+            options: q.options,
+            correctIdx: correctIndex,
+            chosenIdx: idx,
+            isCorrect: true,
+            attempts: qr.currentAttempts,
+            explanation: q.exp
+        });
+
+        document.getElementById('score-counter').innerText = `Σκορ: ${qr.score}`;
+        nextBtn.classList.add('pulse-ready');
+        document.getElementById('next-btn-text').innerText = 'Επόμενο';
+        nextBtn.title = 'Συνέχεια στην επόμενη ερώτηση';
+
+    } else {
+        // Incorrect answer
+        btns[idx].classList.add('wrong');
+        btns[idx].disabled = true; // disable this wrong option
+
+        if (qr.currentAttempts === 1) {
+            // First incorrect attempt:
+            // 1. DO NOT show the correct answer!
+            // 2. Unlock the Hint button!
+            if (hintBtn) {
+                hintBtn.style.display = 'inline-flex';
+                hintBtn.classList.add('pulse-ready');
+            }
+
+            feedback.className = 'feedback-box warning';
+            feedback.innerHTML = `<strong>✗ Μη σωστή επιλογή!</strong> Έχετε άλλη 1 προσπάθεια. Συμβουλευτείτε την <strong>Υπόδειξη (💡)</strong> που μόλις ξεκλειδώθηκε παρακάτω και δοκιμάστε ξανά!`;
+            feedback.style.display = 'block';
+
+            showToast('💡 Ξεκλειδώθηκε η υπόδειξη! Δοκιμάστε ξανά.');
+
+            // Other buttons remain enabled for attempt 2!
+            // qr.answered remains false
+
+        } else {
+            // Second incorrect attempt:
+            // NOW, and only now, reveal the correct answer!
+            qr.answered = true;
+            btns.forEach(btn => btn.disabled = true);
+
+            if (correctIndex >= 0 && btns[correctIndex]) {
+                btns[correctIndex].classList.add('correct');
+            }
+
+            feedback.className = 'feedback-box wrong';
+            feedback.innerHTML = `<strong>✗ Λάθος και στη 2η προσπάθεια.</strong> Η σωστή απάντηση επισημαίνεται με πράσινο.<br><br><strong>Επεξήγηση:</strong> ${q.exp}`;
+            feedback.style.display = 'block';
+
+            // Save history for review screen
+            qr.userHistory.push({
+                qIndex: qIndex,
+                question: q.q,
+                options: q.options,
+                correctIdx: correctIndex,
+                chosenIdx: idx,
+                isCorrect: false,
+                attempts: 2,
+                explanation: q.exp
+            });
+
+            nextBtn.classList.add('pulse-ready');
+            document.getElementById('next-btn-text').innerText = 'Επόμενο';
+            nextBtn.title = 'Συνέχεια στην επόμενη ερώτηση';
+        }
     }
-
-    // Save into history for the review list
-    qr.userHistory.push({
-        qIndex: qIndex,
-        question: q.q,
-        options: q.options,
-        correctIdx: correctIndex,
-        chosenIdx: idx,
-        isCorrect: isCorrect,
-        explanation: q.exp
-    });
-
-    document.getElementById('score-counter').innerText = `Σκορ: ${qr.score}`;
-    feedback.style.display = 'block';
 
     // Auto-scroll feedback into view smoothly on mobile
     if (window.innerWidth <= 768) {
@@ -882,10 +951,6 @@ function selectQuizOption(idx) {
             feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 60);
     }
-
-    // Pulse next button
-    nextBtn.classList.add('pulse-ready');
-    nextBtn.title = 'Συνέχεια στην επόμενη ερώτηση';
 }
 
 function handleNextOrSkip() {
@@ -925,6 +990,11 @@ function handleNextOrSkip() {
 
 function toggleHint() {
     const qr = AppState.quizRunner;
+    const hintBtn = document.getElementById('hint-btn');
+    if (!hintBtn || hintBtn.style.display === 'none') {
+        showToast('💡 Η υπόδειξη ξεκλειδώνεται μόνο αν χρειαστείτε 2η προσπάθεια!');
+        return;
+    }
     qr.hintOpen = !qr.hintOpen;
     const hintBox = document.getElementById('hint-box');
     const hintBtnText = document.getElementById('hint-btn-text');
@@ -1005,6 +1075,9 @@ function buildReviewList() {
             <div class="review-item ${statusClass}">
                 <div class="review-q-title">
                     ${item.isCorrect ? '✓' : '✗'} ${item.question}
+                    <span style="font-size: 0.82rem; margin-left: 8px; opacity: 0.85; font-weight: normal;">
+                        (${item.isCorrect ? (item.attempts === 1 ? '1η προσπάθεια' : '2η προσπάθεια με υπόδειξη') : 'Εξαντλήθηκαν 2 προσπάθειες'})
+                    </span>
                 </div>
                 <div style="margin: 6px 0; font-size: 0.9rem;">
                     <strong>Η επιλογή σας:</strong> 

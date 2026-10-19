@@ -918,6 +918,12 @@ body[data-subject] .bg-overlay {
     border: 1px solid var(--danger-border);
 }
 
+.feedback-box.warning {
+    background: var(--hint-bg);
+    color: var(--hint-text);
+    border: 1px solid var(--hint-border);
+}
+
 .hint-box {
     margin-top: 14px;
     padding: 14px 18px;
