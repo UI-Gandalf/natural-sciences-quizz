@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="el" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <title>Γυμνάσιο Νέας Ερυθραίας - Φυσικές Επιστήμες | Διαδραστικά Κουίζ</title>
+    <meta name="description" content="Εκπαιδευτική πύλη διαδραστικών κουίζ Φυσικών Επιστημών για τους μαθητές του Γυμνασίου Νέας Ερυθραίας (Τάξεις Α', Β', Γ' Γυμνασίου) στα μαθήματα Φυσικής, Χημείας, Βιολογίας και Γεωγραφίας.">
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Application Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css?v=16">
+</head>
+<body>
+
+    <!-- Dynamic Background Image Layer with Gradient Overlay -->
+    <div class="bg-layer" id="dynamic-bg" style="background-image: url('assets/images/school_photo_bg.jpg');"></div>
+    <div class="bg-overlay"></div>
+
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a class="brand-link" onclick="navigateTo('')" title="Αρχική Σελίδα">
+                <div class="brand-logo-icon">🔬</div>
+                <div>
+                    <div class="brand-title">
+                        Γυμνάσιο Νέας Ερυθραίας
+                        <span class="brand-badge">Φυσικές Επιστήμες</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Dynamic Breadcrumbs -->
+            <nav class="nav-breadcrumbs" id="nav-breadcrumbs" aria-label="Πλοήγηση">
+                <!-- Injected via JavaScript -->
+            </nav>
+
+            <!-- Mobile View Toggle & Theme Toggle -->
+            <div class="nav-actions">
+                <button class="mobile-toggle-btn" id="mobile-toggle" onclick="toggleMobileView()" title="Προβολή Κινητού (Phone View)">
+                    <span id="mobile-toggle-icon">📱</span>
+                    <span class="mobile-toggle-label">Κινητό</span>
+                </button>
+                <button class="theme-toggle-btn" id="theme-toggle" onclick="toggleTheme()" title="Εναλλαγή Θέματος (Dark / Light)">
+                    <span id="theme-toggle-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main View Content Area -->
+    <main class="main-wrapper" id="app-content">
+        <!-- Views are rendered dynamically by app.js:
+             1. Class Selection View
+             2. Subject Selection View
+             3. Quiz Selection View
+             4. Interactive Quiz Runner View
+        -->
+    </main>
+
+    <!-- Educational Footer -->
+    <footer class="footer">
+        <div class="footer-content" style="justify-content: center; text-align: center;">
+            <div>
+                © 2026 - 2027 Γυμνάσιο Νέας Ερυθραίας - Φυσικές Επιστήμες | Διαδραστικά Κουίζ
+            </div>
+        </div>
+    </footer>
+
+    <!-- Application Scripts -->
+    <script src="js/quiz-data.js?v=15"></script>
+    <script src="js/app.js?v=16"></script>
+</body>
+</html>
