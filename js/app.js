@@ -796,17 +796,19 @@ function loadCurrentQuestion() {
    CRYPTOGRAPHIC ANSWER VERIFICATION (SHA-256)
    Protects quiz answers against inspection in DevTools / Source code
    ========================================================================== */
-const _GNE_HASH_SALT = atob("R05FXzIwMjZfUVVJel9TQUxUXzlmOGIyYw==");
+const _GNE_HASH_SALT = atob("R05FXzIwMjZfUVVJWl9TQUxUXzlmOGIyYw==");
 
 function _calcOptHash(qid, optIdx) {
-    return sha256(qid + ":" + optIdx + ":" + _GNE_HASH_SALT);
+    return sha256(String(qid) + ":" + String(optIdx) + ":" + _GNE_HASH_SALT);
 }
 
 function resolveCorrectIndex(question) {
+    if (!question) return -1;
     if (question.correct !== undefined) return question.correct;
     if (question.correctHash && Array.isArray(question.options)) {
+        const qid = question.id !== undefined ? question.id : (question.q ? parseInt(question.q) : 0);
         for (let i = 0; i < question.options.length; i++) {
-            if (_calcOptHash(question.id, i) === question.correctHash) {
+            if (_calcOptHash(qid, i) === question.correctHash) {
                 return i;
             }
         }
@@ -815,8 +817,10 @@ function resolveCorrectIndex(question) {
 }
 
 function checkIsCorrect(question, chosenIdx) {
+    if (!question) return false;
     if (question.correctHash) {
-        return _calcOptHash(question.id, chosenIdx) === question.correctHash;
+        const qid = question.id !== undefined ? question.id : (question.q ? parseInt(question.q) : 0);
+        return _calcOptHash(qid, chosenIdx) === question.correctHash;
     }
     return question.correct === chosenIdx;
 }
@@ -892,6 +896,12 @@ function selectQuizOption(idx) {
         qr.answered = true;
         qr.score++;
         btns[idx].classList.add('correct');
+        if (!btns[idx].querySelector('.opt-status-badge')) {
+            const badge = document.createElement('span');
+            badge.className = 'opt-status-badge correct-badge';
+            badge.innerHTML = '✓ Σωστό';
+            btns[idx].appendChild(badge);
+        }
         btns.forEach(btn => btn.disabled = true);
 
         feedback.className = 'feedback-box correct';
@@ -924,6 +934,12 @@ function selectQuizOption(idx) {
         // Incorrect answer
         btns[idx].classList.add('wrong');
         btns[idx].disabled = true; // disable this wrong option
+        if (!btns[idx].querySelector('.opt-status-badge')) {
+            const badge = document.createElement('span');
+            badge.className = 'opt-status-badge wrong-badge';
+            badge.innerHTML = qr.currentAttempts === 1 ? '✗ 1η προσπάθεια' : '✗ Λάθος';
+            btns[idx].appendChild(badge);
+        }
 
         if (qr.currentAttempts === 1) {
             // First incorrect attempt:
@@ -945,16 +961,25 @@ function selectQuizOption(idx) {
 
         } else {
             // Second incorrect attempt:
-            // NOW, and only now, reveal the correct answer!
+            // NOW, and only now, reveal the correct answer with green highlight!
             qr.answered = true;
             btns.forEach(btn => btn.disabled = true);
 
+            // Highlight the correct answer with vibrant green & checkmark badge
             if (correctIndex >= 0 && btns[correctIndex]) {
                 btns[correctIndex].classList.add('correct');
+                if (!btns[correctIndex].querySelector('.opt-status-badge')) {
+                    const badge = document.createElement('span');
+                    badge.className = 'opt-status-badge correct-badge';
+                    badge.innerHTML = '✓ Σωστή Απάντηση';
+                    btns[correctIndex].appendChild(badge);
+                }
             }
 
+            const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
+            const correctLetterStr = correctIndex >= 0 ? ` (Επιλογή <strong>${letters[correctIndex]}</strong>)` : '';
             feedback.className = 'feedback-box wrong';
-            feedback.innerHTML = `<strong>✗ Λάθος και στη 2η προσπάθεια.</strong> Η σωστή απάντηση επισημαίνεται με πράσινο.<br><br><strong>Επεξήγηση:</strong> ${q.exp}`;
+            feedback.innerHTML = `<strong>✗ Λάθος και στη 2η προσπάθεια.</strong> Η σωστή απάντηση επισημαίνεται με πράσινο${correctLetterStr}.<br><br><strong>Επεξήγηση:</strong> ${q.exp}`;
             feedback.style.display = 'block';
 
             // Save history for review screen
@@ -1186,8 +1211,16 @@ function renderAnsweredQuestionReview(reviewIndex) {
 
         if (optIdx === entry.correctIdx) {
             btn.classList.add('correct');
+            const badge = document.createElement('span');
+            badge.className = 'opt-status-badge correct-badge';
+            badge.innerHTML = '✓ Σωστή';
+            btn.appendChild(badge);
         } else if (optIdx === entry.chosenIdx && !entry.isCorrect) {
             btn.classList.add('wrong');
+            const badge = document.createElement('span');
+            badge.className = 'opt-status-badge wrong-badge';
+            badge.innerHTML = '✗ Επιλογή σας';
+            btn.appendChild(badge);
         }
 
         optionsContainer.appendChild(btn);

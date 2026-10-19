@@ -878,21 +878,62 @@ body[data-subject] .bg-overlay {
     background: var(--success-bg) !important;
     border-color: var(--success-border) !important;
     color: var(--success-text) !important;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.3) !important;
     font-weight: 600;
 }
 
 .option-btn.correct .opt-letter {
-    color: var(--success-text) !important;
+    color: var(--success-border) !important;
 }
 
 .option-btn.wrong {
     background: var(--danger-bg) !important;
     border-color: var(--danger-border) !important;
     color: var(--danger-text) !important;
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.25) !important;
 }
 
 .option-btn.wrong .opt-letter {
-    color: var(--danger-text) !important;
+    color: var(--danger-border) !important;
+}
+
+/* Option Status Badges (✓ Σωστό / ✗ Λάθος) */
+.opt-status-badge {
+    margin-left: auto;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    align-self: center;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    animation: fadeIn 0.2s ease forwards;
+}
+
+.opt-status-badge.correct-badge {
+    background: rgba(16, 185, 129, 0.22);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.opt-status-badge.wrong-badge {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+[data-theme="light"] .opt-status-badge.correct-badge {
+    background: #d1fae5;
+    color: #065f46;
+    border-color: #10b981;
+}
+
+[data-theme="light"] .opt-status-badge.wrong-badge {
+    background: #fee2e2;
+    color: #991b1b;
+    border-color: #ef4444;
 }
 
 /* Feedback & Hint Boxes */
