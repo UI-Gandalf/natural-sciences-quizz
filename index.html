@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Application Stylesheet -->
-    <link rel="stylesheet" href="css/styles.css?v=19">
+    <link rel="stylesheet" href="css/styles.css?v=22">
 </head>
 <body>
 
@@ -66,8 +66,17 @@
         </div>
     </footer>
 
+    <!-- Circuit Diagram Fullscreen Lightbox Modal -->
+    <div id="diagram-lightbox" class="diagram-lightbox" onclick="closeDiagramLightbox(event)">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button class="lightbox-close-btn" onclick="closeDiagramLightbox()" title="Κλείσιμο (Esc)">✕</button>
+            <div class="lightbox-title" id="lightbox-title">Διάγραμμα Κυκλώματος</div>
+            <img id="lightbox-img" src="" alt="Διάγραμμα Κυκλώματος" />
+        </div>
+    </div>
+
     <!-- Application Scripts -->
-    <script src="js/quiz-data.js?v=19"></script>
-    <script src="js/app.js?v=19"></script>
+    <script src="js/quiz-data.js?v=22"></script>
+    <script src="js/app.js?v=22"></script>
 </body>
 </html>

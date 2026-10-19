@@ -1604,4 +1604,256 @@ body[data-subject] .bg-overlay {
     }
 }
 
+/* ==========================================================================
+   Question Circuit Diagrams (Physics Class Γ & Multi-Diagrams)
+   ========================================================================== */
+.question-diagrams-container {
+    margin: 14px 0 20px 0;
+    width: 100%;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.question-diagrams-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    width: 100%;
+}
+
+.question-diagrams-grid.multi-diagrams {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.question-diagram-card {
+    background: #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    border-radius: 14px;
+    padding: 12px 14px 14px 14px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-theme="dark"] .question-diagram-card {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+
+.question-diagram-card:hover {
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+}
+
+.diagram-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e293b;
+    background: #f1f5f9;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+    letter-spacing: 0.01em;
+    border: 1px solid #cbd5e1;
+    text-align: center;
+}
+
+.diagram-img-wrap {
+    width: 100%;
+    text-align: center;
+    position: relative;
+    cursor: zoom-in;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+}
+
+.question-diagram-img {
+    max-width: 100%;
+    height: auto;
+    max-height: 250px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    border-radius: 6px;
+    transition: transform 0.25s ease;
+}
+
+.diagram-img-wrap:hover .question-diagram-img {
+    transform: scale(1.02);
+}
+
+.diagram-zoom-hint {
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    background: rgba(15, 23, 42, 0.82);
+    color: #f8fafc;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: translateY(4px);
+    backdrop-filter: blur(4px);
+}
+
+.diagram-img-wrap:hover .diagram-zoom-hint {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Review screen circuit diagram display */
+.review-diagrams-wrap {
+    margin: 10px 0 12px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.review-diagram-item {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 8px 10px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 320px;
+}
+
+.review-diagram-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.review-diagram-item img {
+    max-width: 100%;
+    height: auto;
+    max-height: 110px;
+    object-fit: contain;
+    cursor: zoom-in;
+    border-radius: 4px;
+    transition: transform 0.2s ease;
+}
+
+.review-diagram-item img:hover {
+    transform: scale(1.03);
+}
+
+/* Lightbox Modal for Fullscreen Circuit Inspection */
+.diagram-lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(8px);
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 18px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.diagram-lightbox.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.lightbox-content {
+    background: #ffffff;
+    padding: 18px 24px 22px 24px;
+    border-radius: 18px;
+    max-width: 94vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    position: relative;
+    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lightbox-title {
+    color: #0f172a;
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin-bottom: 14px;
+    text-align: center;
+    padding-right: 36px;
+    letter-spacing: 0.01em;
+}
+
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 76vh;
+    object-fit: contain;
+    display: block;
+    border-radius: 8px;
+}
+
+.lightbox-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #334155;
+    transition: all 0.2s ease;
+}
+
+.lightbox-close-btn:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+    transform: scale(1.08);
+}
+
+@media (max-width: 640px) {
+    .question-diagram-img {
+        max-height: 200px;
+    }
+    .question-diagram-card {
+        padding: 10px 10px 12px 10px;
+    }
+    .diagram-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+    }
+    .lightbox-content {
+        padding: 14px 14px 16px 14px;
+    }
+    .lightbox-title {
+        font-size: 0.92rem;
+    }
+}
+
+
 

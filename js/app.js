@@ -585,6 +585,9 @@ function renderQuizRunner(quiz) {
 
                     <div class="question-text" id="question-text">Φόρτωση ερώτησης...</div>
 
+                    <!-- Question Circuit Diagrams Container -->
+                    <div class="question-diagrams-container" id="question-diagrams-container" style="display: none;"></div>
+
                     <div class="options-list" id="options-container"></div>
 
                     <!-- Hint Box -->
@@ -711,6 +714,9 @@ function loadCurrentQuestion() {
 
     // Question text
     document.getElementById('question-text').innerText = q.q;
+
+    // Render Question Circuit Diagrams
+    renderCurrentQuestionDiagrams(q);
 
     // Options rendering
     const optionsContainer = document.getElementById('options-container');
@@ -882,7 +888,8 @@ function selectQuizOption(idx) {
             chosenIdx: idx,
             isCorrect: true,
             attempts: qr.currentAttempts,
-            explanation: q.exp
+            explanation: q.exp,
+            diagrams: resolveQuestionDiagrams(q)
         });
 
         document.getElementById('score-counter').innerText = `Σκορ: ${qr.score}`;
@@ -936,7 +943,8 @@ function selectQuizOption(idx) {
                 chosenIdx: idx,
                 isCorrect: false,
                 attempts: 2,
-                explanation: q.exp
+                explanation: q.exp,
+                diagrams: resolveQuestionDiagrams(q)
             });
 
             nextBtn.classList.add('pulse-ready');
@@ -1071,6 +1079,20 @@ function buildReviewList() {
         const cleanCorrectText = item.options[item.correctIdx].replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '');
         const cleanChosenText = item.options[item.chosenIdx].replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '');
 
+        let diagramsHtml = '';
+        if (item.diagrams && item.diagrams.length > 0) {
+            diagramsHtml = `
+                <div class="review-diagrams-wrap">
+                    ${item.diagrams.map(d => `
+                        <div class="review-diagram-item">
+                            <div class="review-diagram-label">${d.badge}</div>
+                            <img src="${d.src}" alt="${d.alt}" onclick="openDiagramLightbox('${d.src}', '${d.alt.replace(/'/g, "\\'")}')" title="Κάντε κλικ για μεγέθυνση" />
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
         html += `
             <div class="review-item ${statusClass}">
                 <div class="review-q-title">
@@ -1079,6 +1101,7 @@ function buildReviewList() {
                         (${item.isCorrect ? (item.attempts === 1 ? '1η προσπάθεια' : '2η προσπάθεια με υπόδειξη') : 'Εξαντλήθηκαν 2 προσπάθειες'})
                     </span>
                 </div>
+                ${diagramsHtml}
                 <div style="margin: 6px 0; font-size: 0.9rem;">
                     <strong>Η επιλογή σας:</strong> 
                     <span style="color: ${item.isCorrect ? 'var(--success-border)' : 'var(--danger-border)'}; font-weight: 600;">
@@ -1124,10 +1147,136 @@ function restartCurrentQuiz() {
 }
 
 /* ==========================================================================
+   Question Circuit Diagram Resolvers & Lightbox Handlers
+   ========================================================================== */
+function resolveQuestionDiagrams(q) {
+    if (!q) return [];
+    
+    // 1. Explicit array
+    if (Array.isArray(q.images) && q.images.length > 0) {
+        return q.images.map(img => formatDiagramObj(img));
+    }
+    // 2. Explicit single image
+    if (q.image) {
+        return [formatDiagramObj(q.image)];
+    }
+
+    // 3. Auto-detection from question text
+    const text = (q.q || '') + ' ' + (q.exp || '');
+    const hasS1 = /(?:σχήμα|σχημα|σχήματος|σχηματος)\s*1/i.test(text);
+    const hasS2 = /(?:σχήμα|σχημα|σχήματος|σχηματος)\s*2/i.test(text);
+
+    const diagrams = [];
+    if (hasS1) {
+        diagrams.push(formatDiagramObj('assets/images/sxima_1_series_circuit.png'));
+    }
+    if (hasS2) {
+        diagrams.push(formatDiagramObj('assets/images/sxima_2_parallel_circuit.png'));
+    }
+
+    // 4. Secondary fallback for Physics Class Γ
+    if (diagrams.length === 0 && AppState.currentSubject === 'physics') {
+        const isSeries = /κύκλωμα\s*σειράς|σύνδεση\s*σε\s*σειρά/i.test(q.q || '');
+        const isParallel = /παράλληλο\s*κύκλωμα|παράλληλη\s*σύνδεση/i.test(q.q || '');
+        if (isSeries) {
+            diagrams.push(formatDiagramObj('assets/images/sxima_1_series_circuit.png'));
+        }
+        if (isParallel) {
+            diagrams.push(formatDiagramObj('assets/images/sxima_2_parallel_circuit.png'));
+        }
+    }
+
+    return diagrams;
+}
+
+function formatDiagramObj(item) {
+    if (typeof item === 'object' && item.src) return item;
+    const src = String(item);
+    if (src.includes('sxima_1')) {
+        return {
+            src: src,
+            alt: 'Σχήμα 1: Σύνδεση σε Σειρά',
+            badge: '⚡ Σχήμα 1: Σύνδεση σε Σειρά (R₁, R₂, Vπηγ, Διακόπτης K)'
+        };
+    }
+    if (src.includes('sxima_2')) {
+        return {
+            src: src,
+            alt: 'Σχήμα 2: Παράλληλη Σύνδεση',
+            badge: '⚡ Σχήμα 2: Παράλληλη Σύνδεση (R₁, R₂, Κλάδοι I₁, I₂)'
+        };
+    }
+    if (src.includes('ohms_law')) {
+        return {
+            src: src,
+            alt: 'Διάγραμμα Νόμου Ohm (V - I)',
+            badge: '📈 Διάγραμμα Νόμου του Ohm (V – I)'
+        };
+    }
+    return {
+        src: src,
+        alt: 'Διάγραμμα Κυκλώματος',
+        badge: '⚡ Διάγραμμα Κυκλώματος'
+    };
+}
+
+function renderCurrentQuestionDiagrams(q) {
+    const container = document.getElementById('question-diagrams-container');
+    if (!container) return;
+
+    const diagrams = resolveQuestionDiagrams(q);
+    if (diagrams && diagrams.length > 0) {
+        container.innerHTML = `
+            <div class="question-diagrams-grid ${diagrams.length > 1 ? 'multi-diagrams' : 'single-diagram'}">
+                ${diagrams.map(d => `
+                    <div class="question-diagram-card">
+                        <div class="diagram-badge">${d.badge}</div>
+                        <div class="diagram-img-wrap" onclick="openDiagramLightbox('${d.src}', '${d.alt.replace(/'/g, "\\'")}')" title="Κάντε κλικ για μεγέθυνση σε πλήρη ανάλυση">
+                            <img src="${d.src}" alt="${d.alt}" class="question-diagram-img" loading="eager" />
+                            <span class="diagram-zoom-hint">🔍 Μεγέθυνση</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        container.style.display = 'block';
+    } else {
+        container.innerHTML = '';
+        container.style.display = 'none';
+    }
+}
+
+function openDiagramLightbox(src, title) {
+    const lb = document.getElementById('diagram-lightbox');
+    const img = document.getElementById('lightbox-img');
+    const t = document.getElementById('lightbox-title');
+    if (lb && img) {
+        img.src = src;
+        if (t) t.innerText = title || 'Διάγραμμα Κυκλώματος';
+        lb.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeDiagramLightbox(e) {
+    const lb = document.getElementById('diagram-lightbox');
+    if (lb) {
+        lb.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+/* ==========================================================================
    Global Keyboard Shortcuts
    ========================================================================== */
 function setupGlobalKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
+        // Lightbox Escape
+        if (e.key === 'Escape') {
+            closeDiagramLightbox();
+            return;
+        }
+
         // Only active when quiz screen is visible
         const quizScreen = document.getElementById('quiz-screen');
         if (!quizScreen || quizScreen.style.display === 'none') {
