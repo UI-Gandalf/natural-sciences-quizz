@@ -980,6 +980,49 @@ body[data-subject] .bg-overlay {
     transform: translateY(-1px);
 }
 
+.quiz-nav-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.prev-btn {
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid var(--badge-border);
+    border-radius: 999px;
+    padding: 10px 22px;
+    font-size: 0.94rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.prev-btn:hover:not(:disabled) {
+    background: var(--btn-secondary-hover);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.prev-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.prev-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+    transform: none;
+}
+
 .next-btn {
     background: var(--primary);
     color: #ffffff;
@@ -995,7 +1038,6 @@ body[data-subject] .bg-overlay {
     gap: 8px;
     box-shadow: 0 4px 14px var(--primary-glow);
     transition: all 0.2s ease;
-    margin-left: auto;
 }
 
 .next-btn:hover {
@@ -1404,12 +1446,19 @@ body[data-subject] .bg-overlay {
         margin-top: 0;
     }
     .hint-btn {
-        padding: 10px 16px;
-        font-size: 0.88rem;
+        padding: 9px 13px;
+        font-size: 0.85rem;
+    }
+    .quiz-nav-group {
+        gap: 8px;
+    }
+    .prev-btn {
+        padding: 9px 14px;
+        font-size: 0.86rem;
     }
     .next-btn {
-        padding: 10px 22px;
-        font-size: 0.94rem;
+        padding: 9px 18px;
+        font-size: 0.90rem;
     }
     .shortcuts-hint {
         display: none;

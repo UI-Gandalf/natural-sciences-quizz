@@ -17,7 +17,10 @@ const AppState = {
         score: 0,
         answered: false,
         hintOpen: false,
-        userHistory: []      // Tracks { qIndex, selectedIdx, isCorrect }
+        userHistory: [],      // Tracks { qIndex, selectedIdx, isCorrect }
+        navHistory: [],       // History stack for Back navigation
+        forwardStack: [],     // Forward stack for Next navigation when reviewing
+        viewingReviewIndex: null // If non-null, index in qr.userHistory currently being reviewed
     },
     toastTimer: null
 };
@@ -541,6 +544,9 @@ function renderQuizRunner(quiz) {
     qr.answered = false;
     qr.hintOpen = false;
     qr.userHistory = [];
+    qr.navHistory = [];
+    qr.forwardStack = [];
+    qr.viewingReviewIndex = null;
 
     // Quiz container matches Chemistry Quiz.html template
     // Notice: NO emoji as subject icon here!
@@ -610,14 +616,21 @@ function renderQuizRunner(quiz) {
                             <span id="hint-chevron">▾</span>
                         </button>
 
-                        <button class="next-btn" id="next-btn" onclick="handleNextOrSkip()" title="Παράλειψη / Επόμενο">
-                            <span id="next-btn-text">Επόμενο</span>
-                            <span>➔</span>
-                        </button>
+                        <div class="quiz-nav-group">
+                            <button class="prev-btn" id="prev-btn" onclick="handlePrevQuestion()" title="Προηγούμενη ερώτηση (⬅ ή P)" disabled>
+                                <span>⬅</span>
+                                <span id="prev-btn-text">Προηγούμενο</span>
+                            </button>
+
+                            <button class="next-btn" id="next-btn" onclick="handleNextOrSkip()" title="Παράλειψη / Επόμενο (Enter ή ➔)">
+                                <span id="next-btn-text">Επόμενο</span>
+                                <span>➔</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="shortcuts-hint">
-                        Συντομεύσεις: <kbd>1</kbd>-<kbd>5</kbd> Επιλογή | <kbd>H</kbd> Υπόδειξη | <kbd>Enter</kbd> Επόμενο / Παράλειψη
+                        Συντομεύσεις: <kbd>1</kbd>-<kbd>5</kbd> Επιλογή | <kbd>⬅</kbd> / <kbd>➔</kbd> Πλοήγηση | <kbd>H</kbd> Υπόδειξη | <kbd>Enter</kbd> Επόμενο
                     </div>
                 </div>
 
@@ -685,6 +698,7 @@ function loadCurrentQuestion() {
         qr.currentPos = 0;
     }
 
+    qr.viewingReviewIndex = null;
     qr.answered = false;
     qr.hintOpen = false;
 
@@ -692,8 +706,8 @@ function loadCurrentQuestion() {
     const q = quiz.questions[qIndex];
     const totalAnswered = quiz.questions.length - qr.activeQueue.length;
 
-    // Header updates
-    document.getElementById('question-count').innerText = `Ερώτηση ${totalAnswered + 1} / ${quiz.questions.length}`;
+    // Header updates - Display current question index and completed progress
+    document.getElementById('question-count').innerText = `Ερώτηση ${qIndex + 1} / ${quiz.questions.length}`;
     document.getElementById('score-counter').innerText = `Σκορ: ${qr.score}`;
     document.getElementById('progress-bar').style.width = `${(totalAnswered / quiz.questions.length) * 100}%`;
 
@@ -754,6 +768,14 @@ function loadCurrentQuestion() {
     const feedbackBox = document.getElementById('feedback-box');
     feedbackBox.style.display = 'none';
     feedbackBox.className = 'feedback-box';
+
+    // Update Previous button state
+    const prevBtn = document.getElementById('prev-btn');
+    if (prevBtn) {
+        const canGoBack = qr.navHistory.length > 0;
+        prevBtn.disabled = !canGoBack;
+        prevBtn.title = canGoBack ? 'Προηγούμενη ερώτηση (⬅ ή P)' : 'Δεν υπάρχει προηγούμενη ερώτηση';
+    }
 
     // Reset Next button state
     const nextBtn = document.getElementById('next-btn');
@@ -846,6 +868,7 @@ function sha256(ascii) {
 function selectQuizOption(idx) {
     const qr = AppState.quizRunner;
     const quiz = AppState.currentQuiz;
+    if (qr.viewingReviewIndex !== null) return; // In review mode, options are read-only
     if (qr.answered) return;
 
     const btns = document.querySelectorAll('.option-btn');
@@ -963,6 +986,40 @@ function selectQuizOption(idx) {
 
 function handleNextOrSkip() {
     const qr = AppState.quizRunner;
+
+    // 1. If currently viewing an answered question in review mode
+    if (qr.viewingReviewIndex !== null) {
+        if (qr.forwardStack.length > 0) {
+            const fwd = qr.forwardStack.pop();
+            // Re-push the current review state to navHistory so user can step back again
+            qr.navHistory.push({
+                type: 'answered',
+                qIndex: qr.userHistory[qr.viewingReviewIndex].qIndex,
+                historyIndex: qr.viewingReviewIndex
+            });
+
+            if (fwd.type === 'review') {
+                qr.viewingReviewIndex = fwd.reviewIndex;
+                renderAnsweredQuestionReview(qr.viewingReviewIndex);
+            } else {
+                // Return to active interactive question!
+                qr.viewingReviewIndex = null;
+                qr.activeQueue = fwd.activeQueue;
+                qr.skippedSet = fwd.skippedSet;
+                qr.currentPos = fwd.currentPos;
+                loadCurrentQuestion();
+                showToast('➔ Επιστροφή στην τρέχουσα ερώτηση');
+            }
+        } else {
+            qr.viewingReviewIndex = null;
+            loadCurrentQuestion();
+        }
+        return;
+    }
+
+    // 2. Normal Active Flow: any forward action clears the forward navigation stack
+    qr.forwardStack = [];
+
     if (!qr.answered) {
         // User is skipping (pass)
         if (qr.activeQueue.length <= 1) {
@@ -971,8 +1028,16 @@ function handleNextOrSkip() {
         }
 
         const skippedQ = qr.activeQueue.splice(qr.currentPos, 1)[0];
+        const wasAlreadySkipped = qr.skippedSet.has(skippedQ);
         qr.activeQueue.push(skippedQ);
         qr.skippedSet.add(skippedQ);
+
+        // Record skip action into navHistory
+        qr.navHistory.push({
+            type: 'skip',
+            qIndex: skippedQ,
+            wasAlreadySkipped: wasAlreadySkipped
+        });
 
         showToast('⏭️ Η ερώτηση παραλείφθηκε (pass) και θα επανέλθει στο τέλος.');
 
@@ -985,6 +1050,13 @@ function handleNextOrSkip() {
         const finishedQ = qr.activeQueue.splice(qr.currentPos, 1)[0];
         qr.skippedSet.delete(finishedQ);
 
+        // Record answered question into navHistory
+        qr.navHistory.push({
+            type: 'answered',
+            qIndex: finishedQ,
+            historyIndex: qr.userHistory.length - 1
+        });
+
         if (qr.activeQueue.length === 0) {
             showQuizResults();
         } else {
@@ -992,6 +1064,173 @@ function handleNextOrSkip() {
                 qr.currentPos = 0;
             }
             loadCurrentQuestion();
+        }
+    }
+}
+
+function handlePrevQuestion() {
+    const qr = AppState.quizRunner;
+    const quiz = AppState.currentQuiz;
+    if (!quiz || !quiz.questions) return;
+
+    // Case 1: Already in review mode, stepping back to an earlier question
+    if (qr.viewingReviewIndex !== null) {
+        if (qr.navHistory.length > 0) {
+            qr.forwardStack.push({
+                type: 'review',
+                reviewIndex: qr.viewingReviewIndex
+            });
+            const prevRecord = qr.navHistory.pop();
+            if (prevRecord.type === 'answered') {
+                qr.viewingReviewIndex = prevRecord.historyIndex;
+                renderAnsweredQuestionReview(qr.viewingReviewIndex);
+            } else if (prevRecord.type === 'skip') {
+                qr.viewingReviewIndex = null;
+                const idxInQueue = qr.activeQueue.indexOf(prevRecord.qIndex);
+                if (idxInQueue !== -1) {
+                    qr.activeQueue.splice(idxInQueue, 1);
+                }
+                qr.activeQueue.unshift(prevRecord.qIndex);
+                qr.currentPos = 0;
+                if (!prevRecord.wasAlreadySkipped) {
+                    qr.skippedSet.delete(prevRecord.qIndex);
+                }
+                loadCurrentQuestion();
+            }
+        } else {
+            showToast('⚠️ Βρίσκεστε στην πρώτη ερώτηση.');
+        }
+        return;
+    }
+
+    // Case 2: At active question, checking if we can step back
+    if (qr.navHistory.length === 0) {
+        showToast('⚠️ Βρίσκεστε στην αρχή του κουίζ.');
+        return;
+    }
+
+    // Save active question snapshot into forwardStack so Next can return to it
+    qr.forwardStack.push({
+        type: 'active',
+        activeQueue: [...qr.activeQueue],
+        skippedSet: new Set(qr.skippedSet),
+        currentPos: qr.currentPos
+    });
+
+    const prevRecord = qr.navHistory.pop();
+
+    if (prevRecord.type === 'skip') {
+        // Bring skipped question back to the front of the active queue
+        const idxInQueue = qr.activeQueue.indexOf(prevRecord.qIndex);
+        if (idxInQueue !== -1) {
+            qr.activeQueue.splice(idxInQueue, 1);
+        }
+        qr.activeQueue.unshift(prevRecord.qIndex);
+        qr.currentPos = 0;
+        if (!prevRecord.wasAlreadySkipped) {
+            qr.skippedSet.delete(prevRecord.qIndex);
+        }
+        loadCurrentQuestion();
+        showToast('⬅ Προηγούμενη ερώτηση');
+    } else if (prevRecord.type === 'answered') {
+        // Display previously answered question in read-only review mode
+        qr.viewingReviewIndex = prevRecord.historyIndex;
+        renderAnsweredQuestionReview(qr.viewingReviewIndex);
+        showToast('⬅ Επισκόπηση προηγούμενης απάντησης');
+    }
+}
+
+function renderAnsweredQuestionReview(reviewIndex) {
+    const qr = AppState.quizRunner;
+    const quiz = AppState.currentQuiz;
+    const entry = qr.userHistory[reviewIndex];
+    if (!entry) return;
+
+    const q = quiz.questions[entry.qIndex];
+
+    // Header updates
+    document.getElementById('question-count').innerText = `Ερώτηση ${entry.qIndex + 1} / ${quiz.questions.length} (Απαντημένη)`;
+    document.getElementById('score-counter').innerText = `Σκορ: ${qr.score}`;
+    
+    const totalAnswered = quiz.questions.length - qr.activeQueue.length;
+    document.getElementById('progress-bar').style.width = `${(totalAnswered / quiz.questions.length) * 100}%`;
+
+    // Skipped & Pending Badges
+    const skippedBadge = document.getElementById('skipped-badge');
+    if (skippedBadge) skippedBadge.style.display = 'none';
+
+    const pendingBadge = document.getElementById('pending-badge');
+    if (pendingBadge) pendingBadge.style.display = 'none';
+
+    // Question text
+    document.getElementById('question-text').innerText = entry.question;
+
+    // Render diagrams if any
+    renderCurrentQuestionDiagrams(q);
+
+    // Options rendering in read-only review mode
+    const optionsContainer = document.getElementById('options-container');
+    optionsContainer.innerHTML = '';
+    const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
+
+    entry.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.disabled = true;
+
+        let cleanText = optText.replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '');
+        btn.innerHTML = `
+            <span class="opt-letter">${letters[optIdx]}.</span>
+            <span class="opt-content">${cleanText}</span>
+        `;
+
+        if (optIdx === entry.correctIdx) {
+            btn.classList.add('correct');
+        } else if (optIdx === entry.chosenIdx && !entry.isCorrect) {
+            btn.classList.add('wrong');
+        }
+
+        optionsContainer.appendChild(btn);
+    });
+
+    // Hide hint in review mode
+    const hintBtn = document.getElementById('hint-btn');
+    const hintBox = document.getElementById('hint-box');
+    if (hintBtn) hintBtn.style.display = 'none';
+    if (hintBox) hintBox.style.display = 'none';
+
+    // Feedback box with explanation
+    const feedbackBox = document.getElementById('feedback-box');
+    feedbackBox.style.display = 'block';
+    if (entry.isCorrect) {
+        feedbackBox.className = 'feedback-box correct';
+        feedbackBox.innerHTML = `<strong>✓ Σωστό!</strong> ${entry.explanation}`;
+    } else {
+        feedbackBox.className = 'feedback-box wrong';
+        feedbackBox.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Η σωστή απάντηση είναι η επιλογή <strong>${letters[entry.correctIdx]}</strong>.<br><br><strong>Επεξήγηση:</strong> ${entry.explanation}`;
+    }
+
+    // Previous button state
+    const prevBtn = document.getElementById('prev-btn');
+    if (prevBtn) {
+        const canGoBack = qr.navHistory.length > 0;
+        prevBtn.disabled = !canGoBack;
+        prevBtn.title = canGoBack ? 'Προηγούμενη ερώτηση (⬅ ή P)' : 'Δεν υπάρχει προηγούμενη ερώτηση';
+    }
+
+    // Next button state
+    const nextBtn = document.getElementById('next-btn');
+    if (nextBtn) {
+        nextBtn.classList.add('pulse-ready');
+        document.getElementById('next-btn-text').innerText = 'Επόμενο';
+        nextBtn.title = 'Επόμενη ερώτηση / Επιστροφή στο κουίζ';
+    }
+
+    // Auto-scroll
+    if (window.innerWidth <= 768) {
+        const quizContainer = document.querySelector('.quiz-container');
+        if (quizContainer) {
+            quizContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
 }
@@ -1309,6 +1548,10 @@ function setupGlobalKeyboardShortcuts() {
         else if (e.key.toLowerCase() === 'h' || e.key.toLowerCase() === 'η') {
             toggleHint();
         } 
+        // Previous: ArrowLeft or P or Π
+        else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'p' || e.key.toLowerCase() === 'π') {
+            handlePrevQuestion();
+        }
         // Next: Enter or Space or ArrowRight
         else if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') {
             if (e.key === ' ') e.preventDefault();
