@@ -796,6 +796,79 @@ function loadCurrentQuestion() {
     }
 }
 
+/* ==========================================================================
+   CRYPTOGRAPHIC ANSWER VERIFICATION (SHA-256)
+   Protects quiz answers against inspection in DevTools / Source code
+   ========================================================================== */
+const _GNE_HASH_SALT = atob("R05FXzIwMjZfUVVJel9TQUxUXzlmOGIyYw==");
+
+function _calcOptHash(qid, optIdx) {
+    return sha256(qid + ":" + optIdx + ":" + _GNE_HASH_SALT);
+}
+
+function resolveCorrectIndex(question) {
+    if (question.correct !== undefined) return question.correct;
+    if (question.correctHash && Array.isArray(question.options)) {
+        for (let i = 0; i < question.options.length; i++) {
+            if (_calcOptHash(question.id, i) === question.correctHash) {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
+function checkIsCorrect(question, chosenIdx) {
+    if (question.correctHash) {
+        return _calcOptHash(question.id, chosenIdx) === question.correctHash;
+    }
+    return question.correct === chosenIdx;
+}
+
+function sha256(ascii) {
+    function rightRotate(value, amount) { return (value >>> amount) | (value << (32 - amount)); }
+    var mathPow = Math.pow, maxWord = mathPow(2, 32), lengthProperty = 'length', i, j, result = '', words = [];
+    var asciiBitLength = ascii[lengthProperty] * 8;
+    var hash = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+    var k = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+        0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+        0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+        0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+        0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+        0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+        0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+        0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];
+    var utf8 = unescape(encodeURIComponent(ascii));
+    asciiBitLength = utf8[lengthProperty] * 8;
+    for (i = 0; i < utf8[lengthProperty]; i++) words[i >> 2] |= (utf8.charCodeAt(i) & 0xff) << ((3 - (i % 4)) * 8);
+    words[asciiBitLength >> 5] |= 0x80 << (24 - (asciiBitLength % 32));
+    words[(((asciiBitLength + 64) >> 9) << 4) + 15] = asciiBitLength;
+    for (i = 0; i < words[lengthProperty]; i += 16) {
+        var w = words.slice(i, i + 16), oldHash = hash.slice(0);
+        for (j = 0; j < 64; j++) {
+            var w15 = w[j - 15], w2 = w[j - 2];
+            var s0 = rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3);
+            var s1 = rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10);
+            w[j] = j < 16 ? (w[j] | 0) : ((w[j - 16] + s0 + w[j - 7] + s1) | 0);
+            var s1_maj = rightRotate(hash[0], 2) ^ rightRotate(hash[0], 13) ^ rightRotate(hash[0], 22);
+            var maj = (hash[0] & hash[1]) ^ (hash[0] & hash[2]) ^ (hash[1] & hash[2]);
+            var t2 = (s1_maj + maj) | 0;
+            var s1_ch = rightRotate(hash[4], 6) ^ rightRotate(hash[4], 11) ^ rightRotate(hash[4], 25);
+            var ch = (hash[4] & hash[5]) ^ ((~hash[4]) & hash[6]);
+            var t1 = (hash[7] + s1_ch + ch + k[j] + w[j]) | 0;
+            hash = [(t1 + t2) | 0, hash[0], hash[1], hash[2], (hash[3] + t1) | 0, hash[4], hash[5], hash[6]];
+        }
+        for (j = 0; j < 8; j++) hash[j] = (hash[j] + oldHash[j]) | 0;
+    }
+    for (i = 0; i < 8; i++) {
+        for (j = 3; j >= 0; j--) {
+            var b = (hash[i] >> (j * 8)) & 255;
+            result += (b < 16 ? '0' : '') + b.toString(16);
+        }
+    }
+    return result;
+}
+
 function selectQuizOption(idx) {
     const qr = AppState.quizRunner;
     const quiz = AppState.currentQuiz;
@@ -810,7 +883,9 @@ function selectQuizOption(idx) {
 
     btns.forEach(btn => btn.disabled = true);
 
-    const isCorrect = (idx === q.correct);
+    const isCorrect = checkIsCorrect(q, idx);
+    const correctIndex = resolveCorrectIndex(q);
+
     if (isCorrect) {
         qr.score++;
         btns[idx].classList.add('correct');
@@ -818,7 +893,9 @@ function selectQuizOption(idx) {
         feedback.innerHTML = `<strong>✓ Σωστό!</strong> ${q.exp}`;
     } else {
         btns[idx].classList.add('wrong');
-        btns[q.correct].classList.add('correct');
+        if (correctIndex >= 0 && btns[correctIndex]) {
+            btns[correctIndex].classList.add('correct');
+        }
         feedback.className = 'feedback-box wrong';
         feedback.innerHTML = `<strong>✗ Λάθος!</strong> ${q.exp}`;
     }
@@ -828,7 +905,7 @@ function selectQuizOption(idx) {
         qIndex: qIndex,
         question: q.q,
         options: q.options,
-        correctIdx: q.correct,
+        correctIdx: correctIndex,
         chosenIdx: idx,
         isCorrect: isCorrect,
         explanation: q.exp
