@@ -848,7 +848,7 @@ function loadCurrentQuestion() {
 
     // Header updates - Display current question index and completed progress
     document.getElementById('question-count').innerText = `Ερώτηση ${qIndex + 1} / ${quiz.questions.length}`;
-    document.getElementById('score-counter').innerText = `Σκορ: ${qr.score}`;
+    document.getElementById('score-counter').innerText = `Σκορ: ${formatScore(qr.score)}`;
     document.getElementById('progress-bar').style.width = `${(totalAnswered / quiz.questions.length) * 100}%`;
 
     // Skipped badge
@@ -872,24 +872,17 @@ function loadCurrentQuestion() {
     // Render Question Circuit Diagrams
     renderCurrentQuestionDiagrams(q);
 
-    // Options rendering
+    // Question body rendering (Matching, Cascading Stepper, or Standard MCQ)
     const optionsContainer = document.getElementById('options-container');
     optionsContainer.innerHTML = '';
 
-    const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
-    q.options.forEach((optText, optIdx) => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        
-        let cleanText = optText.replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '');
-        
-        btn.innerHTML = `
-            <span class="opt-letter">${letters[optIdx]}.</span>
-            <span class="opt-content">${formatMathText(cleanText)}</span>
-        `;
-        btn.onclick = () => selectQuizOption(optIdx);
-        optionsContainer.appendChild(btn);
-    });
+    if (q.type === 'matching') {
+        renderMatchingQuestion(q, qIndex, optionsContainer);
+    } else if (q.type === 'cascading') {
+        renderCascadingQuestion(q, qIndex, optionsContainer);
+    } else {
+        renderStandardMcqQuestion(q, qIndex, optionsContainer);
+    }
 
     // Reset Attempts & Hint
     qr.currentAttempts = 0;
@@ -939,10 +932,26 @@ function loadCurrentQuestion() {
    CRYPTOGRAPHIC ANSWER VERIFICATION (SHA-256)
    Protects quiz answers against inspection in DevTools / Source code
    ========================================================================== */
+function formatScore(score) {
+    if (typeof score !== 'number' || isNaN(score)) return 0;
+    if (Math.abs(score - Math.round(score)) < 0.05) {
+        return Math.round(score);
+    }
+    return Number(score.toFixed(1));
+}
+
 const _GNE_HASH_SALT = atob("R05FXzIwMjZfUVVJWl9TQUxUXzlmOGIyYw==");
 
 function _calcOptHash(qid, optIdx) {
     return sha256(String(qid) + ":" + String(optIdx) + ":" + _GNE_HASH_SALT);
+}
+
+function _calcPairHash(qid, leftId, rightId) {
+    return sha256(String(qid) + ":" + String(leftId) + ":" + String(rightId) + ":" + _GNE_HASH_SALT);
+}
+
+function _calcStepHash(qid, stepIdx, optIdx) {
+    return sha256(String(qid) + "_s" + String(stepIdx) + ":" + String(optIdx) + ":" + _GNE_HASH_SALT);
 }
 
 function resolveCorrectIndex(question) {
@@ -966,6 +975,43 @@ function checkIsCorrect(question, chosenIdx) {
         return _calcOptHash(qid, chosenIdx) === question.correctHash;
     }
     return question.correct === chosenIdx;
+}
+
+function checkMatchingPair(question, leftId, rightId) {
+    if (!question) return false;
+    const qid = question.id !== undefined ? question.id : (question.q ? parseInt(question.q) : 0);
+    if (question.pairHashes && question.pairHashes[leftId]) {
+        return _calcPairHash(qid, leftId, rightId) === question.pairHashes[leftId];
+    }
+    if (question.pairs) {
+        return question.pairs[leftId] === rightId;
+    }
+    return false;
+}
+
+function checkCascadingStep(question, stepIdx, chosenIdx) {
+    if (!question || !question.steps || !question.steps[stepIdx]) return false;
+    const step = question.steps[stepIdx];
+    const qid = question.id !== undefined ? question.id : (question.q ? parseInt(question.q) : 0);
+    if (step.correctHash) {
+        return _calcStepHash(qid, stepIdx, chosenIdx) === step.correctHash;
+    }
+    return step.correct === chosenIdx;
+}
+
+function resolveCascadingCorrectIndex(question, stepIdx) {
+    if (!question || !question.steps || !question.steps[stepIdx]) return -1;
+    const step = question.steps[stepIdx];
+    if (step.correct !== undefined) return step.correct;
+    if (step.correctHash && Array.isArray(step.options)) {
+        const qid = question.id !== undefined ? question.id : (question.q ? parseInt(question.q) : 0);
+        for (let i = 0; i < step.options.length; i++) {
+            if (_calcStepHash(qid, stepIdx, i) === step.correctHash) {
+                return i;
+            }
+        }
+    }
+    return -1;
 }
 
 function sha256(ascii) {
@@ -1010,6 +1056,665 @@ function sha256(ascii) {
         }
     }
     return result;
+}
+
+/* ==========================================================================
+   QUIZ VARIATIONS: RENDERING & INTERACTION ENGINES
+   1. Matching (Αντιστοίχιση / Connect-the-Dots)
+   2. Cascading Stepper (Διαδοχική Επίλυση Βημάτων)
+   3. Standard Multiple Choice (MCQ)
+   ========================================================================== */
+
+function renderStandardMcqQuestion(q, qIndex, container) {
+    const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
+    q.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        
+        let cleanText = optText.replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '');
+        
+        btn.innerHTML = `
+            <span class="opt-letter">${letters[optIdx]}.</span>
+            <span class="opt-content">${formatMathText(cleanText)}</span>
+        `;
+        btn.onclick = () => selectQuizOption(optIdx);
+        container.appendChild(btn);
+    });
+}
+
+/* --------------------------------------------------------------------------
+   Type 1: Αντιστοίχιση (Interactive Matching / Connect-the-Dots)
+   -------------------------------------------------------------------------- */
+function renderMatchingQuestion(q, qIndex, container) {
+    const qr = AppState.quizRunner;
+    qr.matchingState = {
+        selectedLeft: null,
+        selectedRight: null,
+        matchedPairs: {}, // { [leftId]: rightId }
+        attempts: 0,
+        evaluating: false
+    };
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'matching-wrapper';
+    wrapper.id = 'matching-wrapper';
+
+    // SVG layer for lines
+    const svgLayer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svgLayer.setAttribute('class', 'matching-svg-layer');
+    svgLayer.setAttribute('id', 'matching-svg-layer');
+    wrapper.appendChild(svgLayer);
+
+    // Columns container
+    const columnsDiv = document.createElement('div');
+    columnsDiv.className = 'matching-columns';
+
+    // Left Column
+    const leftCol = document.createElement('div');
+    leftCol.className = 'matching-col matching-col-left';
+    const leftTitle = document.createElement('div');
+    leftTitle.className = 'matching-col-title';
+    leftTitle.innerHTML = '📋 Στήλη Α (Στοιχεία)';
+    leftCol.appendChild(leftTitle);
+
+    q.left.forEach((item, idx) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'matching-item matching-item-left';
+        itemEl.dataset.id = item.id;
+        itemEl.dataset.side = 'left';
+
+        itemEl.innerHTML = `
+            <div class="matching-item-content">
+                <span class="matching-num">${idx + 1}.</span>
+                <span class="matching-text">${formatMathText(item.text)}</span>
+            </div>
+            <div class="matching-dot matching-dot-right" data-id="${item.id}" data-side="left" title="Κάντε κλικ για σύνδεση">
+                <span class="dot-inner"></span>
+            </div>
+        `;
+
+        itemEl.onclick = () => handleMatchingClick('left', item.id);
+        leftCol.appendChild(itemEl);
+    });
+
+    // Right Column
+    const rightCol = document.createElement('div');
+    rightCol.className = 'matching-col matching-col-right';
+    const rightTitle = document.createElement('div');
+    rightTitle.className = 'matching-col-title';
+    rightTitle.innerHTML = '🎯 Στήλη Β (Ιδιότητες / Αποτελέσματα)';
+    rightCol.appendChild(rightTitle);
+
+    const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
+    q.right.forEach((item, idx) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'matching-item matching-item-right';
+        itemEl.dataset.id = item.id;
+        itemEl.dataset.side = 'right';
+
+        itemEl.innerHTML = `
+            <div class="matching-dot matching-dot-left" data-id="${item.id}" data-side="right" title="Κάντε κλικ για σύνδεση">
+                <span class="dot-inner"></span>
+            </div>
+            <div class="matching-item-content">
+                <span class="matching-num">${letters[idx] || (idx + 1)}.</span>
+                <span class="matching-text">${formatMathText(item.text)}</span>
+            </div>
+        `;
+
+        itemEl.onclick = () => handleMatchingClick('right', item.id);
+        rightCol.appendChild(itemEl);
+    });
+
+    columnsDiv.appendChild(leftCol);
+    columnsDiv.appendChild(rightCol);
+    wrapper.appendChild(columnsDiv);
+    container.appendChild(wrapper);
+
+    // Instruction prompt
+    const instructionBar = document.createElement('div');
+    instructionBar.className = 'matching-instruction-bar';
+    instructionBar.innerHTML = '💡 <em>Κάντε κλικ σε ένα στοιχείο της Στήλης Α και κατόπιν στο αντίστοιχο της Στήλης Β για να τα συνδέσετε.</em>';
+    container.appendChild(instructionBar);
+
+    // Responsive line recalculation
+    if (window._matchingResizeHandler) {
+        window.removeEventListener('resize', window._matchingResizeHandler);
+    }
+    window._matchingResizeHandler = () => redrawAllMatchingLines(q);
+    window.addEventListener('resize', window._matchingResizeHandler);
+}
+
+function handleMatchingClick(side, id) {
+    const qr = AppState.quizRunner;
+    const q = AppState.currentQuiz.questions[qr.activeQueue[qr.currentPos]];
+    if (qr.answered || !qr.matchingState || qr.matchingState.evaluating) return;
+
+    // Ignore if already matched
+    if (side === 'left' && qr.matchingState.matchedPairs[id]) return;
+    if (side === 'right' && Object.values(qr.matchingState.matchedPairs).includes(id)) return;
+
+    if (side === 'left') {
+        qr.matchingState.selectedLeft = id;
+        highlightMatchingSelection();
+
+        if (qr.matchingState.selectedRight) {
+            evaluateMatchingPair(q, qr.matchingState.selectedLeft, qr.matchingState.selectedRight);
+        }
+    } else {
+        qr.matchingState.selectedRight = id;
+        highlightMatchingSelection();
+
+        if (qr.matchingState.selectedLeft) {
+            evaluateMatchingPair(q, qr.matchingState.selectedLeft, qr.matchingState.selectedRight);
+        }
+    }
+}
+
+function highlightMatchingSelection() {
+    const qr = AppState.quizRunner;
+    const wrapper = document.getElementById('matching-wrapper');
+    if (!wrapper || !qr.matchingState) return;
+
+    wrapper.querySelectorAll('.matching-item').forEach(el => {
+        const side = el.dataset.side;
+        const id = el.dataset.id;
+        const isSelected = (side === 'left' && qr.matchingState.selectedLeft === id) ||
+                           (side === 'right' && qr.matchingState.selectedRight === id);
+        el.classList.toggle('selected', isSelected);
+    });
+}
+
+function evaluateMatchingPair(q, leftId, rightId) {
+    const qr = AppState.quizRunner;
+    qr.matchingState.evaluating = true;
+
+    const isMatch = checkMatchingPair(q, leftId, rightId);
+    const wrapper = document.getElementById('matching-wrapper');
+    const svgLayer = document.getElementById('matching-svg-layer');
+
+    const leftDot = wrapper ? wrapper.querySelector(`.matching-item-left[data-id="${leftId}"] .matching-dot`) : null;
+    const rightDot = wrapper ? wrapper.querySelector(`.matching-item-right[data-id="${rightId}"] .matching-dot`) : null;
+    const leftItem = wrapper ? wrapper.querySelector(`.matching-item-left[data-id="${leftId}"]`) : null;
+    const rightItem = wrapper ? wrapper.querySelector(`.matching-item-right[data-id="${rightId}"]`) : null;
+
+    if (isMatch) {
+        // Correct connection!
+        qr.matchingState.matchedPairs[leftId] = rightId;
+        qr.matchingState.selectedLeft = null;
+        qr.matchingState.selectedRight = null;
+        highlightMatchingSelection();
+
+        if (leftItem) leftItem.classList.add('matched');
+        if (rightItem) rightItem.classList.add('matched');
+
+        // Draw permanent green line
+        if (svgLayer && leftDot && rightDot) {
+            drawConnectingLine(svgLayer, leftDot, rightDot, 'matching-line-correct', `line-${leftId}`);
+        }
+
+        const totalPairs = q.left.length;
+        const matchedCount = Object.keys(qr.matchingState.matchedPairs).length;
+
+        if (matchedCount === totalPairs) {
+            // All pairs successfully connected!
+            qr.answered = true;
+            qr.score++;
+            document.getElementById('score-counter').innerText = `Σκορ: ${formatScore(qr.score)}`;
+
+            const feedback = document.getElementById('feedback-box');
+            feedback.className = 'feedback-box correct';
+            feedback.innerHTML = `<strong>✓ Εξαιρετικά! Όλες οι αντιστοιχίσεις έγιναν σωστά!</strong><br><br>${formatMathText(q.exp)}`;
+            feedback.style.display = 'block';
+            triggerMathTypeset(feedback);
+
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.classList.add('pulse-ready');
+            document.getElementById('next-btn-text').innerText = 'Επόμενο';
+            nextBtn.title = 'Συνέχεια στην επόμενη ερώτηση';
+
+            qr.userHistory.push({
+                type: 'matching',
+                qIndex: qr.activeQueue[qr.currentPos],
+                question: q.q,
+                left: q.left,
+                right: q.right,
+                matchedPairs: { ...qr.matchingState.matchedPairs },
+                isCorrect: true,
+                attempts: qr.matchingState.attempts + 1,
+                explanation: q.exp,
+                diagrams: resolveQuestionDiagrams(q)
+            });
+
+            showToast('🎉 Άριστα! Όλες οι συνδέσεις είναι σωστές!');
+        } else {
+            showToast(`✓ Σωστή σύνδεση! (${matchedCount}/${totalPairs})`);
+        }
+        qr.matchingState.evaluating = false;
+    } else {
+        // Wrong connection: draw line, shake, then dissolve line!
+        qr.matchingState.attempts = (qr.matchingState.attempts || 0) + 1;
+
+        let wrongLine = null;
+        if (svgLayer && leftDot && rightDot) {
+            wrongLine = drawConnectingLine(svgLayer, leftDot, rightDot, 'matching-line-wrong', 'temp-wrong-line');
+        }
+
+        if (leftItem) leftItem.classList.add('card-shake', 'item-wrong');
+        if (rightItem) rightItem.classList.add('card-shake', 'item-wrong');
+
+        setTimeout(() => {
+            if (wrongLine && wrongLine.parentNode) {
+                wrongLine.classList.add('line-dissolve');
+                setTimeout(() => wrongLine.remove(), 250);
+            }
+            if (leftItem) leftItem.classList.remove('card-shake', 'item-wrong');
+            if (rightItem) rightItem.classList.remove('card-shake', 'item-wrong');
+
+            qr.matchingState.selectedLeft = null;
+            qr.matchingState.selectedRight = null;
+            highlightMatchingSelection();
+            qr.matchingState.evaluating = false;
+        }, 600);
+
+        const hintBtn = document.getElementById('hint-btn');
+        if (hintBtn && qr.matchingState.attempts === 1) {
+            hintBtn.style.display = 'inline-flex';
+            hintBtn.classList.add('pulse-ready');
+            showToast('💡 Ξεκλειδώθηκε η υπόδειξη! Δοκιμάστε ξανά.');
+        } else {
+            showToast('✗ Λανθασμένη αντιστοίχιση. Δοκιμάστε ξανά!');
+        }
+
+        const feedback = document.getElementById('feedback-box');
+        feedback.className = 'feedback-box warning';
+        feedback.innerHTML = `<strong>✗ Μη σωστή αντιστοίχιση.</strong> Η λανθασμένη σύνδεση αφαιρέθηκε. Συμβουλευτείτε τη θεωρία ή την <strong>Υπόδειξη (💡)</strong> και συνδέστε ξανά.`;
+        feedback.style.display = 'block';
+    }
+}
+
+function drawConnectingLine(svgLayer, dotA, dotB, className, id) {
+    const wrapper = svgLayer.closest('.matching-wrapper');
+    if (!wrapper || !dotA || !dotB) return null;
+
+    const wrapRect = wrapper.getBoundingClientRect();
+    const rectA = dotA.getBoundingClientRect();
+    const rectB = dotB.getBoundingClientRect();
+
+    const x1 = rectA.left + rectA.width / 2 - wrapRect.left;
+    const y1 = rectA.top + rectA.height / 2 - wrapRect.top;
+    const x2 = rectB.left + rectB.width / 2 - wrapRect.left;
+    const y2 = rectB.top + rectB.height / 2 - wrapRect.top;
+
+    const dx = Math.abs(x2 - x1) * 0.45;
+    const pathData = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+
+    let path = id ? svgLayer.querySelector(`#${id}`) : null;
+    if (!path) {
+        path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        if (id) path.setAttribute('id', id);
+        svgLayer.appendChild(path);
+    }
+    path.setAttribute('d', pathData);
+    path.setAttribute('class', `matching-line ${className}`);
+    return path;
+}
+
+function redrawAllMatchingLines(q) {
+    const qr = AppState.quizRunner;
+    const wrapper = document.getElementById('matching-wrapper');
+    const svgLayer = document.getElementById('matching-svg-layer');
+    if (!wrapper || !svgLayer || !qr.matchingState || !qr.matchingState.matchedPairs) return;
+
+    Object.entries(qr.matchingState.matchedPairs).forEach(([leftId, rightId]) => {
+        const leftDot = wrapper.querySelector(`.matching-item-left[data-id="${leftId}"] .matching-dot`);
+        const rightDot = wrapper.querySelector(`.matching-item-right[data-id="${rightId}"] .matching-dot`);
+        if (leftDot && rightDot) {
+            drawConnectingLine(svgLayer, leftDot, rightDot, 'matching-line-correct', `line-${leftId}`);
+        }
+    });
+}
+
+/* --------------------------------------------------------------------------
+   Type 2: Cascading Step-by-Step Problem (Διαδοχική Επίλυση Βημάτων)
+   -------------------------------------------------------------------------- */
+function renderCascadingQuestion(q, qIndex, container) {
+    const qr = AppState.quizRunner;
+    qr.cascadingState = {
+        currentStep: 0,
+        stepResults: [],
+        stepAttempts: 0,
+        totalSteps: q.steps.length
+    };
+
+    const cascadingWrap = document.createElement('div');
+    cascadingWrap.className = 'cascading-container';
+    cascadingWrap.id = 'cascading-container';
+
+    // Header Stepper Indicator
+    const header = document.createElement('div');
+    header.className = 'cascading-stepper-header';
+    header.id = 'cascading-stepper-header';
+
+    q.steps.forEach((step, sIdx) => {
+        const pill = document.createElement('div');
+        pill.className = `cascading-step-pill ${sIdx === 0 ? 'active' : 'locked'}`;
+        pill.id = `step-pill-${sIdx}`;
+        pill.innerHTML = `
+            <span class="step-num-circle">${sIdx + 1}</span>
+            <span class="step-pill-title">${step.stepTitle || `Βήμα ${sIdx + 1}`}</span>
+        `;
+        header.appendChild(pill);
+    });
+    cascadingWrap.appendChild(header);
+
+    // Body container for progressive step cards
+    const stepsBody = document.createElement('div');
+    stepsBody.className = 'cascading-steps-body';
+    stepsBody.id = 'cascading-steps-body';
+    cascadingWrap.appendChild(stepsBody);
+
+    container.appendChild(cascadingWrap);
+
+    // Render Step 0 initially
+    renderActiveCascadingStep(q, 0);
+}
+
+function renderActiveCascadingStep(q, stepIdx) {
+    const qr = AppState.quizRunner;
+    qr.cascadingState.currentStep = stepIdx;
+    qr.cascadingState.stepAttempts = 0;
+
+    const stepsBody = document.getElementById('cascading-steps-body');
+    if (!stepsBody) return;
+    const step = q.steps[stepIdx];
+
+    // Update Header step pills
+    q.steps.forEach((_, idx) => {
+        const pill = document.getElementById(`step-pill-${idx}`);
+        if (pill) {
+            if (idx < stepIdx) {
+                pill.className = 'cascading-step-pill completed';
+            } else if (idx === stepIdx) {
+                pill.className = 'cascading-step-pill active';
+            } else {
+                pill.className = 'cascading-step-pill locked';
+            }
+        }
+    });
+
+    // Create Step Card
+    const card = document.createElement('div');
+    card.className = 'cascading-step-card active animate-step-in';
+    card.id = `cascading-step-card-${stepIdx}`;
+
+    const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
+    const stepPct = Math.round(100 / q.steps.length);
+
+    card.innerHTML = `
+        <div class="step-badge-title">
+            <span class="step-badge">Βήμα ${stepIdx + 1} από ${q.steps.length}</span>
+            <span class="step-badge-weight">Ισοδύναμη βαθμολόγηση (${stepPct}%)</span>
+        </div>
+        <div class="step-prompt">${formatMathText(step.prompt)}</div>
+        <div class="step-options-grid" id="step-options-${stepIdx}"></div>
+        <div class="step-mini-feedback" id="step-feedback-${stepIdx}" style="display: none;"></div>
+    `;
+
+    const optionsGrid = card.querySelector(`#step-options-${stepIdx}`);
+
+    step.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn step-option-btn';
+        let cleanText = optText.replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '');
+        btn.innerHTML = `
+            <span class="opt-letter">${letters[optIdx]}.</span>
+            <span class="opt-content">${formatMathText(cleanText)}</span>
+        `;
+        btn.onclick = () => selectCascadingStepOption(stepIdx, optIdx);
+        optionsGrid.appendChild(btn);
+    });
+
+    stepsBody.appendChild(card);
+    triggerMathTypeset(card);
+
+    // Smooth scroll down to new step card
+    setTimeout(() => {
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 120);
+}
+
+function selectCascadingStepOption(stepIdx, optIdx) {
+    const qr = AppState.quizRunner;
+    const q = AppState.currentQuiz.questions[qr.activeQueue[qr.currentPos]];
+    const step = q.steps[stepIdx];
+    if (qr.answered || qr.cascadingState.currentStep !== stepIdx) return;
+
+    const card = document.getElementById(`cascading-step-card-${stepIdx}`);
+    if (!card) return;
+    const btns = card.querySelectorAll('.step-option-btn');
+    if (btns[optIdx] && btns[optIdx].disabled) return;
+
+    qr.cascadingState.stepAttempts++;
+    const isCorrect = checkCascadingStep(q, stepIdx, optIdx);
+    const correctIdx = resolveCascadingCorrectIndex(q, stepIdx);
+    const feedbackEl = card.querySelector(`#step-feedback-${stepIdx}`);
+
+    if (isCorrect) {
+        // Step answered correctly!
+        btns[optIdx].classList.add('correct');
+        const badge = document.createElement('span');
+        badge.className = 'opt-status-badge correct-badge';
+        badge.innerHTML = '✓ Σωστό';
+        btns[optIdx].appendChild(badge);
+        btns.forEach(b => b.disabled = true);
+
+        // Add equal fractional score
+        qr.score += (1 / q.steps.length);
+        document.getElementById('score-counter').innerText = `Σκορ: ${formatScore(qr.score)}`;
+
+        feedbackEl.className = 'step-mini-feedback correct';
+        feedbackEl.innerHTML = `<strong>✓ Σωστό!</strong> ${formatMathText(step.exp)}`;
+        feedbackEl.style.display = 'block';
+        triggerMathTypeset(feedbackEl);
+
+        qr.cascadingState.stepResults.push({
+            stepIdx,
+            chosenIdx: optIdx,
+            correctIdx,
+            isCorrect: true,
+            attempts: qr.cascadingState.stepAttempts
+        });
+
+        handleCascadingStepAdvance(q, stepIdx);
+    } else {
+        // Step answered incorrectly
+        btns[optIdx].classList.add('wrong');
+        btns[optIdx].disabled = true;
+
+        if (qr.cascadingState.stepAttempts === 1) {
+            const hintBtn = document.getElementById('hint-btn');
+            if (hintBtn) {
+                hintBtn.style.display = 'inline-flex';
+                hintBtn.classList.add('pulse-ready');
+            }
+            feedbackEl.className = 'step-mini-feedback warning';
+            feedbackEl.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Έχετε άλλη 1 προσπάθεια. Συμβουλευτείτε την <strong>Υπόδειξη (💡)</strong> παρακάτω και δοκιμάστε ξανά!`;
+            feedbackEl.style.display = 'block';
+            showToast('💡 Ξεκλειδώθηκε η υπόδειξη για το βήμα!');
+        } else {
+            // Second wrong attempt: reveal correct and unlock next step
+            btns.forEach(b => b.disabled = true);
+            if (correctIdx >= 0 && btns[correctIdx]) {
+                btns[correctIdx].classList.add('correct');
+                const badge = document.createElement('span');
+                badge.className = 'opt-status-badge correct-badge';
+                badge.innerHTML = '✓ Σωστή Απάντηση';
+                btns[correctIdx].appendChild(badge);
+            }
+
+            feedbackEl.className = 'step-mini-feedback wrong';
+            feedbackEl.innerHTML = `<strong>✗ Λάθος στη 2η προσπάθεια.</strong> Η σωστή απάντηση επισημαίνεται με πράσινο.<br><br><strong>Επεξήγηση βήματος:</strong> ${formatMathText(step.exp)}`;
+            feedbackEl.style.display = 'block';
+            triggerMathTypeset(feedbackEl);
+
+            qr.cascadingState.stepResults.push({
+                stepIdx,
+                chosenIdx: optIdx,
+                correctIdx,
+                isCorrect: false,
+                attempts: 2
+            });
+
+            setTimeout(() => {
+                handleCascadingStepAdvance(q, stepIdx);
+            }, 1400);
+        }
+    }
+}
+
+function handleCascadingStepAdvance(q, stepIdx) {
+    const qr = AppState.quizRunner;
+    const card = document.getElementById(`cascading-step-card-${stepIdx}`);
+    if (card) {
+        card.classList.remove('active');
+        card.classList.add('completed');
+    }
+
+    if (stepIdx + 1 < q.steps.length) {
+        setTimeout(() => {
+            renderActiveCascadingStep(q, stepIdx + 1);
+        }, 500);
+    } else {
+        // All steps completed!
+        qr.answered = true;
+
+        q.steps.forEach((_, idx) => {
+            const pill = document.getElementById(`step-pill-${idx}`);
+            if (pill) pill.className = 'cascading-step-pill completed';
+        });
+
+        const feedback = document.getElementById('feedback-box');
+        const allCorrect = qr.cascadingState.stepResults.every(r => r.isCorrect);
+
+        feedback.className = `feedback-box ${allCorrect ? 'correct' : 'warning'}`;
+        feedback.innerHTML = `
+            <strong>${allCorrect ? '✓ Συγχαρητήρια! Επιλύσατε όλα τα βήματα με απόλυτη επιτυχία!' : '✓ Ολοκληρώθηκε η επίλυση όλων των βημάτων του προβλήματος!'}</strong><br><br>
+            <strong>Συνολική Επεξήγηση:</strong> ${formatMathText(q.exp)}
+        `;
+        feedback.style.display = 'block';
+        triggerMathTypeset(feedback);
+
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.classList.add('pulse-ready');
+        document.getElementById('next-btn-text').innerText = 'Επόμενο';
+        nextBtn.title = 'Συνέχεια στην επόμενη ερώτηση';
+
+        qr.userHistory.push({
+            type: 'cascading',
+            qIndex: qr.activeQueue[qr.currentPos],
+            question: q.q,
+            steps: q.steps,
+            stepResults: qr.cascadingState.stepResults,
+            isCorrect: allCorrect,
+            explanation: q.exp,
+            diagrams: resolveQuestionDiagrams(q)
+        });
+
+        showToast(allCorrect ? '🏆 Άριστα! Όλα τα βήματα επιλύθηκαν σωστά!' : '✓ Ολοκληρώθηκαν όλα τα βήματα.');
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Review Helpers for New Types
+   -------------------------------------------------------------------------- */
+function renderMatchingReview(entry, container) {
+    const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
+    const card = document.createElement('div');
+    card.className = 'review-matching-card';
+    card.innerHTML = `
+        <div class="review-matching-title">✓ Ολοκληρωμένες Αντιστοιχίσεις:</div>
+        <div class="review-matching-pairs">
+            ${entry.left.map((lItem, idx) => {
+                const matchedRightId = entry.matchedPairs ? entry.matchedPairs[lItem.id] : null;
+                const rItem = entry.right ? entry.right.find(r => r.id === matchedRightId) : null;
+                const rIdx = entry.right ? entry.right.findIndex(r => r.id === matchedRightId) : -1;
+                const rLetter = rIdx >= 0 ? letters[rIdx] : '';
+                return `
+                    <div class="review-pair-row">
+                        <div class="review-pair-left"><strong>${idx + 1}.</strong> ${formatMathText(lItem.text)}</div>
+                        <div class="review-pair-arrow">➔</div>
+                        <div class="review-pair-right"><strong>${rLetter}.</strong> ${rItem ? formatMathText(rItem.text) : '—'}</div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+    container.appendChild(card);
+}
+
+function renderCascadingReview(entry, container) {
+    const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
+    const card = document.createElement('div');
+    card.className = 'review-cascading-card';
+    card.innerHTML = `
+        <div class="review-cascading-title">Διαδοχικά Βήματα Επίλυσης:</div>
+        <div class="review-cascading-steps">
+            ${entry.steps.map((step, sIdx) => {
+                const res = entry.stepResults ? entry.stepResults[sIdx] : null;
+                const chosenIdx = res ? res.chosenIdx : -1;
+                const correctIdx = res ? res.correctIdx : -1;
+                const isCorrect = res ? res.isCorrect : false;
+                const chosenText = chosenIdx >= 0 && step.options && step.options[chosenIdx] ? step.options[chosenIdx].replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '') : '';
+                const correctText = correctIdx >= 0 && step.options && step.options[correctIdx] ? step.options[correctIdx].replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '') : '';
+                return `
+                    <div class="review-step-item ${isCorrect ? 'was-correct' : 'was-wrong'}">
+                        <div class="review-step-header">
+                            <span class="review-step-badge">${isCorrect ? '✓' : '✗'} Βήμα ${sIdx + 1}</span>
+                            <span class="review-step-prompt">${formatMathText(step.prompt)}</span>
+                        </div>
+                        <div class="review-step-details">
+                            <div><strong>Επιλογή σας:</strong> <span style="color: ${isCorrect ? 'var(--success-border)' : 'var(--danger-border)'};">${letters[chosenIdx]}. ${formatMathText(chosenText)}</span></div>
+                            ${!isCorrect ? `<div><strong>Σωστή απάντηση:</strong> <span style="color: var(--success-border);">${letters[correctIdx]}. ${formatMathText(correctText)}</span></div>` : ''}
+                            <div class="review-step-exp"><strong>💡 Επεξήγηση βήματος:</strong> ${formatMathText(step.exp)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+    container.appendChild(card);
+}
+
+function renderStandardMcqReview(entry, container) {
+    const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
+    entry.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.disabled = true;
+
+        let cleanText = optText.replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '');
+        btn.innerHTML = `
+            <span class="opt-letter">${letters[optIdx]}.</span>
+            <span class="opt-content">${formatMathText(cleanText)}</span>
+        `;
+
+        if (optIdx === entry.correctIdx) {
+            btn.classList.add('correct');
+            const badge = document.createElement('span');
+            badge.className = 'opt-status-badge correct-badge';
+            badge.innerHTML = '✓ Σωστή';
+            btn.appendChild(badge);
+        } else if (optIdx === entry.chosenIdx && !entry.isCorrect) {
+            btn.classList.add('wrong');
+            const badge = document.createElement('span');
+            badge.className = 'opt-status-badge wrong-badge';
+            badge.innerHTML = '✗ Επιλογή σας';
+            btn.appendChild(badge);
+        }
+
+        container.appendChild(btn);
+    });
 }
 
 function selectQuizOption(idx) {
@@ -1069,7 +1774,7 @@ function selectQuizOption(idx) {
             diagrams: resolveQuestionDiagrams(q)
         });
 
-        document.getElementById('score-counter').innerText = `Σκορ: ${qr.score}`;
+        document.getElementById('score-counter').innerText = `Σκορ: ${formatScore(qr.score)}`;
         nextBtn.classList.add('pulse-ready');
         document.getElementById('next-btn-text').innerText = 'Επόμενο';
         nextBtn.title = 'Συνέχεια στην επόμενη ερώτηση';
@@ -1320,7 +2025,7 @@ function renderAnsweredQuestionReview(reviewIndex) {
 
     // Header updates
     document.getElementById('question-count').innerText = `Ερώτηση ${entry.qIndex + 1} / ${quiz.questions.length} (Απαντημένη)`;
-    document.getElementById('score-counter').innerText = `Σκορ: ${qr.score}`;
+    document.getElementById('score-counter').innerText = `Σκορ: ${formatScore(qr.score)}`;
     
     const totalAnswered = quiz.questions.length - qr.activeQueue.length;
     document.getElementById('progress-bar').style.width = `${(totalAnswered / quiz.questions.length) * 100}%`;
@@ -1338,38 +2043,18 @@ function renderAnsweredQuestionReview(reviewIndex) {
     // Render diagrams if any
     renderCurrentQuestionDiagrams(q);
 
-    // Options rendering in read-only review mode
+    // Question body rendering in read-only review mode
     const optionsContainer = document.getElementById('options-container');
     optionsContainer.innerHTML = '';
     const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
 
-    entry.options.forEach((optText, optIdx) => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.disabled = true;
-
-        let cleanText = optText.replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '');
-        btn.innerHTML = `
-            <span class="opt-letter">${letters[optIdx]}.</span>
-            <span class="opt-content">${formatMathText(cleanText)}</span>
-        `;
-
-        if (optIdx === entry.correctIdx) {
-            btn.classList.add('correct');
-            const badge = document.createElement('span');
-            badge.className = 'opt-status-badge correct-badge';
-            badge.innerHTML = '✓ Σωστή';
-            btn.appendChild(badge);
-        } else if (optIdx === entry.chosenIdx && !entry.isCorrect) {
-            btn.classList.add('wrong');
-            const badge = document.createElement('span');
-            badge.className = 'opt-status-badge wrong-badge';
-            badge.innerHTML = '✗ Επιλογή σας';
-            btn.appendChild(badge);
-        }
-
-        optionsContainer.appendChild(btn);
-    });
+    if (entry.type === 'matching') {
+        renderMatchingReview(entry, optionsContainer);
+    } else if (entry.type === 'cascading') {
+        renderCascadingReview(entry, optionsContainer);
+    } else {
+        renderStandardMcqReview(entry, optionsContainer);
+    }
 
     // Hide hint in review mode
     const hintBtn = document.getElementById('hint-btn');
@@ -1385,7 +2070,11 @@ function renderAnsweredQuestionReview(reviewIndex) {
         feedbackBox.innerHTML = `<strong>✓ Σωστό!</strong> ${formatMathText(entry.explanation)}`;
     } else {
         feedbackBox.className = 'feedback-box wrong';
-        feedbackBox.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Η σωστή απάντηση είναι η επιλογή <strong>${letters[entry.correctIdx]}</strong>.<br><br><strong>Επεξήγηση:</strong> ${formatMathText(entry.explanation)}`;
+        if (entry.type === 'matching' || entry.type === 'cascading') {
+            feedbackBox.innerHTML = `<strong>Επεξήγηση:</strong> ${formatMathText(entry.explanation)}`;
+        } else {
+            feedbackBox.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Η σωστή απάντηση είναι η επιλογή <strong>${letters[entry.correctIdx]}</strong>.<br><br><strong>Επεξήγηση:</strong> ${formatMathText(entry.explanation)}`;
+        }
     }
 
     // Previous button state
@@ -1462,7 +2151,7 @@ function showQuizResults() {
     document.getElementById('quiz-screen').style.display = 'none';
     document.getElementById('results-screen').style.display = 'block';
 
-    document.getElementById('final-score').innerText = qr.score;
+    document.getElementById('final-score').innerText = formatScore(qr.score);
     const total = quiz.questions.length;
     const pct = Math.round((qr.score / total) * 100);
     document.getElementById('final-pct').innerText = `${pct}% Επιτυχία`;
@@ -1497,8 +2186,6 @@ function buildReviewList() {
 
     qr.userHistory.forEach((item, i) => {
         const statusClass = item.isCorrect ? 'was-correct' : 'was-wrong';
-        const cleanCorrectText = item.options[item.correctIdx].replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '');
-        const cleanChosenText = item.options[item.chosenIdx].replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '');
 
         let diagramsHtml = '';
         if (item.diagrams && item.diagrams.length > 0) {
@@ -1514,15 +2201,61 @@ function buildReviewList() {
             `;
         }
 
-        html += `
-            <div class="review-item ${statusClass}">
-                <div class="review-q-title">
-                    ${item.isCorrect ? '✓' : '✗'} ${formatMathText(item.question)}
-                    <span style="font-size: 0.82rem; margin-left: 8px; opacity: 0.85; font-weight: normal;">
-                        (${item.isCorrect ? (item.attempts === 1 ? '1η προσπάθεια' : '2η προσπάθεια με υπόδειξη') : 'Εξαντλήθηκαν 2 προσπάθειες'})
-                    </span>
+        let bodyHtml = '';
+        if (item.type === 'matching') {
+            bodyHtml = `
+                <div class="review-matching-card">
+                    <div class="review-matching-title">✓ Ολοκληρωμένες Αντιστοιχίσεις:</div>
+                    <div class="review-matching-pairs">
+                        ${item.left.map((lItem, idx) => {
+                            const matchedRightId = item.matchedPairs ? item.matchedPairs[lItem.id] : null;
+                            const rItem = item.right ? item.right.find(r => r.id === matchedRightId) : null;
+                            const rIdx = item.right ? item.right.findIndex(r => r.id === matchedRightId) : -1;
+                            const rLetter = rIdx >= 0 ? letters[rIdx] : '';
+                            return `
+                                <div class="review-pair-row">
+                                    <div class="review-pair-left"><strong>${idx + 1}.</strong> ${formatMathText(lItem.text)}</div>
+                                    <div class="review-pair-arrow">➔</div>
+                                    <div class="review-pair-right"><strong>${rLetter}.</strong> ${rItem ? formatMathText(rItem.text) : '—'}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
                 </div>
-                ${diagramsHtml}
+            `;
+        } else if (item.type === 'cascading') {
+            bodyHtml = `
+                <div class="review-cascading-card">
+                    <div class="review-cascading-title">Διαδοχικά Βήματα Επίλυσης:</div>
+                    <div class="review-cascading-steps">
+                        ${item.steps.map((step, sIdx) => {
+                            const res = item.stepResults ? item.stepResults[sIdx] : null;
+                            const chosenIdx = res ? res.chosenIdx : -1;
+                            const correctIdx = res ? res.correctIdx : -1;
+                            const isCorrect = res ? res.isCorrect : false;
+                            const chosenText = chosenIdx >= 0 && step.options && step.options[chosenIdx] ? step.options[chosenIdx].replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '') : '';
+                            const correctText = correctIdx >= 0 && step.options && step.options[correctIdx] ? step.options[correctIdx].replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '') : '';
+                            return `
+                                <div class="review-step-item ${isCorrect ? 'was-correct' : 'was-wrong'}">
+                                    <div class="review-step-header">
+                                        <span class="review-step-badge">${isCorrect ? '✓' : '✗'} Βήμα ${sIdx + 1}</span>
+                                        <span class="review-step-prompt">${formatMathText(step.prompt)}</span>
+                                    </div>
+                                    <div class="review-step-details">
+                                        <div><strong>Επιλογή σας:</strong> <span style="color: ${isCorrect ? 'var(--success-border)' : 'var(--danger-border)'}; font-weight: 600;">${letters[chosenIdx]}. ${formatMathText(chosenText)}</span></div>
+                                        ${!isCorrect ? `<div><strong>Σωστή απάντηση:</strong> <span style="color: var(--success-border); font-weight: 600;">${letters[correctIdx]}. ${formatMathText(correctText)}</span></div>` : ''}
+                                        <div class="review-step-exp"><strong>💡 Επεξήγηση βήματος:</strong> ${formatMathText(step.exp)}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        } else {
+            const cleanCorrectText = item.options && item.options[item.correctIdx] ? item.options[item.correctIdx].replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '') : '';
+            const cleanChosenText = item.options && item.options[item.chosenIdx] ? item.options[item.chosenIdx].replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '') : '';
+            bodyHtml = `
                 <div style="margin: 6px 0; font-size: 0.9rem;">
                     <strong>Η επιλογή σας:</strong> 
                     <span style="color: ${item.isCorrect ? 'var(--success-border)' : 'var(--danger-border)'}; font-weight: 600;">
@@ -1537,6 +2270,19 @@ function buildReviewList() {
                         </span>
                     </div>
                 ` : ''}
+            `;
+        }
+
+        html += `
+            <div class="review-item ${statusClass}">
+                <div class="review-q-title">
+                    ${item.isCorrect ? '✓' : '✗'} ${formatMathText(item.question)}
+                    <span style="font-size: 0.82rem; margin-left: 8px; opacity: 0.85; font-weight: normal;">
+                        (${item.isCorrect ? (item.attempts === 1 ? '1η προσπάθεια' : '2η προσπάθεια με υπόδειξη') : 'Εξαντλήθηκαν 2 προσπάθειες'})
+                    </span>
+                </div>
+                ${diagramsHtml}
+                ${bodyHtml}
                 <div class="review-q-exp">
                     <strong>💡 Επεξήγηση:</strong> ${formatMathText(item.explanation)}
                 </div>

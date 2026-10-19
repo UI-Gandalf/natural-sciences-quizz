@@ -15,6 +15,7 @@
 *.pdf
 *.md
 !README.md
+!QUIZ_VARIATIONS_ROADMAP.md
 
 # 2.1 Πρωτότυπο αρχείο ανάπτυξης κουίζ με απαντήσεις (Προστασία λύσεων)
 src/

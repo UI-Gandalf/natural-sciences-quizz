@@ -8,6 +8,7 @@ Quiz Protection & Build Pipeline (SHA-256 + Minification + Obfuscation)
 """
 import os
 import re
+import json
 import hashlib
 import sys
 
@@ -68,13 +69,61 @@ def protect():
     with open(DEV_SRC, 'r', encoding='utf-8') as f:
         src_code = f.read()
 
-    # Pattern to match each question with "q": "<num>. ... "correct": <num>
-    pattern = re.compile(r'\{\s*\"q\":\s*\"(\d+)\.\s*([\s\S]*?)\"correct\":\s*(\d+)')
-    
-    matches = pattern.findall(src_code)
-    print(f"📋 Found {len(matches)} questions with plaintext answers.")
+    # 1. Matching Questions Hashing
+    def replacer_matching(match):
+        qid = match.group(1)
+        body = match.group(2)
+        pairs_str = match.group(3)
+        try:
+            pairs = json.loads(pairs_str)
+        except Exception as e:
+            print(f"⚠️ Error parsing pairs JSON for Q{qid}: {e}")
+            return match.group(0)
+        
+        pair_hashes = {}
+        for left_id, right_id in pairs.items():
+            raw = f"{qid}:{left_id}:{right_id}:{SALT}"
+            pair_hashes[left_id] = hashlib.sha256(raw.encode('ascii')).hexdigest()
+            
+        sorted_pairs = ",".join(f"{k}:{v}" for k, v in sorted(pairs.items()))
+        correct_hash = hashlib.sha256(f"{qid}:pairs:{sorted_pairs}:{SALT}".encode('ascii')).hexdigest()
+        
+        hashes_json = json.dumps(pair_hashes, indent=4)
+        return f'{{\n  "id": {qid},\n  "type": "matching",\n  "q": "{qid}. {body}"pairHashes": {hashes_json},\n  "correctHash": "{correct_hash}"'
 
-    def replacer(match):
+    pattern_matching = re.compile(
+        r'\{\s*"type":\s*"matching",\s*"q":\s*"(\d+)\.\s*([\s\S]*?)"pairs":\s*(\{[^}]+\})',
+        re.DOTALL
+    )
+    protected_code = pattern_matching.sub(replacer_matching, src_code)
+
+    # 2. Cascading Stepper Questions Hashing
+    def replacer_cascading(match):
+        qid = match.group(1)
+        before_steps = match.group(2)
+        steps_block = match.group(3)
+        
+        step_idx = 0
+        def step_replacer(step_match):
+            nonlocal step_idx
+            c_idx = step_match.group(1)
+            raw = f"{qid}_s{step_idx}:{c_idx}:{SALT}"
+            h = hashlib.sha256(raw.encode('ascii')).hexdigest()
+            step_idx += 1
+            return f'"correctHash": "{h}"'
+            
+        protected_steps = re.sub(r'"correct":\s*(\d+)', step_replacer, steps_block)
+        q_hash = hashlib.sha256(f"{qid}:cascading:{SALT}".encode('ascii')).hexdigest()
+        return f'{{\n  "id": {qid},\n  "type": "cascading",\n  "q": "{qid}. {before_steps}"steps": {protected_steps},\n  "correctHash": "{q_hash}"'
+
+    pattern_cascading = re.compile(
+        r'\{\s*"type":\s*"cascading",\s*"q":\s*"(\d+)\.\s*([\s\S]*?)"steps":\s*(\[[\s\S]*?\])(?=,\s*"(?:exp|hint|diagrams)")',
+        re.DOTALL
+    )
+    protected_code = pattern_cascading.sub(replacer_cascading, protected_code)
+
+    # 3. Standard MCQ Questions Hashing
+    def replacer_mcq(match):
         qid = match.group(1)
         body = match.group(2)
         correct_idx = match.group(3)
@@ -82,15 +131,19 @@ def protect():
         h = hashlib.sha256(raw.encode('ascii')).hexdigest()
         return f'{{\n  "id": {qid},\n  "q": "{qid}. {body}"correctHash": "{h}"'
 
-    protected_code = pattern.sub(replacer, src_code)
+    pattern_mcq = re.compile(
+        r'\{\s*(?!"type":\s*"(?:matching|cascading)")"q":\s*"(\d+)\.\s*([\s\S]*?)"correct":\s*(\d+)'
+    )
+    protected_code = pattern_mcq.sub(replacer_mcq, protected_code)
     
-    remaining = re.findall(r'\"correct\":', protected_code)
+    remaining_correct = re.findall(r'\"correct\":', protected_code)
+    remaining_pairs = re.findall(r'\"pairs\":', protected_code)
     hashes = re.findall(r'\"correctHash\":', protected_code)
     
-    if len(remaining) > 0:
-        print(f"⚠️ Warning: {len(remaining)} questions could not be hashed!")
+    if len(remaining_correct) > 0 or len(remaining_pairs) > 0:
+        print(f"⚠️ Warning: Unhashed answers detected! (correct: {len(remaining_correct)}, pairs: {len(remaining_pairs)})")
     else:
-        print(f"✅ 100% of questions ({len(hashes)}) successfully hashed with salted SHA-256!")
+        print(f"✅ 100% of questions successfully hashed with salted SHA-256 ({len(hashes)} hashes)!")
 
     # Minify and remove comments
     print("📦 Minifying code & stripping source comments...")

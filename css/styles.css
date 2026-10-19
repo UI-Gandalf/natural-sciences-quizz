@@ -2125,3 +2125,529 @@ mjx-container[display="true"], .katex-display {
     margin: 12px auto !important;
     text-align: center !important;
 }
+
+/* ==========================================================================
+   QUIZ VARIATION TYPE 1: MATCHING (ΑΝΤΙΣΤΟΙΧΙΣΗ / CONNECT-THE-DOTS)
+   ========================================================================== */
+.matching-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+    width: 100%;
+}
+
+.matching-svg-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    overflow: visible;
+}
+
+.matching-columns {
+    display: flex;
+    gap: 36px;
+    justify-content: space-between;
+    position: relative;
+    z-index: 10;
+}
+
+.matching-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.matching-col-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent-color, #38bdf8);
+    padding: 4px 6px;
+    text-align: center;
+}
+
+.matching-item {
+    display: flex;
+    align-items: center;
+    background: var(--card-bg, rgba(255, 255, 255, 0.04));
+    border: 1.5px solid var(--border-color, rgba(255, 255, 255, 0.12));
+    border-radius: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    min-height: 58px;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.matching-item:hover {
+    border-color: rgba(56, 189, 248, 0.6);
+    background: rgba(56, 189, 248, 0.06);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.matching-item.selected {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.14);
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+}
+
+.matching-item.matched {
+    border-color: #10b981 !important;
+    background: rgba(16, 185, 129, 0.12) !important;
+    cursor: default !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+}
+
+.matching-item.item-wrong {
+    border-color: #ef4444 !important;
+    background: rgba(239, 68, 68, 0.15) !important;
+}
+
+.matching-item-content {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.94rem;
+    line-height: 1.45;
+}
+
+.matching-num {
+    font-weight: 700;
+    color: var(--accent-color, #38bdf8);
+    flex-shrink: 0;
+}
+
+.matching-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-secondary, #1e293b);
+    border: 2.5px solid var(--border-color, rgba(255, 255, 255, 0.25));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.matching-dot-right {
+    margin-left: 12px;
+}
+
+.matching-dot-left {
+    margin-right: 12px;
+}
+
+.matching-dot .dot-inner {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--text-muted, #94a3b8);
+    transition: all 0.25s ease;
+}
+
+.matching-item:hover .matching-dot {
+    border-color: #38bdf8;
+}
+
+.matching-item:hover .matching-dot .dot-inner {
+    background: #38bdf8;
+}
+
+.matching-item.selected .matching-dot {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.25);
+}
+
+.matching-item.selected .matching-dot .dot-inner {
+    background: #38bdf8;
+    transform: scale(1.3);
+    box-shadow: 0 0 8px #38bdf8;
+}
+
+.matching-item.matched .matching-dot {
+    border-color: #10b981 !important;
+    background: rgba(16, 185, 129, 0.25);
+}
+
+.matching-item.matched .matching-dot .dot-inner {
+    background: #10b981 !important;
+}
+
+.matching-line {
+    stroke-linecap: round;
+    fill: none;
+    transition: opacity 0.3s ease;
+}
+
+.matching-line-correct {
+    stroke: #10b981;
+    stroke-width: 3.5px;
+    filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.8));
+}
+
+.matching-line-wrong {
+    stroke: #ef4444;
+    stroke-width: 3.5px;
+    stroke-dasharray: 6 4;
+    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.8));
+}
+
+.line-dissolve {
+    opacity: 0 !important;
+    transition: opacity 0.25s ease;
+}
+
+.matching-instruction-bar {
+    text-align: center;
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed var(--border-color);
+    margin-top: 10px;
+}
+
+/* ==========================================================================
+   QUIZ VARIATION TYPE 2: CASCADING STEP-BY-STEP PROBLEM (ΔΙΑΔΟΧΙΚΗ ΕΠΙΛΥΣΗ)
+   ========================================================================== */
+.cascading-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    margin: 16px 0;
+}
+
+.cascading-stepper-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.cascading-step-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    transition: all 0.25s ease;
+}
+
+.cascading-step-pill .step-num-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.cascading-step-pill.active {
+    background: rgba(56, 189, 248, 0.16);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+.cascading-step-pill.active .step-num-circle {
+    background: #38bdf8;
+    color: #0f172a;
+}
+
+.cascading-step-pill.completed {
+    background: rgba(16, 185, 129, 0.14);
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.cascading-step-pill.completed .step-num-circle {
+    background: #10b981;
+    color: #ffffff;
+}
+
+.cascading-step-pill.locked {
+    opacity: 0.55;
+}
+
+.cascading-step-card {
+    background: var(--card-bg, rgba(255, 255, 255, 0.04));
+    border: 1.5px solid var(--border-color);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cascading-step-card.active {
+    border-color: rgba(56, 189, 248, 0.55);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.cascading-step-card.completed {
+    border-color: rgba(16, 185, 129, 0.35);
+    background: rgba(16, 185, 129, 0.03);
+}
+
+.step-badge-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.step-badge {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    padding: 3px 10px;
+    border-radius: 6px;
+}
+
+.step-badge-weight {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+}
+
+.step-prompt {
+    font-size: 1.02rem;
+    line-height: 1.5;
+    font-weight: 500;
+    margin-bottom: 14px;
+}
+
+.step-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.step-option-btn {
+    min-height: 48px;
+    padding: 10px 14px;
+    font-size: 0.92rem;
+}
+
+.step-mini-feedback {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.step-mini-feedback.correct {
+    background: rgba(16, 185, 129, 0.12);
+    border-left: 3px solid #10b981;
+    color: var(--text-primary);
+}
+
+.step-mini-feedback.warning {
+    background: rgba(245, 158, 11, 0.12);
+    border-left: 3px solid #f59e0b;
+    color: var(--text-primary);
+}
+
+.step-mini-feedback.wrong {
+    background: rgba(239, 68, 68, 0.12);
+    border-left: 3px solid #ef4444;
+    color: var(--text-primary);
+}
+
+/* Review Cards for New Types */
+.review-matching-card, .review-cascading-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 10px 0;
+}
+
+.review-matching-title, .review-cascading-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--accent-color, #38bdf8);
+    margin-bottom: 10px;
+}
+
+.review-matching-pairs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.review-pair-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 8px;
+    font-size: 0.88rem;
+}
+
+.review-pair-left {
+    flex: 1;
+}
+
+.review-pair-arrow {
+    color: #10b981;
+    font-weight: 700;
+}
+
+.review-pair-right {
+    flex: 1;
+}
+
+.review-cascading-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.review-step-item {
+    border-radius: 8px;
+    padding: 10px 14px;
+    border: 1px solid var(--border-color);
+}
+
+.review-step-item.was-correct {
+    background: rgba(16, 185, 129, 0.06);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.review-step-item.was-wrong {
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.review-step-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.review-step-badge {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.review-step-prompt {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.review-step-details {
+    font-size: 0.86rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.review-step-exp {
+    margin-top: 6px;
+    font-size: 0.84rem;
+    opacity: 0.9;
+}
+
+/* Animations */
+@keyframes cardShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+.card-shake {
+    animation: cardShake 0.45s ease-in-out;
+}
+
+@keyframes stepSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-step-in {
+    animation: stepSlideIn 0.35s ease-out forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .matching-columns {
+        gap: 12px;
+    }
+    .matching-item {
+        padding: 8px 6px;
+        min-height: 52px;
+    }
+    .matching-item-content {
+        font-size: 0.8rem;
+        gap: 4px;
+    }
+    .matching-dot {
+        width: 24px;
+        height: 24px;
+    }
+    .matching-dot .dot-inner {
+        width: 7px;
+        height: 7px;
+    }
+    .matching-dot-right {
+        margin-left: 4px;
+    }
+    .matching-dot-left {
+        margin-right: 4px;
+    }
+    .step-options-grid {
+        grid-template-columns: 1fr;
+    }
+    .review-pair-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    .review-pair-arrow {
+        transform: rotate(90deg);
+        align-self: center;
+    }
+}
+
