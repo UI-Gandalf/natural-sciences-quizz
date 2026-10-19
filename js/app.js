@@ -25,7 +25,6 @@ const AppState = {
 // Initialization on DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
-    initMobileView();
     setupRouting();
     setupGlobalKeyboardShortcuts();
 });
@@ -54,45 +53,8 @@ function setTheme(theme) {
 }
 
 /* ==========================================================================
-   Mobile / Student Phone View Management
+   Routing & Application State
    ========================================================================== */
-function initMobileView() {
-    const saved = localStorage.getItem('stem_quiz_mobile_preview');
-    if (saved === 'true') {
-        setMobileView(true, false);
-    }
-}
-
-function toggleMobileView() {
-    const isCurrentlyMobile = document.body.getAttribute('data-mobile-preview') === 'true';
-    setMobileView(!isCurrentlyMobile, true);
-}
-
-function setMobileView(isMobile, showToastNotice = false) {
-    const btn = document.getElementById('mobile-toggle');
-    const label = document.querySelector('.mobile-toggle-label');
-    const icon = document.getElementById('mobile-toggle-icon');
-
-    if (isMobile) {
-        document.body.setAttribute('data-mobile-preview', 'true');
-        localStorage.setItem('stem_quiz_mobile_preview', 'true');
-        if (btn) btn.classList.add('active');
-        if (label) label.innerText = 'Desktop';
-        if (icon) icon.innerText = '💻';
-        if (showToastNotice) {
-            showToast('📱 Ενεργοποιήθηκε η Προβολή Κινητού (Phone View)');
-        }
-    } else {
-        document.body.removeAttribute('data-mobile-preview');
-        localStorage.setItem('stem_quiz_mobile_preview', 'false');
-        if (btn) btn.classList.remove('active');
-        if (label) label.innerText = 'Κινητό';
-        if (icon) icon.innerText = '📱';
-        if (showToastNotice) {
-            showToast('💻 Επιστροφή σε Κανονική Προβολή (Desktop View)');
-        }
-    }
-}
 
 /* ==========================================================================
    Routing & Background Dynamic Layer
@@ -788,7 +750,7 @@ function loadCurrentQuestion() {
     nextBtn.title = 'Προσωρινή παράλειψη ερώτησης (Pass)';
 
     // Smooth scroll to top of question on mobile
-    if (window.innerWidth <= 768 || document.body.getAttribute('data-mobile-preview') === 'true') {
+    if (window.innerWidth <= 768) {
         const quizContainer = document.querySelector('.quiz-container');
         if (quizContainer) {
             quizContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -915,7 +877,7 @@ function selectQuizOption(idx) {
     feedback.style.display = 'block';
 
     // Auto-scroll feedback into view smoothly on mobile
-    if (window.innerWidth <= 768 || document.body.getAttribute('data-mobile-preview') === 'true') {
+    if (window.innerWidth <= 768) {
         setTimeout(() => {
             feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 60);

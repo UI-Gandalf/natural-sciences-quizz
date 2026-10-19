@@ -1258,101 +1258,13 @@ body[data-subject] .bg-overlay {
    Mobile Optimization & Student Phone View
    ========================================================================== */
 
-/* Mobile Mode Toggle in Header */
-.mobile-toggle-btn {
-    background: var(--badge-bg);
-    border: 1px solid var(--badge-border);
-    color: var(--text-primary);
-    border-radius: 999px;
-    padding: 7px 14px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
-    font-family: inherit;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.mobile-toggle-btn:hover {
-    transform: translateY(-1px);
-    background: var(--btn-secondary-hover);
-    border-color: var(--primary);
-}
-
-.mobile-toggle-btn.active {
-    background: var(--primary);
-    color: #ffffff;
-    border-color: var(--primary-hover);
-    box-shadow: 0 4px 14px var(--primary-glow);
-}
-
-/* Touch Device Rules */
+/* Touch Device Optimizations */
 @media (hover: none) and (pointer: coarse) {
     html {
         -webkit-tap-highlight-color: transparent;
     }
     button, a, .glass-card, .option-btn {
         touch-action: manipulation;
-    }
-}
-
-/* Desktop Smartphone Preview Mode (When toggled on desktop) */
-body[data-mobile-preview="true"] .main-wrapper {
-    max-width: 420px;
-    margin: 28px auto;
-    padding: 24px 14px 40px 14px;
-    border: 10px solid #1e293b;
-    border-radius: 46px;
-    box-shadow: 0 25px 65px rgba(0, 0, 0, 0.65), 0 0 0 3px rgba(255, 255, 255, 0.12);
-    background: var(--bg-color);
-    position: relative;
-    min-height: 840px;
-    animation: fadeIn 0.3s ease;
-}
-
-body[data-mobile-preview="true"] .main-wrapper::before {
-    content: '';
-    position: sticky;
-    top: -14px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 110px;
-    height: 20px;
-    background: #090d16;
-    border-radius: 999px;
-    z-index: 1000;
-    margin: -10px auto 18px auto;
-    display: block;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Common Mobile Rules for Real Mobile (<= 640px) AND Desktop Mobile Preview */
-@media (max-width: 640px) {
-    body[data-mobile-preview="true"] .main-wrapper {
-        max-width: 100%;
-        margin: 0;
-        border: none;
-        border-radius: 0;
-        box-shadow: none;
-        background: transparent;
-        padding: 16px 12px 30px 12px;
-    }
-    body[data-mobile-preview="true"] .main-wrapper::before {
-        display: none;
-    }
-    .mobile-toggle-label {
-        display: none;
-    }
-    .mobile-toggle-btn {
-        width: 38px;
-        height: 38px;
-        padding: 0;
-        justify-content: center;
-        border-radius: 50%;
     }
 }
 
@@ -1522,37 +1434,7 @@ body[data-mobile-preview="true"] .main-wrapper::before {
     }
 }
 
-/* Also apply compact styles when Desktop Mobile Preview is active */
-body[data-mobile-preview="true"] .classes-grid,
-body[data-mobile-preview="true"] .subjects-grid,
-body[data-mobile-preview="true"] .quizzes-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-}
-body[data-mobile-preview="true"] .view-title {
-    font-size: 1.45rem;
-}
-body[data-mobile-preview="true"] .view-subtitle {
-    font-size: 0.88rem;
-}
-body[data-mobile-preview="true"] .glass-card {
-    padding: 18px 16px;
-    border-radius: 16px;
-}
-body[data-mobile-preview="true"] .quiz-container {
-    padding: 16px 14px 24px 14px;
-    border-radius: 18px;
-}
-body[data-mobile-preview="true"] .question-text {
-    font-size: 1.1rem;
-}
-body[data-mobile-preview="true"] .option-btn {
-    padding: 13px 14px;
-    min-height: 50px;
-}
-body[data-mobile-preview="true"] .shortcuts-hint {
-    display: none;
-}
+
 
 /* ==========================================================================
    Subject Tabs (Quizzes vs Theory)
