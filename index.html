@@ -14,7 +14,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Application Stylesheet -->
-    <link rel="stylesheet" href="css/styles.css?v=25">
+    <link rel="stylesheet" href="css/styles.css?v=26">
+    
+    <!-- MathJax 3 Engine (Mathematical & Physics Formulas) -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        startup: {
+          typeset: false
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 
@@ -78,7 +96,7 @@
     </div>
 
     <!-- Application Scripts -->
-    <script src="js/quiz-data.js?v=25"></script>
-    <script src="js/app.js?v=25"></script>
+    <script src="js/quiz-data.js?v=26"></script>
+    <script src="js/app.js?v=26"></script>
 </body>
 </html>

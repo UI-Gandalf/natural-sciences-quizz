@@ -827,6 +827,7 @@ body[data-subject] .bg-overlay {
     line-height: 1.5;
     color: var(--text-primary);
     margin: 22px 0 24px 0;
+    white-space: pre-line;
 }
 
 .options-list {
@@ -1945,5 +1946,92 @@ body[data-subject] .bg-overlay {
     }
 }
 
+/* ==========================================================================
+   Mathematical & Physical Formulas Typography
+   ========================================================================== */
+.math-expr {
+    display: inline-flex;
+    align-items: baseline;
+    font-family: "Cambria Math", "Nimbus Roman No9 L", "Times New Roman", Times, serif;
+    font-size: 1.05em;
+    padding: 0 1px;
+    white-space: nowrap;
+    vertical-align: baseline;
+    color: inherit;
+}
 
+/* Math variables: italicized, elegant serif */
+.math-var {
+    font-style: italic;
+    font-family: "Cambria Math", "Nimbus Roman No9 L", "Times New Roman", Times, serif;
+    letter-spacing: 0.03em;
+    margin-right: 0.5px;
+}
 
+/* Math subscripts: small, clean, crisp */
+.math-sub {
+    font-size: 0.72em;
+    line-height: 1;
+    vertical-align: -0.28em;
+    font-style: normal;
+    font-family: var(--font-family, 'Inter', -apple-system, sans-serif);
+    font-weight: 600;
+    margin-left: 0.5px;
+    letter-spacing: 0;
+}
+
+/* Math superscripts */
+.math-sup {
+    font-size: 0.72em;
+    line-height: 1;
+    vertical-align: 0.38em;
+    font-style: normal;
+    font-family: var(--font-family, 'Inter', -apple-system, sans-serif);
+    font-weight: 600;
+    margin-left: 0.5px;
+}
+
+/* Math symbols & deltas */
+.math-sym {
+    font-style: normal;
+    font-family: var(--font-family, 'Inter', -apple-system, sans-serif);
+    font-weight: 600;
+    margin: 0 1px;
+}
+
+/* Fraction rendering (for \frac{A}{B}) */
+.math-frac {
+    display: inline-flex;
+    flex-direction: column;
+    vertical-align: -0.6em;
+    padding: 0 3px;
+    font-size: 0.88em;
+    text-align: center;
+    line-height: 1.1;
+}
+
+.math-num {
+    border-bottom: 1.5px solid currentColor;
+    padding: 0 2px 1px 2px;
+    display: block;
+}
+
+.math-den {
+    padding: 1px 2px 0 2px;
+    display: block;
+}
+
+/* MathJax Custom Theme Integration */
+mjx-container {
+    outline: none !important;
+    display: inline-block !important;
+    margin: 0 2px !important;
+    vertical-align: middle !important;
+    color: inherit !important;
+}
+
+mjx-container[display="true"] {
+    display: block !important;
+    margin: 12px auto !important;
+    text-align: center !important;
+}

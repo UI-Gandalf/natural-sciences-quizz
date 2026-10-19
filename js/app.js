@@ -497,6 +497,123 @@ function switchSubjectTab(tabKey) {
 }
 
 /* ==========================================================================
+   Mathematical & Physical Formulas Typography Engine
+   Handles TeX/LaTeX ($...$, $$...$$, \frac, \Omega, etc.) and
+   Greek physics notations (Vπηγ, R1, Rολ, VAB = VA - VB, etc.)
+   ========================================================================== */
+function formatMathText(text) {
+    if (!text || typeof text !== 'string') return text || '';
+
+    // 1. Parse LaTeX math snippets ($$...$$ and $...$)
+    function parseLatexSnippet(inner) {
+        let s = inner.trim();
+        // Greek words in \mathrm{} or \text{}
+        s = s.replace(/\\(?:mathrm|text)\s*\{\s*\\pi\\eta\\gamma\s*\}/g, 'πηγ');
+        s = s.replace(/\\(?:mathrm|text)\s*\{\s*o\\lambda\s*\}/g, 'ολ');
+        s = s.replace(/\\(?:mathrm|text)\s*\{\s*\\sigma\\epsilon\\iota\\rho\s*\}/g, 'σειρ');
+        s = s.replace(/\\(?:mathrm|text)\s*\{\s*\\pi\\alpha\\rho\s*\}/g, 'παρ');
+        s = s.replace(/\\(?:mathrm|text)\s*\{\s*([^}]+)\s*\}/g, '$1');
+
+        // Common TeX symbols
+        s = s.replace(/\\Omega\b/g, 'Ω');
+        s = s.replace(/\\cdot\b/g, '·');
+        s = s.replace(/\\(?:to|rightarrow)\b/g, '→');
+        s = s.replace(/\\implies\b/g, '⇒');
+        s = s.replace(/\\infty\b/g, '∞');
+        s = s.replace(/\\Delta\b/g, 'Δ');
+        s = s.replace(/\\approx\b/g, '≈');
+        s = s.replace(/\\(?:le|leq)\b/g, '≤');
+        s = s.replace(/\\(?:ge|geq)\b/g, '≥');
+        s = s.replace(/\\neq\b/g, '≠');
+        s = s.replace(/\\times\b/g, '×');
+        s = s.replace(/\\\s+/g, ' ');
+
+        // Nested / simple fractions (support nested braces in numerator / denominator)
+        for (let k = 0; k < 3; k++) {
+            s = s.replace(/\\frac\{((?:[^{}]+|\{[^{}]*\})*)\}\{((?:[^{}]+|\{[^{}]*\})*)\}/g, '<span class="math-frac"><span class="math-num">$1</span><span class="math-den">$2</span></span>');
+        }
+
+        // Subscripts: X_{sub} or X_sub
+        s = s.replace(/([A-Za-zΑ-Ωα-ω\']+)_\{([^}]+)\}/g, '<i class="math-var">$1</i><sub class="math-sub">$2</sub>');
+        s = s.replace(/([A-Za-zΑ-Ωα-ω\']+)_([0-9a-zA-Zα-ωΑ-Ω]+)/g, '<i class="math-var">$1</i><sub class="math-sub">$2</sub>');
+
+        // Superscripts
+        s = s.replace(/([0-9A-Za-zΑ-Ωα-ωΩ\)]+)\^\{([^}]+)\}/g, '$1<sup class="math-sup">$2</sup>');
+        s = s.replace(/([0-9A-Za-zΑ-Ωα-ωΩ\)]+)\^([0-9a-zA-Z\+\-]+)/g, '$1<sup class="math-sup">$2</sup>');
+
+        // Italicize single Latin variables (V, I, P, R) inside LaTeX expression
+        s = s.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b([VIPR])\b(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<i class="math-var">$1</i>');
+
+        return `<span class="math-expr">${s}</span>`;
+    }
+
+    let res = text;
+    // LaTeX display math $$...$$
+    res = res.replace(/\$\$(.*?)\$\$/gs, (m, p1) => parseLatexSnippet(p1));
+    // LaTeX inline math $...$
+    res = res.replace(/\$([^\$\n]+?)\$/g, (m, p1) => parseLatexSnippet(p1));
+
+    // 2. Physics & Electrical Formulas in plain Greek/Latin text
+    // Greek subscripts: Vπηγ, Vδιακ, Rολ, Iολ, Iπηγ, Pολ, Rσειρ, Rπαρ
+    res = res.replace(/\b(V|I|P|R)(πηγ|διακ|ολ|σειρ|παρ)\b/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
+    res = res.replace(/\b(R')\s*(ολ)\b/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
+
+    // Dual letter node voltages: VAB, VBC, VCD, VAD
+    res = res.replace(/\b(V)(AB|BC|CD|AD)\b/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
+
+    // Single letter node voltages & meter resistances: VA, VB, VC, VD, RA, RV
+    res = res.replace(/\b(V)(A|B|C|D)\b/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
+    res = res.replace(/\b(R)(A|V)\b/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
+
+    // Numbered variables: R1, R2, R3, R4, V1, V2, I1, I2, P1, P2
+    res = res.replace(/\b(R|V|I|P)([1-4])\b/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
+
+    // Prime currents: I'
+    res = res.replace(/\b(I')\b/g, '<span class="math-expr"><i class="math-var">$1</i></span>');
+
+    // Delta differences: ΔI, ΔV
+    res = res.replace(/\b(Δ)(I|V)\b/g, '<span class="math-expr"><span class="math-sym">$1</span><i class="math-var">$2</i></span>');
+
+    // Arrow operators
+    res = res.replace(/\s*->\s*/g, ' → ');
+    res = res.replace(/\s*=>\s*/g, ' ⇒ ');
+
+    // Powers like I² or R²
+    res = res.replace(/\b([VIPR])²\b/g, '<span class="math-expr"><i class="math-var">$1</i><sup class="math-sup">2</sup></span>');
+    res = res.replace(/\b([VIPR])³\b/g, '<span class="math-expr"><i class="math-var">$1</i><sup class="math-sup">3</sup></span>');
+    res = res.replace(/([0-9A-Za-zΑ-Ωα-ω])²/g, '$1<sup class="math-sup">2</sup>');
+    res = res.replace(/([0-9A-Za-zΑ-Ωα-ω])³/g, '$1<sup class="math-sup">3</sup>');
+
+    // Standalone variables VIPR directly adjacent to operators (=, ·, +, -, −, /, *, <, >, ⇒, →)
+    res = res.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b([VIPR])\b(?=\s*[=·\+\-−\/\*<>⇒→]|\s+[=·\+\-−\/\*<>⇒→])/g, '<span class="math-expr"><i class="math-var">$1</i></span>');
+    res = res.replace(/([=·\+\-−\/\*<>⇒→]\s*)(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b([VIPR])\b(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '$1<span class="math-expr"><i class="math-var">$2</i></span>');
+
+    // Chemistry ions and formulas
+    res = res.replace(/\b(H)\+/g, '<span class="math-expr"><i class="math-var">$1</i><sup class="math-sup">+</sup></span>');
+    res = res.replace(/\b(OH)\-/g, '<span class="math-expr"><span class="math-sym">$1</span><sup class="math-sup">−</sup></span>');
+    res = res.replace(/\b(H)2(O)\b/g, '<span class="math-expr"><span class="math-sym">$1</span><sub class="math-sub">2</sub><span class="math-sym">$2</span></span>');
+    res = res.replace(/\b(H)3(O)\+/g, '<span class="math-expr"><span class="math-sym">$1</span><sub class="math-sub">3</sub><span class="math-sym">$2</span><sup class="math-sup">+</sup></span>');
+
+    return res;
+}
+
+/**
+ * Asynchronously triggers MathJax typesetting on a specific DOM element or document
+ */
+function triggerMathTypeset(container) {
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        try {
+            const target = container ? (Array.isArray(container) ? container : [container]) : [];
+            window.MathJax.typesetPromise(target.length ? target : undefined).catch((err) => {
+                console.debug('MathJax typeset notice:', err);
+            });
+        } catch (e) {
+            console.debug('MathJax invocation notice:', e);
+        }
+    }
+}
+
+/* ==========================================================================
    VIEW 4: QUIZ RUNNER (Exact Chemistry Quiz.html Template)
    CRITICAL: NO EMOJI AS ICON ON QUIZ SUBPAGE! Clean Academic Header
    ========================================================================== */
@@ -727,7 +844,7 @@ function loadCurrentQuestion() {
     }
 
     // Question text
-    document.getElementById('question-text').innerText = q.q;
+    document.getElementById('question-text').innerHTML = formatMathText(q.q);
 
     // Render Question Circuit Diagrams
     renderCurrentQuestionDiagrams(q);
@@ -745,7 +862,7 @@ function loadCurrentQuestion() {
         
         btn.innerHTML = `
             <span class="opt-letter">${letters[optIdx]}.</span>
-            <span class="opt-content">${cleanText}</span>
+            <span class="opt-content">${formatMathText(cleanText)}</span>
         `;
         btn.onclick = () => selectQuizOption(optIdx);
         optionsContainer.appendChild(btn);
@@ -760,7 +877,7 @@ function loadCurrentQuestion() {
         hintBtn.style.display = 'none'; // Hint hidden initially on 1st attempt
         hintBtn.classList.remove('pulse-ready');
     }
-    document.getElementById('hint-content').innerText = q.hint || q.exp;
+    document.getElementById('hint-content').innerHTML = formatMathText(q.hint || q.exp);
     document.getElementById('hint-btn-text').innerText = 'Υπόδειξη';
     document.getElementById('hint-chevron').innerText = '▾';
 
@@ -782,6 +899,9 @@ function loadCurrentQuestion() {
     nextBtn.classList.remove('pulse-ready');
     document.getElementById('next-btn-text').innerText = 'Επόμενο';
     nextBtn.title = 'Προσωρινή παράλειψη ερώτησης (Pass)';
+
+    // Trigger MathJax / dynamic typesetting
+    triggerMathTypeset(document.querySelector('.quiz-container'));
 
     // Smooth scroll to top of question on mobile
     if (window.innerWidth <= 768) {
@@ -906,11 +1026,12 @@ function selectQuizOption(idx) {
 
         feedback.className = 'feedback-box correct';
         if (qr.currentAttempts === 1) {
-            feedback.innerHTML = `<strong>✓ Σωστό!</strong> ${q.exp}`;
+            feedback.innerHTML = `<strong>✓ Σωστό!</strong> ${formatMathText(q.exp)}`;
         } else {
-            feedback.innerHTML = `<strong>✓ Μπράβο! Σωστό στη 2η προσπάθεια!</strong> ${q.exp}`;
+            feedback.innerHTML = `<strong>✓ Μπράβο! Σωστό στη 2η προσπάθεια!</strong> ${formatMathText(q.exp)}`;
         }
         feedback.style.display = 'block';
+        triggerMathTypeset(feedback);
 
         // Save history for review screen
         qr.userHistory.push({
@@ -979,8 +1100,9 @@ function selectQuizOption(idx) {
             const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
             const correctLetterStr = correctIndex >= 0 ? ` (Επιλογή <strong>${letters[correctIndex]}</strong>)` : '';
             feedback.className = 'feedback-box wrong';
-            feedback.innerHTML = `<strong>✗ Λάθος και στη 2η προσπάθεια.</strong> Η σωστή απάντηση επισημαίνεται με πράσινο${correctLetterStr}.<br><br><strong>Επεξήγηση:</strong> ${q.exp}`;
+            feedback.innerHTML = `<strong>✗ Λάθος και στη 2η προσπάθεια.</strong> Η σωστή απάντηση επισημαίνεται με πράσινο${correctLetterStr}.<br><br><strong>Επεξήγηση:</strong> ${formatMathText(q.exp)}`;
             feedback.style.display = 'block';
+            triggerMathTypeset(feedback);
 
             // Save history for review screen
             qr.userHistory.push({
@@ -1188,7 +1310,7 @@ function renderAnsweredQuestionReview(reviewIndex) {
     if (pendingBadge) pendingBadge.style.display = 'none';
 
     // Question text
-    document.getElementById('question-text').innerText = entry.question;
+    document.getElementById('question-text').innerHTML = formatMathText(entry.question);
 
     // Render diagrams if any
     renderCurrentQuestionDiagrams(q);
@@ -1206,7 +1328,7 @@ function renderAnsweredQuestionReview(reviewIndex) {
         let cleanText = optText.replace(/^[α-εA-Ea-e1-5][\)\.\-]\s*/, '');
         btn.innerHTML = `
             <span class="opt-letter">${letters[optIdx]}.</span>
-            <span class="opt-content">${cleanText}</span>
+            <span class="opt-content">${formatMathText(cleanText)}</span>
         `;
 
         if (optIdx === entry.correctIdx) {
@@ -1237,10 +1359,10 @@ function renderAnsweredQuestionReview(reviewIndex) {
     feedbackBox.style.display = 'block';
     if (entry.isCorrect) {
         feedbackBox.className = 'feedback-box correct';
-        feedbackBox.innerHTML = `<strong>✓ Σωστό!</strong> ${entry.explanation}`;
+        feedbackBox.innerHTML = `<strong>✓ Σωστό!</strong> ${formatMathText(entry.explanation)}`;
     } else {
         feedbackBox.className = 'feedback-box wrong';
-        feedbackBox.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Η σωστή απάντηση είναι η επιλογή <strong>${letters[entry.correctIdx]}</strong>.<br><br><strong>Επεξήγηση:</strong> ${entry.explanation}`;
+        feedbackBox.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Η σωστή απάντηση είναι η επιλογή <strong>${letters[entry.correctIdx]}</strong>.<br><br><strong>Επεξήγηση:</strong> ${formatMathText(entry.explanation)}`;
     }
 
     // Previous button state
@@ -1258,6 +1380,9 @@ function renderAnsweredQuestionReview(reviewIndex) {
         document.getElementById('next-btn-text').innerText = 'Επόμενο';
         nextBtn.title = 'Επόμενη ερώτηση / Επιστροφή στο κουίζ';
     }
+
+    // Trigger MathJax / dynamic typesetting
+    triggerMathTypeset(document.querySelector('.quiz-container'));
 
     // Auto-scroll
     if (window.innerWidth <= 768) {
@@ -1284,6 +1409,7 @@ function toggleHint() {
         hintBox.style.display = 'block';
         hintBtnText.innerText = 'Απόκρυψη';
         hintChevron.innerText = '▴';
+        triggerMathTypeset(hintBox);
         setTimeout(() => {
             hintBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 60);
@@ -1368,7 +1494,7 @@ function buildReviewList() {
         html += `
             <div class="review-item ${statusClass}">
                 <div class="review-q-title">
-                    ${item.isCorrect ? '✓' : '✗'} ${item.question}
+                    ${item.isCorrect ? '✓' : '✗'} ${formatMathText(item.question)}
                     <span style="font-size: 0.82rem; margin-left: 8px; opacity: 0.85; font-weight: normal;">
                         (${item.isCorrect ? (item.attempts === 1 ? '1η προσπάθεια' : '2η προσπάθεια με υπόδειξη') : 'Εξαντλήθηκαν 2 προσπάθειες'})
                     </span>
@@ -1377,25 +1503,26 @@ function buildReviewList() {
                 <div style="margin: 6px 0; font-size: 0.9rem;">
                     <strong>Η επιλογή σας:</strong> 
                     <span style="color: ${item.isCorrect ? 'var(--success-border)' : 'var(--danger-border)'}; font-weight: 600;">
-                        ${letters[item.chosenIdx]}. ${cleanChosenText}
+                        ${letters[item.chosenIdx]}. ${formatMathText(cleanChosenText)}
                     </span>
                 </div>
                 ${!item.isCorrect ? `
                     <div style="margin: 6px 0; font-size: 0.9rem;">
                         <strong>Σωστή απάντηση:</strong> 
                         <span style="color: var(--success-border); font-weight: 600;">
-                            ${letters[item.correctIdx]}. ${cleanCorrectText}
+                            ${letters[item.correctIdx]}. ${formatMathText(cleanCorrectText)}
                         </span>
                     </div>
                 ` : ''}
                 <div class="review-q-exp">
-                    <strong>💡 Επεξήγηση:</strong> ${item.explanation}
+                    <strong>💡 Επεξήγηση:</strong> ${formatMathText(item.explanation)}
                 </div>
             </div>
         `;
     });
 
     reviewList.innerHTML = html;
+    triggerMathTypeset(reviewList);
 }
 
 function toggleReviewList() {
@@ -1409,6 +1536,7 @@ function toggleReviewList() {
     } else {
         list.style.display = 'flex';
         chevron.innerText = '▴';
+        triggerMathTypeset(list);
     }
 }
 
