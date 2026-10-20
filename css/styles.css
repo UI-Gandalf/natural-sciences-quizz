@@ -1732,6 +1732,40 @@ body[data-subject] .bg-overlay {
     line-height: 1.4;
 }
 
+.theory-feature-pill.clickable {
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+}
+
+.theory-feature-pill.clickable:hover {
+    border-color: var(--primary);
+    background: rgba(16, 185, 129, 0.08);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.15);
+    transform: translateY(-3px);
+}
+
+.theory-feature-pill.clickable::after {
+    content: "➔";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+    color: var(--primary);
+    opacity: 0.5;
+    transition: all 0.2s ease;
+}
+
+.theory-feature-pill.clickable:hover::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(3px);
+}
+
+.theory-feature-pill.clickable > div {
+    padding-right: 18px;
+}
+
 .theory-action-wrap {
     display: flex;
     justify-content: center;

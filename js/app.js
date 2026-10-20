@@ -121,6 +121,16 @@ function handleRoute() {
                 }
             }
 
+            // e.g. #/class/Γ/subject/physics/theory
+            if (parts[4] === 'theory') {
+                AppState.currentQuiz = null;
+                AppState.currentSubjectTab = 'theory';
+                renderQuizSelection(classKey, subjectKey);
+                updateDynamicBg(SUBJECT_CONFIG[subjectKey].bgImage, subjectKey);
+                updateBreadcrumbs();
+                return;
+            }
+
             // e.g. #/class/Γ/subject/physics/simulation
             if (parts[4] === 'simulation') {
                 AppState.currentQuiz = null;
@@ -190,6 +200,10 @@ function updateBreadcrumbs() {
                 html += `<a class="crumb-item" onclick="switchSubjectTab('quizzes')">${subConf.emoji} ${subConf.name}</a>`;
                 html += `<span class="crumb-sep">/</span>`;
                 html += `<span class="crumb-active">⚡ Προσομοίωση Κυκλωμάτων</span>`;
+            } else if (AppState.currentSubjectTab === 'theory') {
+                html += `<a class="crumb-item" onclick="switchSubjectTab('quizzes')">${subConf.emoji} ${subConf.name}</a>`;
+                html += `<span class="crumb-sep">/</span>`;
+                html += `<span class="crumb-active">📖 Θεωρία & Σημειώσεις</span>`;
             } else {
                 // Non-quiz page: display emoji as an icon!
                 html += `<span class="crumb-active">${subConf.emoji} ${subConf.name}</span>`;
@@ -438,8 +452,65 @@ function renderQuizSelection(classKey, subjectKey) {
 
         <!-- TAB 2: THEORY PANEL -->
         <div class="tab-panel" id="tab-panel-theory" style="display: ${currentTab === 'theory' ? 'block' : 'none'};">
-            ${(classKey === 'Γ' && subjectKey === 'physics') ? `
-                <div id="theory-mount"></div>
+            ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') ? `
+                <div class="glass-card theory-placeholder-card" id="theory-chapter-card">
+                    <div class="theory-placeholder-icon">📖</div>
+                    <div class="theory-hero-meta" style="justify-content: center; margin-bottom: 14px;">
+                        <span class="theory-tag-pill theme-tag">Φυσική Γ΄ Γυμνασίου</span>
+                        <span class="theory-tag-pill page-tag">12 Σελίδες Επίσημου PDF</span>
+                    </div>
+                    <h2 class="theory-placeholder-title">Ηλεκτρικό Κύκλωμα & Συνδεσμολογίες Αντιστατών</h2>
+                    <p class="theory-placeholder-desc" style="max-width: 680px;">
+                        Συμπυκνωμένος οδηγός μελέτης και πρωτόκολλο επίλυσης ασκήσεων. Περιλαμβάνει θεμελιώδη μεγέθη, 
+                        νόμο του Ohm, μνημονικά τρίγωνα, πρωτόκολλα επιμερισμού σε σειρά & παράλληλα, συγκριτικούς πίνακες και ανάλυση βραχυκυκλώματος.
+                    </p>
+
+                    <div class="theory-features-grid">
+                        <div class="theory-feature-pill clickable" onclick="TheoryNotes.openSection('theory-sec-1')" title="Κλικ για άνοιγμα & μετάβαση στα Θεμελιώδη Μεγέθη">
+                            <span class="pill-icon">📌</span>
+                            <div>
+                                <strong>Βασικές Έννοιες, Μεγέθη & Νόμος Ohm</strong>
+                                <p>Ορισμοί I, V, R, P, μαθηματικοί τύποι και φυσική σημασία</p>
+                            </div>
+                        </div>
+                        <div class="theory-feature-pill clickable" onclick="TheoryNotes.openSection('theory-sec-triangles')" title="Κλικ για άνοιγμα & μετάβαση στα Μνημονικά Τρίγωνα">
+                            <span class="pill-icon">🔺</span>
+                            <div>
+                                <strong>Μνημονικά Τρίγωνα & Μονάδες SI</strong>
+                                <p>Διαδραστικά τρίγωνα υπολογισμών και φυσική ερμηνεία μονάδων</p>
+                            </div>
+                        </div>
+                        <div class="theory-feature-pill clickable" onclick="TheoryNotes.openSection('theory-sec-4')" title="Κλικ για άνοιγμα & μετάβαση στα Πρωτόκολλα Κυκλωμάτων">
+                            <span class="pill-icon">⚡</span>
+                            <div>
+                                <strong>Συνδεσμολογία σε Σειρά & Παράλληλα</strong>
+                                <p>Πρωτόκολλα επίλυσης, επιμερισμός τάσης/ρεύματος & συγκριτικός πίνακας</p>
+                            </div>
+                        </div>
+                        <div class="theory-feature-pill clickable" onclick="TheoryNotes.openSection('theory-sec-7')" title="Κλικ για άνοιγμα & μετάβαση στο Βραχυκύκλωμα">
+                            <span class="pill-icon">⚠️</span>
+                            <div>
+                                <strong>Βραχυκύκλωμα & Όργανα Μετρήσεων</strong>
+                                <p>Αριθμητικά παραδείγματα, μερικό/ολικό βραχυκύκλωμα, αμπερόμετρο & βολτόμετρο</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="theory-actions-bar" style="justify-content: center; margin-top: 14px;">
+                        <button class="theory-btn theory-btn-primary" onclick="TheoryNotes.toggleFullGuide()" id="btn-toggle-theory" style="font-size: 1rem; padding: 12px 24px;">
+                            <span id="toggle-theory-icon">🔼</span>
+                            <span id="toggle-theory-text">Σύμπτυξη Οδηγού Μελέτης</span>
+                        </button>
+                        <a href="assets/docs/physics_g_circuits_theory_2026.pdf" target="_blank" download class="theory-btn theory-btn-secondary" style="font-size: 1rem; padding: 12px 24px;">
+                            <span>📥</span>
+                            <span>Άνοιγμα / Λήψη PDF (12 Σελίδες)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="theory-full-guide-container" style="display: block; margin-top: 28px;">
+                    <div id="theory-mount"></div>
+                </div>
             ` : `
                 <div class="glass-card theory-placeholder-card">
                     <div class="theory-placeholder-icon">📖</div>
@@ -479,13 +550,6 @@ function renderQuizSelection(classKey, subjectKey) {
                             </div>
                         </div>
                     </div>
-
-                    <div class="theory-action-wrap">
-                        <button class="hint-btn" onclick="switchSubjectTab('quizzes')" style="background: var(--primary); color: white; border: none; padding: 11px 24px; font-size: 0.94rem;">
-                            <span>📝</span>
-                            <span>Μετάβαση στα Κουίζ του Μαθήματος</span>
-                        </button>
-                    </div>
                 </div>
             `}
         </div>
@@ -501,10 +565,13 @@ function renderQuizSelection(classKey, subjectKey) {
     container.innerHTML = html;
 
     // Render interactive Theory notes if available
-    if (classKey === 'Γ' && subjectKey === 'physics') {
+    if ((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') {
         const theoryMount = document.getElementById('theory-mount');
         if (theoryMount && window.TheoryNotes) {
             window.TheoryNotes.renderPhysicsG(theoryMount);
+            if (currentTab === 'theory' && window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([theoryMount]).catch(err => console.warn('MathJax error:', err));
+            }
         }
     }
 

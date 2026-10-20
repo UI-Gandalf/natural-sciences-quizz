@@ -983,11 +983,58 @@ window.TheoryNotes = (function() {
         }, { passive: true });
     }
 
+    function toggleFullGuide() {
+        const guideContainer = document.getElementById('theory-full-guide-container');
+        const toggleBtnText = document.getElementById('toggle-theory-text');
+        const toggleBtnIcon = document.getElementById('toggle-theory-icon');
+        const mount = document.getElementById('theory-mount');
+        if (!guideContainer) return;
+
+        const isHidden = guideContainer.style.display === 'none';
+        if (isHidden) {
+            guideContainer.style.display = 'block';
+            if (toggleBtnText) toggleBtnText.innerText = 'Σύμπτυξη Οδηγού Μελέτης';
+            if (toggleBtnIcon) toggleBtnIcon.innerText = '🔼';
+            if (mount && (!mount.hasChildNodes() || mount.children.length === 0)) {
+                renderPhysicsG(mount);
+            }
+            setTimeout(() => {
+                guideContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+        } else {
+            guideContainer.style.display = 'none';
+            if (toggleBtnText) toggleBtnText.innerText = 'Άνοιγμα Ψηφιακού Οδηγού Μελέτης';
+            if (toggleBtnIcon) toggleBtnIcon.innerText = '📖';
+            const card = document.getElementById('theory-chapter-card');
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    function openSection(secId) {
+        const guideContainer = document.getElementById('theory-full-guide-container');
+        const toggleBtnText = document.getElementById('toggle-theory-text');
+        const toggleBtnIcon = document.getElementById('toggle-theory-icon');
+        const mount = document.getElementById('theory-mount');
+        if (guideContainer) {
+            guideContainer.style.display = 'block';
+            if (toggleBtnText) toggleBtnText.innerText = 'Σύμπτυξη Οδηγού Μελέτης';
+            if (toggleBtnIcon) toggleBtnIcon.innerText = '🔼';
+            if (mount && (!mount.hasChildNodes() || mount.children.length === 0)) {
+                renderPhysicsG(mount);
+            }
+        }
+        setTimeout(() => {
+            scrollToSection(null, secId);
+        }, 120);
+    }
+
     return {
         renderPhysicsG: renderPhysicsG,
         setTriangle: setTriangle,
         renderActiveTriangle: renderActiveTriangle,
         scrollToSection: scrollToSection,
-        setupScrollSpy: setupScrollSpy
+        setupScrollSpy: setupScrollSpy,
+        toggleFullGuide: toggleFullGuide,
+        openSection: openSection
     };
 })();
