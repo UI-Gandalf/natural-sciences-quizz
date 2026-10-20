@@ -121,8 +121,19 @@ function handleRoute() {
                 }
             }
 
+            // e.g. #/class/Γ/subject/physics/simulation
+            if (parts[4] === 'simulation') {
+                AppState.currentQuiz = null;
+                AppState.currentSubjectTab = 'simulation';
+                renderQuizSelection(classKey, subjectKey);
+                updateDynamicBg(SUBJECT_CONFIG[subjectKey].bgImage, subjectKey);
+                updateBreadcrumbs();
+                return;
+            }
+
             // Subject Selected: Show Quizzes List
             AppState.currentQuiz = null;
+            AppState.currentSubjectTab = 'quizzes';
             renderQuizSelection(classKey, subjectKey);
             updateDynamicBg(SUBJECT_CONFIG[subjectKey].bgImage, subjectKey);
             updateBreadcrumbs();
@@ -175,8 +186,14 @@ function updateBreadcrumbs() {
         const subConf = SUBJECT_CONFIG[AppState.currentSubject];
         html += `<span class="crumb-sep">/</span>`;
         if (!AppState.currentQuiz) {
-            // Non-quiz page: display emoji as an icon!
-            html += `<span class="crumb-active">${subConf.emoji} ${subConf.name}</span>`;
+            if (AppState.currentSubjectTab === 'simulation') {
+                html += `<a class="crumb-item" onclick="switchSubjectTab('quizzes')">${subConf.emoji} ${subConf.name}</a>`;
+                html += `<span class="crumb-sep">/</span>`;
+                html += `<span class="crumb-active">⚡ Προσομοίωση Κυκλωμάτων</span>`;
+            } else {
+                // Non-quiz page: display emoji as an icon!
+                html += `<span class="crumb-active">${subConf.emoji} ${subConf.name}</span>`;
+            }
         } else {
             html += `<a class="crumb-item" onclick="navigateTo('class/${AppState.currentClass}/subject/${AppState.currentSubject}')">${subConf.emoji} ${subConf.name}</a>`;
             html += `<span class="crumb-sep">/</span>`;
@@ -330,7 +347,7 @@ function renderQuizSelection(classKey, subjectKey) {
                 Επιλέξτε ένα διαδραστικό κουίζ αυτοαξιολόγησης ή μελετήστε τη βασική θεωρία του μαθήματος.
             </p>
 
-            <!-- Navigation Tabs: Quizzes vs Theory -->
+            <!-- Navigation Tabs: Quizzes vs Theory vs Simulation -->
             <div class="subject-tabs-container">
                 <button class="subject-tab-btn ${currentTab === 'quizzes' ? 'active' : ''}" id="tab-btn-quizzes" onclick="switchSubjectTab('quizzes')">
                     <span class="tab-icon">📝</span>
@@ -342,6 +359,13 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span>Θεωρία Μαθήματος</span>
                     <span class="tab-badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border-color: rgba(245, 158, 11, 0.4);">Σύντομα</span>
                 </button>
+                ${subjectKey === 'physics' ? `
+                <button class="subject-tab-btn ${currentTab === 'simulation' ? 'active' : ''}" id="tab-btn-simulation" onclick="switchSubjectTab('simulation')">
+                    <span class="tab-icon">⚡</span>
+                    <span>Προσομοίωση</span>
+                    <span class="tab-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4);">ΝΕΟ</span>
+                </button>
+                ` : ''}
             </div>
         </div>
 
@@ -466,9 +490,23 @@ function renderQuizSelection(classKey, subjectKey) {
                 </div>
             </div>
         </div>
+
+        ${subjectKey === 'physics' ? `
+        <!-- TAB 3: SIMULATION PANEL -->
+        <div class="tab-panel" id="tab-panel-simulation" style="display: ${currentTab === 'simulation' ? 'block' : 'none'};">
+            <div id="simulation-mount"></div>
+        </div>
+        ` : ''}
     `;
 
     container.innerHTML = html;
+
+    if (currentTab === 'simulation' && subjectKey === 'physics') {
+        const mount = document.getElementById('simulation-mount');
+        if (mount && window.CircuitSimulation) {
+            window.CircuitSimulation.render(mount);
+        }
+    }
 }
 
 function switchSubjectTab(tabKey) {
@@ -476,24 +514,32 @@ function switchSubjectTab(tabKey) {
     
     const quizzesBtn = document.getElementById('tab-btn-quizzes');
     const theoryBtn = document.getElementById('tab-btn-theory');
+    const simBtn = document.getElementById('tab-btn-simulation');
     const quizzesPanel = document.getElementById('tab-panel-quizzes');
     const theoryPanel = document.getElementById('tab-panel-theory');
+    const simPanel = document.getElementById('tab-panel-simulation');
 
-    if (!quizzesPanel || !theoryPanel) return;
+    if (quizzesBtn) quizzesBtn.classList.toggle('active', tabKey === 'quizzes');
+    if (theoryBtn) theoryBtn.classList.toggle('active', tabKey === 'theory');
+    if (simBtn) simBtn.classList.toggle('active', tabKey === 'simulation');
 
-    if (tabKey === 'quizzes') {
-        if (quizzesBtn) quizzesBtn.classList.add('active');
-        if (theoryBtn) theoryBtn.classList.remove('active');
-        quizzesPanel.style.display = 'block';
-        theoryPanel.style.display = 'none';
-        quizzesPanel.style.animation = 'fadeIn 0.3s ease';
-    } else {
-        if (quizzesBtn) quizzesBtn.classList.remove('active');
-        if (theoryBtn) theoryBtn.classList.add('active');
-        quizzesPanel.style.display = 'none';
-        theoryPanel.style.display = 'block';
-        theoryPanel.style.animation = 'fadeIn 0.3s ease';
+    if (quizzesPanel) quizzesPanel.style.display = tabKey === 'quizzes' ? 'block' : 'none';
+    if (theoryPanel) theoryPanel.style.display = tabKey === 'theory' ? 'block' : 'none';
+    if (simPanel) {
+        simPanel.style.display = tabKey === 'simulation' ? 'block' : 'none';
+        if (tabKey === 'simulation') {
+            simPanel.style.animation = 'fadeIn 0.3s ease';
+            const mount = document.getElementById('simulation-mount');
+            if (mount && window.CircuitSimulation) {
+                window.CircuitSimulation.render(mount);
+            }
+        }
     }
+
+    if (tabKey === 'quizzes' && quizzesPanel) quizzesPanel.style.animation = 'fadeIn 0.3s ease';
+    if (tabKey === 'theory' && theoryPanel) theoryPanel.style.animation = 'fadeIn 0.3s ease';
+
+    updateBreadcrumbs();
 }
 
 /* ==========================================================================

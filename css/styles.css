@@ -2651,3 +2651,942 @@ mjx-container[display="true"], .katex-display {
     }
 }
 
+/* ==========================================================================
+   INTERACTIVE CIRCUIT SIMULATION LAB (Σύνδεση σε Σειρά & Παράλληλη)
+   ========================================================================== */
+.sim-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 10px 0 30px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Header & Presets Bar */
+.sim-header-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 22px 26px;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(14px);
+    transition: all 0.3s ease;
+}
+
+.sim-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.sim-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sim-title-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    width: fit-content;
+}
+
+.sim-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 4px 0 0 0;
+    letter-spacing: -0.01em;
+}
+
+.sim-subtitle {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+    max-width: 680px;
+}
+
+/* Topology Switcher */
+.sim-topology-switch {
+    display: inline-flex;
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 5px;
+    gap: 6px;
+}
+
+.sim-topo-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.22s ease;
+}
+
+.sim-topo-btn:hover:not(.active) {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.sim-topo-btn.active {
+    background: var(--primary, #0284c7);
+    color: #ffffff;
+    box-shadow: 0 4px 16px rgba(2, 132, 199, 0.45);
+}
+
+.topo-icon {
+    font-size: 1.15rem;
+}
+
+/* Preset Quick Load Pills */
+.sim-presets-bar {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.sim-presets-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.sim-presets-list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.sim-preset-pill {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sim-preset-pill:hover {
+    background: rgba(56, 189, 248, 0.16);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(56, 189, 248, 0.2);
+}
+
+/* Main Workspace Grid (Controls + Display) */
+.sim-workspace-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+/* Controls Panel */
+.sim-controls-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(14px);
+}
+
+.sim-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.sim-card-icon {
+    font-size: 1.3rem;
+}
+
+.sim-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.sim-control-group {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.2s ease;
+}
+
+.sim-control-group:hover {
+    border-color: rgba(56, 189, 248, 0.3);
+}
+
+.sim-control-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.92rem;
+    color: var(--text-primary);
+}
+
+.sim-val-display {
+    font-size: 0.95rem;
+    font-weight: 800;
+    padding: 2px 10px;
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    font-family: 'Outfit', 'Inter', monospace;
+}
+
+/* Range Sliders */
+.sim-slider-row {
+    display: flex;
+    align-items: center;
+}
+
+.sim-slider-row input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    outline: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.sim-slider-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.65);
+    border: 2.5px solid #ffffff;
+    cursor: grab;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.sim-slider-row input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    background: #0ea5e9;
+}
+
+.sim-slider-row input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.65);
+    border: 2.5px solid #ffffff;
+    cursor: grab;
+}
+
+/* Quick Steppers */
+.sim-quick-steppers {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.sim-step-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: inherit;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.sim-step-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Toggle Checkbox */
+.sim-toggles-row {
+    margin-top: 4px;
+}
+
+.sim-toggle-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.86rem;
+    color: var(--text-secondary);
+    user-select: none;
+}
+
+.sim-toggle-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.sim-toggle-checkbox .checkbox-custom {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 1.5px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.05);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.sim-toggle-checkbox input[type="checkbox"]:checked + .checkbox-custom {
+    background: #ef4444;
+    border-color: #ef4444;
+}
+
+.sim-toggle-checkbox input[type="checkbox"]:checked + .checkbox-custom::after {
+    content: "✓";
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+/* Switch Toggle Button */
+.sim-actions-group {
+    background: transparent;
+    border: none;
+    padding: 0;
+    gap: 12px;
+}
+
+.sim-switch-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 13px 18px;
+    border-radius: 12px;
+    font-size: 0.94rem;
+    font-weight: 800;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    border: none;
+    width: 100%;
+}
+
+.sim-switch-toggle-btn.is-closed {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.35));
+    border: 1.5px solid #10b981;
+    color: #ecfdf5;
+    box-shadow: 0 4px 18px rgba(16, 185, 129, 0.3);
+}
+
+.sim-switch-toggle-btn.is-closed:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.5));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(16, 185, 129, 0.45);
+}
+
+.sim-switch-toggle-btn.is-open {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(185, 28, 28, 0.28));
+    border: 1.5px solid #ef4444;
+    color: #fef2f2;
+    box-shadow: 0 4px 18px rgba(239, 68, 68, 0.25);
+}
+
+.sim-switch-toggle-btn.is-open:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(185, 28, 28, 0.4));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(239, 68, 68, 0.4);
+}
+
+/* Steps Toggle */
+.sim-steps-toggle-wrap {
+    padding: 10px 14px;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.28);
+    border-radius: 10px;
+}
+
+.sim-steps-toggle-wrap .checkbox-custom {
+    border-color: rgba(245, 158, 11, 0.5);
+}
+
+.sim-steps-toggle-wrap input[type="checkbox"]:checked + .checkbox-custom {
+    background: #f59e0b;
+    border-color: #f59e0b;
+}
+
+/* Schematic & Display Column */
+.sim-display-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sim-schematic-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(14px);
+    position: relative;
+}
+
+.sim-schematic-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.sim-circuit-status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.sim-circuit-status-chip.normal {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.sim-circuit-status-chip.partial_short {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.sim-circuit-status-chip.total_short {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    animation: alertPulse 1.4s infinite alternate;
+}
+
+.sim-circuit-status-chip.open_circuit {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+@keyframes alertPulse {
+    from {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(239, 68, 68, 0);
+    }
+    to {
+        transform: scale(1.02);
+        box-shadow: 0 0 16px rgba(239, 68, 68, 0.45);
+    }
+}
+
+.chip-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.sim-instructions-badge {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* SVG Viewport & Circuit Vector Graphics */
+.sim-svg-viewport {
+    width: 100%;
+    background: radial-gradient(circle at center, rgba(30, 41, 59, 0.45) 0%, rgba(15, 23, 42, 0.8) 100%);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.sim-svg-circuit {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.circuit-wire-base {
+    fill: none;
+    stroke: rgba(148, 163, 184, 0.3);
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.circuit-wire-current {
+    fill: none;
+    stroke: #38bdf8;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: url(#wire-glow);
+}
+
+.wire-current-active {
+    stroke-dasharray: 12 10;
+    animation: dashLoop linear infinite;
+}
+
+.wire-current-inactive {
+    stroke-dasharray: 0;
+    opacity: 0;
+}
+
+@keyframes dashLoop {
+    to {
+        stroke-dashoffset: -44;
+    }
+}
+
+.flow-arrow-path {
+    fill: none;
+    stroke: #38bdf8;
+    stroke-width: 2.5;
+    opacity: 0.9;
+}
+
+/* Component Interactive States */
+.comp-interactive {
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.comp-hitbox {
+    fill: transparent;
+    cursor: pointer;
+    transition: fill 0.2s ease;
+}
+
+.comp-interactive:hover .comp-hitbox {
+    fill: rgba(56, 189, 248, 0.08);
+}
+
+.battery-plate {
+    stroke-linecap: round;
+}
+
+.battery-plate.positive {
+    stroke: #ef4444;
+    stroke-width: 6;
+}
+
+.battery-plate.negative {
+    stroke: #38bdf8;
+    stroke-width: 6;
+}
+
+.comp-label {
+    font-family: inherit;
+    font-weight: 800;
+    text-anchor: middle;
+}
+
+.text-positive {
+    fill: #ef4444;
+    font-size: 20px;
+}
+
+.text-negative {
+    fill: #38bdf8;
+    font-size: 22px;
+}
+
+.comp-value-tag {
+    fill: var(--text-secondary, #cbd5e1);
+    font-size: 13px;
+    font-weight: 700;
+    text-anchor: middle;
+}
+
+.comp-title-tag {
+    fill: var(--text-primary, #f8fafc);
+    font-size: 13px;
+    font-weight: 700;
+    text-anchor: middle;
+}
+
+.terminal-dot {
+    fill: #f59e0b;
+    stroke: #ffffff;
+    stroke-width: 1.5;
+}
+
+.switch-blade {
+    stroke: #f59e0b;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: all 0.25s ease;
+}
+
+.meter-circle {
+    fill: rgba(30, 41, 59, 0.92);
+    stroke: #06b6d4;
+    stroke-width: 3;
+}
+
+.meter-text {
+    fill: #06b6d4;
+    font-size: 18px;
+    font-weight: 800;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+.meter-reading-tag {
+    fill: #38bdf8;
+    font-size: 13px;
+    font-weight: 800;
+    text-anchor: middle;
+}
+
+.circuit-node-dot {
+    fill: #e2e8f0;
+    stroke: #0284c7;
+    stroke-width: 2.5;
+    cursor: pointer;
+    transition: r 0.2s ease, fill 0.2s ease;
+}
+
+.circuit-node-group:hover .circuit-node-dot {
+    r: 7;
+    fill: #38bdf8;
+}
+
+.node-letter {
+    fill: #38bdf8;
+    font-size: 13px;
+    font-weight: 800;
+    text-anchor: middle;
+}
+
+.resistor-body {
+    fill: rgba(245, 158, 11, 0.16);
+    stroke: #f59e0b;
+    stroke-width: 2.5;
+    transition: all 0.2s ease;
+}
+
+.resistor-body.shorted {
+    fill: rgba(239, 68, 68, 0.16);
+    stroke: #ef4444;
+    stroke-dasharray: 4 4;
+}
+
+.comp-resistor:hover .resistor-body {
+    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.5));
+}
+
+.resistor-inner-text {
+    fill: #fbbf24;
+    font-size: 14px;
+    font-weight: 800;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+.short-circuit-bypass-wire {
+    fill: none;
+    stroke: #ef4444;
+    stroke-width: 3.5;
+    stroke-dasharray: 6 4;
+    animation: bypassBlink 0.9s infinite alternate;
+}
+
+@keyframes bypassBlink {
+    from {
+        opacity: 0.6;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.short-wire-label {
+    fill: #f87171;
+    font-size: 12px;
+    font-weight: 700;
+    text-anchor: middle;
+}
+
+.ground-stem, .ground-line {
+    stroke: #94a3b8;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+}
+
+.probe-wire-hitbox {
+    fill: transparent;
+    cursor: pointer;
+}
+
+.probe-wire-hitbox:hover {
+    fill: rgba(56, 189, 248, 0.15);
+}
+
+/* Multimeter & Probe HUD Card */
+.sim-hud-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(14px);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all 0.2s ease;
+}
+
+.hud-item-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hud-probe-icon {
+    font-size: 1.8rem;
+}
+
+.hud-item-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.hud-item-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.hud-item-badge {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+.hud-item-badge.good {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.hud-item-badge.bad {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.hud-readouts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.hud-meter-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: border-color 0.2s ease;
+}
+
+.hud-meter-box:hover {
+    border-color: rgba(56, 189, 248, 0.3);
+}
+
+.meter-lbl {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+}
+
+.meter-val {
+    font-size: 1.35rem;
+    font-weight: 800;
+    font-family: 'Outfit', 'Inter', monospace;
+}
+
+.text-voltage {
+    color: #38bdf8;
+}
+
+.text-current {
+    color: #34d399;
+}
+
+.text-resistor {
+    color: #fbbf24;
+}
+
+.text-power {
+    color: #c084fc;
+}
+
+/* Steps Box */
+.hud-steps-box {
+    background: rgba(2, 132, 199, 0.06);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hud-steps-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #38bdf8;
+    margin-bottom: 4px;
+}
+
+.step-calc-line {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    padding: 6px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+}
+
+.step-calc-line:last-child {
+    border-bottom: none;
+}
+
+/* Bottom Metrics Strip */
+.sim-metrics-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 16px 20px;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(14px);
+}
+
+.sim-metric-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.metric-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.metric-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    font-family: 'Outfit', 'Inter', monospace;
+}
+
+/* Responsive Rules for Simulation */
+@media (max-width: 960px) {
+    .sim-workspace-grid {
+        grid-template-columns: 1fr;
+    }
+    .sim-header-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .sim-topology-switch {
+        width: 100%;
+    }
+    .sim-topo-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .sim-header-card, .sim-controls-panel, .sim-schematic-card, .sim-hud-card {
+        padding: 16px;
+    }
+    .sim-title {
+        font-size: 1.35rem;
+    }
+    .hud-readouts-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .sim-metrics-strip {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
