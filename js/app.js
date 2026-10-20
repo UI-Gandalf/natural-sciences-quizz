@@ -2381,8 +2381,11 @@ function resolveQuestionDiagrams(q) {
     if (Array.isArray(q.images) && q.images.length > 0) {
         return q.images.map(img => formatDiagramObj(img));
     }
-    // 2. Explicit single image
+    // 2. Explicit single image or array
     if (q.image) {
+        if (Array.isArray(q.image)) {
+            return q.image.map(img => formatDiagramObj(img));
+        }
         return [formatDiagramObj(q.image)];
     }
 
