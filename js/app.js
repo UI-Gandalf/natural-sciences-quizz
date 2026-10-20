@@ -958,6 +958,7 @@ function loadCurrentQuestion() {
 
     // Strict hint check: only true if non-empty string
     const hasHint = Boolean(q && typeof q.hint === 'string' && q.hint.trim().length > 0);
+    const qType = q ? (q.type || 'mcq') : 'mcq';
 
     if (hintBtn) {
         if (hasHint && (qType === 'matching' || qType === 'cascading')) {
@@ -1686,7 +1687,7 @@ function selectCascadingStepOption(stepIdx, optIdx) {
     const card = document.getElementById(`cascading-step-card-${stepIdx}`);
     if (!card) return;
     const btns = card.querySelectorAll('.step-option-btn');
-    if (btns[optIdx] && btns[optIdx].disabled) return;
+    if (!btns || !btns[optIdx] || btns[optIdx].disabled) return;
 
     qr.cascadingState.stepAttempts++;
     const isCorrect = checkCascadingStep(q, stepIdx, optIdx);
@@ -1944,15 +1945,30 @@ function renderStandardMcqReview(entry, container) {
 function selectQuizOption(idx) {
     const qr = AppState.quizRunner;
     const quiz = AppState.currentQuiz;
+    if (!qr || !quiz) return;
     if (qr.viewingReviewIndex !== null) return; // In review mode, options are read-only
     if (qr.answered) return;
 
-    const btns = document.querySelectorAll('.option-btn');
-    // If this option was already tried and marked wrong, ignore clicks
-    if (btns[idx] && btns[idx].disabled) return;
-
     const qIndex = qr.activeQueue[qr.currentPos];
     const q = quiz.questions[qIndex];
+    if (!q) return;
+
+    // 1. If cascading stepper question, route 1-5 / A-E to active step
+    if (q.type === 'cascading' && qr.cascadingState) {
+        selectCascadingStepOption(qr.cascadingState.currentStep, idx);
+        return;
+    }
+
+    // 2. If matching question, numeric shortcuts do not apply to dot-connecting
+    if (q.type === 'matching') {
+        return;
+    }
+
+    // 3. Standard MCQ
+    const btns = document.querySelectorAll('.option-btn');
+    // If this option was already tried and marked wrong or does not exist, ignore
+    if (!btns || !btns[idx] || btns[idx].disabled) return;
+
     const feedback = document.getElementById('feedback-box');
     const nextBtn = document.getElementById('next-btn');
     const hintBtn = document.getElementById('hint-btn');
@@ -2359,7 +2375,11 @@ function toggleHint() {
     const q = quiz.questions[qIndex];
     const hasHint = Boolean(q && typeof q.hint === 'string' && q.hint.trim().length > 0);
     const hintBtn = document.getElementById('hint-btn');
-    if (!hasHint || !hintBtn || hintBtn.style.display === 'none') {
+    if (!hasHint || !hintBtn) {
+        return;
+    }
+    if (hintBtn.style.display === 'none') {
+        showToast('💡 Η υπόδειξη ξεκλειδώνεται αν χρειαστείτε 2η προσπάθεια!');
         return;
     }
     qr.hintOpen = !qr.hintOpen;
@@ -2717,36 +2737,35 @@ function setupGlobalKeyboardShortcuts() {
             return;
         }
 
+        // Ignore when user is interacting with an input, select, or textarea
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+            return;
+        }
+
+        const key = e.key;
+
         // Keys 1 to 5
-        if (e.key >= '1' && e.key <= '5') {
-            const idx = parseInt(e.key) - 1;
+        if (key >= '1' && key <= '5') {
+            const idx = parseInt(key) - 1;
             selectQuizOption(idx);
         } 
-        // Greek and Latin letters
-        else if (['a', 'b', 'c', 'd', 'e', 'α', 'β', 'γ', 'δ', 'ε'].includes(e.key.toLowerCase())) {
+        // Greek and Latin letters (a-e, α-ε)
+        else if (['a', 'b', 'c', 'd', 'e', 'α', 'β', 'γ', 'δ', 'ε'].includes(key.toLowerCase())) {
             const map = { 'a': 0, 'α': 0, 'b': 1, 'β': 1, 'c': 2, 'γ': 2, 'd': 3, 'δ': 3, 'e': 4, 'ε': 4 };
-            const idx = map[e.key.toLowerCase()];
+            const idx = map[key.toLowerCase()];
             if (idx !== undefined) selectQuizOption(idx);
         } 
         // Hint: H or Η
-        else if (e.key.toLowerCase() === 'h' || e.key.toLowerCase() === 'η') {
-            const qr = AppState.quizRunner;
-            const quiz = AppState.currentQuiz;
-            if (qr && quiz) {
-                const q = quiz.questions[qr.activeQueue[qr.currentPos]];
-                const hasHint = Boolean(q && typeof q.hint === 'string' && q.hint.trim().length > 0);
-                if (hasHint) {
-                    toggleHint();
-                }
-            }
+        else if (key.toLowerCase() === 'h' || key.toLowerCase() === 'η') {
+            toggleHint();
         } 
         // Previous: ArrowLeft or P or Π
-        else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'p' || e.key.toLowerCase() === 'π') {
+        else if (key === 'ArrowLeft' || key.toLowerCase() === 'p' || key.toLowerCase() === 'π') {
             handlePrevQuestion();
         }
         // Next: Enter or Space or ArrowRight
-        else if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') {
-            if (e.key === ' ') e.preventDefault();
+        else if (key === 'Enter' || key === ' ' || key === 'ArrowRight') {
+            if (key === ' ') e.preventDefault();
             handleNextOrSkip();
         }
     });
