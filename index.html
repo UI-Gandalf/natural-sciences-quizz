@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     
     <!-- Application Stylesheet -->
-    <link rel="stylesheet" href="css/styles.css?v=52">
+    <link rel="stylesheet" href="css/styles.css?v=53">
     
     <!-- MathJax 3 Engine (Mathematical & Physics Formulas) -->
     <script>
@@ -32,7 +32,14 @@
           skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
         },
         startup: {
-          typeset: false
+          typeset: false,
+          ready: function() {
+            MathJax.startup.defaultReady();
+            const target = document.getElementById('theory-mount') || document.getElementById('tab-panel-theory');
+            if (target && window.MathJax && window.MathJax.typesetPromise) {
+              window.MathJax.typesetPromise([target]).catch(function(err) { console.warn('MathJax ready error:', err); });
+            }
+          }
         }
       };
     </script>
@@ -103,9 +110,9 @@
     <div class="toast-notification" id="toast-msg"></div>
 
     <!-- Application Scripts -->
-    <script src="js/quiz-data.js?v=52"></script>
-    <script src="js/simulation.js?v=52"></script>
-    <script src="js/theory.js?v=52"></script>
-    <script src="js/app.js?v=52"></script>
+    <script src="js/quiz-data.js?v=53"></script>
+    <script src="js/simulation.js?v=53"></script>
+    <script src="js/theory.js?v=53"></script>
+    <script src="js/app.js?v=53"></script>
 </body>
 </html>

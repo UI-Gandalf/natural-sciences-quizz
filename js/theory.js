@@ -29,7 +29,7 @@ window.TheoryNotes = (function() {
             top: { symbol: 'P', name: 'Ισχύς (Watt)', formula: 'P = I \\cdot V', desc: 'Καλύπτοντας το P: Πολλαπλασιάζουμε την ένταση I με την τάση V.' },
             left: { symbol: 'I', name: 'Ένταση (Ampere)', formula: 'I = \\frac{P}{V}', desc: 'Καλύπτοντας το I: Διαιρούμε την ισχύ P με την τάση V.' },
             right: { symbol: 'V', name: 'Τάση (Volt)', formula: 'V = \\frac{P}{I}', desc: 'Καλύπτοντας το V: Διαιρούμε την ισχύ P με την ένταση I.' },
-            tip: 'Συνδυάζεται επίσης με τον νόμο του Ohm: P = I^2 \\cdot R = \\frac{V^2}{R}.'
+            tip: 'Συνδυάζεται επίσης με τον νόμο του Ohm: $P = I^2 \\cdot R = \\frac{V^2}{R}$.'
         },
         energy: {
             title: 'Τρίγωνο Ηλεκτρικής Ενέργειας',
@@ -75,20 +75,8 @@ window.TheoryNotes = (function() {
                     <div class="theory-actions-bar">
                         <a href="assets/docs/physics_g_circuits_theory_2026.pdf" target="_blank" download class="theory-btn theory-btn-primary" title="Λήψη του πρωτότυπου PDF">
                             <span>📥</span>
-                            <span>Λήψη Επίσημου PDF</span>
+                            <span>Λήψη Επίσημου PDF (12 Σελίδες)</span>
                         </a>
-                        <button onclick="window.print()" class="theory-btn theory-btn-secondary" title="Εκτύπωση ή αποθήκευση ως PDF">
-                            <span>🖨️</span>
-                            <span>Εκτύπωση Οδηγού</span>
-                        </button>
-                        <button onclick="switchSubjectTab('simulation')" class="theory-btn theory-btn-sim" title="Μετάβαση στην προσομοίωση κυκλώματος">
-                            <span>⚡</span>
-                            <span>Διαδραστική Προσομοίωση</span>
-                        </button>
-                        <button onclick="switchSubjectTab('quizzes')" class="theory-btn theory-btn-quiz" title="Εξάσκηση στα 4 σχετικά κουίζ">
-                            <span>📝</span>
-                            <span>Κουίζ Αξιολόγησης (4)</span>
-                        </button>
                     </div>
                 </div>
 
@@ -141,7 +129,7 @@ window.TheoryNotes = (function() {
                                 </tr>
                                 <tr>
                                     <td><strong>Ηλεκτρική Αντίσταση</strong></td>
-                                    <td><span class="unit-chip">R (Ohm, \\Omega)</span></td>
+                                    <td><span class="unit-chip">R (Ohm, Ω)</span></td>
                                     <td class="math-cell">$$R = \\frac{V}{I}$$</td>
                                     <td>Το μέτρο της δυσκολίας που προβάλλει ένας αγωγός στη διέλευση του ηλεκτρικού ρεύματος.</td>
                                 </tr>
@@ -842,18 +830,18 @@ window.TheoryNotes = (function() {
                 <!-- FOOTER NAVIGATION ACTIONS -->
                 <div class="theory-footer-nav glass-card">
                     <div>
-                        <h3>Είστε έτοιμοι για εξάσκηση;</h3>
-                        <p>Δοκιμάστε τις γνώσεις σας στα 4 εξειδικευμένα κουίζ αξιολόγησης ή εξερευνήστε τη διαδραστική προσομοίωση.</p>
+                        <h3>Επίσημος Οδηγός Μελέτης Φυσικής Γ΄</h3>
+                        <p>Ηλεκτρικό Κύκλωμα & Συνδεσμολογίες Αντιστατών — Πλήρης ψηφιακός οδηγός βάσει του σχολικού φυλλαδίου.</p>
                     </div>
                     <div class="footer-btn-group">
-                        <button onclick="switchSubjectTab('quizzes')" class="theory-btn theory-btn-primary">
-                            <span>📝</span>
-                            <span>Έναρξη Κουίζ</span>
+                        <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="theory-btn theory-btn-secondary" title="Επιστροφή στην κορυφή">
+                            <span>⬆️</span>
+                            <span>Κορυφή Σελίδας</span>
                         </button>
-                        <button onclick="switchSubjectTab('simulation')" class="theory-btn theory-btn-sim">
-                            <span>⚡</span>
-                            <span>Προσομοίωση</span>
-                        </button>
+                        <a href="assets/docs/physics_g_circuits_theory_2026.pdf" target="_blank" download class="theory-btn theory-btn-primary" title="Λήψη PDF">
+                            <span>📥</span>
+                            <span>Λήψη PDF</span>
+                        </a>
                     </div>
                 </div>
 
@@ -863,10 +851,8 @@ window.TheoryNotes = (function() {
         // Render initial active triangle
         TheoryNotes.renderActiveTriangle();
 
-        // Typeset LaTeX math formulas with MathJax
-        if (window.MathJax && window.MathJax.typesetPromise) {
-            window.MathJax.typesetPromise([container]).catch(err => console.warn('MathJax rendering error:', err));
-        }
+        // Typeset LaTeX math formulas with MathJax (with retry for async loading)
+        ensureMathTypeset(container);
 
         // Setup scroll spy for sticky nav
         TheoryNotes.setupScrollSpy();
@@ -933,9 +919,7 @@ window.TheoryNotes = (function() {
             </div>
         `;
 
-        if (window.MathJax && window.MathJax.typesetPromise) {
-            window.MathJax.typesetPromise([mount]).catch(err => console.warn('MathJax error:', err));
-        }
+        ensureMathTypeset(mount);
     }
 
     function scrollToSection(e, secId) {
@@ -981,6 +965,24 @@ window.TheoryNotes = (function() {
                 }
             }
         }, { passive: true });
+    }
+
+    function ensureMathTypeset(targetElem) {
+        if (!targetElem) return;
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise([targetElem]).catch(err => console.warn('MathJax error:', err));
+        } else {
+            let attempts = 0;
+            const timer = setInterval(() => {
+                attempts++;
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    clearInterval(timer);
+                    window.MathJax.typesetPromise([targetElem]).catch(err => console.warn('MathJax error:', err));
+                } else if (attempts >= 30) {
+                    clearInterval(timer);
+                }
+            }, 150);
+        }
     }
 
     function toggleFullGuide() {

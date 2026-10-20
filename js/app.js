@@ -702,10 +702,18 @@ function formatMathText(text) {
     // LaTeX inline math $...$
     res = res.replace(/\$([^\$\n]+?)\$/g, (m, p1) => parseLatexSnippet(p1));
 
-    // Handle any LaTeX spacing / relation commands in plain text
+    // Handle any LaTeX symbols / spacing / relation commands in plain text
+    res = res.replace(/\\Omega\b/g, '<span class="math-sym">Ω</span>');
+    res = res.replace(/\\cdot\b/g, '<span class="math-op math-bin">·</span>');
+    res = res.replace(/\\Delta\b/g, '<span class="math-sym">Δ</span>');
     res = res.replace(/\\qquad(?=[A-Za-z0-9_]|\b)\s*/g, '<span class="math-space math-qquad">&emsp;&emsp;</span>');
     res = res.replace(/\\quad(?=[A-Za-z0-9_]|\b)\s*/g, '<span class="math-space math-quad">&emsp;</span>');
     res = res.replace(/\\iff\b/g, '<span class="math-op math-rel">⇔</span>');
+    res = res.replace(/\\implies\b/g, '<span class="math-op math-rel">⇒</span>');
+    res = res.replace(/\\(?:to|rightarrow)\b/g, '<span class="math-op math-rel">→</span>');
+    res = res.replace(/\\approx\b/g, '<span class="math-op math-rel">≈</span>');
+    res = res.replace(/\\infty\b/g, '<span class="math-sym">∞</span>');
+    res = res.replace(/\\neq\b/g, '<span class="math-op math-rel">≠</span>');
 
     // 2. Physics & Electrical Formulas in plain Greek/Latin text
     // Greek subscripts with or without underscore: Vπηγ, V_πηγ, Rολ, R_ολ, Iολ, I_ολ, Pολ, P_ολ, Vδιακ, V_διακ, Rσειρ, R_σειρ, Rπαρ, R_παρ
