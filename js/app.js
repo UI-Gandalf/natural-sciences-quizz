@@ -946,8 +946,13 @@ function loadCurrentQuestion() {
     const hintBtn = document.getElementById('hint-btn');
     hintBox.style.display = 'none';
     if (hintBtn) {
-        hintBtn.style.display = 'none'; // Hint hidden initially on 1st attempt
-        hintBtn.classList.remove('pulse-ready');
+        if (qType === 'matching' || qType === 'cascading') {
+            hintBtn.style.display = 'inline-flex';
+            hintBtn.classList.add('pulse-ready');
+        } else {
+            hintBtn.style.display = 'none'; // Hint hidden initially on 1st attempt
+            hintBtn.classList.remove('pulse-ready');
+        }
     }
     document.getElementById('hint-content').innerHTML = formatMathText(q.hint || q.exp);
     document.getElementById('hint-btn-text').innerText = 'Υπόδειξη';
@@ -1146,9 +1151,9 @@ function renderMatchingQuestion(q, qIndex, container) {
     qr.matchingState = {
         selectedLeft: null,
         selectedRight: null,
-        matchedPairs: {}, // { [leftId]: rightId }
-        attempts: 0,
-        evaluating: false
+        draftPairs: {}, // { [leftId]: rightId }
+        evaluated: false,
+        pairResults: {}
     };
 
     const wrapper = document.createElement('div');
@@ -1170,7 +1175,7 @@ function renderMatchingQuestion(q, qIndex, container) {
     leftCol.className = 'matching-col matching-col-left';
     const leftTitle = document.createElement('div');
     leftTitle.className = 'matching-col-title';
-    leftTitle.innerHTML = '📋 Στήλη Α (Στοιχεία)';
+    leftTitle.innerHTML = '📋 Στήλη Α (Ζητούμενα / Μεγέθη)';
     leftCol.appendChild(leftTitle);
 
     q.left.forEach((item, idx) => {
@@ -1198,7 +1203,7 @@ function renderMatchingQuestion(q, qIndex, container) {
     rightCol.className = 'matching-col matching-col-right';
     const rightTitle = document.createElement('div');
     rightTitle.className = 'matching-col-title';
-    rightTitle.innerHTML = '🎯 Στήλη Β (Ιδιότητες / Αποτελέσματα)';
+    rightTitle.innerHTML = '🎯 Στήλη Β (Επιλογές Αποτελεσμάτων)';
     rightCol.appendChild(rightTitle);
 
     const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
@@ -1227,11 +1232,25 @@ function renderMatchingQuestion(q, qIndex, container) {
     wrapper.appendChild(columnsDiv);
     container.appendChild(wrapper);
 
-    // Instruction prompt
-    const instructionBar = document.createElement('div');
-    instructionBar.className = 'matching-instruction-bar';
-    instructionBar.innerHTML = '💡 <em>Κάντε κλικ σε ένα στοιχείο της Στήλης Α και κατόπιν στο αντίστοιχο της Στήλης Β για να τα συνδέσετε.</em>';
-    container.appendChild(instructionBar);
+    // Matching Control & Submission Bar
+    const controlBar = document.createElement('div');
+    controlBar.className = 'matching-control-bar';
+    controlBar.id = 'matching-control-bar';
+    controlBar.innerHTML = `
+        <div class="matching-status" id="matching-status">
+            <span class="matching-status-icon">💡</span>
+            <span id="matching-status-text">Επιλέξτε ένα στοιχείο της <strong>Στήλης Α</strong> και κατόπιν το αντίστοιχο της <strong>Στήλης Β</strong> για να τα συνδέσετε.</span>
+        </div>
+        <div class="matching-actions">
+            <button type="button" class="matching-btn-reset" id="matching-reset-btn" onclick="resetMatchingDraft()" style="display: none;">
+                <i class="fas fa-undo"></i> Καθαρισμός
+            </button>
+            <button type="button" class="matching-btn-submit" id="matching-submit-btn" onclick="submitMatchingAnswer()" disabled>
+                <i class="fas fa-check-circle"></i> Έλεγχος Αντιστοίχισης
+            </button>
+        </div>
+    `;
+    container.appendChild(controlBar);
 
     // Responsive line recalculation
     if (window._matchingResizeHandler) {
@@ -1239,153 +1258,231 @@ function renderMatchingQuestion(q, qIndex, container) {
     }
     window._matchingResizeHandler = () => redrawAllMatchingLines(q);
     window.addEventListener('resize', window._matchingResizeHandler);
+
+    updateMatchingUI(q);
 }
 
 function handleMatchingClick(side, id) {
     const qr = AppState.quizRunner;
     const q = AppState.currentQuiz.questions[qr.activeQueue[qr.currentPos]];
-    if (qr.answered || !qr.matchingState || qr.matchingState.evaluating) return;
-
-    // Ignore if already matched
-    if (side === 'left' && qr.matchingState.matchedPairs[id]) return;
-    if (side === 'right' && Object.values(qr.matchingState.matchedPairs).includes(id)) return;
+    if (qr.answered || !qr.matchingState || qr.matchingState.evaluated) return;
 
     if (side === 'left') {
-        qr.matchingState.selectedLeft = id;
-        highlightMatchingSelection();
-
-        if (qr.matchingState.selectedRight) {
-            evaluateMatchingPair(q, qr.matchingState.selectedLeft, qr.matchingState.selectedRight);
+        if (qr.matchingState.selectedLeft === id) {
+            qr.matchingState.selectedLeft = null;
+        } else {
+            qr.matchingState.selectedLeft = id;
+            if (qr.matchingState.selectedRight) {
+                connectMatchingPair(q, qr.matchingState.selectedLeft, qr.matchingState.selectedRight);
+                return;
+            }
         }
     } else {
-        qr.matchingState.selectedRight = id;
-        highlightMatchingSelection();
-
-        if (qr.matchingState.selectedLeft) {
-            evaluateMatchingPair(q, qr.matchingState.selectedLeft, qr.matchingState.selectedRight);
+        if (qr.matchingState.selectedRight === id) {
+            qr.matchingState.selectedRight = null;
+        } else {
+            qr.matchingState.selectedRight = id;
+            if (qr.matchingState.selectedLeft) {
+                connectMatchingPair(q, qr.matchingState.selectedLeft, qr.matchingState.selectedRight);
+                return;
+            }
         }
     }
+
+    updateMatchingUI(q);
 }
 
-function highlightMatchingSelection() {
+function connectMatchingPair(q, leftId, rightId) {
+    const qr = AppState.quizRunner;
+    if (!qr.matchingState) return;
+
+    // Remove any previous pairing holding this same rightId
+    for (const [lKey, rVal] of Object.entries(qr.matchingState.draftPairs)) {
+        if (rVal === rightId && lKey !== leftId) {
+            delete qr.matchingState.draftPairs[lKey];
+        }
+    }
+
+    qr.matchingState.draftPairs[leftId] = rightId;
+    qr.matchingState.selectedLeft = null;
+    qr.matchingState.selectedRight = null;
+
+    redrawAllMatchingLines(q);
+    updateMatchingUI(q);
+}
+
+function resetMatchingDraft() {
+    const qr = AppState.quizRunner;
+    const q = AppState.currentQuiz.questions[qr.activeQueue[qr.currentPos]];
+    if (qr.answered || !qr.matchingState || qr.matchingState.evaluated) return;
+
+    qr.matchingState.draftPairs = {};
+    qr.matchingState.selectedLeft = null;
+    qr.matchingState.selectedRight = null;
+
+    redrawAllMatchingLines(q);
+    updateMatchingUI(q);
+    showToast('Οι συνδέσεις καθαρίστηκαν.');
+}
+
+function updateMatchingUI(q) {
     const qr = AppState.quizRunner;
     const wrapper = document.getElementById('matching-wrapper');
     if (!wrapper || !qr.matchingState) return;
 
+    const draftPairs = qr.matchingState.draftPairs || {};
+    const selectedLeft = qr.matchingState.selectedLeft;
+    const selectedRight = qr.matchingState.selectedRight;
+    const isEvaluated = qr.matchingState.evaluated;
+    const results = qr.matchingState.pairResults || {};
+
+    const connectedLefts = Object.keys(draftPairs);
+    const connectedRights = Object.values(draftPairs);
+
     wrapper.querySelectorAll('.matching-item').forEach(el => {
         const side = el.dataset.side;
         const id = el.dataset.id;
-        const isSelected = (side === 'left' && qr.matchingState.selectedLeft === id) ||
-                           (side === 'right' && qr.matchingState.selectedRight === id);
-        el.classList.toggle('selected', isSelected);
+
+        el.classList.remove('selected', 'item-connected', 'matched', 'item-wrong');
+
+        if (isEvaluated) {
+            if (side === 'left') {
+                const isCorrect = results[id];
+                el.classList.add(isCorrect ? 'matched' : 'item-wrong');
+            } else {
+                const leftKey = Object.keys(draftPairs).find(k => draftPairs[k] === id);
+                if (leftKey) {
+                    const isCorrect = results[leftKey];
+                    el.classList.add(isCorrect ? 'matched' : 'item-wrong');
+                }
+            }
+        } else {
+            const isSelected = (side === 'left' && selectedLeft === id) ||
+                               (side === 'right' && selectedRight === id);
+            if (isSelected) el.classList.add('selected');
+
+            const isConnected = (side === 'left' && connectedLefts.includes(id)) ||
+                                (side === 'right' && connectedRights.includes(id));
+            if (isConnected) el.classList.add('item-connected');
+        }
     });
+
+    const statusText = document.getElementById('matching-status-text');
+    const submitBtn = document.getElementById('matching-submit-btn');
+    const resetBtn = document.getElementById('matching-reset-btn');
+
+    const totalCount = q.left.length;
+    const connectedCount = connectedLefts.length;
+
+    if (resetBtn) {
+        resetBtn.style.display = (!isEvaluated && connectedCount > 0) ? 'inline-flex' : 'none';
+    }
+
+    if (!isEvaluated) {
+        if (connectedCount === 0) {
+            if (statusText) statusText.innerHTML = 'Επιλέξτε ένα στοιχείο της <strong>Στήλης Α</strong> και κατόπιν το αντίστοιχο της <strong>Στήλης Β</strong>.';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.classList.remove('pulse-ready');
+                submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Έλεγχος Αντιστοίχισης';
+            }
+        } else if (connectedCount < totalCount) {
+            if (statusText) statusText.innerHTML = `Συνδέθηκαν <strong>${connectedCount} από ${totalCount}</strong> ζεύγη. Συνδέστε και τα υπόλοιπα στοιχεία.`;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.classList.remove('pulse-ready');
+                submitBtn.innerHTML = `<i class="fas fa-link"></i> Συνδέστε όλα (${connectedCount}/${totalCount})`;
+            }
+        } else {
+            if (statusText) statusText.innerHTML = `✓ <strong>Όλα τα ζεύγη (${totalCount}/${totalCount}) συνδέθηκαν!</strong> Πατήστε <em>«Έλεγχος Αντιστοίχισης»</em> για υποβολή.`;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.add('pulse-ready');
+                submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Έλεγχος Αντιστοίχισης';
+            }
+        }
+    } else {
+        if (submitBtn) submitBtn.style.display = 'none';
+        if (resetBtn) resetBtn.style.display = 'none';
+    }
 }
 
-function evaluateMatchingPair(q, leftId, rightId) {
+function submitMatchingAnswer() {
     const qr = AppState.quizRunner;
-    qr.matchingState.evaluating = true;
+    const q = AppState.currentQuiz.questions[qr.activeQueue[qr.currentPos]];
+    if (qr.answered || !qr.matchingState || qr.matchingState.evaluated) return;
 
-    const isMatch = checkMatchingPair(q, leftId, rightId);
-    const wrapper = document.getElementById('matching-wrapper');
-    const svgLayer = document.getElementById('matching-svg-layer');
+    const totalPairs = q.left.length;
+    const mappedCount = Object.keys(qr.matchingState.draftPairs).length;
 
-    const leftDot = wrapper ? wrapper.querySelector(`.matching-item-left[data-id="${leftId}"] .matching-dot`) : null;
-    const rightDot = wrapper ? wrapper.querySelector(`.matching-item-right[data-id="${rightId}"] .matching-dot`) : null;
-    const leftItem = wrapper ? wrapper.querySelector(`.matching-item-left[data-id="${leftId}"]`) : null;
-    const rightItem = wrapper ? wrapper.querySelector(`.matching-item-right[data-id="${rightId}"]`) : null;
+    if (mappedCount < totalPairs) {
+        showToast('⚠️ Παρακαλώ συνδέστε όλα τα ζητούμενα πριν τον έλεγχο.');
+        return;
+    }
 
-    if (isMatch) {
-        // Correct connection!
-        qr.matchingState.matchedPairs[leftId] = rightId;
-        qr.matchingState.selectedLeft = null;
-        qr.matchingState.selectedRight = null;
-        highlightMatchingSelection();
+    qr.matchingState.evaluated = true;
+    qr.answered = true;
 
-        if (leftItem) leftItem.classList.add('matched');
-        if (rightItem) rightItem.classList.add('matched');
+    let correctCount = 0;
+    const pairResults = {};
 
-        // Draw permanent green line
-        if (svgLayer && leftDot && rightDot) {
-            drawConnectingLine(svgLayer, leftDot, rightDot, 'matching-line-correct', `line-${leftId}`);
-        }
+    for (const leftItem of q.left) {
+        const userRightId = qr.matchingState.draftPairs[leftItem.id];
+        const isMatch = checkMatchingPair(q, leftItem.id, userRightId);
+        pairResults[leftItem.id] = isMatch;
+        if (isMatch) correctCount++;
+    }
+    qr.matchingState.pairResults = pairResults;
 
-        const totalPairs = q.left.length;
-        const matchedCount = Object.keys(qr.matchingState.matchedPairs).length;
+    const isFullMatch = (correctCount === totalPairs);
+    const partialScore = correctCount / totalPairs;
+    qr.score += partialScore;
+    document.getElementById('score-counter').innerText = `Σκορ: ${formatScore(qr.score)}`;
 
-        if (matchedCount === totalPairs) {
-            // All pairs successfully connected!
-            qr.answered = true;
-            qr.score++;
-            document.getElementById('score-counter').innerText = `Σκορ: ${formatScore(qr.score)}`;
+    redrawAllMatchingLines(q);
+    updateMatchingUI(q);
 
-            const feedback = document.getElementById('feedback-box');
-            feedback.className = 'feedback-box correct';
-            feedback.innerHTML = `<strong>✓ Εξαιρετικά! Όλες οι αντιστοιχίσεις έγιναν σωστά!</strong><br><br>${formatMathText(q.exp)}`;
-            feedback.style.display = 'block';
-            triggerMathTypeset(feedback);
-
-            const nextBtn = document.getElementById('next-btn');
-            nextBtn.classList.add('pulse-ready');
-            document.getElementById('next-btn-text').innerText = 'Επόμενο';
-            nextBtn.title = 'Συνέχεια στην επόμενη ερώτηση';
-
-            qr.userHistory.push({
-                type: 'matching',
-                qIndex: qr.activeQueue[qr.currentPos],
-                question: q.q,
-                left: q.left,
-                right: q.right,
-                matchedPairs: { ...qr.matchingState.matchedPairs },
-                isCorrect: true,
-                attempts: qr.matchingState.attempts + 1,
-                explanation: q.exp,
-                diagrams: resolveQuestionDiagrams(q)
-            });
-
-            showToast('🎉 Άριστα! Όλες οι συνδέσεις είναι σωστές!');
-        } else {
-            showToast(`✓ Σωστή σύνδεση! (${matchedCount}/${totalPairs})`);
-        }
-        qr.matchingState.evaluating = false;
-    } else {
-        // Wrong connection: draw line, shake, then dissolve line!
-        qr.matchingState.attempts = (qr.matchingState.attempts || 0) + 1;
-
-        let wrongLine = null;
-        if (svgLayer && leftDot && rightDot) {
-            wrongLine = drawConnectingLine(svgLayer, leftDot, rightDot, 'matching-line-wrong', 'temp-wrong-line');
-        }
-
-        if (leftItem) leftItem.classList.add('card-shake', 'item-wrong');
-        if (rightItem) rightItem.classList.add('card-shake', 'item-wrong');
-
-        setTimeout(() => {
-            if (wrongLine && wrongLine.parentNode) {
-                wrongLine.classList.add('line-dissolve');
-                setTimeout(() => wrongLine.remove(), 250);
-            }
-            if (leftItem) leftItem.classList.remove('card-shake', 'item-wrong');
-            if (rightItem) rightItem.classList.remove('card-shake', 'item-wrong');
-
-            qr.matchingState.selectedLeft = null;
-            qr.matchingState.selectedRight = null;
-            highlightMatchingSelection();
-            qr.matchingState.evaluating = false;
-        }, 600);
-
-        const hintBtn = document.getElementById('hint-btn');
-        if (hintBtn && qr.matchingState.attempts === 1) {
-            hintBtn.style.display = 'inline-flex';
-            hintBtn.classList.add('pulse-ready');
-            showToast('💡 Ξεκλειδώθηκε η υπόδειξη! Δοκιμάστε ξανά.');
-        } else {
-            showToast('✗ Λανθασμένη αντιστοίχιση. Δοκιμάστε ξανά!');
-        }
-
-        const feedback = document.getElementById('feedback-box');
+    const feedback = document.getElementById('feedback-box');
+    if (isFullMatch) {
+        feedback.className = 'feedback-box correct';
+        feedback.innerHTML = `<strong>🎉 Άριστα! Όλες οι αντιστοιχίσεις έγιναν σωστά! (+1.0 βαθμός)</strong><br><br>${formatMathText(q.exp)}`;
+        showToast('🎉 Άριστα! Όλες οι συνδέσεις είναι σωστές!');
+    } else if (correctCount > 0) {
         feedback.className = 'feedback-box warning';
-        feedback.innerHTML = `<strong>✗ Μη σωστή αντιστοίχιση.</strong> Η λανθασμένη σύνδεση αφαιρέθηκε. Συμβουλευτείτε τη θεωρία ή την <strong>Υπόδειξη (💡)</strong> και συνδέστε ξανά.`;
-        feedback.style.display = 'block';
+        feedback.innerHTML = `<strong>⚠️ Μερικώς σωστή αντιστοίχιση (${correctCount} από ${totalPairs} σωστές — +${formatScore(partialScore)} βαθμοί).</strong><br><br>${formatMathText(q.exp)}`;
+        showToast(`⚠️ Μερικώς σωστή (${correctCount}/${totalPairs})`);
+    } else {
+        feedback.className = 'feedback-box wrong';
+        feedback.innerHTML = `<strong>✗ Λανθασμένη αντιστοίχιση (0 από ${totalPairs} σωστές).</strong><br><br>${formatMathText(q.exp)}`;
+        showToast('✗ Λανθασμένη αντιστοίχιση.');
+    }
+    feedback.style.display = 'block';
+    triggerMathTypeset(feedback);
+
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.classList.add('pulse-ready');
+    document.getElementById('next-btn-text').innerText = 'Επόμενο';
+    nextBtn.title = 'Συνέχεια στην επόμενη ερώτηση';
+
+    qr.userHistory.push({
+        type: 'matching',
+        qIndex: qr.activeQueue[qr.currentPos],
+        question: q.q,
+        left: q.left,
+        right: q.right,
+        matchedPairs: { ...qr.matchingState.draftPairs },
+        pairResults: { ...pairResults },
+        isCorrect: isFullMatch,
+        partialScore: partialScore,
+        attempts: 1,
+        explanation: q.exp,
+        diagrams: resolveQuestionDiagrams(q)
+    });
+
+    if (window.innerWidth <= 768) {
+        setTimeout(() => {
+            feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 60);
     }
 }
 
@@ -1420,13 +1517,25 @@ function redrawAllMatchingLines(q) {
     const qr = AppState.quizRunner;
     const wrapper = document.getElementById('matching-wrapper');
     const svgLayer = document.getElementById('matching-svg-layer');
-    if (!wrapper || !svgLayer || !qr.matchingState || !qr.matchingState.matchedPairs) return;
+    if (!wrapper || !svgLayer || !qr.matchingState) return;
 
-    Object.entries(qr.matchingState.matchedPairs).forEach(([leftId, rightId]) => {
+    while (svgLayer.firstChild) {
+        svgLayer.removeChild(svgLayer.firstChild);
+    }
+
+    const pairs = qr.matchingState.draftPairs || {};
+    const isEvaluated = qr.matchingState.evaluated;
+    const results = qr.matchingState.pairResults || {};
+
+    Object.entries(pairs).forEach(([leftId, rightId]) => {
         const leftDot = wrapper.querySelector(`.matching-item-left[data-id="${leftId}"] .matching-dot`);
         const rightDot = wrapper.querySelector(`.matching-item-right[data-id="${rightId}"] .matching-dot`);
         if (leftDot && rightDot) {
-            drawConnectingLine(svgLayer, leftDot, rightDot, 'matching-line-correct', `line-${leftId}`);
+            let lineClass = 'matching-line-connected';
+            if (isEvaluated) {
+                lineClass = results[leftId] ? 'matching-line-correct' : 'matching-line-wrong';
+            }
+            drawConnectingLine(svgLayer, leftDot, rightDot, lineClass, `line-${leftId}`);
         }
     });
 }
@@ -1688,19 +1797,35 @@ function renderMatchingReview(entry, container) {
     const letters = ['Α', 'Β', 'Γ', 'Δ', 'Ε'];
     const card = document.createElement('div');
     card.className = 'review-matching-card';
+    
+    const isAllCorrect = entry.isCorrect;
+    const scoreText = entry.partialScore !== undefined 
+        ? `(${formatScore(entry.partialScore * (entry.left ? entry.left.length : 2))}/${entry.left ? entry.left.length : 2} σωστές — +${formatScore(entry.partialScore)} βαθμοί)`
+        : (isAllCorrect ? '(✓ Άριστα - 100%)' : '');
+
     card.innerHTML = `
-        <div class="review-matching-title">✓ Ολοκληρωμένες Αντιστοιχίσεις:</div>
+        <div class="review-matching-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Αποτελέσματα Αντιστοίχισης:</span>
+            <span style="font-size: 0.82rem; font-weight: 600; color: ${isAllCorrect ? 'var(--success-border)' : 'var(--accent-color)'};">${scoreText}</span>
+        </div>
         <div class="review-matching-pairs">
             ${entry.left.map((lItem, idx) => {
                 const matchedRightId = entry.matchedPairs ? entry.matchedPairs[lItem.id] : null;
                 const rItem = entry.right ? entry.right.find(r => r.id === matchedRightId) : null;
                 const rIdx = entry.right ? entry.right.findIndex(r => r.id === matchedRightId) : -1;
                 const rLetter = rIdx >= 0 ? letters[rIdx] : '';
+                
+                const isPairCorrect = entry.pairResults ? entry.pairResults[lItem.id] : isAllCorrect;
+                const statusBadge = isPairCorrect 
+                    ? '<span class="review-pair-status correct">✓ Σωστό</span>' 
+                    : '<span class="review-pair-status wrong">✗ Λάθος</span>';
+
                 return `
-                    <div class="review-pair-row">
+                    <div class="review-pair-row ${isPairCorrect ? 'was-correct' : 'was-wrong'}">
                         <div class="review-pair-left"><strong>${idx + 1}.</strong> ${formatMathText(lItem.text)}</div>
                         <div class="review-pair-arrow">➔</div>
                         <div class="review-pair-right"><strong>${rLetter}.</strong> ${rItem ? formatMathText(rItem.text) : '—'}</div>
+                        ${statusBadge}
                     </div>
                 `;
             }).join('')}
