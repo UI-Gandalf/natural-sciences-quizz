@@ -16,8 +16,10 @@ window.CircuitSimulation = (function() {
         R1: 4,                   // Ohms (1 - 50)
         R2: 6,                   // Ohms (1 - 50)
         switchClosed: true,      // Boolean
-        shortR1: false,          // Boolean
-        shortR2: false,          // Boolean
+        shortR1: false,          // Boolean: Short-circuit bypass
+        shortR2: false,          // Boolean: Short-circuit bypass
+        brokenR1: false,         // Boolean: Device malfunction / open circuit
+        brokenR2: false,         // Boolean: Device malfunction / open circuit
         showSteps: true,         // Boolean: Show detailed calculation steps
         activeProbe: 'R1',       // Currently inspected component
         hoverProbe: null,        // Hovered element
@@ -34,7 +36,9 @@ window.CircuitSimulation = (function() {
             R2: 6,
             switchClosed: true,
             shortR1: false,
-            shortR2: false
+            shortR2: false,
+            brokenR1: false,
+            brokenR2: false
         },
         'q4_parallel': {
             name: 'Πρόβλημα 4 (Παράλληλα: 30V, 10Ω || 30Ω)',
@@ -44,7 +48,9 @@ window.CircuitSimulation = (function() {
             R2: 30,
             switchClosed: true,
             shortR1: false,
-            shortR2: false
+            shortR2: false,
+            brokenR1: false,
+            brokenR2: false
         },
         'q24_short': {
             name: 'Πρόβλημα 24 (Βραχυκύκλωμα R1: 30V, 10Ω + 5Ω)',
@@ -54,7 +60,21 @@ window.CircuitSimulation = (function() {
             R2: 5,
             switchClosed: true,
             shortR1: true,
-            shortR2: false
+            shortR2: false,
+            brokenR1: false,
+            brokenR2: false
+        },
+        'q_broken_series': {
+            name: 'Βλάβη / Καταστροφή R1 (Σειρά: I = 0 A)',
+            topology: 'series',
+            V_src: 20,
+            R1: 4,
+            R2: 6,
+            switchClosed: true,
+            shortR1: false,
+            shortR2: false,
+            brokenR1: true,
+            brokenR2: false
         },
         'standard_12v': {
             name: 'Εργαστήριο 12V (10Ω & 20Ω)',
@@ -64,7 +84,9 @@ window.CircuitSimulation = (function() {
             R2: 20,
             switchClosed: true,
             shortR1: false,
-            shortR2: false
+            shortR2: false,
+            brokenR1: false,
+            brokenR2: false
         }
     };
 
@@ -72,7 +94,7 @@ window.CircuitSimulation = (function() {
      * Compute all electrical quantities based on physical laws
      */
     function computePhysics() {
-        const { topology, V_src, R1, R2, switchClosed, shortR1, shortR2 } = state;
+        const { topology, V_src, R1, R2, switchClosed, shortR1, shortR2, brokenR1, brokenR2 } = state;
         const res = {
             switchClosed,
             V_src,
@@ -80,6 +102,8 @@ window.CircuitSimulation = (function() {
             R2,
             shortR1,
             shortR2,
+            brokenR1,
+            brokenR2,
             topology
         };
 
@@ -104,12 +128,56 @@ window.CircuitSimulation = (function() {
             res.VE = 0;
             res.VF = 0;
             res.VG = V_src;
+            res.V_src_meter = V_src;
+            res.V_par_meter = 0;
             return res;
         }
 
         res.V_switch = 0;
+        res.V_src_meter = V_src;
 
         if (topology === 'series') {
+            // Check for broken device (open circuit fault in series)
+            if (brokenR1 || brokenR2) {
+                res.status = 'broken_circuit';
+                if (brokenR1 && brokenR2) {
+                    res.statusText = '💥 Καταστροφή R₁ & R₂ (Διακοπή Σειράς - I = 0 A)';
+                    res.V1 = V_src;
+                    res.V2 = 0;
+                } else if (brokenR1) {
+                    res.statusText = '💥 Καταστροφή R₁ (Διακοπή Σειράς - I = 0 A)';
+                    res.V1 = V_src; // Entire source voltage drops across open break!
+                    res.V2 = 0;
+                } else {
+                    res.statusText = '💥 Καταστροφή R₂ (Διακοπή Σειράς - I = 0 A)';
+                    res.V1 = 0;
+                    res.V2 = V_src; // Entire source voltage drops across open break!
+                }
+                res.R_eq = Infinity;
+                res.I_total = 0;
+                res.I_switch = 0;
+                res.P_total = 0;
+                res.I1 = 0;
+                res.P1 = 0;
+                res.I2 = 0;
+                res.P2 = 0;
+
+                // Potentials
+                res.VD = 0;
+                res.VE = 0;
+                res.VF = 0;
+                res.VC = 0;
+                if (brokenR1) {
+                    res.VB = 0;
+                    res.VA = V_src;
+                } else {
+                    res.VB = V_src;
+                    res.VA = V_src;
+                }
+                res.VG = V_src;
+                return res;
+            }
+
             const effR1 = shortR1 ? 0 : R1;
             const effR2 = shortR2 ? 0 : R2;
             const Req = effR1 + effR2;
@@ -169,6 +237,82 @@ window.CircuitSimulation = (function() {
                 res.V2 = 0;
                 res.I2 = 0;
                 res.P2 = 0;
+                res.V_par_meter = 0;
+                return res;
+            }
+
+            // Check broken in parallel
+            if (brokenR1 && brokenR2) {
+                res.status = 'broken_circuit';
+                res.statusText = '💥 Καταστροφή & των δύο κλάδων (I = 0 A)';
+                res.R_eq = Infinity;
+                res.I_total = 0;
+                res.I_switch = 0;
+                res.P_total = 0;
+                res.V1 = 0;
+                res.I1 = 0;
+                res.P1 = 0;
+                res.V2 = 0;
+                res.I2 = 0;
+                res.P2 = 0;
+                res.V_par_meter = V_src;
+                res.VD = 0;
+                res.VE = 0;
+                res.VF = 0;
+                res.VB = 0;
+                res.VA = V_src;
+                res.VC = V_src;
+                res.VG = V_src;
+                return res;
+            }
+
+            if (brokenR1 && !brokenR2) {
+                const I2 = V_src / R2;
+                res.status = 'partial_broken';
+                res.statusText = '💥 Καταστροφή R₁ (Λειτουργεί μόνον ο κλάδος R₂)';
+                res.R_eq = R2;
+                res.I_total = I2;
+                res.I_switch = I2;
+                res.P_total = V_src * I2;
+                res.V1 = 0;
+                res.I1 = 0;
+                res.P1 = 0;
+                res.V2 = V_src;
+                res.I2 = I2;
+                res.P2 = V_src * I2;
+                res.V_par_meter = V_src;
+                res.VD = 0;
+                res.VE = 0;
+                res.VF = 0;
+                res.VB = 0;
+                res.VA = V_src;
+                res.VC = V_src;
+                res.VG = V_src;
+                return res;
+            }
+
+            if (brokenR2 && !brokenR1) {
+                const I1 = V_src / R1;
+                res.status = 'partial_broken';
+                res.statusText = '💥 Καταστροφή R₂ (Λειτουργεί μόνον ο κλάδος R₁)';
+                res.R_eq = R1;
+                res.I_total = I1;
+                res.I_switch = I1;
+                res.P_total = V_src * I1;
+                res.V1 = V_src;
+                res.I1 = I1;
+                res.P1 = V_src * I1;
+                res.V2 = 0;
+                res.I2 = 0;
+                res.P2 = 0;
+                res.V_par_meter = V_src;
+                res.VD = 0;
+                res.VE = 0;
+                res.VF = 0;
+                res.VB = 0;
+                res.VA = V_src;
+                res.VC = V_src;
+                res.VG = V_src;
                 return res;
             }
 
@@ -191,6 +335,8 @@ window.CircuitSimulation = (function() {
             res.V2 = V_src;
             res.I2 = I2;
             res.P2 = V_src * I2;
+
+            res.V_par_meter = V_src;
 
             res.VD = 0;
             res.VE = 0;
@@ -291,12 +437,18 @@ window.CircuitSimulation = (function() {
                                 <input type="range" id="sim-slider-r1" min="1" max="50" step="1" value="${state.R1}" 
                                        oninput="CircuitSimulation.setParam('R1', this.value)" />
                             </div>
-                            <div class="sim-toggles-row">
+                            <div class="sim-toggles-row" style="display: flex; flex-direction: column; gap: 6px;">
                                 <label class="sim-toggle-checkbox">
                                     <input type="checkbox" id="sim-short-r1" ${state.shortR1 ? 'checked' : ''} 
                                            onchange="CircuitSimulation.toggleShort('shortR1', this.checked)">
                                     <span class="checkbox-custom"></span>
                                     <span class="checkbox-label">Βραχυκύκλωση <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> (Bypass)</span>
+                                </label>
+                                <label class="sim-toggle-checkbox broken-toggle">
+                                    <input type="checkbox" id="sim-broken-r1" ${state.brokenR1 ? 'checked' : ''} 
+                                           onchange="CircuitSimulation.toggleBroken('brokenR1', this.checked)">
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-label">💥 Καταστροφή <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> (Διακοπή)</span>
                                 </label>
                             </div>
                         </div>
@@ -313,12 +465,18 @@ window.CircuitSimulation = (function() {
                                 <input type="range" id="sim-slider-r2" min="1" max="50" step="1" value="${state.R2}" 
                                        oninput="CircuitSimulation.setParam('R2', this.value)" />
                             </div>
-                            <div class="sim-toggles-row">
+                            <div class="sim-toggles-row" style="display: flex; flex-direction: column; gap: 6px;">
                                 <label class="sim-toggle-checkbox">
                                     <input type="checkbox" id="sim-short-r2" ${state.shortR2 ? 'checked' : ''} 
                                            onchange="CircuitSimulation.toggleShort('shortR2', this.checked)">
                                     <span class="checkbox-custom"></span>
                                     <span class="checkbox-label">Βραχυκύκλωση <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Bypass)</span>
+                                </label>
+                                <label class="sim-toggle-checkbox broken-toggle">
+                                    <input type="checkbox" id="sim-broken-r2" ${state.brokenR2 ? 'checked' : ''} 
+                                           onchange="CircuitSimulation.toggleBroken('brokenR2', this.checked)">
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-label">💥 Καταστροφή <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Διακοπή)</span>
                                 </label>
                             </div>
                         </div>
@@ -388,7 +546,8 @@ window.CircuitSimulation = (function() {
         const phys = computePhysics();
         const isClosed = state.switchClosed;
         const isShortTotal = phys.status === 'total_short';
-        const hasCurrent = isClosed && !isShortTotal && phys.I_total > 0;
+        const isBrokenSeries = state.topology === 'series' && (state.brokenR1 || state.brokenR2);
+        const hasCurrent = isClosed && !isShortTotal && !isBrokenSeries && phys.I_total > 0;
 
         // Particle speed & dasharray
         const animSpeed = hasCurrent ? Math.max(0.6, Math.min(3.5, 4.5 / phys.I_total)).toFixed(2) : 0;
@@ -398,7 +557,7 @@ window.CircuitSimulation = (function() {
 
         if (state.topology === 'series') {
             svgHtml = `
-                <svg viewBox="0 0 840 430" class="sim-svg-circuit" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 880 430" class="sim-svg-circuit" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <!-- Glow filter for active wires -->
                         <filter id="wire-glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -415,144 +574,223 @@ window.CircuitSimulation = (function() {
                     </defs>
 
                     <!-- Background Base Wire Path (Gray) -->
-                    <rect x="90" y="80" width="660" height="270" rx="16" ry="16" class="circuit-wire-base" />
+                    <rect x="100" y="80" width="680" height="270" rx="16" ry="16" class="circuit-wire-base" />
 
                     <!-- Active Animated Current Overlay Path -->
-                    <rect x="90" y="80" width="660" height="270" rx="16" ry="16" 
+                    <rect x="100" y="80" width="680" height="270" rx="16" ry="16" 
                           class="circuit-wire-current ${currentLineClass}" 
                           style="animation-duration: ${animSpeed}s;" />
 
                     <!-- Conventional Flow Directional Arrows (Series Closed Loop) -->
                     ${hasCurrent ? `
-                        <path d="M 90 200 L 90 140" marker-end="url(#current-arrow)" class="flow-arrow-path" />
-                        <path d="M 230 80 L 290 80" marker-end="url(#current-arrow)" class="flow-arrow-path" />
-                        <path d="M 750 160 L 750 240" marker-end="url(#current-arrow)" class="flow-arrow-path" />
-                        <path d="M 710 350 L 640 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
-                        <path d="M 530 350 L 470 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
-                        <path d="M 370 350 L 310 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                        <path d="M 100 200 L 100 135" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                        <path d="M 205 80 L 225 80" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                        <path d="M 780 160 L 780 240" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                        <path d="M 740 350 L 670 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                        <path d="M 560 350 L 500 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                        <path d="M 380 350 L 320 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
                         <path d="M 210 350 L 150 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
                     ` : ''}
 
-                    <!-- 1. DC VOLTAGE SOURCE (BATTERY) at Left (x=90, y=215) -->
+                    <!-- 1. VOLTMETER Vπηγ across DC Source (Left side: x=42, y=215) -->
+                    <g class="comp-interactive comp-voltmeter" data-probe="voltmeter_src"
+                       onmouseenter="CircuitSimulation.hoverProbe('voltmeter_src')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.selectProbe('voltmeter_src')">
+                        <!-- Probe leads to battery terminals -->
+                        <path d="M 42 197 L 42 160 L 100 160" class="voltmeter-lead" />
+                        <path d="M 42 233 L 42 270 L 100 270" class="voltmeter-lead" />
+                        <circle cx="100" cy="160" r="3.5" class="voltmeter-contact-dot" />
+                        <circle cx="100" cy="270" r="3.5" class="voltmeter-contact-dot" />
+                        <!-- Voltmeter Instrument Body -->
+                        <circle cx="42" cy="215" r="18" class="voltmeter-circle" />
+                        <text x="42" y="215" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.7em" dy="2">πηγ</tspan></text>
+                        <text x="42" y="246" class="voltmeter-reading-tag">${state.V_src} V</text>
+                    </g>
+
+                    <!-- 2. DC VOLTAGE SOURCE (BATTERY) at Left (x=100, y=215) -->
                     <g class="comp-interactive comp-source" data-probe="source" 
                        onmouseenter="CircuitSimulation.hoverProbe('source')" 
                        onmouseleave="CircuitSimulation.hoverProbe(null)"
                        onclick="CircuitSimulation.selectProbe('source')">
-                        <!-- Click / Hover Hitbox -->
-                        <rect x="50" y="160" width="80" height="110" class="comp-hitbox" />
-                        <!-- Battery Plates -->
-                        <line x1="68" y1="200" x2="112" y2="200" class="battery-plate positive" />
-                        <line x1="78" y1="230" x2="102" y2="230" class="battery-plate negative" />
-                        <!-- Polarity & Labels -->
-                        <text x="122" y="196" class="comp-label bold text-positive">+</text>
-                        <text x="122" y="235" class="comp-label bold text-negative">−</text>
-                        <text x="44" y="218" class="comp-value-tag"><tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">πηγ</tspan><tspan dy="-3"> = ${state.V_src} V</tspan></text>
+                        <rect x="70" y="160" width="60" height="110" class="comp-hitbox" />
+                        <line x1="78" y1="200" x2="122" y2="200" class="battery-plate positive" />
+                        <line x1="88" y1="230" x2="112" y2="230" class="battery-plate negative" />
+                        <text x="132" y="196" class="comp-label bold text-positive">+</text>
+                        <text x="132" y="235" class="comp-label bold text-negative">−</text>
                     </g>
 
-                    <!-- NODE G (x=90, y=80) - Above Source -->
+                    <!-- NODE G (x=100, y=80) - Above Source -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeG')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeG')">
-                        <circle cx="90" cy="80" r="14" class="comp-hitbox" fill="transparent" />
-                        <circle cx="90" cy="80" r="4" class="circuit-node-dot" />
-                        <text x="90" y="65" class="node-letter">G</text>
+                        <circle cx="100" cy="80" r="14" class="comp-hitbox" fill="transparent" />
+                        <circle cx="100" cy="80" r="4" class="circuit-node-dot" />
+                        <text x="100" y="65" class="node-letter">G</text>
                     </g>
 
-                    <!-- 2. SWITCH K at Top-Left (x=170 to x=230, y=80) -->
+                    <!-- 3. SWITCH K at Top-Left (x=145 to x=205, y=80) -->
                     <g class="comp-interactive comp-switch" data-probe="switch"
                        onmouseenter="CircuitSimulation.hoverProbe('switch')" 
                        onmouseleave="CircuitSimulation.hoverProbe(null)"
                        onclick="CircuitSimulation.toggleSwitch()">
-                        <rect x="155" y="45" width="90" height="70" class="comp-hitbox" />
-                        <!-- Terminals -->
-                        <circle cx="170" cy="80" r="4.5" class="terminal-dot" />
-                        <circle cx="230" cy="80" r="4.5" class="terminal-dot" />
-                        <!-- Blade -->
+                        <rect x="135" y="45" width="80" height="70" class="comp-hitbox" />
+                        <circle cx="145" cy="80" r="4.5" class="terminal-dot" />
+                        <circle cx="205" cy="80" r="4.5" class="terminal-dot" />
                         ${isClosed ? `
-                            <line x1="170" y1="80" x2="230" y2="80" class="switch-blade closed" />
+                            <line x1="145" y1="80" x2="205" y2="80" class="switch-blade closed" />
                         ` : `
-                            <line x1="170" y1="80" x2="220" y2="52" class="switch-blade open" />
+                            <line x1="145" y1="80" x2="195" y2="52" class="switch-blade open" />
                         `}
-                        <text x="200" y="40" class="comp-title-tag">Διακόπτης K (${isClosed ? 'Κλειστός' : 'Ανοικτός'})</text>
+                        <text x="175" y="40" class="comp-title-tag">Διακόπτης K</text>
                     </g>
 
-                    <!-- 3. AMMETER A at Top-Center (x=300, y=80) -->
-                    <g class="comp-interactive comp-meter" data-probe="ammeter"
-                       onmouseenter="CircuitSimulation.hoverProbe('ammeter')" 
+                    <!-- 4. AMMETER A1 at Top (before R1: x=255, y=80) -->
+                    <g class="comp-interactive comp-meter" data-probe="ammeter1"
+                       onmouseenter="CircuitSimulation.hoverProbe('ammeter1')" 
                        onmouseleave="CircuitSimulation.hoverProbe(null)"
-                       onclick="CircuitSimulation.selectProbe('ammeter')">
-                        <rect x="275" y="55" width="55" height="55" class="comp-hitbox" />
-                        <circle cx="302" cy="80" r="19" class="meter-circle" />
-                        <text x="302" y="86" class="meter-text">A</text>
-                        <text x="302" y="118" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
+                       onclick="CircuitSimulation.selectProbe('ammeter1')">
+                        <rect x="235" y="55" width="45" height="65" class="comp-hitbox" />
+                        <circle cx="255" cy="80" r="17" class="meter-circle" />
+                        <text x="255" y="80" class="meter-text">A₁</text>
+                        <text x="255" y="112" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
                     </g>
 
-                    <!-- NODE A (x=380, y=80) -->
+                    <!-- NODE A (x=310, y=80) -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeA')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeA')">
-                        <circle cx="380" cy="80" r="14" class="comp-hitbox" fill="transparent" />
-                        <circle cx="380" cy="80" r="4" class="circuit-node-dot" />
-                        <text x="380" y="65" class="node-letter">A</text>
+                        <circle cx="310" cy="80" r="14" class="comp-hitbox" fill="transparent" />
+                        <circle cx="310" cy="80" r="4" class="circuit-node-dot" />
+                        <text x="310" y="65" class="node-letter">A</text>
                     </g>
 
-                    <!-- 4. RESISTOR R1 (x=410 to x=510, y=80) -->
-                    <g class="comp-interactive comp-resistor ${state.shortR1 ? 'is-shorted' : ''}" data-probe="R1"
+                    <!-- 5. RESISTOR R1 (x=340 to x=440, y=80) -->
+                    <g class="comp-interactive comp-resistor ${state.shortR1 ? 'is-shorted' : ''} ${state.brokenR1 ? 'is-broken' : ''}" data-probe="R1"
                        onmouseenter="CircuitSimulation.hoverProbe('R1')" 
                        onmouseleave="CircuitSimulation.hoverProbe(null)"
                        onclick="CircuitSimulation.selectProbe('R1')">
-                        <rect x="395" y="40" width="130" height="85" class="comp-hitbox" />
-                        <!-- Resistance value above resistor (LaTeX style) -->
-                        <text x="460" y="53" class="comp-resistor-top" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${state.R1} Ω</tspan></text>
-                        <!-- Resistor Box -->
-                        <rect x="415" y="68" width="90" height="24" rx="4" class="resistor-body ${state.shortR1 ? 'shorted' : ''}" />
-                        <text x="460" y="80" class="resistor-inner-text"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
-                        <!-- Voltage drop value below resistor (LaTeX style) -->
-                        <text x="460" y="120" class="comp-resistor-bottom" text-anchor="middle">${state.shortR1 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${phys.V1.toFixed(1)} V</tspan>`}</text>
+                        <rect x="330" y="35" width="120" height="90" class="comp-hitbox" />
+                        <text x="390" y="53" class="comp-resistor-top" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${state.R1} Ω</tspan></text>
+                        
+                        ${state.brokenR1 ? `
+                            <!-- Broken Resistor Split in Two with Gap & Red Crack Symbol -->
+                            <rect x="340" y="68" width="44" height="24" rx="3" class="resistor-body broken" />
+                            <rect x="396" y="68" width="44" height="24" rx="3" class="resistor-body broken" />
+                            <text x="362" y="80" class="resistor-inner-text" style="font-size: 11px;"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
+                            <path d="M 388 64 L 396 96 M 396 64 L 388 96" class="resistor-crack-symbol" />
+                            <text x="390" y="118" class="broken-badge-text" text-anchor="middle">💥 ΚΑΤΑΣΤΡΟΦΗ</text>
+                        ` : `
+                            <!-- Normal / Shorted Resistor Box -->
+                            <rect x="345" y="68" width="90" height="24" rx="4" class="resistor-body ${state.shortR1 ? 'shorted' : ''}" />
+                            <text x="390" y="80" class="resistor-inner-text"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
+                            <text x="390" y="118" class="comp-resistor-bottom" text-anchor="middle">${state.shortR1 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${phys.V1.toFixed(1)} V</tspan>`}</text>
+                        `}
 
                         <!-- Bypass Wire if shorted -->
                         ${state.shortR1 ? `
-                            <path d="M 380 80 C 420 25, 500 25, 540 80" class="short-circuit-bypass-wire" />
-                            <text x="460" y="22" class="short-wire-label">⚠️ Καλώδιο Βραχυκύκλωσης</text>
+                            <path d="M 310 80 C 335 22, 445 22, 470 80" class="short-circuit-bypass-wire" />
+                            ${hasCurrent ? `
+                                <path d="M 310 80 C 335 22, 445 22, 470 80" class="circuit-wire-current wire-current-active bypass-current" style="animation-duration: ${animSpeed}s;" />
+                            ` : ''}
+                            <text x="390" y="20" class="short-wire-label">⚠️ Καλώδιο Βραχυκύκλωσης R₁</text>
                         ` : ''}
                     </g>
 
-                    <!-- NODE B (x=540, y=80) -->
-                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeB')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeB')">
-                        <circle cx="540" cy="80" r="14" class="comp-hitbox" fill="transparent" />
-                        <circle cx="540" cy="80" r="4" class="circuit-node-dot" />
-                        <text x="540" y="65" class="node-letter">B</text>
+                    <!-- 6. VOLTMETER V1 across Resistor R1 (inside loop: x=390, y=170) -->
+                    <g class="comp-interactive comp-voltmeter" data-probe="voltmeter1"
+                       onmouseenter="CircuitSimulation.hoverProbe('voltmeter1')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.selectProbe('voltmeter1')">
+                        <path d="M 373 170 L 310 170 L 310 80" class="voltmeter-lead" />
+                        <path d="M 407 170 L 470 170 L 470 80" class="voltmeter-lead" />
+                        <circle cx="310" cy="80" r="3.5" class="voltmeter-contact-dot" />
+                        <circle cx="470" cy="80" r="3.5" class="voltmeter-contact-dot" />
+                        <circle cx="390" cy="170" r="17" class="voltmeter-circle" />
+                        <text x="390" y="170" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="2">1</tspan></text>
+                        <text x="390" y="200" class="voltmeter-reading-tag">${phys.V1.toFixed(1)} V</text>
                     </g>
 
-                    <!-- 5. RESISTOR R2 (x=570 to x=670, y=80) -->
-                    <g class="comp-interactive comp-resistor ${state.shortR2 ? 'is-shorted' : ''}" data-probe="R2"
+                    <!-- 7. AMMETER A2 between R1 and R2 (x=495, y=80) -->
+                    <g class="comp-interactive comp-meter" data-probe="ammeter2"
+                       onmouseenter="CircuitSimulation.hoverProbe('ammeter2')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.selectProbe('ammeter2')">
+                        <rect x="475" y="55" width="45" height="65" class="comp-hitbox" />
+                        <circle cx="495" cy="80" r="17" class="meter-circle" />
+                        <text x="495" y="80" class="meter-text">A₂</text>
+                        <text x="495" y="112" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
+                    </g>
+
+                    <!-- NODE B (x=545, y=80) -->
+                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeB')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeB')">
+                        <circle cx="545" cy="80" r="14" class="comp-hitbox" fill="transparent" />
+                        <circle cx="545" cy="80" r="4" class="circuit-node-dot" />
+                        <text x="545" y="65" class="node-letter">B</text>
+                    </g>
+
+                    <!-- 8. RESISTOR R2 (x=570 to x=670, y=80) -->
+                    <g class="comp-interactive comp-resistor ${state.shortR2 ? 'is-shorted' : ''} ${state.brokenR2 ? 'is-broken' : ''}" data-probe="R2"
                        onmouseenter="CircuitSimulation.hoverProbe('R2')" 
                        onmouseleave="CircuitSimulation.hoverProbe(null)"
                        onclick="CircuitSimulation.selectProbe('R2')">
-                        <rect x="555" y="40" width="130" height="85" class="comp-hitbox" />
-                        <!-- Resistance value above resistor (LaTeX style) -->
+                        <rect x="560" y="35" width="120" height="90" class="comp-hitbox" />
                         <text x="620" y="53" class="comp-resistor-top" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${state.R2} Ω</tspan></text>
-                        <!-- Resistor Box -->
-                        <rect x="575" y="68" width="90" height="24" rx="4" class="resistor-body ${state.shortR2 ? 'shorted' : ''}" />
-                        <text x="620" y="80" class="resistor-inner-text"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
-                        <!-- Voltage drop value below resistor (LaTeX style) -->
-                        <text x="620" y="120" class="comp-resistor-bottom" text-anchor="middle">${state.shortR2 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${phys.V2.toFixed(1)} V</tspan>`}</text>
+                        
+                        ${state.brokenR2 ? `
+                            <rect x="570" y="68" width="44" height="24" rx="3" class="resistor-body broken" />
+                            <rect x="626" y="68" width="44" height="24" rx="3" class="resistor-body broken" />
+                            <text x="592" y="80" class="resistor-inner-text" style="font-size: 11px;"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
+                            <path d="M 618 64 L 626 96 M 626 64 L 618 96" class="resistor-crack-symbol" />
+                            <text x="620" y="118" class="broken-badge-text" text-anchor="middle">💥 ΚΑΤΑΣΤΡΟΦΗ</text>
+                        ` : `
+                            <rect x="575" y="68" width="90" height="24" rx="4" class="resistor-body ${state.shortR2 ? 'shorted' : ''}" />
+                            <text x="620" y="80" class="resistor-inner-text"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
+                            <text x="620" y="118" class="comp-resistor-bottom" text-anchor="middle">${state.shortR2 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${phys.V2.toFixed(1)} V</tspan>`}</text>
+                        `}
 
-                        <!-- Bypass Wire if shorted -->
                         ${state.shortR2 ? `
-                            <path d="M 540 80 C 580 25, 660 25, 700 80" class="short-circuit-bypass-wire" />
-                            <text x="620" y="22" class="short-wire-label">⚠️ Καλώδιο Βραχυκύκλωσης</text>
+                            <path d="M 545 80 C 570 22, 675 22, 700 80" class="short-circuit-bypass-wire" />
+                            ${hasCurrent ? `
+                                <path d="M 545 80 C 570 22, 675 22, 700 80" class="circuit-wire-current wire-current-active bypass-current" style="animation-duration: ${animSpeed}s;" />
+                            ` : ''}
+                            <text x="620" y="20" class="short-wire-label">⚠️ Καλώδιο Βραχυκύκλωσης R₂</text>
                         ` : ''}
                     </g>
 
-                    <!-- NODE C (x=700, y=80) -->
+                    <!-- 9. VOLTMETER V2 across Resistor R2 (inside loop: x=620, y=170) -->
+                    <g class="comp-interactive comp-voltmeter" data-probe="voltmeter2"
+                       onmouseenter="CircuitSimulation.hoverProbe('voltmeter2')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.selectProbe('voltmeter2')">
+                        <path d="M 603 170 L 545 170 L 545 80" class="voltmeter-lead" />
+                        <path d="M 637 170 L 700 170 L 700 80" class="voltmeter-lead" />
+                        <circle cx="545" cy="80" r="3.5" class="voltmeter-contact-dot" />
+                        <circle cx="700" cy="80" r="3.5" class="voltmeter-contact-dot" />
+                        <circle cx="620" cy="170" r="17" class="voltmeter-circle" />
+                        <text x="620" y="170" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="2">2</tspan></text>
+                        <text x="620" y="200" class="voltmeter-reading-tag">${phys.V2.toFixed(1)} V</text>
+                    </g>
+
+                    <!-- 10. AMMETER A3 at Top (after R2: x=725, y=80) -->
+                    <g class="comp-interactive comp-meter" data-probe="ammeter3"
+                       onmouseenter="CircuitSimulation.hoverProbe('ammeter3')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.selectProbe('ammeter3')">
+                        <rect x="705" y="55" width="45" height="65" class="comp-hitbox" />
+                        <circle cx="725" cy="80" r="17" class="meter-circle" />
+                        <text x="725" y="80" class="meter-text">A₃</text>
+                        <text x="725" y="112" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
+                    </g>
+
+                    <!-- NODE C (x=780, y=80) -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeC')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeC')">
-                        <circle cx="700" cy="80" r="14" class="comp-hitbox" fill="transparent" />
-                        <circle cx="700" cy="80" r="4" class="circuit-node-dot" />
-                        <text x="700" y="65" class="node-letter">C</text>
+                        <circle cx="780" cy="80" r="14" class="comp-hitbox" fill="transparent" />
+                        <circle cx="780" cy="80" r="4" class="circuit-node-dot" />
+                        <text x="780" y="65" class="node-letter">C</text>
                     </g>
 
                     <!-- Wire Probe Zones (Hovering plain wires) -->
                     <g class="wire-probe-zone" onmouseenter="CircuitSimulation.hoverProbe('wireMain')" onmouseleave="CircuitSimulation.hoverProbe(null)">
-                        <rect x="735" y="130" width="30" height="150" class="probe-wire-hitbox" />
-                        <rect x="110" y="335" width="110" height="30" class="probe-wire-hitbox" />
-                        <rect x="640" y="335" width="90" height="30" class="probe-wire-hitbox" />
+                        <rect x="765" y="130" width="30" height="150" class="probe-wire-hitbox" />
+                        <rect x="120" y="335" width="110" height="30" class="probe-wire-hitbox" />
+                        <rect x="670" y="335" width="90" height="30" class="probe-wire-hitbox" />
                     </g>
 
                     <!-- NODE F (x=260, y=350) - Left of Ground D -->
@@ -562,31 +800,35 @@ window.CircuitSimulation = (function() {
                         <text x="260" y="335" class="node-letter">F</text>
                     </g>
 
-                    <!-- NODE D (GROUND) at Bottom (x=420, y=350) -->
+                    <!-- NODE D (GROUND) at Bottom (x=440, y=350) -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeD')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeD')">
-                        <circle cx="420" cy="350" r="14" class="comp-hitbox" fill="transparent" />
-                        <circle cx="420" cy="350" r="4" class="circuit-node-dot" />
+                        <circle cx="440" cy="350" r="14" class="comp-hitbox" fill="transparent" />
+                        <circle cx="440" cy="350" r="4" class="circuit-node-dot" />
                         <!-- Ground symbol lines -->
-                        <line x1="420" y1="350" x2="420" y2="385" class="ground-stem" />
-                        <line x1="405" y1="385" x2="435" y2="385" class="ground-line" />
-                        <line x1="410" y1="390" x2="430" y2="390" class="ground-line" />
-                        <line x1="415" y1="395" x2="425" y2="395" class="ground-line" />
-                        <!-- Ground label moved to the right for clear visibility -->
-                        <text x="442" y="380" class="node-letter ground-label" text-anchor="start">D (0 V)</text>
+                        <line x1="440" y1="350" x2="440" y2="385" class="ground-stem" />
+                        <line x1="425" y1="385" x2="455" y2="385" class="ground-line" />
+                        <line x1="430" y1="390" x2="450" y2="390" class="ground-line" />
+                        <line x1="435" y1="395" x2="445" y2="395" class="ground-line" />
+                        <text x="462" y="380" class="node-letter ground-label" text-anchor="start">D (0 V)</text>
                     </g>
 
-                    <!-- NODE E (x=580, y=350) - Right of Ground D -->
+                    <!-- NODE E (x=620, y=350) - Right of Ground D -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeE')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeE')">
-                        <circle cx="580" cy="350" r="14" class="comp-hitbox" fill="transparent" />
-                        <circle cx="580" cy="350" r="4" class="circuit-node-dot" />
-                        <text x="580" y="335" class="node-letter">E</text>
+                        <circle cx="620" cy="350" r="14" class="comp-hitbox" fill="transparent" />
+                        <circle cx="620" cy="350" r="4" class="circuit-node-dot" />
+                        <text x="620" y="335" class="node-letter">E</text>
                     </g>
                 </svg>
             `;
         } else {
-            // PARALLEL CIRCUIT SVG (Σχήμα 2 - Vertical Resistors)
+            // PARALLEL CIRCUIT SVG (Σχήμα 2 - Vertical Resistors with Meters & Fault Options)
+            const hasCurrent1 = hasCurrent && !state.brokenR1 && phys.I1 > 0;
+            const hasCurrent2 = hasCurrent && !state.brokenR2 && phys.I2 > 0;
+            const animSpeed1 = hasCurrent1 ? (3 / Math.max(0.2, phys.I1)).toFixed(2) : 0;
+            const animSpeed2 = hasCurrent2 ? (3 / Math.max(0.2, phys.I2)).toFixed(2) : 0;
+
             svgHtml = `
-                <svg viewBox="0 0 840 430" class="sim-svg-circuit" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 880 430" class="sim-svg-circuit" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <!-- Glow filter for active wires -->
                         <filter id="wire-glow-par" x="-20%" y="-20%" width="140%" height="140%">
@@ -602,140 +844,72 @@ window.CircuitSimulation = (function() {
                     </defs>
 
                     <!-- Base Wire Framework (Gray) -->
-                    <!-- Outer rectangular loop: G(100,80) -> C(620,80) -> E(620,350) -> F(100,350) -> battery -->
-                    <path d="M 100 200 L 100 80 L 620 80 L 620 350 L 100 350 L 100 230" class="circuit-wire-base" />
+                    <!-- Outer loop: G(100,80) -> C(640,80) -> E(640,350) -> F(100,350) -> battery -->
+                    <path d="M 100 200 L 100 80 L 640 80 L 640 350 L 100 350 L 100 230" class="circuit-wire-base" />
                     <!-- Branch 1 (Vertical from A to B at x=380) -->
                     <line x1="380" y1="80" x2="380" y2="350" class="circuit-wire-base" />
 
                     <!-- Active Animated Current Overlay Paths -->
-                    <!-- Main supply current: Battery -> G -> Switch K -> A -->
+                    <!-- Main supply current: Battery -> G -> Switch K -> A(380,80) -->
                     <path d="M 100 200 L 100 80 L 380 80" class="circuit-wire-current ${currentLineClass}" style="animation-duration: ${animSpeed}s;" />
-                    <!-- Main return current: B -> F -> Battery -->
+                    <!-- Main return current: B(380,350) -> F(100,350) -> Battery -->
                     <path d="M 380 350 L 100 350 L 100 230" class="circuit-wire-current ${currentLineClass}" style="animation-duration: ${animSpeed}s;" />
 
                     <!-- Branch 1 current I1: A(380,80) down to B(380,350) -->
-                    <line x1="380" y1="80" x2="380" y2="350" class="circuit-wire-current ${currentLineClass}" 
-                          style="animation-duration: ${hasCurrent ? (3 / Math.max(0.2, phys.I1)).toFixed(2) : 0}s;" />
+                    ${hasCurrent1 ? `
+                        <line x1="380" y1="80" x2="380" y2="350" class="circuit-wire-current wire-current-active" 
+                              style="animation-duration: ${animSpeed1}s;" />
+                    ` : ''}
 
-                    <!-- Branch 2 current I2: A(380,80) -> C(620,80) -> E(620,350) -> B(380,350) -->
-                    <path d="M 380 80 L 620 80 L 620 350 L 380 350" class="circuit-wire-current ${currentLineClass}" 
-                          style="animation-duration: ${hasCurrent ? (3 / Math.max(0.2, phys.I2)).toFixed(2) : 0}s;" />
+                    <!-- Branch 2 current I2: A(380,80) -> C(640,80) -> E(640,350) -> B(380,350) -->
+                    ${hasCurrent2 ? `
+                        <path d="M 380 80 L 640 80 L 640 350 L 380 350" class="circuit-wire-current wire-current-active" 
+                              style="animation-duration: ${animSpeed2}s;" />
+                    ` : ''}
 
                     <!-- Conventional Flow Directional Arrows (Parallel) -->
                     ${hasCurrent ? `
-                        <!-- Left wire up towards G -->
                         <path d="M 100 180 L 100 120" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <!-- Top wire from G to switch -->
-                        <path d="M 125 80 L 165 80" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <!-- Top wire from switch to A -->
-                        <path d="M 260 80 L 330 80" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <!-- Top wire between A and C -->
-                        <path d="M 440 80 L 540 80" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <!-- Branch 1 (R1) downwards: above and below resistor -->
-                        <path d="M 380 110 L 380 155" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <path d="M 380 275 L 380 320" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <!-- Branch 2 (R2) downwards: above and below resistor -->
-                        <path d="M 620 110 L 620 155" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <path d="M 620 275 L 620 320" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <!-- Bottom wire from E to D -->
-                        <path d="M 580 350 L 535 350" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <!-- Bottom wire from D to B -->
-                        <path d="M 465 350 L 415 350" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <!-- Bottom wire from B to F -->
+                        <path d="M 125 80 L 145 80" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                        ${hasCurrent1 ? `
+                            <path d="M 380 155 L 380 170" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                            <path d="M 380 265 L 380 310" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                        ` : ''}
+                        ${hasCurrent2 ? `
+                            <path d="M 440 80 L 560 80" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                            <path d="M 640 155 L 640 170" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                            <path d="M 640 265 L 640 310" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                            <path d="M 600 350 L 545 350" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                            <path d="M 475 350 L 415 350" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                        ` : ''}
                         <path d="M 280 350 L 180 350" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <!-- Left wire return to battery -->
                         <path d="M 100 320 L 100 260" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
                     ` : ''}
 
-                    <!-- 1. DC SOURCE at Left (x=100, y=215) -->
+                    <!-- 1. VOLTMETER Vπηγ across DC Source (Left side: x=42, y=215) -->
+                    <g class="comp-interactive comp-voltmeter" data-probe="voltmeter_src"
+                       onmouseenter="CircuitSimulation.hoverProbe('voltmeter_src')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.selectProbe('voltmeter_src')">
+                        <path d="M 42 197 L 42 160 L 100 160" class="voltmeter-lead" />
+                        <path d="M 42 233 L 42 270 L 100 270" class="voltmeter-lead" />
+                        <circle cx="100" cy="160" r="3.5" class="voltmeter-contact-dot" />
+                        <circle cx="100" cy="270" r="3.5" class="voltmeter-contact-dot" />
+                        <circle cx="42" cy="215" r="18" class="voltmeter-circle" />
+                        <text x="42" y="215" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.7em" dy="2">πηγ</tspan></text>
+                        <text x="42" y="246" class="voltmeter-reading-tag">${state.V_src} V</text>
+                    </g>
+
+                    <!-- 2. DC SOURCE at Left (x=100, y=215) -->
                     <g class="comp-interactive comp-source" data-probe="source"
                        onmouseenter="CircuitSimulation.hoverProbe('source')" 
                        onmouseleave="CircuitSimulation.hoverProbe(null)"
                        onclick="CircuitSimulation.selectProbe('source')">
-                        <rect x="60" y="160" width="80" height="110" class="comp-hitbox" />
+                        <rect x="70" y="160" width="60" height="110" class="comp-hitbox" />
                         <line x1="78" y1="200" x2="122" y2="200" class="battery-plate positive" />
                         <line x1="88" y1="230" x2="112" y2="230" class="battery-plate negative" />
                         <text x="132" y="196" class="comp-label bold text-positive">+</text>
                         <text x="132" y="235" class="comp-label bold text-negative">−</text>
-                        <text x="54" y="218" class="comp-value-tag"><tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">πηγ</tspan><tspan dy="-3"> = ${state.V_src} V</tspan></text>
-                    </g>
-
-                    <!-- 2. SWITCH K at Top-Left (x=180 to x=240, y=80) -->
-                    <g class="comp-interactive comp-switch" data-probe="switch"
-                       onmouseenter="CircuitSimulation.hoverProbe('switch')" 
-                       onmouseleave="CircuitSimulation.hoverProbe(null)"
-                       onclick="CircuitSimulation.toggleSwitch()">
-                        <rect x="165" y="45" width="90" height="70" class="comp-hitbox" />
-                        <circle cx="180" cy="80" r="4.5" class="terminal-dot" />
-                        <circle cx="240" cy="80" r="4.5" class="terminal-dot" />
-                        ${isClosed ? `
-                            <line x1="180" y1="80" x2="240" y2="80" class="switch-blade closed" />
-                        ` : `
-                            <line x1="180" y1="80" x2="230" y2="52" class="switch-blade open" />
-                        `}
-                        <text x="210" y="40" class="comp-title-tag">Διακόπτης K (${isClosed ? 'Κλειστός' : 'Ανοικτός'})</text>
-                    </g>
-
-                    <!-- 3. RESISTOR R1 (Vertical Branch 1: x=380) -->
-                    <g class="comp-interactive comp-resistor ${state.shortR1 ? 'is-shorted' : ''}" data-probe="R1"
-                       onmouseenter="CircuitSimulation.hoverProbe('R1')" 
-                       onmouseleave="CircuitSimulation.hoverProbe(null)"
-                       onclick="CircuitSimulation.selectProbe('R1')">
-                        <rect x="350" y="150" width="180" height="130" class="comp-hitbox" />
-                        <!-- Vertical Resistor Box -->
-                        <rect x="368" y="170" width="24" height="90" rx="4" class="resistor-body ${state.shortR1 ? 'shorted' : ''}" />
-                        <text x="380" y="215" class="resistor-inner-text" dominant-baseline="middle" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
-                        <!-- Values to the right: R, V, I (25% larger font: 19px) -->
-                        <text x="406" y="196" class="comp-resistor-par-top" text-anchor="start"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${state.R1} Ω</tspan></text>
-                        <text x="406" y="224" class="comp-resistor-par-bottom" text-anchor="start">${state.shortR1 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${phys.V1.toFixed(1)} V</tspan>`}</text>
-                        <text x="406" y="252" class="comp-resistor-par-current" text-anchor="start"><tspan font-style="italic">I</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${phys.I1.toFixed(2)} A</tspan></text>
-
-                        <!-- Bypass Wire if shorted -->
-                        ${state.shortR1 ? `
-                            <path d="M 380 80 C 330 140, 330 290, 380 350" class="short-circuit-bypass-wire" />
-                            <text x="320" y="215" class="short-wire-label" text-anchor="end">⚠️ Βραχυκύκλωμα R1</text>
-                        ` : ''}
-                    </g>
-
-                    <!-- 4. RESISTOR R2 (Vertical Branch 2: x=620) -->
-                    <g class="comp-interactive comp-resistor ${state.shortR2 ? 'is-shorted' : ''}" data-probe="R2"
-                       onmouseenter="CircuitSimulation.hoverProbe('R2')" 
-                       onmouseleave="CircuitSimulation.hoverProbe(null)"
-                       onclick="CircuitSimulation.selectProbe('R2')">
-                        <rect x="590" y="150" width="180" height="130" class="comp-hitbox" />
-                        <!-- Vertical Resistor Box -->
-                        <rect x="608" y="170" width="24" height="90" rx="4" class="resistor-body ${state.shortR2 ? 'shorted' : ''}" />
-                        <text x="620" y="215" class="resistor-inner-text" dominant-baseline="middle" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
-                        <!-- Values to the right: R, V, I (25% larger font: 19px) -->
-                        <text x="646" y="196" class="comp-resistor-par-top" text-anchor="start"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${state.R2} Ω</tspan></text>
-                        <text x="646" y="224" class="comp-resistor-par-bottom" text-anchor="start">${state.shortR2 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${phys.V2.toFixed(1)} V</tspan>`}</text>
-                        <text x="646" y="252" class="comp-resistor-par-current" text-anchor="start"><tspan font-style="italic">I</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${phys.I2.toFixed(2)} A</tspan></text>
-
-                        <!-- Bypass Wire if shorted -->
-                        ${state.shortR2 ? `
-                            <path d="M 620 80 C 570 140, 570 290, 620 350" class="short-circuit-bypass-wire" />
-                            <text x="560" y="215" class="short-wire-label" text-anchor="end">⚠️ Βραχυκύκλωμα R2</text>
-                        ` : ''}
-                    </g>
-
-                    <!-- Wire Probe Zones -->
-                    <g class="wire-probe-zone">
-                        <g onmouseenter="CircuitSimulation.hoverProbe('wireMain')" onmouseleave="CircuitSimulation.hoverProbe(null)">
-                            <rect x="250" y="65" width="100" height="30" class="probe-wire-hitbox" />
-                            <rect x="85" y="100" width="30" height="80" class="probe-wire-hitbox" />
-                            <rect x="85" y="270" width="30" height="70" class="probe-wire-hitbox" />
-                            <rect x="140" y="335" width="200" height="30" class="probe-wire-hitbox" />
-                        </g>
-                        <g onmouseenter="CircuitSimulation.hoverProbe('branch1')" onmouseleave="CircuitSimulation.hoverProbe(null)">
-                            <rect x="365" y="95" width="30" height="65" class="probe-wire-hitbox" />
-                            <rect x="365" y="270" width="30" height="65" class="probe-wire-hitbox" />
-                        </g>
-                        <g onmouseenter="CircuitSimulation.hoverProbe('branch2')" onmouseleave="CircuitSimulation.hoverProbe(null)">
-                            <rect x="410" y="65" width="180" height="30" class="probe-wire-hitbox" />
-                            <rect x="605" y="95" width="30" height="65" class="probe-wire-hitbox" />
-                            <rect x="605" y="270" width="30" height="65" class="probe-wire-hitbox" />
-                            <rect x="410" y="335" width="180" height="30" class="probe-wire-hitbox" />
-                        </g>
                     </g>
 
                     <!-- NODE G (x=100, y=80) - Above Source -->
@@ -745,18 +919,170 @@ window.CircuitSimulation = (function() {
                         <text x="100" y="65" class="node-letter">G</text>
                     </g>
 
-                    <!-- NODE A (x=380, y=80) - Top of Branch 1 -->
+                    <!-- 3. SWITCH K at Top-Left (x=145 to x=205, y=80) -->
+                    <g class="comp-interactive comp-switch" data-probe="switch"
+                       onmouseenter="CircuitSimulation.hoverProbe('switch')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.toggleSwitch()">
+                        <rect x="135" y="45" width="80" height="70" class="comp-hitbox" />
+                        <circle cx="145" cy="80" r="4.5" class="terminal-dot" />
+                        <circle cx="205" cy="80" r="4.5" class="terminal-dot" />
+                        ${isClosed ? `
+                            <line x1="145" y1="80" x2="205" y2="80" class="switch-blade closed" />
+                        ` : `
+                            <line x1="145" y1="80" x2="195" y2="52" class="switch-blade open" />
+                        `}
+                        <text x="175" y="40" class="comp-title-tag">Διακόπτης K</text>
+                    </g>
+
+                    <!-- 4. MAIN AMMETER Aολ on Top Rail (x=280, y=80) -->
+                    <g class="comp-interactive comp-meter" data-probe="ammeter_main"
+                       onmouseenter="CircuitSimulation.hoverProbe('ammeter_main')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.selectProbe('ammeter_main')">
+                        <rect x="258" y="55" width="45" height="65" class="comp-hitbox" />
+                        <circle cx="280" cy="80" r="17" class="meter-circle" />
+                        <text x="280" y="80" class="meter-text">A<tspan font-size="0.65em" dy="2">ολ</tspan></text>
+                        <text x="280" y="112" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
+                    </g>
+
+                    <!-- NODE A (x=380, y=80) - Branch 1 Top -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeA')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeA')">
                         <circle cx="380" cy="80" r="14" class="comp-hitbox" fill="transparent" />
                         <circle cx="380" cy="80" r="4" class="circuit-node-dot" />
                         <text x="380" y="65" class="node-letter">A</text>
                     </g>
 
-                    <!-- NODE C (x=620, y=80) - Top of Branch 2 -->
+                    <!-- 5. BRANCH 1 AMMETER A1 (Vertical at x=380, y=125) -->
+                    <g class="comp-interactive comp-meter" data-probe="ammeter1"
+                       onmouseenter="CircuitSimulation.hoverProbe('ammeter1')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.selectProbe('ammeter1')">
+                        <rect x="360" y="105" width="40" height="40" class="comp-hitbox" />
+                        <circle cx="380" cy="125" r="16" class="meter-circle" />
+                        <text x="380" y="125" class="meter-text">A₁</text>
+                        <text x="342" y="129" class="meter-reading-tag" text-anchor="end">${phys.I1.toFixed(2)} A</text>
+                    </g>
+
+                    <!-- 6. RESISTOR R1 (Vertical Branch 1: x=380) -->
+                    <g class="comp-interactive comp-resistor ${state.shortR1 ? 'is-shorted' : ''} ${state.brokenR1 ? 'is-broken' : ''}" data-probe="R1"
+                       onmouseenter="CircuitSimulation.hoverProbe('R1')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.selectProbe('R1')">
+                        <rect x="350" y="150" width="180" height="130" class="comp-hitbox" />
+                        
+                        ${state.brokenR1 ? `
+                            <!-- Broken Vertical Resistor Split in Two with Red Crack -->
+                            <rect x="368" y="175" width="24" height="34" rx="3" class="resistor-body broken" />
+                            <rect x="368" y="221" width="24" height="34" rx="3" class="resistor-body broken" />
+                            <text x="380" y="192" class="resistor-inner-text" dominant-baseline="middle" text-anchor="middle" style="font-size: 11px;"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
+                            <path d="M 364 213 L 396 223 M 396 213 L 364 223" class="resistor-crack-symbol" />
+                            <text x="406" y="274" class="broken-badge-text" text-anchor="start">💥 ΚΑΤΑΣΤΡΟΦΗ</text>
+                        ` : `
+                            <!-- Normal Vertical Resistor Box -->
+                            <rect x="368" y="170" width="24" height="90" rx="4" class="resistor-body ${state.shortR1 ? 'shorted' : ''}" />
+                            <text x="380" y="215" class="resistor-inner-text" dominant-baseline="middle" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
+                        `}
+                        
+                        <!-- Values to the right: R, V, I (25% larger font: 19px) -->
+                        <text x="406" y="196" class="comp-resistor-par-top" text-anchor="start"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${state.R1} Ω</tspan></text>
+                        <text x="406" y="224" class="comp-resistor-par-bottom" text-anchor="start">${state.shortR1 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${phys.V1.toFixed(1)} V</tspan>`}</text>
+                        <text x="406" y="252" class="comp-resistor-par-current" text-anchor="start"><tspan font-style="italic">I</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${phys.I1.toFixed(2)} A</tspan></text>
+
+                        <!-- Bypass Wire if shorted -->
+                        ${state.shortR1 ? `
+                            <path d="M 380 80 C 320 140, 320 290, 380 350" class="short-circuit-bypass-wire" />
+                            ${hasCurrent ? `
+                                <path d="M 380 80 C 320 140, 320 290, 380 350" class="circuit-wire-current wire-current-active bypass-current" style="animation-duration: ${animSpeed}s;" />
+                            ` : ''}
+                            <text x="310" y="215" class="short-wire-label" text-anchor="end">⚠️ Βραχυκύκλωμα R₁</text>
+                        ` : ''}
+                    </g>
+
+                    <!-- NODE C (x=640, y=80) - Branch 2 Top -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeC')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeC')">
-                        <circle cx="620" cy="80" r="14" class="comp-hitbox" fill="transparent" />
-                        <circle cx="620" cy="80" r="4" class="circuit-node-dot" />
-                        <text x="620" y="65" class="node-letter">C</text>
+                        <circle cx="640" cy="80" r="14" class="comp-hitbox" fill="transparent" />
+                        <circle cx="640" cy="80" r="4" class="circuit-node-dot" />
+                        <text x="640" y="65" class="node-letter">C</text>
+                    </g>
+
+                    <!-- 7. BRANCH 2 AMMETER A2 (Vertical at x=640, y=125) -->
+                    <g class="comp-interactive comp-meter" data-probe="ammeter2"
+                       onmouseenter="CircuitSimulation.hoverProbe('ammeter2')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.selectProbe('ammeter2')">
+                        <rect x="620" y="105" width="40" height="40" class="comp-hitbox" />
+                        <circle cx="640" cy="125" r="16" class="meter-circle" />
+                        <text x="640" y="125" class="meter-text">A₂</text>
+                        <text x="602" y="129" class="meter-reading-tag" text-anchor="end">${phys.I2.toFixed(2)} A</text>
+                    </g>
+
+                    <!-- 8. RESISTOR R2 (Vertical Branch 2: x=640) -->
+                    <g class="comp-interactive comp-resistor ${state.shortR2 ? 'is-shorted' : ''} ${state.brokenR2 ? 'is-broken' : ''}" data-probe="R2"
+                       onmouseenter="CircuitSimulation.hoverProbe('R2')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.selectProbe('R2')">
+                        <rect x="610" y="150" width="180" height="130" class="comp-hitbox" />
+                        
+                        ${state.brokenR2 ? `
+                            <rect x="628" y="175" width="24" height="34" rx="3" class="resistor-body broken" />
+                            <rect x="628" y="221" width="24" height="34" rx="3" class="resistor-body broken" />
+                            <text x="640" y="192" class="resistor-inner-text" dominant-baseline="middle" text-anchor="middle" style="font-size: 11px;"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
+                            <path d="M 624 213 L 656 223 M 656 213 L 624 223" class="resistor-crack-symbol" />
+                            <text x="666" y="274" class="broken-badge-text" text-anchor="start">💥 ΚΑΤΑΣΤΡΟΦΗ</text>
+                        ` : `
+                            <rect x="628" y="170" width="24" height="90" rx="4" class="resistor-body ${state.shortR2 ? 'shorted' : ''}" />
+                            <text x="640" y="215" class="resistor-inner-text" dominant-baseline="middle" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
+                        `}
+                        
+                        <text x="666" y="196" class="comp-resistor-par-top" text-anchor="start"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${state.R2} Ω</tspan></text>
+                        <text x="666" y="224" class="comp-resistor-par-bottom" text-anchor="start">${state.shortR2 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${phys.V2.toFixed(1)} V</tspan>`}</text>
+                        <text x="666" y="252" class="comp-resistor-par-current" text-anchor="start"><tspan font-style="italic">I</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${phys.I2.toFixed(2)} A</tspan></text>
+
+                        <!-- Bypass Wire if shorted -->
+                        ${state.shortR2 ? `
+                            <path d="M 640 80 C 580 140, 580 290, 640 350" class="short-circuit-bypass-wire" />
+                            ${hasCurrent ? `
+                                <path d="M 640 80 C 580 140, 580 290, 640 350" class="circuit-wire-current wire-current-active bypass-current" style="animation-duration: ${animSpeed}s;" />
+                            ` : ''}
+                            <text x="570" y="215" class="short-wire-label" text-anchor="end">⚠️ Βραχυκύκλωμα R₂</text>
+                        ` : ''}
+                    </g>
+
+                    <!-- 9. VOLTMETER Vπαρ across Parallel Resistors (Right side: x=780, y=215) -->
+                    <g class="comp-interactive comp-voltmeter" data-probe="voltmeter_par"
+                       onmouseenter="CircuitSimulation.hoverProbe('voltmeter_par')" 
+                       onmouseleave="CircuitSimulation.hoverProbe(null)"
+                       onclick="CircuitSimulation.selectProbe('voltmeter_par')">
+                        <!-- Probe leads to Node C (640,80) and Node E (640,350) -->
+                        <path d="M 780 197 L 780 80 L 640 80" class="voltmeter-lead" />
+                        <path d="M 780 233 L 780 350 L 640 350" class="voltmeter-lead" />
+                        <circle cx="640" cy="80" r="3.5" class="voltmeter-contact-dot" />
+                        <circle cx="640" cy="350" r="3.5" class="voltmeter-contact-dot" />
+                        <!-- Voltmeter Instrument Body -->
+                        <circle cx="780" cy="215" r="18" class="voltmeter-circle" />
+                        <text x="780" y="215" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.7em" dy="2">παρ</tspan></text>
+                        <text x="780" y="246" class="voltmeter-reading-tag">${(!state.switchClosed || phys.status === 'total_short') ? '0.0 V' : `${phys.V_src.toFixed(1)} V`}</text>
+                    </g>
+
+                    <!-- Wire Probe Zones -->
+                    <g class="wire-probe-zone">
+                        <g onmouseenter="CircuitSimulation.hoverProbe('wireMain')" onmouseleave="CircuitSimulation.hoverProbe(null)">
+                            <rect x="220" y="65" width="60" height="30" class="probe-wire-hitbox" />
+                            <rect x="85" y="100" width="30" height="80" class="probe-wire-hitbox" />
+                            <rect x="85" y="270" width="30" height="70" class="probe-wire-hitbox" />
+                            <rect x="140" y="335" width="200" height="30" class="probe-wire-hitbox" />
+                        </g>
+                        <g onmouseenter="CircuitSimulation.hoverProbe('branch1')" onmouseleave="CircuitSimulation.hoverProbe(null)">
+                            <rect x="365" y="95" width="30" height="30" class="probe-wire-hitbox" />
+                            <rect x="365" y="270" width="30" height="65" class="probe-wire-hitbox" />
+                        </g>
+                        <g onmouseenter="CircuitSimulation.hoverProbe('branch2')" onmouseleave="CircuitSimulation.hoverProbe(null)">
+                            <rect x="410" y="65" width="210" height="30" class="probe-wire-hitbox" />
+                            <rect x="625" y="95" width="30" height="30" class="probe-wire-hitbox" />
+                            <rect x="625" y="270" width="30" height="65" class="probe-wire-hitbox" />
+                            <rect x="410" y="335" width="210" height="30" class="probe-wire-hitbox" />
+                        </g>
                     </g>
 
                     <!-- NODE F (x=100, y=350) - Under Source -->
@@ -773,23 +1099,23 @@ window.CircuitSimulation = (function() {
                         <text x="380" y="375" class="node-letter">B</text>
                     </g>
 
-                    <!-- NODE D (GROUND: x=500, y=350) -->
+                    <!-- NODE D (GROUND: x=510, y=350) -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeD')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeD')">
-                        <circle cx="500" cy="350" r="14" class="comp-hitbox" fill="transparent" />
-                        <circle cx="500" cy="350" r="4" class="circuit-node-dot" />
+                        <circle cx="510" cy="350" r="14" class="comp-hitbox" fill="transparent" />
+                        <circle cx="510" cy="350" r="4" class="circuit-node-dot" />
                         <!-- Ground symbol lines -->
-                        <line x1="500" y1="350" x2="500" y2="385" class="ground-stem" />
-                        <line x1="485" y1="385" x2="515" y2="385" class="ground-line" />
-                        <line x1="490" y1="390" x2="510" y2="390" class="ground-line" />
-                        <line x1="495" y1="395" x2="505" y2="395" class="ground-line" />
-                        <text x="522" y="380" class="node-letter ground-label" text-anchor="start">D (0 V)</text>
+                        <line x1="510" y1="350" x2="510" y2="385" class="ground-stem" />
+                        <line x1="495" y1="385" x2="525" y2="385" class="ground-line" />
+                        <line x1="500" y1="390" x2="520" y2="390" class="ground-line" />
+                        <line x1="505" y1="395" x2="515" y2="395" class="ground-line" />
+                        <text x="532" y="380" class="node-letter ground-label" text-anchor="start">D (0 V)</text>
                     </g>
 
-                    <!-- NODE E (x=620, y=350) - Bottom of Branch 2 -->
+                    <!-- NODE E (x=640, y=350) - Bottom of Branch 2 -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeE')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeE')">
-                        <circle cx="620" cy="350" r="14" class="comp-hitbox" fill="transparent" />
-                        <circle cx="620" cy="350" r="4" class="circuit-node-dot" />
-                        <text x="620" y="375" class="node-letter">E</text>
+                        <circle cx="640" cy="350" r="14" class="comp-hitbox" fill="transparent" />
+                        <circle cx="640" cy="350" r="4" class="circuit-node-dot" />
+                        <text x="640" y="375" class="node-letter">E</text>
                     </g>
                 </svg>
             `;
@@ -815,6 +1141,7 @@ window.CircuitSimulation = (function() {
             const v = phys.V1;
             const i = phys.I1;
             const isShorted = state.shortR1;
+            const isBroken = state.brokenR1;
             const p1 = phys.P1;
             const p2 = phys.P2;
             const e1 = p1 * 10;
@@ -825,8 +1152,8 @@ window.CircuitSimulation = (function() {
                     <span class="hud-probe-icon">📦</span>
                     <div class="hud-item-title-wrap">
                         <h4 class="hud-item-title">Αντιστάτης <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> (Κόμβοι A − B)</h4>
-                        <span class="hud-item-badge ${isShorted ? 'bad' : 'good'}">
-                            ${isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : 'Ενεργό Στοιχείο'}
+                        <span class="hud-item-badge ${isBroken ? 'bad' : (isShorted ? 'bad' : 'good')}">
+                            ${isBroken ? '💥 Καταστροφή (Ανοικτό Κύκλωμα)' : (isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : 'Ενεργό Στοιχείο')}
                         </span>
                     </div>
                 </div>
@@ -873,22 +1200,36 @@ window.CircuitSimulation = (function() {
                                 <div class="step-calc-header">1. Ολική Αντίσταση Σειράς:</div>
                                 ${!state.switchClosed ? `
                                     <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
+                                ` : (state.brokenR1 || state.brokenR2) ? `
+                                    <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Διακοπή λόγω Καταστροφής})$$</div>
                                 ` : `
                                     <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${state.shortR1 ? '0' : state.R1} + ${state.shortR2 ? '0' : state.R2} = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
                                 `}
                             </div>
                             <div class="step-calc-line">
                                 <div class="step-calc-header">2. Κοινό Ρεύμα Κυκλώματος:</div>
-                                ${!state.switchClosed ? `
+                                ${(!state.switchClosed || state.brokenR1 || state.brokenR2) ? `
                                     <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} = 0.00\\text{ A}$$</div>
                                 ` : `
                                     <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{${phys.R_eq.toFixed(1)}\\ \\Omega} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
                                 `}
                             </div>
                             <div class="step-calc-line">
-                                <div class="step-calc-header">3. Πτώσεις Τάσης Αντιστατών (Νόμος Ohm):</div>
-                                <div class="step-calc-formula">$$V_1 = I \\cdot R_1 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR1 ? 0 : state.R1}\\ \\Omega = ${phys.V1.toFixed(2)}\\text{ V}$$</div>
-                                <div class="step-calc-formula">$$V_2 = I \\cdot R_2 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR2 ? 0 : state.R2}\\ \\Omega = ${phys.V2.toFixed(2)}\\text{ V}$$</div>
+                                <div class="step-calc-header">3. Πτώσεις Τάσης Αντιστατών:</div>
+                                ${state.brokenR1 ? `
+                                    <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                                        Λόγω καταστροφής του $R_1$, το ρεύμα είναι μηδέν ($I = 0\\text{ A}$) και $V_2 = 0\\text{ V}$. <strong>Ολόκληρη η τάση της πηγής εμφανίζεται στα άκρα του κατεστραμμένου $R_1$</strong>:
+                                    </p>
+                                    <div class="step-calc-formula">$$V_1 = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}, \\quad V_2 = 0.00\\text{ V}$$</div>
+                                ` : state.brokenR2 ? `
+                                    <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                                        Λόγω καταστροφής του $R_2$, το ρεύμα είναι μηδέν ($I = 0\\text{ A}$), άρα $V_1 = I \\cdot R_1 = 0\\text{ V}$, ενώ στα άκρα του $R_2$ εμφανίζεται ολόκληρη η τάση:
+                                    </p>
+                                    <div class="step-calc-formula">$$V_1 = 0.00\\text{ V}, \\quad V_2 = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}$$</div>
+                                ` : `
+                                    <div class="step-calc-formula">$$V_1 = I \\cdot R_1 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR1 ? 0 : state.R1}\\ \\Omega = ${phys.V1.toFixed(2)}\\text{ V}$$</div>
+                                    <div class="step-calc-formula">$$V_2 = I \\cdot R_2 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR2 ? 0 : state.R2}\\ \\Omega = ${phys.V2.toFixed(2)}\\text{ V}$$</div>
+                                `}
                             </div>
                             <div class="step-calc-line">
                                 <div class="step-calc-header">4. Θερμική Ισχύς Κατανάλωσης (σε Watt):</div>
@@ -906,13 +1247,19 @@ window.CircuitSimulation = (function() {
                                 ${!state.switchClosed ? `
                                     <div class="step-calc-formula">$$V_1 = V_2 = 0.00\\text{ V} \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
                                 ` : `
-                                    <div class="step-calc-formula">$$V_1 = V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V} \\quad (V_A - V_B = V_C - V_E = ${state.V_src}\\text{ V})$$</div>
+                                    <div class="step-calc-formula">$$V_1 = ${state.brokenR1 ? '0.00' : state.V_src.toFixed(1)}\\text{ V}, \\quad V_2 = ${state.brokenR2 ? '0.00' : state.V_src.toFixed(1)}\\text{ V}$$</div>
                                 `}
                             </div>
                             <div class="step-calc-line">
                                 <div class="step-calc-header">2. Ρεύματα Κλάδων (Νόμος Ohm):</div>
                                 ${!state.switchClosed ? `
                                     <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}, \\quad I_2 = 0.00\\text{ A}, \\quad I_{\\text{ολ}} = 0.00\\text{ A}$$</div>
+                                ` : (state.brokenR1 && state.brokenR2) ? `
+                                    <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}, \\quad I_2 = 0.00\\text{ A}, \\quad I_{\\text{ολ}} = 0.00\\text{ A}$$</div>
+                                ` : state.brokenR1 ? `
+                                    <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}\\ (\\text{Καταστροφή}), \\quad I_2 = \\frac{${state.V_src}\\text{ V}}{${state.R2}\\ \\Omega} = ${phys.I2.toFixed(2)}\\text{ A}, \\quad I_{\\text{ολ}} = I_2 = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
+                                ` : state.brokenR2 ? `
+                                    <div class="step-calc-formula">$$I_1 = \\frac{${state.V_src}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}, \\quad I_2 = 0.00\\text{ A}\\ (\\text{Καταστροφή}), \\quad I_{\\text{ολ}} = I_1 = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
                                 ` : `
                                     <div class="step-calc-formula">$$I_1 = \\frac{V_1}{R_1} = \\frac{${phys.V1.toFixed(1)}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}$$</div>
                                     <div class="step-calc-formula">$$I_2 = \\frac{V_2}{R_2} = \\frac{${phys.V2.toFixed(1)}\\text{ V}}{${state.R2}\\ \\Omega} = ${phys.I2.toFixed(2)}\\text{ A}$$</div>
@@ -937,6 +1284,7 @@ window.CircuitSimulation = (function() {
             const v = phys.V2;
             const i = phys.I2;
             const isShorted = state.shortR2;
+            const isBroken = state.brokenR2;
             const p1 = phys.P1;
             const p2 = phys.P2;
             const e1 = p1 * 10;
@@ -947,8 +1295,8 @@ window.CircuitSimulation = (function() {
                     <span class="hud-probe-icon">📦</span>
                     <div class="hud-item-title-wrap">
                         <h4 class="hud-item-title">Αντιστάτης <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Κόμβοι ${state.topology === 'series' ? 'B − C' : 'C − E'})</h4>
-                        <span class="hud-item-badge ${isShorted ? 'bad' : 'good'}">
-                            ${isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : 'Ενεργό Στοιχείο'}
+                        <span class="hud-item-badge ${isBroken ? 'bad' : (isShorted ? 'bad' : 'good')}">
+                            ${isBroken ? '💥 Καταστροφή (Ανοικτό Κύκλωμα)' : (isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : 'Ενεργό Στοιχείο')}
                         </span>
                     </div>
                 </div>
@@ -995,22 +1343,36 @@ window.CircuitSimulation = (function() {
                                 <div class="step-calc-header">1. Ολική Αντίσταση Σειράς:</div>
                                 ${!state.switchClosed ? `
                                     <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
+                                ` : (state.brokenR1 || state.brokenR2) ? `
+                                    <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Διακοπή λόγω Καταστροφής})$$</div>
                                 ` : `
                                     <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
                                 `}
                             </div>
                             <div class="step-calc-line">
                                 <div class="step-calc-header">2. Κοινό Ρεύμα Σειράς:</div>
-                                ${!state.switchClosed ? `
+                                ${(!state.switchClosed || state.brokenR1 || state.brokenR2) ? `
                                     <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} = 0.00\\text{ A}$$</div>
                                 ` : `
                                     <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
                                 `}
                             </div>
                             <div class="step-calc-line">
-                                <div class="step-calc-header">3. Πτώσεις Τάσης Αντιστατών (Νόμος Ohm):</div>
-                                <div class="step-calc-formula">$$V_1 = I \\cdot R_1 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR1 ? 0 : state.R1}\\ \\Omega = ${phys.V1.toFixed(2)}\\text{ V}$$</div>
-                                <div class="step-calc-formula">$$V_2 = I \\cdot R_2 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR2 ? 0 : state.R2}\\ \\Omega = ${phys.V2.toFixed(2)}\\text{ V}$$</div>
+                                <div class="step-calc-header">3. Πτώσεις Τάσης Αντιστατών:</div>
+                                ${state.brokenR2 ? `
+                                    <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                                        Λόγω καταστροφής του $R_2$, το ρεύμα είναι μηδέν ($I = 0\\text{ A}$), άρα $V_1 = 0\\text{ V}$, ενώ στα άκρα του κατεστραμμένου $R_2$ εμφανίζεται ολόκληρη η τάση:
+                                    </p>
+                                    <div class="step-calc-formula">$$V_1 = 0.00\\text{ V}, \\quad V_2 = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}$$</div>
+                                ` : state.brokenR1 ? `
+                                    <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                                        Λόγω καταστροφής του $R_1$, το ρεύμα είναι μηδέν ($I = 0\\text{ A}$), άρα $V_2 = I \\cdot R_2 = 0\\text{ V}$, ενώ στα άκρα του $R_1$ εμφανίζεται ολόκληρη η τάση:
+                                    </p>
+                                    <div class="step-calc-formula">$$V_1 = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}, \\quad V_2 = 0.00\\text{ V}$$</div>
+                                ` : `
+                                    <div class="step-calc-formula">$$V_1 = I \\cdot R_1 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR1 ? 0 : state.R1}\\ \\Omega = ${phys.V1.toFixed(2)}\\text{ V}$$</div>
+                                    <div class="step-calc-formula">$$V_2 = I \\cdot R_2 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR2 ? 0 : state.R2}\\ \\Omega = ${phys.V2.toFixed(2)}\\text{ V}$$</div>
+                                `}
                             </div>
                             <div class="step-calc-line">
                                 <div class="step-calc-header">4. Θερμική Ισχύς Κατανάλωσης (σε Watt):</div>
@@ -1028,13 +1390,19 @@ window.CircuitSimulation = (function() {
                                 ${!state.switchClosed ? `
                                     <div class="step-calc-formula">$$V_1 = V_2 = 0.00\\text{ V} \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
                                 ` : `
-                                    <div class="step-calc-formula">$$V_1 = V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V} \\quad (V_A - V_B = V_C - V_E = ${state.V_src}\\text{ V})$$</div>
+                                    <div class="step-calc-formula">$$V_1 = ${state.brokenR1 ? '0.00' : state.V_src.toFixed(1)}\\text{ V}, \\quad V_2 = ${state.brokenR2 ? '0.00' : state.V_src.toFixed(1)}\\text{ V}$$</div>
                                 `}
                             </div>
                             <div class="step-calc-line">
                                 <div class="step-calc-header">2. Ρεύματα Κλάδων (Νόμος Ohm):</div>
                                 ${!state.switchClosed ? `
                                     <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}, \\quad I_2 = 0.00\\text{ A}, \\quad I_{\\text{ολ}} = 0.00\\text{ A}$$</div>
+                                ` : (state.brokenR1 && state.brokenR2) ? `
+                                    <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}, \\quad I_2 = 0.00\\text{ A}, \\quad I_{\\text{ολ}} = 0.00\\text{ A}$$</div>
+                                ` : state.brokenR2 ? `
+                                    <div class="step-calc-formula">$$I_1 = \\frac{${state.V_src}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}, \\quad I_2 = 0.00\\text{ A}\\ (\\text{Καταστροφή}), \\quad I_{\\text{ολ}} = I_1 = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
+                                ` : state.brokenR1 ? `
+                                    <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}\\ (\\text{Καταστροφή}), \\quad I_2 = \\frac{${state.V_src}\\text{ V}}{${state.R2}\\ \\Omega} = ${phys.I2.toFixed(2)}\\text{ A}, \\quad I_{\\text{ολ}} = I_2 = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
                                 ` : `
                                     <div class="step-calc-formula">$$I_1 = \\frac{V_1}{R_1} = \\frac{${phys.V1.toFixed(1)}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}$$</div>
                                     <div class="step-calc-formula">$$I_2 = \\frac{V_2}{R_2} = \\frac{${phys.V2.toFixed(1)}\\text{ V}}{${state.R2}\\ \\Omega} = ${phys.I2.toFixed(2)}\\text{ A}$$</div>
@@ -1091,7 +1459,13 @@ window.CircuitSimulation = (function() {
                             <div class="step-calc-header">1. Υπολογισμός $R_{\\text{ολ}}$:</div>
                             ${!state.switchClosed ? `
                                 <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
-                            ` : (state.topology === 'series' ? `
+                            ` : (state.brokenR1 || state.brokenR2) ? (state.topology === 'series' ? `
+                                <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Διακοπή Σειράς})$$</div>
+                            ` : (state.brokenR1 && state.brokenR2) ? `
+                                <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Διακοπή & των 2 Κλάδων})$$</div>
+                            ` : `
+                                <div class="step-calc-formula">$$R_{\\text{ολ}} = ${phys.R_eq.toFixed(2)}\\ \\Omega$$</div>
+                            `) : (state.topology === 'series' ? `
                                 <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
                             ` : `
                                 <div class="step-calc-formula">$$R_{\\text{ολ}} = \\frac{R_1 \\cdot R_2}{R_1 + R_2} = \\frac{${state.R1} \\cdot ${state.R2}}{${state.R1} + ${state.R2}} = ${phys.R_eq.toFixed(2)}\\ \\Omega$$</div>
@@ -1099,7 +1473,7 @@ window.CircuitSimulation = (function() {
                         </div>
                         <div class="step-calc-line">
                             <div class="step-calc-header">2. Ολικό Ρεύμα από τον Νόμο του Ohm:</div>
-                            ${!state.switchClosed ? `
+                            ${(!state.switchClosed || ((state.brokenR1 || state.brokenR2) && state.topology === 'series') || (state.brokenR1 && state.brokenR2)) ? `
                                 <div class="step-calc-formula">$$I_{\\text{ολ}} = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} = 0.00\\text{ A}$$</div>
                             ` : `
                                 <div class="step-calc-formula">$$I_{\\text{ολ}} = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
@@ -1148,19 +1522,133 @@ window.CircuitSimulation = (function() {
                     </div>
                 ` : ''}
             `;
-        } else if (probeTarget === 'ammeter') {
+        } else if (probeTarget.startsWith('voltmeter')) {
+            let vmTitle = 'Ιδανικό Βολτόμετρο (R_V → ∞)';
+            let vmReading = 0;
+            let vmSubtitle = '';
+            let vmExplanation = '';
+
+            if (probeTarget === 'voltmeter_src') {
+                vmTitle = 'Βολτόμετρο Πηγής Τάσης (Vπηγ)';
+                vmReading = state.V_src;
+                vmSubtitle = 'Συνδεδεμένο παράλληλα στους πόλους της ηλεκτρικής πηγής';
+                vmExplanation = `Το βολτόμετρο συνδέεται πάντοτε <strong>παράλληλα</strong> στους πόλους της ηλεκτρικής πηγής. Μετράει την ηλεκτρική τάση (διαφορά δυναμικού) που παρέχει η πηγή στο κύκλωμα: $V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$. Επειδή ένα ιδανικό βολτόμετρο έχει άπειρη εσωτερική αντίσταση ($R_V \\to \\infty$), δεν απορροφά ρεύμα ($I_V = 0\\text{ A}$) και δεν επηρεάζει καθόλου τη λειτουργία του κυκλώματος.`;
+            } else if (probeTarget === 'voltmeter1') {
+                vmTitle = 'Βολτόμετρο Αντιστάτη R₁ (V₁)';
+                vmReading = phys.V1;
+                vmSubtitle = state.topology === 'series' ? 'Συνδεδεμένο παράλληλα στα άκρα του R₁ (Σειρά)' : 'Συνδεδεμένο στον κλάδο του R₁ (Παράλληλα)';
+                vmExplanation = state.topology === 'series' ? (state.brokenR1 ? `
+                    Η συσκευή $R_1$ έχει υποστεί βλάβη/καταστροφή (ανοικτό κύκλωμα). Επειδή το ρεύμα στη σειρά μηδενίζεται ($I = 0\\text{ A}$), δεν υπάρχει πτώση τάσης στον ανέπαφο αντιστάτη $R_2$ ($V_2 = I \\cdot R_2 = 0\\text{ V}$). Συνεπώς, <strong>ολόκληρη η τάση της πηγής εμφανίζεται στα άκρα της κατεστραμμένης συσκευής: $V_1 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$</strong>!
+                ` : state.shortR1 ? `
+                    Ο αντιστάτης $R_1$ παρακάμπτεται από το εξωτερικό καλώδιο βραχυκυκλώματος μηδενικής αντίστασης, άρα η τάση στα άκρα του μηδενίζεται ($V_1 = 0.00\\text{ V}$).
+                ` : `
+                    Συνδέεται παράλληλα στα άκρα του $R_1$. Σύμφωνα με τον Νόμο του Ohm, μετράει πτώση τάσης $V_1 = I \\cdot R_1 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.R1}\\ \\Omega = ${phys.V1.toFixed(2)}\\text{ V}$.
+                `) : (state.brokenR1 ? `
+                    Ο κλάδος του $R_1$ έχει διακοπεί λόγω καταστροφής. Το ρεύμα του κλάδου μηδενίζεται ($I_1 = 0\\text{ A}$).
+                ` : `
+                    Στην παράλληλη σύνδεση, ο αντιστάτης $R_1$ συνδέεται απευθείας μεταξύ των δύο κύριων αγωγών, συνεπώς η τάση στα άκρα του ισούται με την τάση της πηγής: $V_1 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$.
+                `);
+            } else if (probeTarget === 'voltmeter2') {
+                vmTitle = 'Βολτόμετρο Αντιστάτη R₂ (V₂)';
+                vmReading = phys.V2;
+                vmSubtitle = state.topology === 'series' ? 'Συνδεδεμένο παράλληλα στα άκρα του R₂ (Σειρά)' : 'Συνδεδεμένο στον κλάδο του R₂ (Παράλληλα)';
+                vmExplanation = state.topology === 'series' ? (state.brokenR2 ? `
+                    Η συσκευή $R_2$ έχει υποστεί βλάβη/καταστροφή (ανοικτό κύκλωμα). Επειδή το ρεύμα στη σειρά μηδενίζεται ($I = 0\\text{ A}$), δεν υπάρχει πτώση τάσης στον ανέπαφο αντιστάτη $R_1$ ($V_1 = I \\cdot R_1 = 0\\text{ V}$). Συνεπώς, <strong>ολόκληρη η τάση της πηγής εμφανίζεται στα άκρα της κατεστραμμένης συσκευής: $V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$</strong>!
+                ` : state.shortR2 ? `
+                    Ο αντιστάτης $R_2$ παρακάμπτεται από το εξωτερικό καλώδιο βραχυκυκλώματος μηδενικής αντίστασης, άρα η τάση στα άκρα του μηδενίζεται ($V_2 = 0.00\\text{ V}$).
+                ` : `
+                    Συνδέεται παράλληλα στα άκρα του $R_2$. Σύμφωνα με τον Νόμο του Ohm, μετράει πτώση τάσης $V_2 = I \\cdot R_2 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.R2}\\ \\Omega = ${phys.V2.toFixed(2)}\\text{ V}$.
+                `) : (state.brokenR2 ? `
+                    Ο κλάδος του $R_2$ έχει διακοπεί λόγω καταστροφής. Το ρεύμα του κλάδου μηδενίζεται ($I_2 = 0\\text{ A}$).
+                ` : `
+                    Στην παράλληλη σύνδεση, ο αντιστάτης $R_2$ συνδέεται απευθείας μεταξύ των δύο κύριων αγωγών, συνεπώς η τάση στα άκρα του ισούται με την τάση της πηγής: $V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$.
+                `);
+            } else if (probeTarget === 'voltmeter_par') {
+                vmTitle = 'Βολτόμετρο Παράλληλης Σύνδεσης (Vπαρ)';
+                vmReading = (!state.switchClosed || phys.status === 'total_short') ? 0 : state.V_src;
+                vmSubtitle = 'Συνδεδεμένο στη δεξιά πλευρά (Κόμβοι C − E)';
+                vmExplanation = `Το βολτόμετρο είναι συνδεδεμένο παράλληλα στη συστοιχία των δύο παράλληλων κλάδων (μεταξύ του άνω κοινού αγωγού C και του κάτω κοινού αγωγού E). Επιβεβαιώνει πειραματικά τον θεμελιώδη κανόνα της παράλληλης σύνδεσης: <strong>όλοι οι παράλληλοι κλάδοι βρίσκονται υπό την ίδια ακριβώς ηλεκτρική τάση: $V_{\\text{παρ}} = V_1 = V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$</strong>!`;
+            }
+
             detailsHtml = `
                 <div class="hud-item-header">
-                    <span class="hud-probe-icon">🧭</span>
+                    <span class="hud-probe-icon">🟣</span>
                     <div class="hud-item-title-wrap">
-                        <h4 class="hud-item-title">Ιδανικό Αμπερόμετρο A (Σειρά)</h4>
-                        <span class="hud-item-badge good">RA = 0 Ω (Ιδανικό)</span>
+                        <h4 class="hud-item-title">${vmTitle}</h4>
+                        <span class="hud-item-badge good">RV → ∞ (Ιδανικό Όργανο)</span>
                     </div>
                 </div>
                 <div class="hud-readouts-grid cols-2">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ένδειξη Αμπερομέτρου</span><span>(<span class="math-expr"><i class="math-var">I</i></span>):</span></span>
-                        <span class="meter-val text-current">${phys.I_total.toFixed(2)} A</span>
+                        <span class="meter-lbl"><span>Ένδειξη Τάσης</span><span>(<span class="math-expr"><i class="math-var">V</i></span>):</span></span>
+                        <span class="meter-val text-voltage">${vmReading.toFixed(2)} V</span>
+                    </div>
+                    <div class="hud-meter-box">
+                        <span class="meter-lbl"><span>Ρεύμα Οργάνου</span><span>(<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">V</sub></span>):</span></span>
+                        <span class="meter-val text-current">0.00 A</span>
+                    </div>
+                </div>
+                ${isSteps ? `
+                    <div class="hud-steps-box">
+                        <div class="hud-steps-title">💡 Φυσική Σημασία Μέτρησης Βολτομέτρου:</div>
+                        <p style="font-size: 0.88rem; line-height: 1.5; margin: 4px 0;">
+                            ${vmExplanation}
+                        </p>
+                    </div>
+                ` : ''}
+            `;
+        } else if (probeTarget.startsWith('ammeter')) {
+            let amTitle = 'Ιδανικό Αμπερόμετρο (RA = 0 Ω)';
+            let amReading = phys.I_total;
+            let amExplanation = '';
+
+            if (probeTarget === 'ammeter1') {
+                if (state.topology === 'series') {
+                    amTitle = 'Αμπερόμετρο A₁ (Σειρά - Πριν τον R₁)';
+                    amReading = phys.I_total;
+                    amExplanation = `Συνδεδεμένο στη σειρά πριν τον πρώτο αντιστάτη $R_1$. Μετράει το κοινό ρεύμα του κυκλώματος: $I_{A1} = ${phys.I_total.toFixed(2)}\\text{ A}$.`;
+                } else {
+                    amTitle = 'Αμπερόμετρο A₁ (Κλάδος R₁)';
+                    amReading = phys.I1;
+                    amExplanation = `Συνδεδεμένο στον 1ο παράλληλο κλάδο. Μετράει αποκλειστικά το ρεύμα που διαρρέει τον αντιστάτη $R_1$: $I_1 = V_1 / R_1 = ${phys.I1.toFixed(2)}\\text{ A}$.`;
+                }
+            } else if (probeTarget === 'ammeter2') {
+                if (state.topology === 'series') {
+                    amTitle = 'Αμπερόμετρο A₂ (Σειρά - Ανάμεσα στους R₁ & R₂)';
+                    amReading = phys.I_total;
+                    amExplanation = `Συνδεδεμένο <strong>ενδιάμεσα των δύο αντιστατών $R_1$ και $R_2$</strong>. Επιβεβαιώνει πειραματικά ότι το ηλεκτρικό ρεύμα δεν «μειώνεται» ούτε «ξοδεύεται» περνώντας μέσα από έναν αντιστάτη: $I_{A2} = I_{A1} = ${phys.I_total.toFixed(2)}\\text{ A}$ (Αρχή Διατήρησης Φορτίου).`;
+                } else {
+                    amTitle = 'Αμπερόμετρο A₂ (Κλάδος R₂)';
+                    amReading = phys.I2;
+                    amExplanation = `Συνδεδεμένο στον 2ο παράλληλο κλάδο. Μετράει αποκλειστικά το ρεύμα που διαρρέει τον αντιστάτη $R_2$: $I_2 = V_2 / R_2 = ${phys.I2.toFixed(2)}\\text{ A}$.`;
+                }
+            } else if (probeTarget === 'ammeter3') {
+                amTitle = 'Αμπερόμετρο A₃ (Σειρά - Μετά τον R₂)';
+                amReading = phys.I_total;
+                amExplanation = `Συνδεδεμένο <strong>μετά τον δεύτερο αντιστάτη $R_2$</strong>. Επιβεβαιώνει ότι το ρεύμα εξόδου που επιστρέφει στον αρνητικό πόλο της πηγής είναι απαράλλακτο: $I_{A3} = I_{A2} = I_{A1} = ${phys.I_total.toFixed(2)}\\text{ A}$.`;
+            } else {
+                // Main Ammeter
+                amTitle = state.topology === 'parallel' ? 'Κύριο Αμπερόμετρο Aολ (Κύριος Αγωγός)' : 'Ιδανικό Αμπερόμετρο A (Σειρά)';
+                amReading = phys.I_total;
+                amExplanation = state.topology === 'parallel' ? `
+                    Μετράει το συνολικό ρεύμα $I_{\\text{ολ}}$ που εξέρχεται από την ηλεκτρική πηγή. Σύμφωνα με τον 1ο Κανόνα του Kirchhoff, διακλαδίζεται στους δύο κλάδους: $I_{\\text{ολ}} = I_1 + I_2 = ${phys.I1.toFixed(2)}\\text{ A} + ${phys.I2.toFixed(2)}\\text{ A} = ${phys.I_total.toFixed(2)}\\text{ A}$.
+                ` : `
+                    Το αμπερόμετρο συνδέεται πάντοτε <strong>στη σειρά</strong> και διαθέτει μηδενική εσωτερική αντίσταση ($R_A = 0\\ \\Omega$) ώστε να μετράει το ρεύμα χωρίς να προκαλεί καμία πτώση τάσης.
+                `;
+            }
+
+            detailsHtml = `
+                <div class="hud-item-header">
+                    <span class="hud-probe-icon">🧭</span>
+                    <div class="hud-item-title-wrap">
+                        <h4 class="hud-item-title">${amTitle}</h4>
+                        <span class="hud-item-badge good">RA = 0 Ω (Ιδανικό Όργανο)</span>
+                    </div>
+                </div>
+                <div class="hud-readouts-grid cols-2">
+                    <div class="hud-meter-box">
+                        <span class="meter-lbl"><span>Ένδειξη Ρεύματος</span><span>(<span class="math-expr"><i class="math-var">I</i></span>):</span></span>
+                        <span class="meter-val text-current">${amReading.toFixed(2)} A</span>
                     </div>
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Πτώση Τάσης</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">A</sub></span>):</span></span>
@@ -1169,9 +1657,9 @@ window.CircuitSimulation = (function() {
                 </div>
                 ${isSteps ? `
                     <div class="hud-steps-box">
-                        <div class="hud-steps-title">💡 Χαρακτηριστικό Ιδανικού Αμπερομέτρου (Ερώτηση 17):</div>
-                        <p style="font-size: 0.88rem; line-height: 1.5;">
-                            Το αμπερόμετρο συνδέεται πάντοτε <strong>στη σειρά</strong> και διαθέτει μηδενική εσωτερική αντίσταση ($R_A = 0\ \Omega$) ώστε να μετράει το ρεύμα χωρίς να προκαλεί καμία πτώση τάσης και χωρίς να μεταβάλλει τη ροή του κυκλώματος.
+                        <div class="hud-steps-title">💡 Φυσική Σημασία Μέτρησης Αμπερομέτρου:</div>
+                        <p style="font-size: 0.88rem; line-height: 1.5; margin: 4px 0;">
+                            ${amExplanation}
                         </p>
                     </div>
                 ` : ''}
@@ -1400,6 +1888,18 @@ window.CircuitSimulation = (function() {
 
         toggleShort: function(key, checked) {
             state[key] = checked;
+            // If shorted, clear broken state for this component
+            if (checked) {
+                if (key === 'shortR1') {
+                    state.brokenR1 = false;
+                    const b1 = document.getElementById('sim-broken-r1');
+                    if (b1) b1.checked = false;
+                } else if (key === 'shortR2') {
+                    state.brokenR2 = false;
+                    const b2 = document.getElementById('sim-broken-r2');
+                    if (b2) b2.checked = false;
+                }
+            }
             updateSvg();
             updateHud();
             updateMetrics();
@@ -1409,6 +1909,34 @@ window.CircuitSimulation = (function() {
                 } else {
                     showToast('⚡ Μερικό βραχυκύκλωμα: Ο αντιστάτης παρακάμφθηκε, η ολική αντίσταση μειώθηκε!');
                 }
+            }
+        },
+
+        toggleBroken: function(key, checked) {
+            state[key] = checked;
+            // If broken, clear short state for this component
+            if (checked) {
+                if (key === 'brokenR1') {
+                    state.shortR1 = false;
+                    const s1 = document.getElementById('sim-short-r1');
+                    if (s1) s1.checked = false;
+                } else if (key === 'brokenR2') {
+                    state.shortR2 = false;
+                    const s2 = document.getElementById('sim-short-r2');
+                    if (s2) s2.checked = false;
+                }
+            }
+            updateSvg();
+            updateHud();
+            updateMetrics();
+            if (checked) {
+                if (state.topology === 'series') {
+                    showToast('💥 Καταστροφή συσκευής στη σειρά: Το κύκλωμα διακόπηκε (I = 0 A) και όλη η τάση εμφανίζεται στα άκρα της βλάβης!');
+                } else {
+                    showToast('💥 Καταστροφή συσκευής: Ο κλάδος διακόπηκε (I = 0 A). Ο άλλος παράλληλος κλάδος συνεχίζει να λειτουργεί ανεπηρέαστος!');
+                }
+            } else {
+                showToast('🔧 Η βλάβη αποκαταστάθηκε! Ο αντιστάτης επαναλειτουργεί.');
             }
         },
 
@@ -1435,8 +1963,10 @@ window.CircuitSimulation = (function() {
             state.R1 = p.R1;
             state.R2 = p.R2;
             state.switchClosed = p.switchClosed;
-            state.shortR1 = p.shortR1;
-            state.shortR2 = p.shortR2;
+            state.shortR1 = !!p.shortR1;
+            state.shortR2 = !!p.shortR2;
+            state.brokenR1 = !!p.brokenR1;
+            state.brokenR2 = !!p.brokenR2;
             state.activeProbe = 'R1';
 
             if (state.containerEl) render(state.containerEl);

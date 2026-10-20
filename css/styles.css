@@ -3318,6 +3318,14 @@ mjx-container[display="true"], .katex-display {
     border: 1px solid rgba(148, 163, 184, 0.35);
 }
 
+.sim-circuit-status-chip.broken_circuit,
+.sim-circuit-status-chip.partial_broken {
+    background: rgba(220, 38, 38, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.6);
+    animation: alertPulse 1.4s infinite alternate;
+}
+
 @keyframes alertPulse {
     from {
         transform: scale(1);
@@ -3632,6 +3640,104 @@ mjx-container[display="true"], .katex-display {
 
 .probe-wire-hitbox:hover {
     fill: rgba(56, 189, 248, 0.15);
+}
+
+/* Voltmeter Instrument & Probe Styles */
+.voltmeter-circle {
+    fill: rgba(15, 23, 42, 0.95);
+    stroke: #a855f7;
+    stroke-width: 2.5;
+    transition: all 0.2s ease;
+}
+
+.comp-voltmeter:hover .voltmeter-circle {
+    stroke: #c084fc;
+    filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.6));
+}
+
+.voltmeter-text {
+    fill: #c084fc;
+    font-size: 14.5px;
+    font-weight: 800;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
+.voltmeter-reading-tag {
+    fill: #d8b4fe;
+    font-size: 12px;
+    font-weight: 800;
+    text-anchor: middle;
+    font-family: 'STIX Two Text', 'Outfit', 'Inter', monospace;
+}
+
+.voltmeter-lead {
+    fill: none;
+    stroke: rgba(192, 132, 252, 0.7);
+    stroke-width: 1.8;
+    stroke-dasharray: 4 3;
+    pointer-events: none;
+}
+
+.voltmeter-contact-dot {
+    fill: #c084fc;
+    stroke: #ffffff;
+    stroke-width: 1.2;
+}
+
+/* Broken Resistor Visuals */
+.resistor-body.broken {
+    fill: rgba(239, 68, 68, 0.12);
+    stroke: #ef4444;
+    stroke-width: 2.2;
+    stroke-dasharray: 4 3;
+}
+
+.resistor-crack-symbol {
+    fill: none;
+    stroke: #ef4444;
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.85));
+}
+
+.broken-badge-text {
+    fill: #f87171;
+    font-size: 11px;
+    font-weight: 800;
+    text-anchor: middle;
+}
+
+/* Short Circuit Bypass Current Flow Animation */
+.bypass-current {
+    fill: none;
+    stroke: #fbbf24 !important;
+    stroke-width: 4 !important;
+    stroke-dasharray: 10 8 !important;
+    filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8)) !important;
+}
+
+/* Broken Device Toggle Checkbox Styles */
+.sim-toggle-checkbox.broken-toggle {
+    margin-top: 4px;
+}
+
+.sim-toggle-checkbox.broken-toggle input[type="checkbox"]:checked + .checkbox-custom {
+    background: #dc2626;
+    border-color: #f87171;
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
+}
+
+.sim-toggle-checkbox.broken-toggle input[type="checkbox"]:checked + .checkbox-custom::after {
+    content: "✕";
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.sim-toggle-checkbox.broken-toggle:hover .checkbox-label {
+    color: #fca5a5;
 }
 
 /* Multimeter & Probe HUD Card */
