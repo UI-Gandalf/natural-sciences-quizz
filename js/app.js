@@ -623,21 +623,21 @@ function formatMathText(text) {
     res = res.replace(/\\iff\b/g, '<span class="math-op math-rel">⇔</span>');
 
     // 2. Physics & Electrical Formulas in plain Greek/Latin text
-    // Greek subscripts: Vπηγ, Vδιακ, Rολ, Iολ, Iπηγ, Pολ, Rσειρ, Rπαρ
-    res = res.replace(/\b(V|I|P|R)(πηγ|διακ|ολ|σειρ|παρ)\b/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
-    res = res.replace(/\b(R')\s*(ολ)\b/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
+    // Greek subscripts with or without underscore: Vπηγ, V_πηγ, Rολ, R_ολ, Iολ, I_ολ, Pολ, P_ολ, Vδιακ, V_διακ, Rσειρ, R_σειρ, Rπαρ, R_παρ
+    res = res.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b(V|I|P|R|E)_?(πηγ|διακ|ολ|σειρ|παρ|κλ)(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
+    res = res.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b(R')\s*_?(ολ)(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
 
-    // Dual letter node voltages: VAB, VBC, VCD, VAD
-    res = res.replace(/\b(V)(AB|BC|CD|AD)\b/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
+    // Dual letter node voltages with or without underscore: VAB, V_AB, VBC, V_BC, VCD, V_CD, VAD, V_AD
+    res = res.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b(V)_?(AB|BC|CD|AD)(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
 
-    // Single letter node voltages & meter resistances: VA, VB, VC, VD, RA, RV
-    res = res.replace(/\b(V)(A|B|C|D)\b/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
-    res = res.replace(/\b(R)(A|V)\b/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
+    // Single letter node voltages & meter resistances: VA, V_A, VB, V_B, VC, V_C, VD, V_D, RA, R_A, RV, R_V
+    res = res.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b(V)_?(A|B|C|D)(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
+    res = res.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b(R)_?(A|V)(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
 
-    // Numbered variables: R1, R2, R3, R4, V1, V2, I1, I2, P1, P2
-    res = res.replace(/\b(R|V|I|P)([1-4])\b/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
+    // Numbered variables with or without underscore: R1, R_1, R2, R_2, R3, R_3, R4, R_4, V1, V_1, V2, V_2, I1, I_1, I2, I_2, P1, P_1, P2, P_2, E1, E_1
+    res = res.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b(R|V|I|P|E)_?([1-4])(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<span class="math-expr"><i class="math-var">$1</i><sub class="math-sub">$2</sub></span>');
 
-    // Prime currents: I'
+    // Prime currents: I', I'_ολ
     res = res.replace(/\b(I')\b/g, '<span class="math-expr"><i class="math-var">$1</i></span>');
 
     // Delta differences: ΔI, ΔV
