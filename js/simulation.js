@@ -253,8 +253,8 @@ window.CircuitSimulation = (function() {
                         <!-- 1. Source Voltage Control -->
                         <div class="sim-control-group">
                             <div class="sim-control-header">
-                                <label for="sim-input-vsrc">
-                                    <strong>Τάση Πηγής</strong> <span class="math-expr">($V_{\\text{πηγ}}$)</span>:
+                                <label for="sim-slider-vsrc">
+                                    <strong>Τάση Πηγής</strong> <span class="math-expr">(<i class="math-var">V</i><sub class="math-sub">πηγ</sub>)</span>:
                                 </label>
                                 <span class="sim-val-display" id="disp-vsrc">${state.V_src} V</span>
                             </div>
@@ -274,7 +274,7 @@ window.CircuitSimulation = (function() {
                         <div class="sim-control-group">
                             <div class="sim-control-header">
                                 <label for="sim-slider-r1">
-                                    <strong>Αντιστάτης 1</strong> <span class="math-expr">($R_1$)</span>:
+                                    <strong>Αντιστάτης 1</strong> <span class="math-expr">(<i class="math-var">R</i><sub class="math-sub">1</sub>)</span>:
                                 </label>
                                 <span class="sim-val-display" id="disp-r1">${state.R1} Ω</span>
                             </div>
@@ -287,7 +287,7 @@ window.CircuitSimulation = (function() {
                                     <input type="checkbox" id="sim-short-r1" ${state.shortR1 ? 'checked' : ''} 
                                            onchange="CircuitSimulation.toggleShort('shortR1', this.checked)">
                                     <span class="checkbox-custom"></span>
-                                    <span class="checkbox-label">Βραχυκύκλωση $R_1$ (Bypass)</span>
+                                    <span class="checkbox-label">Βραχυκύκλωση <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> (Bypass)</span>
                                 </label>
                             </div>
                         </div>
@@ -296,7 +296,7 @@ window.CircuitSimulation = (function() {
                         <div class="sim-control-group">
                             <div class="sim-control-header">
                                 <label for="sim-slider-r2">
-                                    <strong>Αντιστάτης 2</strong> <span class="math-expr">($R_2$)</span>:
+                                    <strong>Αντιστάτης 2</strong> <span class="math-expr">(<i class="math-var">R</i><sub class="math-sub">2</sub>)</span>:
                                 </label>
                                 <span class="sim-val-display" id="disp-r2">${state.R2} Ω</span>
                             </div>
@@ -309,7 +309,7 @@ window.CircuitSimulation = (function() {
                                     <input type="checkbox" id="sim-short-r2" ${state.shortR2 ? 'checked' : ''} 
                                            onchange="CircuitSimulation.toggleShort('shortR2', this.checked)">
                                     <span class="checkbox-custom"></span>
-                                    <span class="checkbox-label">Βραχυκύκλωση $R_2$ (Bypass)</span>
+                                    <span class="checkbox-label">Βραχυκύκλωση <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Bypass)</span>
                                 </label>
                             </div>
                         </div>
@@ -443,7 +443,7 @@ window.CircuitSimulation = (function() {
                         <!-- Polarity & Labels -->
                         <text x="122" y="196" class="comp-label bold text-positive">+</text>
                         <text x="122" y="235" class="comp-label bold text-negative">−</text>
-                        <text x="44" y="218" class="comp-value-tag">Vπηγ = ${state.V_src} V</text>
+                        <text x="44" y="218" class="comp-value-tag"><tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">πηγ</tspan><tspan dy="-3"> = ${state.V_src} V</tspan></text>
                     </g>
 
                     <!-- 2. SWITCH K at Top-Left (x=170 to x=230, y=80) -->
@@ -489,7 +489,7 @@ window.CircuitSimulation = (function() {
                         <rect x="395" y="45" width="130" height="70" class="comp-hitbox" />
                         <!-- Resistor Box / Zigzag -->
                         <rect x="415" y="68" width="90" height="24" rx="4" class="resistor-body ${state.shortR1 ? 'shorted' : ''}" />
-                        <text x="460" y="84" class="resistor-inner-text">R1</text>
+                        <text x="460" y="85" class="resistor-inner-text"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
                         <text x="460" y="116" class="comp-value-tag">${state.shortR1 ? 'Βραχυκυκλωμένος (0 V)' : `${state.R1} Ω (${phys.V1.toFixed(1)} V)`}</text>
 
                         <!-- Bypass Wire if shorted -->
@@ -512,7 +512,7 @@ window.CircuitSimulation = (function() {
                        onclick="CircuitSimulation.selectProbe('R2')">
                         <rect x="555" y="45" width="130" height="70" class="comp-hitbox" />
                         <rect x="575" y="68" width="90" height="24" rx="4" class="resistor-body ${state.shortR2 ? 'shorted' : ''}" />
-                        <text x="620" y="84" class="resistor-inner-text">R2</text>
+                        <text x="620" y="85" class="resistor-inner-text"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
                         <text x="620" y="116" class="comp-value-tag">${state.shortR2 ? 'Βραχυκυκλωμένος (0 V)' : `${state.R2} Ω (${phys.V2.toFixed(1)} V)`}</text>
 
                         <!-- Bypass Wire if shorted -->
@@ -602,7 +602,7 @@ window.CircuitSimulation = (function() {
                         <line x1="78" y1="230" x2="102" y2="230" class="battery-plate negative" />
                         <text x="122" y="196" class="comp-label bold text-positive">+</text>
                         <text x="122" y="235" class="comp-label bold text-negative">−</text>
-                        <text x="44" y="218" class="comp-value-tag">Vπηγ = ${state.V_src} V</text>
+                        <text x="44" y="218" class="comp-value-tag"><tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">πηγ</tspan><tspan dy="-3"> = ${state.V_src} V</tspan></text>
                     </g>
 
                     <!-- 2. SWITCH K on Main Wire -->
@@ -634,8 +634,8 @@ window.CircuitSimulation = (function() {
                        onclick="CircuitSimulation.selectProbe('R1')">
                         <rect x="440" y="55" width="130" height="70" class="comp-hitbox" />
                         <rect x="460" y="78" width="90" height="24" rx="4" class="resistor-body ${state.shortR1 ? 'shorted' : ''}" />
-                        <text x="505" y="94" class="resistor-inner-text">R1</text>
-                        <text x="505" y="126" class="comp-value-tag">${state.R1} Ω (I1 = ${phys.I1.toFixed(2)} A)</text>
+                        <text x="505" y="94" class="resistor-inner-text"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
+                        <text x="505" y="126" class="comp-value-tag">${state.R1} Ω (<tspan font-style="italic">I</tspan><tspan font-size="0.75em" dy="2">1</tspan><tspan dy="-2"> = ${phys.I1.toFixed(2)} A</tspan>)</text>
 
                         ${state.shortR1 ? `
                             <path d="M 360 90 C 440 30, 580 30, 660 90" class="short-circuit-bypass-wire" />
@@ -650,8 +650,8 @@ window.CircuitSimulation = (function() {
                        onclick="CircuitSimulation.selectProbe('R2')">
                         <rect x="440" y="185" width="130" height="70" class="comp-hitbox" />
                         <rect x="460" y="208" width="90" height="24" rx="4" class="resistor-body ${state.shortR2 ? 'shorted' : ''}" />
-                        <text x="505" y="224" class="resistor-inner-text">R2</text>
-                        <text x="505" y="256" class="comp-value-tag">${state.R2} Ω (I2 = ${phys.I2.toFixed(2)} A)</text>
+                        <text x="505" y="224" class="resistor-inner-text"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
+                        <text x="505" y="256" class="comp-value-tag">${state.R2} Ω (<tspan font-style="italic">I</tspan><tspan font-size="0.75em" dy="2">2</tspan><tspan dy="-2"> = ${phys.I2.toFixed(2)} A</tspan>)</text>
 
                         ${state.shortR2 ? `
                             <path d="M 360 220 C 440 160, 580 160, 660 220" class="short-circuit-bypass-wire" />
@@ -711,7 +711,7 @@ window.CircuitSimulation = (function() {
                 <div class="hud-item-header">
                     <span class="hud-probe-icon">📦</span>
                     <div class="hud-item-title-wrap">
-                        <h4 class="hud-item-title">Αντιστάτης $R_1$ (Κόμβοι A − B)</h4>
+                        <h4 class="hud-item-title">Αντιστάτης <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> (Κόμβοι A − B)</h4>
                         <span class="hud-item-badge ${isShorted ? 'bad' : 'good'}">
                             ${isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : 'Ενεργό Στοιχείο'}
                         </span>
@@ -720,19 +720,19 @@ window.CircuitSimulation = (function() {
 
                 <div class="hud-readouts-grid">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl">Πτώση Τάσης ($V_1$):</span>
+                        <span class="meter-lbl">Πτώση Τάσης (<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">1</sub></span>):</span>
                         <span class="meter-val text-voltage">${v.toFixed(2)} V</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl">Ένταση Ρεύματος ($I_1$):</span>
+                        <span class="meter-lbl">Ένταση Ρεύματος (<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">1</sub></span>):</span>
                         <span class="meter-val text-current">${i.toFixed(2)} A</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl">Αντίσταση ($R_1$):</span>
+                        <span class="meter-lbl">Αντίσταση (<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span>):</span>
                         <span class="meter-val text-resistor">${state.R1} Ω</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl">Θερμική Ισχύς Joule ($P_1$):</span>
+                        <span class="meter-lbl">Θερμική Ισχύς Joule (<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">1</sub></span>):</span>
                         <span class="meter-val text-power">${p.toFixed(2)} W</span>
                     </div>
                 </div>
@@ -784,7 +784,7 @@ window.CircuitSimulation = (function() {
                 <div class="hud-item-header">
                     <span class="hud-probe-icon">📦</span>
                     <div class="hud-item-title-wrap">
-                        <h4 class="hud-item-title">Αντιστάτης $R_2$ (Κόμβοι B − C)</h4>
+                        <h4 class="hud-item-title">Αντιστάτης <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Κόμβοι B − C)</h4>
                         <span class="hud-item-badge ${isShorted ? 'bad' : 'good'}">
                             ${isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : 'Ενεργό Στοιχείο'}
                         </span>
@@ -793,19 +793,19 @@ window.CircuitSimulation = (function() {
 
                 <div class="hud-readouts-grid">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl">Πτώση Τάσης ($V_2$):</span>
+                        <span class="meter-lbl">Πτώση Τάσης (<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">2</sub></span>):</span>
                         <span class="meter-val text-voltage">${v.toFixed(2)} V</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl">Ένταση Ρεύματος ($I_2$):</span>
+                        <span class="meter-lbl">Ένταση Ρεύματος (<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">2</sub></span>):</span>
                         <span class="meter-val text-current">${i.toFixed(2)} A</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl">Αντίσταση ($R_2$):</span>
+                        <span class="meter-lbl">Αντίσταση (<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span>):</span>
                         <span class="meter-val text-resistor">${state.R2} Ω</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl">Θερμική Ισχύς Joule ($P_2$):</span>
+                        <span class="meter-lbl">Θερμική Ισχύς Joule (<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">2</sub></span>):</span>
                         <span class="meter-val text-power">${p.toFixed(2)} W</span>
                     </div>
                 </div>
@@ -855,15 +855,15 @@ window.CircuitSimulation = (function() {
                         <span class="meter-val text-voltage">${state.V_src} V</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl">Ολικό Ρεύμα Τροφοδοσίας ($I_{\\text{ολ}}$):</span>
+                        <span class="meter-lbl">Ολικό Ρεύμα Τροφοδοσίας (<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">ολ</sub></span>):</span>
                         <span class="meter-val text-current">${phys.I_total.toFixed(2)} A</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl">Ισοδύναμη Αντίσταση ($R_{\\text{ολ}}$):</span>
+                        <span class="meter-lbl">Ισοδύναμη Αντίσταση (<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">ολ</sub></span>):</span>
                         <span class="meter-val text-resistor">${phys.R_eq.toFixed(2)} Ω</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl">Συνολική Ισχύς Πηγής ($P_{\\text{ολ}}$):</span>
+                        <span class="meter-lbl">Συνολική Ισχύς Πηγής (<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">ολ</sub></span>):</span>
                         <span class="meter-val text-power">${phys.P_total.toFixed(2)} W</span>
                     </div>
                 </div>
@@ -1033,27 +1033,27 @@ window.CircuitSimulation = (function() {
 
         let metricsHtml = `
             <div class="sim-metric-cell">
-                <span class="metric-label">Τάση Πηγής ($V_{\\text{πηγ}}$)</span>
+                <span class="metric-label">Τάση Πηγής (<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">πηγ</sub></span>)</span>
                 <span class="metric-value text-voltage">${state.V_src} V</span>
             </div>
             <div class="sim-metric-cell">
-                <span class="metric-label">Ισοδύναμη ($R_{\\text{ολ}}$)</span>
+                <span class="metric-label">Ισοδύναμη (<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">ολ</sub></span>)</span>
                 <span class="metric-value text-resistor">${phys.R_eq === Infinity ? '∞' : `${phys.R_eq.toFixed(1)} Ω`}</span>
             </div>
             <div class="sim-metric-cell">
-                <span class="metric-label">Ολικό Ρεύμα ($I_{\\text{ολ}}$)</span>
+                <span class="metric-label">Ολικό Ρεύμα (<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">ολ</sub></span>)</span>
                 <span class="metric-value text-current">${phys.I_total.toFixed(2)} A</span>
             </div>
             <div class="sim-metric-cell">
-                <span class="metric-label">Ολική Ισχύς ($P_{\\text{ολ}}$)</span>
+                <span class="metric-label">Ολική Ισχύς (<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">ολ</sub></span>)</span>
                 <span class="metric-value text-power">${phys.P_total.toFixed(1)} W</span>
             </div>
             <div class="sim-metric-cell">
-                <span class="metric-label">Τάση $V_1$ / Ρεύμα $I_1$</span>
+                <span class="metric-label">Τάση <span class="math-expr"><i class="math-var">V</i><sub class="math-sub">1</sub></span> / Ρεύμα <span class="math-expr"><i class="math-var">I</i><sub class="math-sub">1</sub></span></span>
                 <span class="metric-value" style="font-size: 0.95rem;">${phys.V1.toFixed(1)} V / ${phys.I1.toFixed(2)} A</span>
             </div>
             <div class="sim-metric-cell">
-                <span class="metric-label">Τάση $V_2$ / Ρεύμα $I_2$</span>
+                <span class="metric-label">Τάση <span class="math-expr"><i class="math-var">V</i><sub class="math-sub">2</sub></span> / Ρεύμα <span class="math-expr"><i class="math-var">I</i><sub class="math-sub">2</sub></span></span>
                 <span class="metric-value" style="font-size: 0.95rem;">${phys.V2.toFixed(1)} V / ${phys.I2.toFixed(2)} A</span>
             </div>
         `;

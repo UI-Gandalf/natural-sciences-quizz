@@ -555,10 +555,12 @@ function formatMathText(text) {
     function parseLatexSnippet(inner) {
         let s = inner.trim();
         // Greek words in \mathrm{} or \text{}
-        s = s.replace(/\\(?:mathrm|text)\s*\{\s*\\pi\\eta\\gamma\s*\}/g, 'πηγ');
-        s = s.replace(/\\(?:mathrm|text)\s*\{\s*o\\lambda\s*\}/g, 'ολ');
-        s = s.replace(/\\(?:mathrm|text)\s*\{\s*\\sigma\\epsilon\\iota\\rho\s*\}/g, 'σειρ');
-        s = s.replace(/\\(?:mathrm|text)\s*\{\s*\\pi\\alpha\\rho\s*\}/g, 'παρ');
+        s = s.replace(/\\(?:mathrm|text)\s*\{\s*(?:\\pi\\eta\\gamma|πηγ)\s*\}/g, 'πηγ');
+        s = s.replace(/\\(?:mathrm|text)\s*\{\s*(?:o\\lambda|ολ)\s*\}/g, 'ολ');
+        s = s.replace(/\\(?:mathrm|text)\s*\{\s*(?:\\sigma\\epsilon\\iota\\rho|σειρ)\s*\}/g, 'σειρ');
+        s = s.replace(/\\(?:mathrm|text)\s*\{\s*(?:\\pi\\alpha\\rho|παρ)\s*\}/g, 'παρ');
+        s = s.replace(/\\(?:mathrm|text)\s*\{\s*(?:\\delta\\iota\\alpha\\kappa|διακ)\s*\}/g, 'διακ');
+        s = s.replace(/\\(?:mathrm|text)\s*\{\s*([ΩVAWJs\s]+)\s*\}/g, ' <span class="math-unit">$1</span>');
         s = s.replace(/\\(?:mathrm|text)\s*\{\s*([^}]+)\s*\}/g, '<span class="math-unit">$1</span>');
 
         // Common TeX symbols & operators
