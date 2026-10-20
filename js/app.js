@@ -565,16 +565,16 @@ function formatMathText(text) {
 
         // Common TeX symbols & operators
         s = s.replace(/\\Omega\b/g, '<span class="math-sym">Ω</span>');
-        s = s.replace(/\\cdot\b/g, '<span class="math-op">·</span>');
-        s = s.replace(/\\(?:to|rightarrow)\b/g, '<span class="math-op">→</span>');
-        s = s.replace(/\\implies\b/g, '<span class="math-op">⇒</span>');
+        s = s.replace(/\\cdot\b/g, '<span class="math-op math-bin">·</span>');
+        s = s.replace(/\\(?:to|rightarrow)\b/g, '<span class="math-op math-rel">→</span>');
+        s = s.replace(/\\implies\b/g, '<span class="math-op math-rel">⇒</span>');
         s = s.replace(/\\infty\b/g, '<span class="math-sym">∞</span>');
         s = s.replace(/\\Delta\b/g, '<span class="math-sym">Δ</span>');
-        s = s.replace(/\\approx\b/g, '<span class="math-op">≈</span>');
-        s = s.replace(/\\(?:le|leq)\b/g, '<span class="math-op">≤</span>');
-        s = s.replace(/\\(?:ge|geq)\b/g, '<span class="math-op">≥</span>');
-        s = s.replace(/\\neq\b/g, '<span class="math-op">≠</span>');
-        s = s.replace(/\\times\b/g, '<span class="math-op">×</span>');
+        s = s.replace(/\\approx\b/g, '<span class="math-op math-rel">≈</span>');
+        s = s.replace(/\\(?:le|leq)\b/g, '<span class="math-op math-rel">≤</span>');
+        s = s.replace(/\\(?:ge|geq)\b/g, '<span class="math-op math-rel">≥</span>');
+        s = s.replace(/\\neq\b/g, '<span class="math-op math-rel">≠</span>');
+        s = s.replace(/\\times\b/g, '<span class="math-op math-bin">×</span>');
         s = s.replace(/\\\s+/g, ' ');
 
         // Nested / simple fractions (support nested braces in numerator / denominator)
@@ -590,18 +590,26 @@ function formatMathText(text) {
         s = s.replace(/([0-9A-Za-zΑ-Ωα-ωΩ\)]+)\^\{([^}]+)\}/g, '$1<sup class="math-sup">$2</sup>');
         s = s.replace(/([0-9A-Za-zΑ-Ωα-ωΩ\)]+)\^([0-9a-zA-Z\+\-]+)/g, '$1<sup class="math-sup">$2</sup>');
 
-        // Numbers in LaTeX math mode
-        s = s.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])(\d+(?:[.,]\d+)?)(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<span class="math-num-val">$1</span>');
+        // Operators: = , + , - (when not inside HTML tags)
+        s = s.replace(/(?<![<a-zA-Z/])=(?![=>])/g, ' <span class="math-op math-rel">=</span> ');
+        s = s.replace(/(?<![<a-zA-Z/])\+(?![+>])/g, ' <span class="math-op math-bin">+</span> ');
+        s = s.replace(/(?<![<a-zA-Z/])-(?![->])/g, ' <span class="math-op math-bin">−</span> ');
+
+        // Numbers in LaTeX math mode (ensuring not inside HTML tag/attribute)
+        s = s.replace(/(?<![0-9A-Za-zΑ-Ωα-ω])(\d+(?:[.,]\d+)?)(?![0-9A-Za-zΑ-Ωα-ω_])(?![^<]*>)/g, '<span class="math-num-val">$1</span>');
 
         // Italicize single Latin variables inside LaTeX expression (V, I, P, R, K, A, B, C, D, etc.)
         s = s.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])\b([A-Za-z])\b(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<i class="math-var">$1</i>');
 
-        return `<span class="math-expr">${s}</span>`;
+        // Normalize multiple spaces
+        s = s.replace(/\s{2,}/g, ' ');
+
+        return `<span class="math-expr">${s.trim()}</span>`;
     }
 
     let res = text;
     // LaTeX display math $$...$$
-    res = res.replace(/\$\$(.*?)\$\$/gs, (m, p1) => parseLatexSnippet(p1));
+    res = res.replace(/\$\$(.*?)\$\$/gs, (m, p1) => `<span class="math-display">${parseLatexSnippet(p1)}</span>`);
     // LaTeX inline math $...$
     res = res.replace(/\$([^\$\n]+?)\$/g, (m, p1) => parseLatexSnippet(p1));
 

@@ -742,33 +742,33 @@ window.CircuitSimulation = (function() {
                         <div class="hud-steps-title">📐 Αναλυτική Διαδικασία Υπολογισμού:</div>
                         ${state.topology === 'series' ? `
                             <div class="step-calc-line">
-                                <strong>1. Ολική Αντίσταση Σειράς:</strong>
-                                <span>$$R_{\\text{ολ}} = R_1 + R_2 = ${state.shortR1 ? '0' : state.R1} + ${state.shortR2 ? '0' : state.R2} = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</span>
+                                <div class="step-calc-header">1. Ολική Αντίσταση Σειράς:</div>
+                                <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${state.shortR1 ? '0' : state.R1} + ${state.shortR2 ? '0' : state.R2} = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
                             </div>
                             <div class="step-calc-line">
-                                <strong>2. Κοινό Ρεύμα Κυκλώματος:</strong>
-                                <span>$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{${phys.R_eq.toFixed(1)}\\ \\Omega} = ${phys.I_total.toFixed(2)}\\text{ A}$$</span>
+                                <div class="step-calc-header">2. Κοινό Ρεύμα Κυκλώματος:</div>
+                                <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{${phys.R_eq.toFixed(1)}\\ \\Omega} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
                             </div>
                             <div class="step-calc-line">
-                                <strong>3. Νόμος του Ohm για τον $R_1$:</strong>
-                                <span>$$V_1 = I \\cdot R_1 = ${i.toFixed(2)}\\text{ A} \\cdot ${isShorted ? 0 : state.R1}\\ \\Omega = ${v.toFixed(2)}\\text{ V}$$</span>
+                                <div class="step-calc-header">3. Νόμος του Ohm για τον $R_1$:</div>
+                                <div class="step-calc-formula">$$V_1 = I \\cdot R_1 = ${i.toFixed(2)}\\text{ A} \\cdot ${isShorted ? 0 : state.R1}\\ \\Omega = ${v.toFixed(2)}\\text{ V}$$</div>
                             </div>
                             <div class="step-calc-line">
-                                <strong>4. Ισχύς Κατανάλωσης (Joule):</strong>
-                                <span>$$P_1 = V_1 \\cdot I_1 = ${v.toFixed(2)}\\text{ V} \\cdot ${i.toFixed(2)}\\text{ A} = ${p.toFixed(2)}\\text{ W}$$</span>
+                                <div class="step-calc-header">4. Ισχύς Κατανάλωσης (Joule):</div>
+                                <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${v.toFixed(2)}\\text{ V} \\cdot ${i.toFixed(2)}\\text{ A} = ${p.toFixed(2)}\\text{ W}$$</div>
                             </div>
                         ` : `
                             <div class="step-calc-line">
-                                <strong>1. Τάση Κλάδου (Παράλληλη σύνδεση):</strong>
-                                <span>$$V_1 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$$</span>
+                                <div class="step-calc-header">1. Τάση Κλάδου (Παράλληλη σύνδεση):</div>
+                                <div class="step-calc-formula">$$V_1 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$$</div>
                             </div>
                             <div class="step-calc-line">
-                                <strong>2. Ρεύμα Κλάδου $R_1$ (Νόμος Ohm):</strong>
-                                <span>$$I_1 = \\frac{V_1}{R_1} = \\frac{${state.V_src}\\text{ V}}{${state.R1}\\ \\Omega} = ${i.toFixed(2)}\\text{ A}$$</span>
+                                <div class="step-calc-header">2. Ρεύμα Κλάδου $R_1$ (Νόμος Ohm):</div>
+                                <div class="step-calc-formula">$$I_1 = \\frac{V_1}{R_1} = \\frac{${state.V_src}\\text{ V}}{${state.R1}\\ \\Omega} = ${i.toFixed(2)}\\text{ A}$$</div>
                             </div>
                             <div class="step-calc-line">
-                                <strong>3. Ισχύς Κατανάλωσης Κλάδου 1:</strong>
-                                <span>$$P_1 = \\frac{V_1^2}{R_1} = \\frac{(${state.V_src})^2}{${state.R1}} = ${p.toFixed(2)}\\text{ W}$$</span>
+                                <div class="step-calc-header">3. Ισχύς Κατανάλωσης Κλάδου 1:</div>
+                                <div class="step-calc-formula">$$P_1 = \\frac{V_1^2}{R_1} = \\frac{(${state.V_src})^2}{${state.R1}} = ${p.toFixed(2)}\\text{ W}$$</div>
                             </div>
                         `}
                     </div>
@@ -815,25 +815,33 @@ window.CircuitSimulation = (function() {
                         <div class="hud-steps-title">📐 Αναλυτική Διαδικασία Υπολογισμού:</div>
                         ${state.topology === 'series' ? `
                             <div class="step-calc-line">
-                                <strong>1. Ολική Αντίσταση Σειράς:</strong>
-                                <span>$$R_{\\text{ολ}} = R_1 + R_2 = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</span>
+                                <div class="step-calc-header">1. Ολική Αντίσταση Σειράς:</div>
+                                <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
                             </div>
                             <div class="step-calc-line">
-                                <strong>2. Κοινό Ρεύμα Σειράς:</strong>
-                                <span>$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = ${phys.I_total.toFixed(2)}\\text{ A}$$</span>
+                                <div class="step-calc-header">2. Κοινό Ρεύμα Σειράς:</div>
+                                <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
                             </div>
                             <div class="step-calc-line">
-                                <strong>3. Νόμος Ohm για τον $R_2$:</strong>
-                                <span>$$V_2 = I \\cdot R_2 = ${i.toFixed(2)}\\text{ A} \\cdot ${isShorted ? 0 : state.R2}\\ \\Omega = ${v.toFixed(2)}\\text{ V}$$</span>
+                                <div class="step-calc-header">3. Νόμος Ohm για τον $R_2$:</div>
+                                <div class="step-calc-formula">$$V_2 = I \\cdot R_2 = ${i.toFixed(2)}\\text{ A} \\cdot ${isShorted ? 0 : state.R2}\\ \\Omega = ${v.toFixed(2)}\\text{ V}$$</div>
+                            </div>
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">4. Ισχύς Κατανάλωσης (Joule):</div>
+                                <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${v.toFixed(2)}\\text{ V} \\cdot ${i.toFixed(2)}\\text{ A} = ${p.toFixed(2)}\\text{ W}$$</div>
                             </div>
                         ` : `
                             <div class="step-calc-line">
-                                <strong>1. Τάση Κλάδου (Παράλληλη σύνδεση):</strong>
-                                <span>$$V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$$</span>
+                                <div class="step-calc-header">1. Τάση Κλάδου (Παράλληλη σύνδεση):</div>
+                                <div class="step-calc-formula">$$V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$$</div>
                             </div>
                             <div class="step-calc-line">
-                                <strong>2. Ρεύμα Κλάδου $R_2$ (Νόμος Ohm):</strong>
-                                <span>$$I_2 = \\frac{V_2}{R_2} = \\frac{${state.V_src}\\text{ V}}{${state.R2}\\ \\Omega} = ${i.toFixed(2)}\\text{ A}$$</span>
+                                <div class="step-calc-header">2. Ρεύμα Κλάδου $R_2$ (Νόμος Ohm):</div>
+                                <div class="step-calc-formula">$$I_2 = \\frac{V_2}{R_2} = \\frac{${state.V_src}\\text{ V}}{${state.R2}\\ \\Omega} = ${i.toFixed(2)}\\text{ A}$$</div>
+                            </div>
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">3. Ισχύς Κατανάλωσης Κλάδου 2:</div>
+                                <div class="step-calc-formula">$$P_2 = \\frac{V_2^2}{R_2} = \\frac{(${state.V_src})^2}{${state.R2}} = ${p.toFixed(2)}\\text{ W}$$</div>
                             </div>
                         `}
                     </div>
@@ -872,20 +880,20 @@ window.CircuitSimulation = (function() {
                     <div class="hud-steps-box">
                         <div class="hud-steps-title">📐 Επιστημονική Ανάλυση Πηγής:</div>
                         <div class="step-calc-line">
-                            <strong>1. Υπολογισμός $R_{\\text{ολ}}$:</strong>
+                            <div class="step-calc-header">1. Υπολογισμός $R_{\\text{ολ}}$:</div>
                             ${state.topology === 'series' ? `
-                                <span>$$R_{\\text{ολ}} = R_1 + R_2 = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</span>
+                                <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
                             ` : `
-                                <span>$$R_{\\text{ολ}} = \\frac{R_1 \\cdot R_2}{R_1 + R_2} = \\frac{${state.R1} \\cdot ${state.R2}}{${state.R1} + ${state.R2}} = ${phys.R_eq.toFixed(2)}\\ \\Omega$$</span>
+                                <div class="step-calc-formula">$$R_{\\text{ολ}} = \\frac{R_1 \\cdot R_2}{R_1 + R_2} = \\frac{${state.R1} \\cdot ${state.R2}}{${state.R1} + ${state.R2}} = ${phys.R_eq.toFixed(2)}\\ \\Omega$$</div>
                             `}
                         </div>
                         <div class="step-calc-line">
-                            <strong>2. Ολικό Ρεύμα από τον Νόμο του Ohm:</strong>
-                            <span>$$I_{\\text{ολ}} = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = ${phys.I_total.toFixed(2)}\\text{ A}$$</span>
+                            <div class="step-calc-header">2. Ολικό Ρεύμα από τον Νόμο του Ohm:</div>
+                            <div class="step-calc-formula">$$I_{\\text{ολ}} = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
                         </div>
                         <div class="step-calc-line">
-                            <strong>3. Συνολική Παρεχόμενη Ισχύς:</strong>
-                            <span>$$P_{\\text{ολ}} = V_{\\text{πηγ}} \\cdot I_{\\text{ολ}} = P_1 + P_2 = ${phys.P_total.toFixed(2)}\\text{ W}$$</span>
+                            <div class="step-calc-header">3. Συνολική Παρεχόμενη Ισχύς:</div>
+                            <div class="step-calc-formula">$$P_{\\text{ολ}} = V_{\\text{πηγ}} \\cdot I_{\\text{ολ}} = P_1 + P_2 = ${phys.P_total.toFixed(2)}\\text{ W}$$</div>
                         </div>
                     </div>
                 ` : ''}
