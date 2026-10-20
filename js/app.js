@@ -295,7 +295,7 @@ function renderSubjectSelection(classKey) {
         const sub = SUBJECT_CONFIG[subKey];
         const quizzes = (QUIZ_DATABASE[classKey] && QUIZ_DATABASE[classKey][subKey]) || [];
         const activeQuizzes = quizzes.filter(q => !q.isPlaceholder);
-        const badgeText = activeQuizzes.length > 0 ? `${activeQuizzes.length} Ενεργό Κουίζ` : 'Υπό Προετοιμασία';
+        const badgeText = activeQuizzes.length > 0 ? `${activeQuizzes.length} Κουίζ` : 'Υπό Προετοιμασία';
 
         html += `
             <div class="glass-card theme-${sub.theme}" onclick="navigateTo('class/${classKey}/subject/${subKey}')">
@@ -352,18 +352,15 @@ function renderQuizSelection(classKey, subjectKey) {
                 <button class="subject-tab-btn ${currentTab === 'quizzes' ? 'active' : ''}" id="tab-btn-quizzes" onclick="switchSubjectTab('quizzes')">
                     <span class="tab-icon">📝</span>
                     <span>Κουίζ Αξιολόγησης</span>
-                    <span class="tab-badge">${activeQuizzes.length > 0 ? `${activeQuizzes.length} Ενεργό` : 'Υπό προετοιμασία'}</span>
                 </button>
                 <button class="subject-tab-btn ${currentTab === 'theory' ? 'active' : ''}" id="tab-btn-theory" onclick="switchSubjectTab('theory')">
                     <span class="tab-icon">📖</span>
                     <span>Θεωρία Μαθήματος</span>
-                    <span class="tab-badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border-color: rgba(245, 158, 11, 0.4);">Σύντομα</span>
                 </button>
                 ${subjectKey === 'physics' ? `
                 <button class="subject-tab-btn ${currentTab === 'simulation' ? 'active' : ''}" id="tab-btn-simulation" onclick="switchSubjectTab('simulation')">
                     <span class="tab-icon">⚡</span>
                     <span>Προσομοίωση</span>
-                    <span class="tab-badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4);">ΝΕΟ</span>
                 </button>
                 ` : ''}
             </div>
@@ -382,7 +379,6 @@ function renderQuizSelection(classKey, subjectKey) {
                     <div class="card-content-wrap">
                         <div class="card-top-meta">
                             <span class="card-badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border-color: rgba(245, 158, 11, 0.4);">${quiz.badge}</span>
-                            <span class="card-badge">${quiz.level}</span>
                         </div>
                         <h3 class="card-title" style="font-size: 1.25rem; margin-top: 10px;">${quiz.title}</h3>
                         <p class="card-desc">${quiz.subtitle}</p>
@@ -410,7 +406,6 @@ function renderQuizSelection(classKey, subjectKey) {
                 <div class="card-content-wrap">
                     <div class="card-top-meta">
                         <span class="card-badge">${quiz.badge}</span>
-                        <span class="card-badge">${quiz.level}</span>
                     </div>
                     <h3 class="card-title" style="font-size: 1.25rem; margin-top: 10px;">${quiz.title}</h3>
                     <p class="card-desc">${quiz.subtitle}</p>
