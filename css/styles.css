@@ -3532,7 +3532,6 @@ mjx-container[display="true"], .katex-display {
     font-size: 15px;
     font-weight: 700;
     font-family: 'STIX Two Text', 'Outfit', 'Inter', serif;
-    text-anchor: middle;
 }
 
 .comp-resistor-bottom {
@@ -3540,7 +3539,13 @@ mjx-container[display="true"], .katex-display {
     font-size: 15px;
     font-weight: 700;
     font-family: 'STIX Two Text', 'Outfit', 'Inter', serif;
-    text-anchor: middle;
+}
+
+.comp-resistor-current {
+    fill: #34d399;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'STIX Two Text', 'Outfit', 'Inter', serif;
 }
 
 .resistor-body {
