@@ -831,7 +831,6 @@ window.CircuitSimulation = (function() {
                     </div>
                 </div>
 
-                <!-- Row 1: V1, I1, R1 -->
                 <div class="hud-readouts-grid cols-3" style="margin-bottom: 10px;">
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Πτώση Τάσης</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">1</sub></span>):</span></span>
@@ -847,7 +846,6 @@ window.CircuitSimulation = (function() {
                     </div>
                 </div>
 
-                <!-- Row 2: P1, P2, E1 (t=10s), E2 (t=10s) -->
                 <div class="hud-readouts-grid cols-4">
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Θερμική Ισχύς</span><span>(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">1</sub></span>):</span></span>
@@ -955,7 +953,6 @@ window.CircuitSimulation = (function() {
                     </div>
                 </div>
 
-                <!-- Row 1: V2, I2, R2 -->
                 <div class="hud-readouts-grid cols-3" style="margin-bottom: 10px;">
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Πτώση Τάσης</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">2</sub></span>):</span></span>
@@ -971,7 +968,6 @@ window.CircuitSimulation = (function() {
                     </div>
                 </div>
 
-                <!-- Row 2: P1, P2, E1 (t=10s), E2 (t=10s) -->
                 <div class="hud-readouts-grid cols-4">
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Θερμική Ισχύς</span><span>(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">1</sub></span>):</span></span>
@@ -1308,6 +1304,8 @@ window.CircuitSimulation = (function() {
     function updateMetrics() {
         const strip = document.getElementById('sim-metrics-strip');
         if (!strip) return;
+
+        const phys = computePhysics();
 
         let metricsHtml = `
             <div class="sim-metric-cell">

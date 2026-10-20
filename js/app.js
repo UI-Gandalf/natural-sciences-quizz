@@ -752,9 +752,9 @@ function formatMathText(text) {
     // Standalone Ohm symbol Ω
     res = res.replace(/(?<![0-9A-Za-zΑ-Ωα-ω<>="\'/])Ω(?![0-9A-Za-zΑ-Ωα-ω<>="\'/])/g, '<span class="math-expr"><span class="math-sym">Ω</span></span>');
 
-    // Arrow and logic operators
-    res = res.replace(/\s*->\s*/g, ' <span class="math-op">→</span> ');
-    res = res.replace(/\s*=>\s*/g, ' <span class="math-op">⇒</span> ');
+    // Arrow and logic operators (not part of HTML comments like <!-- or -->)
+    res = res.replace(/(?<![<!-])\s*->\s*(?!>)/g, ' <span class="math-op">→</span> ');
+    res = res.replace(/(?<![<!-])\s*=>\s*(?!>)/g, ' <span class="math-op">⇒</span> ');
 
     // Powers like I² or R²
     res = res.replace(/\b([VIPR])²\b/g, '<span class="math-expr"><i class="math-var">$1</i><sup class="math-sup">2</sup></span>');
