@@ -681,14 +681,14 @@ window.CircuitSimulation = (function() {
                        onmouseenter="CircuitSimulation.hoverProbe('R1')" 
                        onmouseleave="CircuitSimulation.hoverProbe(null)"
                        onclick="CircuitSimulation.selectProbe('R1')">
-                        <rect x="350" y="160" width="150" height="110" class="comp-hitbox" />
+                        <rect x="350" y="150" width="180" height="130" class="comp-hitbox" />
                         <!-- Vertical Resistor Box -->
                         <rect x="368" y="170" width="24" height="90" rx="4" class="resistor-body ${state.shortR1 ? 'shorted' : ''}" />
                         <text x="380" y="215" class="resistor-inner-text" dominant-baseline="middle" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
-                        <!-- Values to the right: R and V one above the other -->
-                        <text x="406" y="202" class="comp-resistor-top" text-anchor="start"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${state.R1} Ω</tspan></text>
-                        <text x="406" y="226" class="comp-resistor-bottom" text-anchor="start">${state.shortR1 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${phys.V1.toFixed(1)} V</tspan>`}</text>
-                        <text x="406" y="248" class="comp-resistor-current" text-anchor="start"><tspan font-style="italic">I</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${phys.I1.toFixed(2)} A</tspan></text>
+                        <!-- Values to the right: R, V, I (25% larger font: 19px) -->
+                        <text x="406" y="196" class="comp-resistor-par-top" text-anchor="start"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${state.R1} Ω</tspan></text>
+                        <text x="406" y="224" class="comp-resistor-par-bottom" text-anchor="start">${state.shortR1 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${phys.V1.toFixed(1)} V</tspan>`}</text>
+                        <text x="406" y="252" class="comp-resistor-par-current" text-anchor="start"><tspan font-style="italic">I</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${phys.I1.toFixed(2)} A</tspan></text>
 
                         <!-- Bypass Wire if shorted -->
                         ${state.shortR1 ? `
@@ -702,14 +702,14 @@ window.CircuitSimulation = (function() {
                        onmouseenter="CircuitSimulation.hoverProbe('R2')" 
                        onmouseleave="CircuitSimulation.hoverProbe(null)"
                        onclick="CircuitSimulation.selectProbe('R2')">
-                        <rect x="590" y="160" width="160" height="110" class="comp-hitbox" />
+                        <rect x="590" y="150" width="180" height="130" class="comp-hitbox" />
                         <!-- Vertical Resistor Box -->
                         <rect x="608" y="170" width="24" height="90" rx="4" class="resistor-body ${state.shortR2 ? 'shorted' : ''}" />
                         <text x="620" y="215" class="resistor-inner-text" dominant-baseline="middle" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
-                        <!-- Values to the right: R and V one above the other -->
-                        <text x="646" y="202" class="comp-resistor-top" text-anchor="start"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${state.R2} Ω</tspan></text>
-                        <text x="646" y="226" class="comp-resistor-bottom" text-anchor="start">${state.shortR2 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${phys.V2.toFixed(1)} V</tspan>`}</text>
-                        <text x="646" y="248" class="comp-resistor-current" text-anchor="start"><tspan font-style="italic">I</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${phys.I2.toFixed(2)} A</tspan></text>
+                        <!-- Values to the right: R, V, I (25% larger font: 19px) -->
+                        <text x="646" y="196" class="comp-resistor-par-top" text-anchor="start"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${state.R2} Ω</tspan></text>
+                        <text x="646" y="224" class="comp-resistor-par-bottom" text-anchor="start">${state.shortR2 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${phys.V2.toFixed(1)} V</tspan>`}</text>
+                        <text x="646" y="252" class="comp-resistor-par-current" text-anchor="start"><tspan font-style="italic">I</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${phys.I2.toFixed(2)} A</tspan></text>
 
                         <!-- Bypass Wire if shorted -->
                         ${state.shortR2 ? `
@@ -814,8 +814,11 @@ window.CircuitSimulation = (function() {
         if (probeTarget === 'R1') {
             const v = phys.V1;
             const i = phys.I1;
-            const p = phys.P1;
             const isShorted = state.shortR1;
+            const p1 = phys.P1;
+            const p2 = phys.P2;
+            const e1 = p1 * 10;
+            const e2 = p2 * 10;
 
             detailsHtml = `
                 <div class="hud-item-header">
@@ -828,7 +831,8 @@ window.CircuitSimulation = (function() {
                     </div>
                 </div>
 
-                <div class="hud-readouts-grid">
+                <!-- Row 1: V1, I1, R1 -->
+                <div class="hud-readouts-grid cols-3" style="margin-bottom: 10px;">
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Πτώση Τάσης</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">1</sub></span>):</span></span>
                         <span class="meter-val text-voltage">${v.toFixed(2)} V</span>
@@ -841,14 +845,30 @@ window.CircuitSimulation = (function() {
                         <span class="meter-lbl"><span>Αντίσταση</span><span>(<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span>):</span></span>
                         <span class="meter-val text-resistor">${state.R1} Ω</span>
                     </div>
+                </div>
+
+                <!-- Row 2: P1, P2, E1 (t=10s), E2 (t=10s) -->
+                <div class="hud-readouts-grid cols-4">
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Θερμική Ισχύς</span><span>(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">1</sub></span>):</span></span>
-                        <span class="meter-val text-power">${p.toFixed(2)} W</span>
+                        <span class="meter-val text-power">${p1.toFixed(2)} W</span>
+                    </div>
+                    <div class="hud-meter-box">
+                        <span class="meter-lbl"><span>Θερμική Ισχύς</span><span>(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">2</sub></span>):</span></span>
+                        <span class="meter-val text-power">${p2.toFixed(2)} W</span>
+                    </div>
+                    <div class="hud-meter-box">
+                        <span class="meter-lbl"><span>Θερμότητα Joule</span><span>(<span class="math-expr"><i class="math-var">E</i><sub class="math-sub">1</sub></span>, <span class="math-expr"><i class="math-var">t</i> = 10s</span>):</span></span>
+                        <span class="meter-val text-energy">${e1.toFixed(1)} J</span>
+                    </div>
+                    <div class="hud-meter-box">
+                        <span class="meter-lbl"><span>Θερμότητα Joule</span><span>(<span class="math-expr"><i class="math-var">E</i><sub class="math-sub">2</sub></span>, <span class="math-expr"><i class="math-var">t</i> = 10s</span>):</span></span>
+                        <span class="meter-val text-energy">${e2.toFixed(1)} J</span>
                     </div>
                 </div>
 
                 ${isSteps ? `
-                    <div class="hud-steps-box">
+                    <div class="hud-steps-box" style="margin-top: 14px;">
                         <div class="hud-steps-title">📐 Αναλυτική Διαδικασία Υπολογισμού:</div>
                         ${state.topology === 'series' ? `
                             <div class="step-calc-line">
@@ -868,29 +888,48 @@ window.CircuitSimulation = (function() {
                                 `}
                             </div>
                             <div class="step-calc-line">
-                                <div class="step-calc-header">3. Νόμος του Ohm για τον $R_1$:</div>
-                                <div class="step-calc-formula">$$V_1 = I \\cdot R_1 = ${i.toFixed(2)}\\text{ A} \\cdot ${isShorted ? 0 : state.R1}\\ \\Omega = ${v.toFixed(2)}\\text{ V}$$</div>
+                                <div class="step-calc-header">3. Πτώσεις Τάσης Αντιστατών (Νόμος Ohm):</div>
+                                <div class="step-calc-formula">$$V_1 = I \\cdot R_1 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR1 ? 0 : state.R1}\\ \\Omega = ${phys.V1.toFixed(2)}\\text{ V}$$</div>
+                                <div class="step-calc-formula">$$V_2 = I \\cdot R_2 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR2 ? 0 : state.R2}\\ \\Omega = ${phys.V2.toFixed(2)}\\text{ V}$$</div>
                             </div>
                             <div class="step-calc-line">
-                                <div class="step-calc-header">4. Ισχύς Κατανάλωσης (Joule):</div>
-                                <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${v.toFixed(2)}\\text{ V} \\cdot ${i.toFixed(2)}\\text{ A} = ${p.toFixed(2)}\\text{ W}$$</div>
+                                <div class="step-calc-header">4. Θερμική Ισχύς Κατανάλωσης (σε Watt):</div>
+                                <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${phys.V1.toFixed(2)}\\text{ V} \\cdot ${phys.I1.toFixed(2)}\\text{ A} = ${p1.toFixed(2)}\\text{ W}$$</div>
+                                <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${phys.V2.toFixed(2)}\\text{ V} \\cdot ${phys.I2.toFixed(2)}\\text{ A} = ${p2.toFixed(2)}\\text{ W}$$</div>
+                            </div>
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">5. Εκλυόμενη Θερμότητα / Ενέργεια ($t = 10\\text{ s}$ - Νόμος Joule σε Joule):</div>
+                                <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
+                                <div class="step-calc-formula">$$E_2 = P_2 \\cdot t = ${p2.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e2.toFixed(1)}\\text{ J}$$</div>
                             </div>
                         ` : `
                             <div class="step-calc-line">
-                                <div class="step-calc-header">1. Τάση Κλάδου (Παράλληλη σύνδεση):</div>
+                                <div class="step-calc-header">1. Τάσεις Παράλληλων Κλάδων:</div>
                                 ${!state.switchClosed ? `
-                                    <div class="step-calc-formula">$$V_1 = 0.00\\text{ V} \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
+                                    <div class="step-calc-formula">$$V_1 = V_2 = 0.00\\text{ V} \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
                                 ` : `
-                                    <div class="step-calc-formula">$$V_1 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V} \\quad (V_A - V_B = ${state.V_src}\\text{ V})$$</div>
+                                    <div class="step-calc-formula">$$V_1 = V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V} \\quad (V_A - V_B = V_C - V_E = ${state.V_src}\\text{ V})$$</div>
                                 `}
                             </div>
                             <div class="step-calc-line">
-                                <div class="step-calc-header">2. Ρεύμα Κλάδου $R_1$ (Νόμος Ohm):</div>
-                                <div class="step-calc-formula">$$I_1 = \\frac{V_1}{R_1} = \\frac{${v.toFixed(1)}\\text{ V}}{${state.R1}\\ \\Omega} = ${i.toFixed(2)}\\text{ A}$$</div>
+                                <div class="step-calc-header">2. Ρεύματα Κλάδων (Νόμος Ohm):</div>
+                                ${!state.switchClosed ? `
+                                    <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}, \\quad I_2 = 0.00\\text{ A}, \\quad I_{\\text{ολ}} = 0.00\\text{ A}$$</div>
+                                ` : `
+                                    <div class="step-calc-formula">$$I_1 = \\frac{V_1}{R_1} = \\frac{${phys.V1.toFixed(1)}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}$$</div>
+                                    <div class="step-calc-formula">$$I_2 = \\frac{V_2}{R_2} = \\frac{${phys.V2.toFixed(1)}\\text{ V}}{${state.R2}\\ \\Omega} = ${phys.I2.toFixed(2)}\\text{ A}$$</div>
+                                    <div class="step-calc-formula">$$I_{\\text{ολ}} = I_1 + I_2 = ${phys.I1.toFixed(2)}\\text{ A} + ${phys.I2.toFixed(2)}\\text{ A} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
+                                `}
                             </div>
                             <div class="step-calc-line">
-                                <div class="step-calc-header">3. Ισχύς Κατανάλωσης Κλάδου 1:</div>
-                                <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${v.toFixed(2)}\\text{ V} \\cdot ${i.toFixed(2)}\\text{ A} = ${p.toFixed(2)}\\text{ W}$$</div>
+                                <div class="step-calc-header">3. Θερμική Ισχύς Κατανάλωσης (σε Watt):</div>
+                                <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${phys.V1.toFixed(2)}\\text{ V} \\cdot ${phys.I1.toFixed(2)}\\text{ A} = ${p1.toFixed(2)}\\text{ W}$$</div>
+                                <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${phys.V2.toFixed(2)}\\text{ V} \\cdot ${phys.I2.toFixed(2)}\\text{ A} = ${p2.toFixed(2)}\\text{ W}$$</div>
+                            </div>
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">4. Εκλυόμενη Θερμότητα / Ενέργεια ($t = 10\\text{ s}$ - Νόμος Joule σε Joule):</div>
+                                <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
+                                <div class="step-calc-formula">$$E_2 = P_2 \\cdot t = ${p2.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e2.toFixed(1)}\\text{ J}$$</div>
                             </div>
                         `}
                     </div>
@@ -899,8 +938,11 @@ window.CircuitSimulation = (function() {
         } else if (probeTarget === 'R2') {
             const v = phys.V2;
             const i = phys.I2;
-            const p = phys.P2;
             const isShorted = state.shortR2;
+            const p1 = phys.P1;
+            const p2 = phys.P2;
+            const e1 = p1 * 10;
+            const e2 = p2 * 10;
 
             detailsHtml = `
                 <div class="hud-item-header">
@@ -913,7 +955,8 @@ window.CircuitSimulation = (function() {
                     </div>
                 </div>
 
-                <div class="hud-readouts-grid">
+                <!-- Row 1: V2, I2, R2 -->
+                <div class="hud-readouts-grid cols-3" style="margin-bottom: 10px;">
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Πτώση Τάσης</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">2</sub></span>):</span></span>
                         <span class="meter-val text-voltage">${v.toFixed(2)} V</span>
@@ -926,14 +969,30 @@ window.CircuitSimulation = (function() {
                         <span class="meter-lbl"><span>Αντίσταση</span><span>(<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span>):</span></span>
                         <span class="meter-val text-resistor">${state.R2} Ω</span>
                     </div>
+                </div>
+
+                <!-- Row 2: P1, P2, E1 (t=10s), E2 (t=10s) -->
+                <div class="hud-readouts-grid cols-4">
+                    <div class="hud-meter-box">
+                        <span class="meter-lbl"><span>Θερμική Ισχύς</span><span>(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">1</sub></span>):</span></span>
+                        <span class="meter-val text-power">${p1.toFixed(2)} W</span>
+                    </div>
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Θερμική Ισχύς</span><span>(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">2</sub></span>):</span></span>
-                        <span class="meter-val text-power">${p.toFixed(2)} W</span>
+                        <span class="meter-val text-power">${p2.toFixed(2)} W</span>
+                    </div>
+                    <div class="hud-meter-box">
+                        <span class="meter-lbl"><span>Θερμότητα Joule</span><span>(<span class="math-expr"><i class="math-var">E</i><sub class="math-sub">1</sub></span>, <span class="math-expr"><i class="math-var">t</i> = 10s</span>):</span></span>
+                        <span class="meter-val text-energy">${e1.toFixed(1)} J</span>
+                    </div>
+                    <div class="hud-meter-box">
+                        <span class="meter-lbl"><span>Θερμότητα Joule</span><span>(<span class="math-expr"><i class="math-var">E</i><sub class="math-sub">2</sub></span>, <span class="math-expr"><i class="math-var">t</i> = 10s</span>):</span></span>
+                        <span class="meter-val text-energy">${e2.toFixed(1)} J</span>
                     </div>
                 </div>
 
                 ${isSteps ? `
-                    <div class="hud-steps-box">
+                    <div class="hud-steps-box" style="margin-top: 14px;">
                         <div class="hud-steps-title">📐 Αναλυτική Διαδικασία Υπολογισμού:</div>
                         ${state.topology === 'series' ? `
                             <div class="step-calc-line">
@@ -953,29 +1012,48 @@ window.CircuitSimulation = (function() {
                                 `}
                             </div>
                             <div class="step-calc-line">
-                                <div class="step-calc-header">3. Νόμος Ohm για τον $R_2$:</div>
-                                <div class="step-calc-formula">$$V_2 = I \\cdot R_2 = ${i.toFixed(2)}\\text{ A} \\cdot ${isShorted ? 0 : state.R2}\\ \\Omega = ${v.toFixed(2)}\\text{ V}$$</div>
+                                <div class="step-calc-header">3. Πτώσεις Τάσης Αντιστατών (Νόμος Ohm):</div>
+                                <div class="step-calc-formula">$$V_1 = I \\cdot R_1 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR1 ? 0 : state.R1}\\ \\Omega = ${phys.V1.toFixed(2)}\\text{ V}$$</div>
+                                <div class="step-calc-formula">$$V_2 = I \\cdot R_2 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR2 ? 0 : state.R2}\\ \\Omega = ${phys.V2.toFixed(2)}\\text{ V}$$</div>
                             </div>
                             <div class="step-calc-line">
-                                <div class="step-calc-header">4. Ισχύς Κατανάλωσης (Joule):</div>
-                                <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${v.toFixed(2)}\\text{ V} \\cdot ${i.toFixed(2)}\\text{ A} = ${p.toFixed(2)}\\text{ W}$$</div>
+                                <div class="step-calc-header">4. Θερμική Ισχύς Κατανάλωσης (σε Watt):</div>
+                                <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${phys.V1.toFixed(2)}\\text{ V} \\cdot ${phys.I1.toFixed(2)}\\text{ A} = ${p1.toFixed(2)}\\text{ W}$$</div>
+                                <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${phys.V2.toFixed(2)}\\text{ V} \\cdot ${phys.I2.toFixed(2)}\\text{ A} = ${p2.toFixed(2)}\\text{ W}$$</div>
+                            </div>
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">5. Εκλυόμενη Θερμότητα / Ενέργεια ($t = 10\\text{ s}$ - Νόμος Joule σε Joule):</div>
+                                <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
+                                <div class="step-calc-formula">$$E_2 = P_2 \\cdot t = ${p2.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e2.toFixed(1)}\\text{ J}$$</div>
                             </div>
                         ` : `
                             <div class="step-calc-line">
-                                <div class="step-calc-header">1. Τάση Κλάδου (Παράλληλη σύνδεση):</div>
+                                <div class="step-calc-header">1. Τάσεις Παράλληλων Κλάδων:</div>
                                 ${!state.switchClosed ? `
-                                    <div class="step-calc-formula">$$V_2 = 0.00\\text{ V} \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
+                                    <div class="step-calc-formula">$$V_1 = V_2 = 0.00\\text{ V} \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
                                 ` : `
-                                    <div class="step-calc-formula">$$V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V} \\quad (V_C - V_E = ${state.V_src}\\text{ V})$$</div>
+                                    <div class="step-calc-formula">$$V_1 = V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V} \\quad (V_A - V_B = V_C - V_E = ${state.V_src}\\text{ V})$$</div>
                                 `}
                             </div>
                             <div class="step-calc-line">
-                                <div class="step-calc-header">2. Ρεύμα Κλάδου $R_2$ (Νόμος Ohm):</div>
-                                <div class="step-calc-formula">$$I_2 = \\frac{V_2}{R_2} = \\frac{${v.toFixed(1)}\\text{ V}}{${state.R2}\\ \\Omega} = ${i.toFixed(2)}\\text{ A}$$</div>
+                                <div class="step-calc-header">2. Ρεύματα Κλάδων (Νόμος Ohm):</div>
+                                ${!state.switchClosed ? `
+                                    <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}, \\quad I_2 = 0.00\\text{ A}, \\quad I_{\\text{ολ}} = 0.00\\text{ A}$$</div>
+                                ` : `
+                                    <div class="step-calc-formula">$$I_1 = \\frac{V_1}{R_1} = \\frac{${phys.V1.toFixed(1)}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}$$</div>
+                                    <div class="step-calc-formula">$$I_2 = \\frac{V_2}{R_2} = \\frac{${phys.V2.toFixed(1)}\\text{ V}}{${state.R2}\\ \\Omega} = ${phys.I2.toFixed(2)}\\text{ A}$$</div>
+                                    <div class="step-calc-formula">$$I_{\\text{ολ}} = I_1 + I_2 = ${phys.I1.toFixed(2)}\\text{ A} + ${phys.I2.toFixed(2)}\\text{ A} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
+                                `}
                             </div>
                             <div class="step-calc-line">
-                                <div class="step-calc-header">3. Ισχύς Κατανάλωσης Κλάδου 2:</div>
-                                <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${v.toFixed(2)}\\text{ V} \\cdot ${i.toFixed(2)}\\text{ A} = ${p.toFixed(2)}\\text{ W}$$</div>
+                                <div class="step-calc-header">3. Θερμική Ισχύς Κατανάλωσης (σε Watt):</div>
+                                <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${phys.V1.toFixed(2)}\\text{ V} \\cdot ${phys.I1.toFixed(2)}\\text{ A} = ${p1.toFixed(2)}\\text{ W}$$</div>
+                                <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${phys.V2.toFixed(2)}\\text{ V} \\cdot ${phys.I2.toFixed(2)}\\text{ A} = ${p2.toFixed(2)}\\text{ W}$$</div>
+                            </div>
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">4. Εκλυόμενη Θερμότητα / Ενέργεια ($t = 10\\text{ s}$ - Νόμος Joule σε Joule):</div>
+                                <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
+                                <div class="step-calc-formula">$$E_2 = P_2 \\cdot t = ${p2.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e2.toFixed(1)}\\text{ J}$$</div>
                             </div>
                         `}
                     </div>
