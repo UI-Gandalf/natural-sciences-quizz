@@ -2140,6 +2140,21 @@ body[data-subject] .bg-overlay {
     text-align: center;
 }
 
+/* LaTeX Spacing Commands (\quad, \qquad) */
+.math-space.math-quad,
+.math-quad {
+    display: inline-block;
+    width: 1.25em;
+    min-width: 8px;
+}
+
+.math-space.math-qquad,
+.math-qquad {
+    display: inline-block;
+    width: 2.25em;
+    min-width: 16px;
+}
+
 /* MathJax & KaTeX Custom Theme Integration */
 mjx-container, .katex {
     outline: none !important;

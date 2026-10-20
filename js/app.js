@@ -567,6 +567,7 @@ function formatMathText(text) {
         s = s.replace(/\\Omega\b/g, '<span class="math-sym">Ω</span>');
         s = s.replace(/\\cdot\b/g, '<span class="math-op math-bin">·</span>');
         s = s.replace(/\\(?:to|rightarrow)\b/g, '<span class="math-op math-rel">→</span>');
+        s = s.replace(/\\iff\b/g, '<span class="math-op math-rel">⇔</span>');
         s = s.replace(/\\implies\b/g, '<span class="math-op math-rel">⇒</span>');
         s = s.replace(/\\infty\b/g, '<span class="math-sym">∞</span>');
         s = s.replace(/\\Delta\b/g, '<span class="math-sym">Δ</span>');
@@ -575,6 +576,9 @@ function formatMathText(text) {
         s = s.replace(/\\(?:ge|geq)\b/g, '<span class="math-op math-rel">≥</span>');
         s = s.replace(/\\neq\b/g, '<span class="math-op math-rel">≠</span>');
         s = s.replace(/\\times\b/g, '<span class="math-op math-bin">×</span>');
+        s = s.replace(/\\qquad(?=[A-Za-z0-9_]|\b)\s*/g, '<span class="math-space math-qquad">&emsp;&emsp;</span>');
+        s = s.replace(/\\quad(?=[A-Za-z0-9_]|\b)\s*/g, '<span class="math-space math-quad">&emsp;</span>');
+        s = s.replace(/\\([,;:!])\s*/g, ' ');
         s = s.replace(/\\\s+/g, ' ');
 
         // Nested / simple fractions (support nested braces in numerator / denominator)
@@ -612,6 +616,11 @@ function formatMathText(text) {
     res = res.replace(/\$\$(.*?)\$\$/gs, (m, p1) => `<span class="math-display">${parseLatexSnippet(p1)}</span>`);
     // LaTeX inline math $...$
     res = res.replace(/\$([^\$\n]+?)\$/g, (m, p1) => parseLatexSnippet(p1));
+
+    // Handle any LaTeX spacing / relation commands in plain text
+    res = res.replace(/\\qquad(?=[A-Za-z0-9_]|\b)\s*/g, '<span class="math-space math-qquad">&emsp;&emsp;</span>');
+    res = res.replace(/\\quad(?=[A-Za-z0-9_]|\b)\s*/g, '<span class="math-space math-quad">&emsp;</span>');
+    res = res.replace(/\\iff\b/g, '<span class="math-op math-rel">⇔</span>');
 
     // 2. Physics & Electrical Formulas in plain Greek/Latin text
     // Greek subscripts: Vπηγ, Vδιακ, Rολ, Iολ, Iπηγ, Pολ, Rσειρ, Rπαρ
@@ -806,7 +815,7 @@ function renderQuizRunner(quiz) {
 
                     <!-- Action Buttons -->
                     <div class="actions-bar">
-                        <button class="hint-btn" id="hint-btn" onclick="toggleHint()" title="Εμφάνιση ή απόκρυψη υπόδειξης (Πλήκτρο H)">
+                        <button class="hint-btn" id="hint-btn" onclick="toggleHint()" style="display: none;" title="Εμφάνιση ή απόκρυψη υπόδειξης (Πλήκτρο H)">
                             <span>💡</span>
                             <span id="hint-btn-text">Υπόδειξη</span>
                             <span id="hint-chevron">▾</span>
@@ -942,21 +951,32 @@ function loadCurrentQuestion() {
 
     // Reset Attempts & Hint
     qr.currentAttempts = 0;
+    qr.hintOpen = false;
     const hintBox = document.getElementById('hint-box');
     const hintBtn = document.getElementById('hint-btn');
-    hintBox.style.display = 'none';
+    if (hintBox) hintBox.style.display = 'none';
+
+    // Strict hint check: only true if non-empty string
+    const hasHint = Boolean(q && typeof q.hint === 'string' && q.hint.trim().length > 0);
+
     if (hintBtn) {
-        if (qType === 'matching' || qType === 'cascading') {
+        if (hasHint && (qType === 'matching' || qType === 'cascading')) {
             hintBtn.style.display = 'inline-flex';
             hintBtn.classList.add('pulse-ready');
         } else {
-            hintBtn.style.display = 'none'; // Hint hidden initially on 1st attempt
+            // Completely hide hint button if question has no hint, or if standard MCQ initially
+            hintBtn.style.display = 'none';
             hintBtn.classList.remove('pulse-ready');
         }
     }
-    document.getElementById('hint-content').innerHTML = formatMathText(q.hint || q.exp);
-    document.getElementById('hint-btn-text').innerText = 'Υπόδειξη';
-    document.getElementById('hint-chevron').innerText = '▾';
+    const hintContent = document.getElementById('hint-content');
+    if (hintContent) {
+        hintContent.innerHTML = hasHint ? formatMathText(q.hint) : '';
+    }
+    const hintBtnText = document.getElementById('hint-btn-text');
+    if (hintBtnText) hintBtnText.innerText = 'Υπόδειξη';
+    const hintChevron = document.getElementById('hint-chevron');
+    if (hintChevron) hintChevron.innerText = '▾';
 
     // Reset Feedback
     const feedbackBox = document.getElementById('feedback-box');
@@ -1459,6 +1479,14 @@ function submitMatchingAnswer() {
     feedback.style.display = 'block';
     triggerMathTypeset(feedback);
 
+    const hintBtn = document.getElementById('hint-btn');
+    if (hintBtn) {
+        hintBtn.style.display = 'none';
+        hintBtn.classList.remove('pulse-ready');
+    }
+    const hintBox = document.getElementById('hint-box');
+    if (hintBox) hintBox.style.display = 'none';
+
     const nextBtn = document.getElementById('next-btn');
     nextBtn.classList.add('pulse-ready');
     document.getElementById('next-btn-text').innerText = 'Επόμενο';
@@ -1699,14 +1727,29 @@ function selectCascadingStepOption(stepIdx, optIdx) {
 
         if (qr.cascadingState.stepAttempts === 1) {
             const hintBtn = document.getElementById('hint-btn');
+            const hasStepHint = Boolean((step && typeof step.hint === 'string' && step.hint.trim().length > 0) || (q && typeof q.hint === 'string' && q.hint.trim().length > 0));
             if (hintBtn) {
-                hintBtn.style.display = 'inline-flex';
-                hintBtn.classList.add('pulse-ready');
+                if (hasStepHint) {
+                    hintBtn.style.display = 'inline-flex';
+                    hintBtn.classList.add('pulse-ready');
+                    const hintContent = document.getElementById('hint-content');
+                    if (hintContent) {
+                        hintContent.innerHTML = formatMathText((step && step.hint && step.hint.trim()) ? step.hint : q.hint);
+                    }
+                } else {
+                    hintBtn.style.display = 'none';
+                    hintBtn.classList.remove('pulse-ready');
+                }
             }
             feedbackEl.className = 'step-mini-feedback warning';
-            feedbackEl.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Έχετε άλλη 1 προσπάθεια. Συμβουλευτείτε την <strong>Υπόδειξη (💡)</strong> παρακάτω και δοκιμάστε ξανά!`;
+            if (hasStepHint) {
+                feedbackEl.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Έχετε άλλη 1 προσπάθεια. Συμβουλευτείτε την <strong>Υπόδειξη (💡)</strong> παρακάτω και δοκιμάστε ξανά!`;
+                showToast('💡 Ξεκλειδώθηκε η υπόδειξη για το βήμα!');
+            } else {
+                feedbackEl.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Έχετε άλλη 1 προσπάθεια. Δοκιμάστε ξανά!`;
+                showToast('⚠️ Μη σωστή επιλογή! Δοκιμάστε ξανά.');
+            }
             feedbackEl.style.display = 'block';
-            showToast('💡 Ξεκλειδώθηκε η υπόδειξη για το βήμα!');
         } else {
             // Second wrong attempt: reveal correct and unlock next step
             btns.forEach(b => b.disabled = true);
@@ -1932,6 +1975,12 @@ function selectQuizOption(idx) {
             btns[idx].appendChild(badge);
         }
         btns.forEach(btn => btn.disabled = true);
+        if (hintBtn) {
+            hintBtn.style.display = 'none';
+            hintBtn.classList.remove('pulse-ready');
+        }
+        const hintBox = document.getElementById('hint-box');
+        if (hintBox) hintBox.style.display = 'none';
 
         feedback.className = 'feedback-box correct';
         if (qr.currentAttempts === 1) {
@@ -1974,17 +2023,27 @@ function selectQuizOption(idx) {
         if (qr.currentAttempts === 1) {
             // First incorrect attempt:
             // 1. DO NOT show the correct answer!
-            // 2. Unlock the Hint button!
+            // 2. Unlock the Hint button ONLY IF a hint exists!
+            const hasHint = Boolean(q && typeof q.hint === 'string' && q.hint.trim().length > 0);
             if (hintBtn) {
-                hintBtn.style.display = 'inline-flex';
-                hintBtn.classList.add('pulse-ready');
+                if (hasHint) {
+                    hintBtn.style.display = 'inline-flex';
+                    hintBtn.classList.add('pulse-ready');
+                } else {
+                    hintBtn.style.display = 'none';
+                    hintBtn.classList.remove('pulse-ready');
+                }
             }
 
             feedback.className = 'feedback-box warning';
-            feedback.innerHTML = `<strong>✗ Μη σωστή επιλογή!</strong> Έχετε άλλη 1 προσπάθεια. Συμβουλευτείτε την <strong>Υπόδειξη (💡)</strong> που μόλις ξεκλειδώθηκε παρακάτω και δοκιμάστε ξανά!`;
+            if (hasHint) {
+                feedback.innerHTML = `<strong>✗ Μη σωστή επιλογή!</strong> Έχετε άλλη 1 προσπάθεια. Συμβουλευτείτε την <strong>Υπόδειξη (💡)</strong> που μόλις ξεκλειδώθηκε παρακάτω και δοκιμάστε ξανά!`;
+                showToast('💡 Ξεκλειδώθηκε η υπόδειξη! Δοκιμάστε ξανά.');
+            } else {
+                feedback.innerHTML = `<strong>✗ Μη σωστή επιλογή!</strong> Έχετε άλλη 1 προσπάθεια. Δοκιμάστε ξανά!`;
+                showToast('⚠️ Μη σωστή επιλογή! Δοκιμάστε ξανά.');
+            }
             feedback.style.display = 'block';
-
-            showToast('💡 Ξεκλειδώθηκε η υπόδειξη! Δοκιμάστε ξανά.');
 
             // Other buttons remain enabled for attempt 2!
             // qr.answered remains false
@@ -1993,6 +2052,12 @@ function selectQuizOption(idx) {
             // Second incorrect attempt:
             // NOW, and only now, reveal the correct answer with green highlight!
             qr.answered = true;
+            if (hintBtn) {
+                hintBtn.style.display = 'none';
+                hintBtn.classList.remove('pulse-ready');
+            }
+            const hintBox = document.getElementById('hint-box');
+            if (hintBox) hintBox.style.display = 'none';
             btns.forEach(btn => btn.disabled = true);
 
             // Highlight the correct answer with vibrant green & checkmark badge
@@ -2288,28 +2353,33 @@ function renderAnsweredQuestionReview(reviewIndex) {
 
 function toggleHint() {
     const qr = AppState.quizRunner;
+    const quiz = AppState.currentQuiz;
+    if (!qr || !quiz) return;
+    const qIndex = qr.activeQueue[qr.currentPos];
+    const q = quiz.questions[qIndex];
+    const hasHint = Boolean(q && typeof q.hint === 'string' && q.hint.trim().length > 0);
     const hintBtn = document.getElementById('hint-btn');
-    if (!hintBtn || hintBtn.style.display === 'none') {
-        showToast('💡 Η υπόδειξη ξεκλειδώνεται μόνο αν χρειαστείτε 2η προσπάθεια!');
+    if (!hasHint || !hintBtn || hintBtn.style.display === 'none') {
         return;
     }
     qr.hintOpen = !qr.hintOpen;
     const hintBox = document.getElementById('hint-box');
     const hintBtnText = document.getElementById('hint-btn-text');
     const hintChevron = document.getElementById('hint-chevron');
+    if (!hintBox) return;
 
     if (qr.hintOpen) {
         hintBox.style.display = 'block';
-        hintBtnText.innerText = 'Απόκρυψη';
-        hintChevron.innerText = '▴';
+        if (hintBtnText) hintBtnText.innerText = 'Απόκρυψη';
+        if (hintChevron) hintChevron.innerText = '▴';
         triggerMathTypeset(hintBox);
         setTimeout(() => {
             hintBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 60);
     } else {
         hintBox.style.display = 'none';
-        hintBtnText.innerText = 'Υπόδειξη';
-        hintChevron.innerText = '▾';
+        if (hintBtnText) hintBtnText.innerText = 'Υπόδειξη';
+        if (hintChevron) hintChevron.innerText = '▾';
     }
 }
 
@@ -2660,7 +2730,15 @@ function setupGlobalKeyboardShortcuts() {
         } 
         // Hint: H or Η
         else if (e.key.toLowerCase() === 'h' || e.key.toLowerCase() === 'η') {
-            toggleHint();
+            const qr = AppState.quizRunner;
+            const quiz = AppState.currentQuiz;
+            if (qr && quiz) {
+                const q = quiz.questions[qr.activeQueue[qr.currentPos]];
+                const hasHint = Boolean(q && typeof q.hint === 'string' && q.hint.trim().length > 0);
+                if (hasHint) {
+                    toggleHint();
+                }
+            }
         } 
         // Previous: ArrowLeft or P or Π
         else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'p' || e.key.toLowerCase() === 'π') {
