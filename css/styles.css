@@ -3523,9 +3523,13 @@ mjx-container[display="true"], .katex-display {
     font-family: 'STIX Two Text', 'Outfit', 'Inter', monospace;
 }
 
+.circuit-node-group {
+    cursor: pointer;
+}
+
 .comp-resistor-top {
     fill: #fbbf24;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     font-family: 'STIX Two Text', 'Outfit', 'Inter', serif;
     text-anchor: middle;
@@ -3533,7 +3537,7 @@ mjx-container[display="true"], .katex-display {
 
 .comp-resistor-bottom {
     fill: #38bdf8;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     font-family: 'STIX Two Text', 'Outfit', 'Inter', serif;
     text-anchor: middle;

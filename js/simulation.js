@@ -101,6 +101,8 @@ window.CircuitSimulation = (function() {
             res.VB = 0;
             res.VC = 0;
             res.VD = 0;
+            res.VE = 0;
+            res.VF = 0;
             return res;
         }
 
@@ -146,6 +148,8 @@ window.CircuitSimulation = (function() {
             // Potentials (VD = 0V ground)
             res.VD = 0;
             res.VC = 0;
+            res.VE = 0;
+            res.VF = 0;
             res.VB = res.V2;
             res.VA = res.VB + res.V1; // = V_src
         } else {
@@ -188,6 +192,8 @@ window.CircuitSimulation = (function() {
 
             res.VD = 0;
             res.VC = 0;
+            res.VE = 0;
+            res.VF = 0;
             res.VB = 0;
             res.VA = V_src;
         }
@@ -337,7 +343,7 @@ window.CircuitSimulation = (function() {
                                     <span id="sim-status-text">${phys.statusText}</span>
                                 </div>
                                 <div class="sim-instructions-badge">
-                                    🔍 <em>Περάστε το ποντίκι πάνω από στοιχεία ή καλώδια για μέτρηση</em>
+                                    🔍 <em>Περάστε το ποντίκι πάνω από στοιχεία ή κόμβους για πληροφορίες</em>
                                 </div>
                             </div>
 
@@ -418,8 +424,10 @@ window.CircuitSimulation = (function() {
                         <path d="M 90 200 L 90 140" marker-end="url(#current-arrow)" class="flow-arrow-path" />
                         <path d="M 230 80 L 290 80" marker-end="url(#current-arrow)" class="flow-arrow-path" />
                         <path d="M 750 160 L 750 240" marker-end="url(#current-arrow)" class="flow-arrow-path" />
-                        <path d="M 620 350 L 520 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
-                        <path d="M 280 350 L 180 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                        <path d="M 710 350 L 640 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                        <path d="M 530 350 L 470 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                        <path d="M 370 350 L 310 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                        <path d="M 210 350 L 150 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
                     ` : ''}
 
                     <!-- 1. DC VOLTAGE SOURCE (BATTERY) at Left (x=90, y=215) -->
@@ -468,7 +476,8 @@ window.CircuitSimulation = (function() {
                     </g>
 
                     <!-- NODE A (x=380, y=80) -->
-                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeA')" onmouseleave="CircuitSimulation.hoverProbe(null)">
+                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeA')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeA')">
+                        <circle cx="380" cy="80" r="14" class="comp-hitbox" fill="transparent" />
                         <circle cx="380" cy="80" r="4" class="circuit-node-dot" />
                         <text x="380" y="65" class="node-letter">A</text>
                     </g>
@@ -480,12 +489,12 @@ window.CircuitSimulation = (function() {
                        onclick="CircuitSimulation.selectProbe('R1')">
                         <rect x="395" y="40" width="130" height="85" class="comp-hitbox" />
                         <!-- Resistance value above resistor (LaTeX style) -->
-                        <text x="460" y="55" class="comp-resistor-top" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${state.R1} Ω</tspan></text>
+                        <text x="460" y="53" class="comp-resistor-top" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${state.R1} Ω</tspan></text>
                         <!-- Resistor Box -->
                         <rect x="415" y="68" width="90" height="24" rx="4" class="resistor-body ${state.shortR1 ? 'shorted' : ''}" />
                         <text x="460" y="80" class="resistor-inner-text"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
                         <!-- Voltage drop value below resistor (LaTeX style) -->
-                        <text x="460" y="118" class="comp-resistor-bottom" text-anchor="middle">${state.shortR1 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${phys.V1.toFixed(1)} V</tspan>`}</text>
+                        <text x="460" y="120" class="comp-resistor-bottom" text-anchor="middle">${state.shortR1 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">1</tspan><tspan dy="-3"> = ${phys.V1.toFixed(1)} V</tspan>`}</text>
 
                         <!-- Bypass Wire if shorted -->
                         ${state.shortR1 ? `
@@ -495,7 +504,8 @@ window.CircuitSimulation = (function() {
                     </g>
 
                     <!-- NODE B (x=540, y=80) -->
-                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeB')" onmouseleave="CircuitSimulation.hoverProbe(null)">
+                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeB')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeB')">
+                        <circle cx="540" cy="80" r="14" class="comp-hitbox" fill="transparent" />
                         <circle cx="540" cy="80" r="4" class="circuit-node-dot" />
                         <text x="540" y="65" class="node-letter">B</text>
                     </g>
@@ -507,12 +517,12 @@ window.CircuitSimulation = (function() {
                        onclick="CircuitSimulation.selectProbe('R2')">
                         <rect x="555" y="40" width="130" height="85" class="comp-hitbox" />
                         <!-- Resistance value above resistor (LaTeX style) -->
-                        <text x="620" y="55" class="comp-resistor-top" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${state.R2} Ω</tspan></text>
+                        <text x="620" y="53" class="comp-resistor-top" text-anchor="middle"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${state.R2} Ω</tspan></text>
                         <!-- Resistor Box -->
                         <rect x="575" y="68" width="90" height="24" rx="4" class="resistor-body ${state.shortR2 ? 'shorted' : ''}" />
                         <text x="620" y="80" class="resistor-inner-text"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
                         <!-- Voltage drop value below resistor (LaTeX style) -->
-                        <text x="620" y="118" class="comp-resistor-bottom" text-anchor="middle">${state.shortR2 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${phys.V2.toFixed(1)} V</tspan>`}</text>
+                        <text x="620" y="120" class="comp-resistor-bottom" text-anchor="middle">${state.shortR2 ? '<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = 0.0 V (0 Ω)</tspan>' : `<tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="3">2</tspan><tspan dy="-3"> = ${phys.V2.toFixed(1)} V</tspan>`}</text>
 
                         <!-- Bypass Wire if shorted -->
                         ${state.shortR2 ? `
@@ -522,13 +532,29 @@ window.CircuitSimulation = (function() {
                     </g>
 
                     <!-- NODE C (x=700, y=80) -->
-                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeC')" onmouseleave="CircuitSimulation.hoverProbe(null)">
+                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeC')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeC')">
+                        <circle cx="700" cy="80" r="14" class="comp-hitbox" fill="transparent" />
                         <circle cx="700" cy="80" r="4" class="circuit-node-dot" />
                         <text x="700" y="65" class="node-letter">C</text>
                     </g>
 
+                    <!-- Wire Probe Zones (Hovering plain wires) -->
+                    <g class="wire-probe-zone" onmouseenter="CircuitSimulation.hoverProbe('wireMain')" onmouseleave="CircuitSimulation.hoverProbe(null)">
+                        <rect x="735" y="130" width="30" height="150" class="probe-wire-hitbox" />
+                        <rect x="110" y="335" width="110" height="30" class="probe-wire-hitbox" />
+                        <rect x="640" y="335" width="90" height="30" class="probe-wire-hitbox" />
+                    </g>
+
+                    <!-- NODE F (x=260, y=350) - Left of Ground D -->
+                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeF')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeF')">
+                        <circle cx="260" cy="350" r="14" class="comp-hitbox" fill="transparent" />
+                        <circle cx="260" cy="350" r="4" class="circuit-node-dot" />
+                        <text x="260" y="335" class="node-letter">F</text>
+                    </g>
+
                     <!-- NODE D (GROUND) at Bottom (x=420, y=350) -->
-                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeD')" onmouseleave="CircuitSimulation.hoverProbe(null)">
+                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeD')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeD')">
+                        <circle cx="420" cy="350" r="14" class="comp-hitbox" fill="transparent" />
                         <circle cx="420" cy="350" r="4" class="circuit-node-dot" />
                         <!-- Ground symbol lines -->
                         <line x1="420" y1="350" x2="420" y2="385" class="ground-stem" />
@@ -539,10 +565,11 @@ window.CircuitSimulation = (function() {
                         <text x="442" y="380" class="node-letter ground-label" text-anchor="start">D (0 V)</text>
                     </g>
 
-                    <!-- Wire Probe Zones -->
-                    <g class="wire-probe-zone" onmouseenter="CircuitSimulation.hoverProbe('wireMain')" onmouseleave="CircuitSimulation.hoverProbe(null)">
-                        <rect x="735" y="130" width="30" height="150" class="probe-wire-hitbox" />
-                        <rect x="200" y="335" width="200" height="30" class="probe-wire-hitbox" />
+                    <!-- NODE E (x=580, y=350) - Right of Ground D -->
+                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeE')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeE')">
+                        <circle cx="580" cy="350" r="14" class="comp-hitbox" fill="transparent" />
+                        <circle cx="580" cy="350" r="4" class="circuit-node-dot" />
+                        <text x="580" y="335" class="node-letter">E</text>
                     </g>
                 </svg>
             `;
@@ -743,11 +770,19 @@ window.CircuitSimulation = (function() {
                         ${state.topology === 'series' ? `
                             <div class="step-calc-line">
                                 <div class="step-calc-header">1. Ολική Αντίσταση Σειράς:</div>
-                                <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${state.shortR1 ? '0' : state.R1} + ${state.shortR2 ? '0' : state.R2} = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
+                                ${!state.switchClosed ? `
+                                    <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
+                                ` : `
+                                    <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${state.shortR1 ? '0' : state.R1} + ${state.shortR2 ? '0' : state.R2} = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
+                                `}
                             </div>
                             <div class="step-calc-line">
                                 <div class="step-calc-header">2. Κοινό Ρεύμα Κυκλώματος:</div>
-                                <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{${phys.R_eq.toFixed(1)}\\ \\Omega} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
+                                ${!state.switchClosed ? `
+                                    <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} = 0.00\\text{ A}$$</div>
+                                ` : `
+                                    <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{${phys.R_eq.toFixed(1)}\\ \\Omega} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
+                                `}
                             </div>
                             <div class="step-calc-line">
                                 <div class="step-calc-header">3. Νόμος του Ohm για τον $R_1$:</div>
@@ -816,11 +851,19 @@ window.CircuitSimulation = (function() {
                         ${state.topology === 'series' ? `
                             <div class="step-calc-line">
                                 <div class="step-calc-header">1. Ολική Αντίσταση Σειράς:</div>
-                                <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
+                                ${!state.switchClosed ? `
+                                    <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
+                                ` : `
+                                    <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
+                                `}
                             </div>
                             <div class="step-calc-line">
                                 <div class="step-calc-header">2. Κοινό Ρεύμα Σειράς:</div>
-                                <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
+                                ${!state.switchClosed ? `
+                                    <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} = 0.00\\text{ A}$$</div>
+                                ` : `
+                                    <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
+                                `}
                             </div>
                             <div class="step-calc-line">
                                 <div class="step-calc-header">3. Νόμος Ohm για τον $R_2$:</div>
@@ -868,7 +911,7 @@ window.CircuitSimulation = (function() {
                     </div>
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Ισοδύναμη Αντίσταση</span><span>(<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">ολ</sub></span>):</span></span>
-                        <span class="meter-val text-resistor">${phys.R_eq.toFixed(2)} Ω</span>
+                        <span class="meter-val text-resistor">${phys.R_eq === Infinity ? '∞ Ω' : `${phys.R_eq.toFixed(2)} Ω`}</span>
                     </div>
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Ολική Ισχύς</span><span>(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">ολ</sub></span>):</span></span>
@@ -881,15 +924,21 @@ window.CircuitSimulation = (function() {
                         <div class="hud-steps-title">📐 Επιστημονική Ανάλυση Πηγής:</div>
                         <div class="step-calc-line">
                             <div class="step-calc-header">1. Υπολογισμός $R_{\\text{ολ}}$:</div>
-                            ${state.topology === 'series' ? `
+                            ${!state.switchClosed ? `
+                                <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
+                            ` : (state.topology === 'series' ? `
                                 <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
                             ` : `
                                 <div class="step-calc-formula">$$R_{\\text{ολ}} = \\frac{R_1 \\cdot R_2}{R_1 + R_2} = \\frac{${state.R1} \\cdot ${state.R2}}{${state.R1} + ${state.R2}} = ${phys.R_eq.toFixed(2)}\\ \\Omega$$</div>
-                            `}
+                            `)}
                         </div>
                         <div class="step-calc-line">
                             <div class="step-calc-header">2. Ολικό Ρεύμα από τον Νόμο του Ohm:</div>
-                            <div class="step-calc-formula">$$I_{\\text{ολ}} = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
+                            ${!state.switchClosed ? `
+                                <div class="step-calc-formula">$$I_{\\text{ολ}} = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} = 0.00\\text{ A}$$</div>
+                            ` : `
+                                <div class="step-calc-formula">$$I_{\\text{ολ}} = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
+                            `}
                         </div>
                         <div class="step-calc-line">
                             <div class="step-calc-header">3. Συνολική Παρεχόμενη Ισχύς:</div>
@@ -965,6 +1014,7 @@ window.CircuitSimulation = (function() {
         } else if (probeTarget.startsWith('node')) {
             const nodeKey = probeTarget.replace('node', '');
             const pot = phys['V' + nodeKey] !== undefined ? phys['V' + nodeKey] : 0;
+            const nodeCurrent = (!state.switchClosed || phys.status === 'total_short') ? 0 : phys.I_total;
             detailsHtml = `
                 <div class="hud-item-header">
                     <span class="hud-probe-icon">📍</span>
@@ -975,23 +1025,45 @@ window.CircuitSimulation = (function() {
                 </div>
                 <div class="hud-readouts-grid cols-2">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ηλεκτρικό Δυναμικό</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">${nodeKey}</sub></span>):</span></span>
-                        <span class="meter-val text-voltage">${pot.toFixed(2)} V</span>
+                        <span class="meter-lbl"><span>Ένταση Ρεύματος</span><span>(<span class="math-expr"><i class="math-var">I</i></span>):</span></span>
+                        <span class="meter-val text-current">${nodeCurrent.toFixed(2)} A</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Δυναμικό Γείωσης</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">D</sub></span>):</span></span>
-                        <span class="meter-val" style="color: var(--text-muted, #94a3b8); font-weight: 700;">0.00 V</span>
+                        <span class="meter-lbl"><span>Ηλεκτρικό Δυναμικό</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">${nodeKey}</sub></span>):</span></span>
+                        <span class="meter-val text-voltage">${pot.toFixed(2)} V</span>
                     </div>
                 </div>
                 ${isSteps ? `
                     <div class="hud-steps-box">
-                        <div class="hud-steps-title">💡 Ανάλυση Ηλεκτρικού Δυναμικού (Κουίζ Ερώτηση 1):</div>
+                        <div class="hud-steps-title">💡 Ανάλυση Ρεύματος & Ηλεκτρικού Δυναμικού (Κόμβος ${nodeKey}):</div>
                         <p style="font-size: 0.88rem; line-height: 1.5; margin: 0;">
-                            Το ηλεκτρικό δυναμικό στον κόμβο ${nodeKey} ορίζεται ως προς τη γείωση (σημείο D όπου $V_D = 0\text{ V}$).
-                            ${nodeKey === 'A' ? `Εφόσον ο διακόπτης και το αμπερόμετρο θεωρούνται ιδανικά (αμελητέα αντίσταση), $V_A = V_{\text{πηγ}} = ${phys.V_src}\text{ V}$.` : ''}
-                            ${nodeKey === 'B' ? (state.topology === 'series' ? `Η πτώση τάσης στον $R_1$ είναι $V_{AB} = V_1 = ${phys.V1.toFixed(2)}\text{ V}$, άρα $V_B = V_A - V_1 = ${phys.VB.toFixed(2)}\text{ V}$.` : `Στην παράλληλη σύνδεση, ο κόμβος B είναι ο κόμβος συμβολής των δύο κλάδων.`) : ''}
-                            ${nodeKey === 'C' ? `Ο κόμβος C συνδέεται απευθείας με τη γείωση D μέσω ιδανικού αγωγού, άρα $V_C = V_D = 0\text{ V}$.` : ''}
-                            ${nodeKey === 'D' ? `Το σημείο D αποτελεί τη γείωση του κυκλώματος με δυναμικό αναφοράς $V_D = 0\text{ V}$.` : ''}
+                            ${nodeKey === 'A' ? `
+                                <strong>1. Ένταση Ρεύματος:</strong> Στον κόμβο A διέρχεται το ολικό ρεύμα του κυκλώματος $I = ${nodeCurrent.toFixed(2)}\\text{ A}$.<br>
+                                <strong>2. Ηλεκτρικό Δυναμικό:</strong> Συνδέεται μετά τον διακόπτη και το αμπερόμετρο. Όταν ο διακόπτης είναι κλειστός, $V_A = V_{\\text{πηγ}} = ${phys.V_src}\\text{ V}$ (ως προς τη γείωση $D$).
+                            ` : ''}
+                            ${nodeKey === 'B' ? (state.topology === 'series' ? `
+                                <strong>1. Ένταση Ρεύματος:</strong> Στον ενδιάμεσο κόμβο B διέρχεται το κοινό ρεύμα σειράς $I = ${nodeCurrent.toFixed(2)}\\text{ A}$.<br>
+                                <strong>2. Ηλεκτρικό Δυναμικό:</strong> Βρίσκεται μεταξύ $R_1$ και $R_2$. Η πτώση τάσης στον $R_2$ ως προς τη γείωση δίνει δυναμικό $V_B = V_2 = ${phys.VB.toFixed(2)}\\text{ V}$.
+                            ` : `
+                                <strong>1. Ένταση Ρεύματος:</strong> Στην παράλληλη σύνδεση, ο κόμβος B είναι ο κόμβος συμβολής των κλάδων ($I = ${nodeCurrent.toFixed(2)}\\text{ A}$).<br>
+                                <strong>2. Ηλεκτρικό Δυναμικό:</strong> $V_B = 0\\text{ V}$.
+                            `) : ''}
+                            ${nodeKey === 'C' ? `
+                                <strong>1. Ένταση Ρεύματος:</strong> Ο κόμβος C διαρρέεται από το ρεύμα $I = ${nodeCurrent.toFixed(2)}\\text{ A}$.<br>
+                                <strong>2. Ηλεκτρικό Δυναμικό:</strong> Συνδέεται με τη γείωση D μέσω ιδανικού αγωγού ($R = 0\\ \\Omega$), άρα $V_C = V_D = 0\\text{ V}$.
+                            ` : ''}
+                            ${nodeKey === 'D' ? `
+                                <strong>1. Ένταση Ρεύματος:</strong> Το ρεύμα που διέρχεται από τον αγωγό στο σημείο D είναι $I = ${nodeCurrent.toFixed(2)}\\text{ A}$ (στη γραμμή γείωσης δεν διαφεύγει ρεύμα).<br>
+                                <strong>2. Ηλεκτρικό Δυναμικό:</strong> Το σημείο D αποτελεί τη γείωση αναφοράς του κυκλώματος ($V_D = 0\\text{ V}$).
+                            ` : ''}
+                            ${nodeKey === 'E' ? `
+                                <strong>1. Ένταση Ρεύματος:</strong> Στον κόμβο E του κάτω αγωγού διέρχεται το ρεύμα επιστροφής $I = ${nodeCurrent.toFixed(2)}\\text{ A}$.<br>
+                                <strong>2. Ηλεκτρικό Δυναμικό:</strong> Βρίσκεται δεξιά της γείωσης D πάνω στον ιδανικό αγωγό ($R = 0\\ \\Omega$), συνεπώς $V_E = V_D = 0\\text{ V}$.
+                            ` : ''}
+                            ${nodeKey === 'F' ? `
+                                <strong>1. Ένταση Ρεύματος:</strong> Στον κόμβο F του κάτω αγωγού διέρχεται το ρεύμα επιστροφής $I = ${nodeCurrent.toFixed(2)}\\text{ A}$ προς τον αρνητικό πόλο.<br>
+                                <strong>2. Ηλεκτρικό Δυναμικό:</strong> Βρίσκεται αριστερά της γείωσης D πάνω στον ιδανικό αγωγό ($R = 0\\ \\Omega$), συνεπώς $V_F = V_D = 0\\text{ V}$.
+                            ` : ''}
                         </p>
                     </div>
                 ` : ''}
