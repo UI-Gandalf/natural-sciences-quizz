@@ -436,54 +436,58 @@ function renderQuizSelection(classKey, subjectKey) {
             </div>
         </div>
 
-        <!-- TAB 2: THEORY PANEL (Empty placeholder ready for future content) -->
+        <!-- TAB 2: THEORY PANEL -->
         <div class="tab-panel" id="tab-panel-theory" style="display: ${currentTab === 'theory' ? 'block' : 'none'};">
-            <div class="glass-card theory-placeholder-card">
-                <div class="theory-placeholder-icon">📖</div>
-                <h2 class="theory-placeholder-title">Θεωρία & Σημειώσεις: ${sub.name} (${cls.name})</h2>
-                <p class="theory-placeholder-desc">
-                    Η βασική θεωρία, οι ορισμοί, οι μαθηματικοί τύποι και τα συνοπτικά διαγράμματα για το μάθημα της 
-                    <strong>${sub.name} (${cls.name})</strong> προετοιμάζονται βάσει των επίσημων φυλλαδίων PDF και θα αναρτηθούν σύντομα εδώ.
-                </p>
+            ${(classKey === 'Γ' && subjectKey === 'physics') ? `
+                <div id="theory-mount"></div>
+            ` : `
+                <div class="glass-card theory-placeholder-card">
+                    <div class="theory-placeholder-icon">📖</div>
+                    <h2 class="theory-placeholder-title">Θεωρία & Σημειώσεις: ${sub.name} (${cls.name})</h2>
+                    <p class="theory-placeholder-desc">
+                        Η βασική θεωρία, οι ορισμοί, οι μαθηματικοί τύποι και τα συνοπτικά διαγράμματα για το μάθημα της 
+                        <strong>${sub.name} (${cls.name})</strong> προετοιμάζονται βάσει των επίσημων φυλλαδίων PDF και θα αναρτηθούν σύντομα εδώ.
+                    </p>
 
-                <div class="theory-features-grid">
-                    <div class="theory-feature-pill">
-                        <span class="pill-icon">📌</span>
-                        <div>
-                            <strong>Βασικές Έννοιες & Ορισμοί</strong>
-                            <p>Συνοπτική παρουσίαση των θεμελιωδών νόμων και ορολογίας</p>
+                    <div class="theory-features-grid">
+                        <div class="theory-feature-pill">
+                            <span class="pill-icon">📌</span>
+                            <div>
+                                <strong>Βασικές Έννοιες & Ορισμοί</strong>
+                                <p>Συνοπτική παρουσίαση των θεμελιωδών νόμων και ορολογίας</p>
+                            </div>
+                        </div>
+                        <div class="theory-feature-pill">
+                            <span class="pill-icon">📐</span>
+                            <div>
+                                <strong>Μαθηματικοί Τύποι & Μονάδες SI</strong>
+                                <p>Τυπολόγιο με εφαρμογές και μετατροπές μονάδων μέτρησης</p>
+                            </div>
+                        </div>
+                        <div class="theory-feature-pill">
+                            <span class="pill-icon">⚡</span>
+                            <div>
+                                <strong>Σχηματικά Διαγράμματα</strong>
+                                <p>Επεξηγηματικά κυκλώματα, χημικές εξισώσεις και γραφήματα</p>
+                            </div>
+                        </div>
+                        <div class="theory-feature-pill">
+                            <span class="pill-icon">📥</span>
+                            <div>
+                                <strong>Υποστηρικτικό Υλικό PDF</strong>
+                                <p>Επίσημα σχολικά βοηθήματα και φύλλα αυτοαξιολόγησης</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="theory-feature-pill">
-                        <span class="pill-icon">📐</span>
-                        <div>
-                            <strong>Μαθηματικοί Τύποι & Μονάδες SI</strong>
-                            <p>Τυπολόγιο με εφαρμογές και μετατροπές μονάδων μέτρησης</p>
-                        </div>
-                    </div>
-                    <div class="theory-feature-pill">
-                        <span class="pill-icon">⚡</span>
-                        <div>
-                            <strong>Σχηματικά Διαγράμματα</strong>
-                            <p>Επεξηγηματικά κυκλώματα, χημικές εξισώσεις και γραφήματα</p>
-                        </div>
-                    </div>
-                    <div class="theory-feature-pill">
-                        <span class="pill-icon">📥</span>
-                        <div>
-                            <strong>Υποστηρικτικό Υλικό PDF</strong>
-                            <p>Επίσημα σχολικά βοηθήματα και φύλλα αυτοαξιολόγησης</p>
-                        </div>
+
+                    <div class="theory-action-wrap">
+                        <button class="hint-btn" onclick="switchSubjectTab('quizzes')" style="background: var(--primary); color: white; border: none; padding: 11px 24px; font-size: 0.94rem;">
+                            <span>📝</span>
+                            <span>Μετάβαση στα Κουίζ του Μαθήματος</span>
+                        </button>
                     </div>
                 </div>
-
-                <div class="theory-action-wrap">
-                    <button class="hint-btn" onclick="switchSubjectTab('quizzes')" style="background: var(--primary); color: white; border: none; padding: 11px 24px; font-size: 0.94rem;">
-                        <span>📝</span>
-                        <span>Μετάβαση στα Κουίζ του Μαθήματος</span>
-                    </button>
-                </div>
-            </div>
+            `}
         </div>
 
         ${subjectKey === 'physics' ? `
@@ -495,6 +499,14 @@ function renderQuizSelection(classKey, subjectKey) {
     `;
 
     container.innerHTML = html;
+
+    // Render interactive Theory notes if available
+    if (classKey === 'Γ' && subjectKey === 'physics') {
+        const theoryMount = document.getElementById('theory-mount');
+        if (theoryMount && window.TheoryNotes) {
+            window.TheoryNotes.renderPhysicsG(theoryMount);
+        }
+    }
 
     if (currentTab === 'simulation' && subjectKey === 'physics') {
         const mount = document.getElementById('simulation-mount');
@@ -519,7 +531,19 @@ function switchSubjectTab(tabKey) {
     if (simBtn) simBtn.classList.toggle('active', tabKey === 'simulation');
 
     if (quizzesPanel) quizzesPanel.style.display = tabKey === 'quizzes' ? 'block' : 'none';
-    if (theoryPanel) theoryPanel.style.display = tabKey === 'theory' ? 'block' : 'none';
+    if (theoryPanel) {
+        theoryPanel.style.display = tabKey === 'theory' ? 'block' : 'none';
+        if (tabKey === 'theory') {
+            theoryPanel.style.animation = 'fadeIn 0.3s ease';
+            const theoryMount = document.getElementById('theory-mount');
+            if (theoryMount && window.TheoryNotes && (!theoryMount.hasChildNodes() || theoryMount.children.length === 0)) {
+                window.TheoryNotes.renderPhysicsG(theoryMount);
+            }
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([theoryPanel]).catch(err => console.warn('MathJax error:', err));
+            }
+        }
+    }
     if (simPanel) {
         simPanel.style.display = tabKey === 'simulation' ? 'block' : 'none';
         if (tabKey === 'simulation') {
@@ -532,7 +556,6 @@ function switchSubjectTab(tabKey) {
     }
 
     if (tabKey === 'quizzes' && quizzesPanel) quizzesPanel.style.animation = 'fadeIn 0.3s ease';
-    if (tabKey === 'theory' && theoryPanel) theoryPanel.style.animation = 'fadeIn 0.3s ease';
 
     updateBreadcrumbs();
 }

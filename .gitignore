@@ -13,6 +13,7 @@
 *.docx
 *.doc
 *.pdf
+!assets/docs/*.pdf
 *.md
 !README.md
 !QUIZ_VARIATIONS_ROADMAP.md
