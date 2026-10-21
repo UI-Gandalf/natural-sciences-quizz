@@ -4284,6 +4284,29 @@ mjx-container[display="true"], .katex-display {
     background: linear-gradient(145deg, rgba(245, 158, 11, 0.05) 0%, rgba(15, 23, 42, 0.8) 100%);
 }
 
+.sim-fault-group.is-series-vm {
+    border-color: rgba(168, 85, 247, 0.5);
+    background: linear-gradient(145deg, rgba(168, 85, 247, 0.06) 0%, rgba(15, 23, 42, 0.8) 100%);
+}
+
+.meter-circle.meter-faulty-purple {
+    stroke: #a855f7;
+    stroke-width: 2.5;
+    fill: rgba(168, 85, 247, 0.16);
+    filter: drop-shadow(0 0 7px rgba(168, 85, 247, 0.6));
+}
+
+.meter-text.faulty-text-purple {
+    fill: #d8b4fe;
+    font-weight: 900;
+}
+
+.meter-reading-tag.purple-reading {
+    fill: #c084fc !important;
+    font-weight: 800 !important;
+    font-size: 12px !important;
+}
+
 .sim-bypass-warning-banner {
     fill: rgba(239, 68, 68, 0.12);
     stroke: rgba(239, 68, 68, 0.4);

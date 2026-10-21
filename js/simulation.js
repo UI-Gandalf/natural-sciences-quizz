@@ -68,6 +68,32 @@ window.CircuitSimulation = (function() {
             brokenR2: false,
             faultInstrument: 'ammeter2_parallel'
         },
+        'q_fault_voltmeter_series': {
+            name: '⚠️ Σφάλμα III: Βολτόμετρο σε σειρά (Rv → ∞, I = 0 A)',
+            topology: 'series',
+            V_src: 20,
+            R1: 4,
+            R2: 6,
+            switchClosed: true,
+            shortR1: false,
+            shortR2: false,
+            brokenR1: false,
+            brokenR2: false,
+            faultInstrument: 'voltmeter_series'
+        },
+        'q_fault_voltmeter_par': {
+            name: '⚠️ Σφάλμα: Βολτόμετρο σε σειρά στον κύριο αγωγό (Rv → ∞)',
+            topology: 'parallel',
+            V_src: 30,
+            R1: 10,
+            R2: 30,
+            switchClosed: true,
+            shortR1: false,
+            shortR2: false,
+            brokenR1: false,
+            brokenR2: false,
+            faultInstrument: 'voltmeter_series'
+        },
         'q4_parallel': {
             name: 'Πρόβλημα 4 (Παράλληλα: 30V, 10Ω || 30Ω)',
             topology: 'parallel',
@@ -294,6 +320,37 @@ window.CircuitSimulation = (function() {
                 return res;
             }
 
+            // Check for faulty instrument placement (Case III: Voltmeter in series replacing A1)
+            if (faultInstrument === 'voltmeter_series') {
+                res.status = 'open_circuit';
+                res.statusText = '⚠️ Σφάλμα: Σύνδεση Βολτομέτρου σε Σειρά (Rv → ∞) — Μηδενισμός Ρεύματος (I = 0 A)';
+                res.R_eq = Infinity;
+                res.I_total = 0;
+                res.I_switch = 0;
+                res.P_total = 0;
+                res.I_A1 = 0;
+                res.I_A2 = 0;
+                res.I_A3 = 0;
+                res.V1 = 0;
+                res.I1 = 0;
+                res.P1 = 0;
+                res.V2 = 0;
+                res.I2 = 0;
+                res.P2 = 0;
+                res.V_series_meter = V_src;
+                res.V_src_meter = V_src;
+                res.VG = V_src;
+                res.VA = 0;
+                res.VB = 0;
+                res.VC = 0;
+                res.VD = 0;
+                res.VE = 0;
+                res.VF = 0;
+                res.VM = 0;
+                res.VK = 0;
+                return res;
+            }
+
             // Check for broken device (open circuit fault in series)
             if (brokenR1 || brokenR2) {
                 res.status = 'broken_circuit';
@@ -385,6 +442,35 @@ window.CircuitSimulation = (function() {
             res.VG = V_src;
         } else {
             // Parallel circuit
+            // Check for faulty instrument placement (Voltmeter in series on main supply rail before Aολ)
+            if (faultInstrument === 'voltmeter_series') {
+                res.status = 'open_circuit';
+                res.statusText = '⚠️ Σφάλμα: Βολτόμετρο σε Σειρά στον Κύριο Αγωγό (Rv → ∞) — Iολ = 0 A, Vπαρ = 0 V';
+                res.R_eq = Infinity;
+                res.I_total = 0;
+                res.I_switch = 0;
+                res.P_total = 0;
+                res.I_A1 = 0;
+                res.I_A2 = 0;
+                res.V1 = 0;
+                res.I1 = 0;
+                res.P1 = 0;
+                res.V2 = 0;
+                res.I2 = 0;
+                res.P2 = 0;
+                res.V_series_meter = V_src;
+                res.V_par_meter = 0;
+                res.V_src_meter = V_src;
+                res.VD = 0;
+                res.VE = 0;
+                res.VF = 0;
+                res.VB = 0;
+                res.VA = 0;
+                res.VC = 0;
+                res.VG = V_src;
+                return res;
+            }
+
             if (shortR1 || shortR2) {
                 res.status = 'total_short';
                 res.statusText = '⚠️ Ολικό Βραχυκύκλωμα Πηγής (Παράλληλη σύνδεση)!';
@@ -642,9 +728,9 @@ window.CircuitSimulation = (function() {
                             </div>
                         </div>
 
-                        <!-- Faulty Instrument Placement (Series Circuit) -->
+                        <!-- Faulty Instrument Placement (Series & Parallel Circuits) -->
                         ${state.topology === 'series' ? `
-                            <div class="sim-control-group sim-fault-group ${state.faultInstrument === 'ammeter_parallel' ? 'is-shorted' : (state.faultInstrument === 'ammeter2_parallel' ? 'is-partial' : '')}" id="sim-fault-group">
+                            <div class="sim-control-group sim-fault-group ${state.faultInstrument === 'ammeter_parallel' ? 'is-shorted' : (state.faultInstrument === 'ammeter2_parallel' ? 'is-partial' : (state.faultInstrument === 'voltmeter_series' ? 'is-series-vm' : ''))}" id="sim-fault-group">
                                 <div class="sim-control-header">
                                     <span class="sim-group-title">
                                         <strong>⚠️ Τοποθέτηση Οργάνων</strong>
@@ -653,6 +739,8 @@ window.CircuitSimulation = (function() {
                                         <span class="warn-badge">Ολικό Βραχυκύκλωμα</span>
                                     ` : state.faultInstrument === 'ammeter2_parallel' ? `
                                         <span class="warn-badge" style="background: rgba(245, 158, 11, 0.18); color: #f59e0b; border-color: rgba(245, 158, 11, 0.4);">Βραχυκύκλωση R₂</span>
+                                    ` : state.faultInstrument === 'voltmeter_series' ? `
+                                        <span class="warn-badge" style="background: rgba(168, 85, 247, 0.18); color: #c084fc; border-color: rgba(168, 85, 247, 0.4);">Διακοπή (Rv → ∞)</span>
                                     ` : `
                                         <span class="ok-badge">Ορθή Σύνδεση</span>
                                     `}
@@ -691,17 +779,55 @@ window.CircuitSimulation = (function() {
                                         </div>
                                     </label>
 
-                                    <label class="sim-radio-card disabled" title="Θα προστεθεί σε επόμενη αναβάθμιση">
-                                        <input type="radio" name="sim-fault-instrument" value="voltmeter_series" disabled>
+                                    <label class="sim-radio-card warn ${state.faultInstrument === 'voltmeter_series' ? 'active' : ''}">
+                                        <input type="radio" name="sim-fault-instrument" value="voltmeter_series" 
+                                               ${state.faultInstrument === 'voltmeter_series' ? 'checked' : ''} 
+                                               onchange="CircuitSimulation.setFaultInstrument('voltmeter_series')">
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
-                                            <span class="radio-card-title">(3) Λανθασμένη τοποθέτηση βολτομέτρου</span>
-                                            <span class="radio-card-desc">Σύνδεση βολτομέτρου σε σειρά <em>(Προσεχώς)</em></span>
+                                            <span class="radio-card-title"><strong>(3) Λανθασμένη τοποθέτηση βολτομέτρου</strong></span>
+                                            <span class="radio-card-desc">Σύνδεση σε σειρά (στη θέση του <span class="math-expr"><i class="math-var">A</i><sub class="math-sub">1</sub></span>) ➔ <span class="math-expr"><i class="math-var">I</i> = 0 A</span></span>
                                         </div>
                                     </label>
                                 </div>
                             </div>
-                        ` : ''}
+                        ` : `
+                            <div class="sim-control-group sim-fault-group ${state.faultInstrument === 'voltmeter_series' ? 'is-series-vm' : ''}" id="sim-fault-group">
+                                <div class="sim-control-header">
+                                    <span class="sim-group-title">
+                                        <strong>⚠️ Τοποθέτηση Οργάνων</strong>
+                                    </span>
+                                    ${state.faultInstrument === 'voltmeter_series' ? `
+                                        <span class="warn-badge" style="background: rgba(168, 85, 247, 0.18); color: #c084fc; border-color: rgba(168, 85, 247, 0.4);">Διακοπή (Rv → ∞)</span>
+                                    ` : `
+                                        <span class="ok-badge">Ορθή Σύνδεση</span>
+                                    `}
+                                </div>
+                                <div class="sim-fault-options-list">
+                                    <label class="sim-radio-card ${state.faultInstrument === 'none' ? 'active' : ''}">
+                                        <input type="radio" name="sim-fault-instrument" value="none" 
+                                               ${state.faultInstrument === 'none' ? 'checked' : ''} 
+                                               onchange="CircuitSimulation.setFaultInstrument('none')">
+                                        <span class="radio-card-dot"></span>
+                                        <div class="radio-card-content">
+                                            <span class="radio-card-title">Ορθή συνδεσμολογία</span>
+                                            <span class="radio-card-desc">Όλα τα όργανα στις κανονικές τους θέσεις</span>
+                                        </div>
+                                    </label>
+
+                                    <label class="sim-radio-card warn ${state.faultInstrument === 'voltmeter_series' ? 'active' : ''}">
+                                        <input type="radio" name="sim-fault-instrument" value="voltmeter_series" 
+                                               ${state.faultInstrument === 'voltmeter_series' ? 'checked' : ''} 
+                                               onchange="CircuitSimulation.setFaultInstrument('voltmeter_series')">
+                                        <span class="radio-card-dot"></span>
+                                        <div class="radio-card-content">
+                                            <span class="radio-card-title"><strong>(1) Λανθασμένη τοποθέτηση βολτομέτρου</strong></span>
+                                            <span class="radio-card-desc">Σε σειρά στον κύριο αγωγό (πριν το <span class="math-expr"><i class="math-var">A</i><sub class="math-sub">ολ</sub></span>) ➔ <span class="math-expr"><i class="math-var">I</i><sub class="math-sub">ολ</sub> = 0 A</span></span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        `}
 
                         <!-- 4. Calculation Mode -->
                         <div class="sim-control-group sim-actions-group">
@@ -770,9 +896,10 @@ window.CircuitSimulation = (function() {
         const isFaultAmmeter1 = state.topology === 'series' && state.faultInstrument === 'ammeter_parallel';
         const isFaultAmmeter2 = state.topology === 'series' && state.faultInstrument === 'ammeter2_parallel';
         const isFaultAmmeter = isFaultAmmeter1 || isFaultAmmeter2;
+        const isFaultVoltmeter = state.faultInstrument === 'voltmeter_series';
         const isShortTotal = phys.status === 'total_short';
         const isBrokenSeries = state.topology === 'series' && (state.brokenR1 || state.brokenR2);
-        const hasCurrent = isClosed && !isShortTotal && !isBrokenSeries && phys.I_total > 0;
+        const hasCurrent = isClosed && !isShortTotal && !isBrokenSeries && !isFaultVoltmeter && phys.I_total > 0;
 
         // Particle speed & dasharray
         const animSpeed = hasCurrent ? Math.max(0.6, Math.min(3.5, 4.5 / phys.I_total)).toFixed(2) : 0;
@@ -883,6 +1010,14 @@ window.CircuitSimulation = (function() {
                             </text>
                         </g>
                     ` : ''}
+                    ${isFaultVoltmeter ? `
+                        <g class="sim-bypass-alert-badge">
+                            <rect x="275" y="260" width="520" height="34" rx="8" class="sim-bypass-warning-banner" style="stroke: rgba(168, 85, 247, 0.5); fill: rgba(168, 85, 247, 0.12);" />
+                            <text x="535" y="282" class="sim-bypass-warning-text" style="fill: #d8b4fe;" text-anchor="middle">
+                                ${isClosed ? '⚠️ Το βολτόμετρο συνδέθηκε σε σειρά (Rv → ∞) — Μηδενίζει το ρεύμα (I = 0 A) & τις τάσεις (V₁ = V₂ = 0 V)' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
+                            </text>
+                        </g>
+                    ` : ''}
 
                     <!-- 1. VOLTMETER Vπηγ across DC Source (Left side: x=42, y=215) -->
                     <g class="comp-interactive comp-voltmeter" data-probe="voltmeter_src"
@@ -935,7 +1070,7 @@ window.CircuitSimulation = (function() {
                         <text x="175" y="40" class="comp-title-tag">Διακόπτης K</text>
                     </g>
 
-                    <!-- 4. AMMETER A1 / KNOT K SETUP -->
+                    <!-- 4. AMMETER A1 / KNOT K / SERIES VOLTMETER SETUP -->
                     ${isFaultAmmeter1 ? `
                         <!-- KNOT K (x=260, y=80) - In A1's previous location -->
                         <g class="circuit-node-group node-knot-group" onmouseenter="CircuitSimulation.hoverProbe('nodeK')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeK')">
@@ -955,6 +1090,17 @@ window.CircuitSimulation = (function() {
                             <text x="260" y="248" class="meter-reading-tag danger-reading">
                                 ${!isClosed ? '0.00 A' : 'I → ∞ (Βραχυκύκλωμα!)'}
                             </text>
+                        </g>
+                    ` : isFaultVoltmeter ? `
+                        <!-- 4. VOLTMETER CONNECTED IN SERIES (REPLACES A1: x=255, y=80) -->
+                        <g class="comp-interactive comp-voltmeter faulty-voltmeter" data-probe="voltmeter_series"
+                           onmouseenter="CircuitSimulation.hoverProbe('voltmeter_series')" 
+                           onmouseleave="CircuitSimulation.hoverProbe(null)"
+                           onclick="CircuitSimulation.selectProbe('voltmeter_series')">
+                            <rect x="230" y="55" width="50" height="65" class="comp-hitbox" />
+                            <circle cx="255" cy="80" r="18" class="voltmeter-circle meter-faulty-purple" />
+                            <text x="255" y="80" class="voltmeter-text faulty-text-purple"><tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="2">σ</tspan></text>
+                            <text x="255" y="112" class="meter-reading-tag purple-reading">${!isClosed ? '0.0 V' : phys.V_src.toFixed(1) + ' V'}</text>
                         </g>
                     ` : `
                         <!-- 4. AMMETER A1 at Top (before R1: x=255, y=80) -->
@@ -1281,16 +1427,41 @@ window.CircuitSimulation = (function() {
                         <text x="175" y="40" class="comp-title-tag">Διακόπτης K</text>
                     </g>
 
-                    <!-- 4. MAIN AMMETER Aολ on Top Rail (x=280, y=80) -->
-                    <g class="comp-interactive comp-meter" data-probe="ammeter_main"
-                       onmouseenter="CircuitSimulation.hoverProbe('ammeter_main')" 
-                       onmouseleave="CircuitSimulation.hoverProbe(null)"
-                       onclick="CircuitSimulation.selectProbe('ammeter_main')">
-                        <rect x="258" y="55" width="45" height="65" class="comp-hitbox" />
-                        <circle cx="280" cy="80" r="17" class="meter-circle" />
-                        <text x="280" y="80" class="meter-text">A<tspan font-size="0.65em" dy="2">ολ</tspan></text>
-                        <text x="280" y="112" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
-                    </g>
+                    <!-- 4. MAIN RAIL METERS (Voltmeter in series + Ammeter Aολ) -->
+                    ${isFaultVoltmeter ? `
+                        <!-- Voltmeter in series just before Aολ (x=250, y=80) -->
+                        <g class="comp-interactive comp-voltmeter faulty-voltmeter" data-probe="voltmeter_series"
+                           onmouseenter="CircuitSimulation.hoverProbe('voltmeter_series')" 
+                           onmouseleave="CircuitSimulation.hoverProbe(null)"
+                           onclick="CircuitSimulation.selectProbe('voltmeter_series')">
+                            <rect x="228" y="55" width="45" height="65" class="comp-hitbox" />
+                            <circle cx="250" cy="80" r="17" class="voltmeter-circle meter-faulty-purple" />
+                            <text x="250" y="80" class="voltmeter-text faulty-text-purple"><tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="2">σ</tspan></text>
+                            <text x="250" y="112" class="meter-reading-tag purple-reading">${!isClosed ? '0.0 V' : phys.V_src.toFixed(1) + ' V'}</text>
+                        </g>
+
+                        <!-- MAIN AMMETER Aολ shifted slightly to fit nicely (x=320, y=80) -->
+                        <g class="comp-interactive comp-meter" data-probe="ammeter_main"
+                           onmouseenter="CircuitSimulation.hoverProbe('ammeter_main')" 
+                           onmouseleave="CircuitSimulation.hoverProbe(null)"
+                           onclick="CircuitSimulation.selectProbe('ammeter_main')">
+                            <rect x="298" y="55" width="45" height="65" class="comp-hitbox" />
+                            <circle cx="320" cy="80" r="17" class="meter-circle" />
+                            <text x="320" y="80" class="meter-text">A<tspan font-size="0.65em" dy="2">ολ</tspan></text>
+                            <text x="320" y="112" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
+                        </g>
+                    ` : `
+                        <!-- 4. MAIN AMMETER Aολ on Top Rail (x=280, y=80) -->
+                        <g class="comp-interactive comp-meter" data-probe="ammeter_main"
+                           onmouseenter="CircuitSimulation.hoverProbe('ammeter_main')" 
+                           onmouseleave="CircuitSimulation.hoverProbe(null)"
+                           onclick="CircuitSimulation.selectProbe('ammeter_main')">
+                            <rect x="258" y="55" width="45" height="65" class="comp-hitbox" />
+                            <circle cx="280" cy="80" r="17" class="meter-circle" />
+                            <text x="280" y="80" class="meter-text">A<tspan font-size="0.65em" dy="2">ολ</tspan></text>
+                            <text x="280" y="112" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
+                        </g>
+                    `}
 
                     <!-- NODE A (x=380, y=80) - Branch 1 Top -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeA')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeA')">
@@ -1408,8 +1579,18 @@ window.CircuitSimulation = (function() {
                         <!-- Voltmeter Instrument Body -->
                         <circle cx="780" cy="215" r="18" class="voltmeter-circle" />
                         <text x="780" y="215" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.7em" dy="2">παρ</tspan></text>
-                        <text x="780" y="246" class="voltmeter-reading-tag">${(!state.switchClosed || phys.status === 'total_short') ? '0.0 V' : `${phys.V_src.toFixed(1)} V`}</text>
+                        <text x="780" y="246" class="voltmeter-reading-tag">${(!state.switchClosed || phys.status === 'total_short' || isFaultVoltmeter) ? '0.0 V' : `${phys.V_src.toFixed(1)} V`}</text>
                     </g>
+
+                    <!-- Informative warning badge when series voltmeter is active in parallel -->
+                    ${isFaultVoltmeter ? `
+                        <g class="sim-bypass-alert-badge">
+                            <rect x="220" y="295" width="540" height="34" rx="8" class="sim-bypass-warning-banner" style="stroke: rgba(168, 85, 247, 0.5); fill: rgba(168, 85, 247, 0.12);" />
+                            <text x="490" y="317" class="sim-bypass-warning-text" style="fill: #d8b4fe;" text-anchor="middle">
+                                ${isClosed ? '⚠️ Το βολτόμετρο συνδέθηκε σε σειρά στον κύριο αγωγό (Rv → ∞) — Iολ = 0 A, Vπαρ = 0 V' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
+                            </text>
+                        </g>
+                    ` : ''}
 
                     <!-- Wire Probe Zones -->
                     <g class="wire-probe-zone">
@@ -1538,6 +1719,37 @@ window.CircuitSimulation = (function() {
                 }
             }
 
+            if (state.faultInstrument === 'voltmeter_series') {
+                const targetR = resistorKey === 'R1' ? state.R1 : state.R2;
+                return `
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">1. Εσωτερική Αντίσταση Βολτομέτρου & Ολική Αντίσταση:</div>
+                        <div class="step-calc-formula">$$R_V \\to \\infty \\implies R_{\\text{ολ}} = R_V + R_1 + R_2 \\to \\infty\\ \\Omega$$</div>
+                    </div>
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">2. Μηδενισμός Ρεύματος Κυκλώματος (Νόμος του Ohm):</div>
+                        <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                            Επειδή το βολτόμετρο συνδέθηκε λανθασμένα σε σειρά (στη θέση του $A_1$), η τεράστια εσωτερική του αντίσταση ($R_V \\approx \\infty$) μπλοκάρει όλη τη ροή του ηλεκτρικού ρεύματος:
+                        </p>
+                        <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} = 0.00\\text{ A}$$</div>
+                    </div>
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">3. Πτώση Τάσης στον $${resistorKey}$:</div>
+                        <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                            Εφόσον δεν διέρχεται ρεύμα από τον αντιστάτη, η πτώση τάσης στα άκρα του είναι μηδενική:
+                        </p>
+                        <div class="step-calc-formula">$$V_${resistorKey === 'R1' ? '1' : '2'} = I \\cdot ${resistorKey} = 0.00\\text{ A} \\cdot ${targetR}\\ \\Omega = 0.00\\text{ V}$$</div>
+                    </div>
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">4. Ένδειξη Βολτομέτρου Σειράς ($V_\\sigma$):</div>
+                        <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                            Ολόκληρη η τάση της πηγής εμφανίζεται στα άκρα του βολτομέτρου που συνδέθηκε σε σειρά:
+                        </p>
+                        <div class="step-calc-formula">$$V_\\sigma = V_{\\text{πηγ}} - V_1 - V_2 = ${state.V_src}\\text{ V} - 0 - 0 = ${state.V_src.toFixed(1)}\\text{ V}$$</div>
+                    </div>
+                `;
+            }
+
             let rEqFormula = '';
             if (!state.switchClosed) {
                 rEqFormula = `$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$`;
@@ -1602,6 +1814,36 @@ window.CircuitSimulation = (function() {
             `;
         } else {
             // Parallel circuit
+            if (state.faultInstrument === 'voltmeter_series') {
+                return `
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">1. Εσωτερική Αντίσταση Βολτομέτρου & Ολική Αντίσταση:</div>
+                        <div class="step-calc-formula">$$R_V \\to \\infty \\implies R_{\\text{ολ}} = R_V + R_{\\text{παρ}} \\to \\infty\\ \\Omega$$</div>
+                    </div>
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">2. Μηδενισμός Ολικού Ρεύματος Κυρίου Αγωγού:</div>
+                        <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                            Το βολτόμετρο συνδέθηκε λανθασμένα σε σειρά στον κύριο αγωγό (πριν το $A_{\\text{ολ}}$). Λόγω της άπειρης εσωτερικής του αντίστασης ($R_V \\approx \\infty$), μπλοκάρει όλο το ρεύμα από την πηγή:
+                        </p>
+                        <div class="step-calc-formula">$$I_{\\text{ολ}} = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} = 0.00\\text{ A}$$</div>
+                    </div>
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">3. Μηδενισμός Τάσης Παράλληλης Συστοιχίας & Ρευμάτων Κλάδων:</div>
+                        <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                            Εφόσον $I_{\\text{ολ}} = 0\\text{ A}$, η τάση στους παράλληλους κλάδους μηδενίζεται ($V_{\\text{παρ}} = 0.00\\text{ V}$). Συνεπώς, κανένας κλάδος δεν διαρρέεται από ρεύμα:
+                        </p>
+                        <div class="step-calc-formula">$$V_1 = V_2 = 0.00\\text{ V}, \\quad I_1 = 0.00\\text{ A}, \\quad I_2 = 0.00\\text{ A}$$</div>
+                    </div>
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">4. Ένδειξη Βολτομέτρου Σειράς ($V_\\sigma$):</div>
+                        <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                            Ολόκληρη η τάση της πηγής εμφανίζεται στα άκρα του βολτομέτρου που συνδέθηκε σε σειρά:
+                        </p>
+                        <div class="step-calc-formula">$$V_\\sigma = V_{\\text{πηγ}} - V_{\\text{παρ}} = ${state.V_src}\\text{ V} - 0.00\\text{ V} = ${state.V_src.toFixed(1)}\\text{ V}$$</div>
+                    </div>
+                `;
+            }
+
             let vPar = !state.switchClosed ?
                 `$$V_1 = V_2 = 0.00\\text{ V} \\quad (\\text{Ανοικτός Διακόπτης})$$` :
                 `$$V_1 = ${state.brokenR1 ? '0.00' : state.V_src.toFixed(1)}\\text{ V}, \\quad V_2 = ${state.brokenR2 ? '0.00' : state.V_src.toFixed(1)}\\text{ V}$$`;
@@ -1670,8 +1912,8 @@ window.CircuitSimulation = (function() {
                     <span class="hud-probe-icon">📦</span>
                     <div class="hud-item-title-wrap">
                         <h4 class="hud-item-title">Αντιστάτης <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> (Κόμβοι A − B)</h4>
-                        <span class="hud-item-badge ${state.faultInstrument === 'ammeter_parallel' ? 'bad' : (isBroken ? 'bad' : (isShorted ? 'bad' : 'good'))}">
-                            ${state.faultInstrument === 'ammeter_parallel' ? '⚪ Παρακαμφθείς (Βραχυκύκλωμα από A₁)' : (isBroken ? '💥 Καταστροφή (Ανοικτό Κύκλωμα)' : (isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : (state.faultInstrument === 'ammeter2_parallel' ? '⚡ Ενεργό Στοιχείο (Κανονική Ροή)' : 'Ενεργό Στοιχείο')))}
+                        <span class="hud-item-badge ${state.faultInstrument === 'ammeter_parallel' ? 'bad' : (isBroken ? 'bad' : (isShorted ? 'bad' : (state.faultInstrument === 'voltmeter_series' ? 'bad' : 'good')))}">
+                            ${state.faultInstrument === 'ammeter_parallel' ? '⚪ Παρακαμφθείς (Βραχυκύκλωμα από A₁)' : (state.faultInstrument === 'voltmeter_series' ? '⚪ Ανενεργός (Διακοπή Ρεύματος από Vσ)' : (isBroken ? '💥 Καταστροφή (Ανοικτό Κύκλωμα)' : (isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : (state.faultInstrument === 'ammeter2_parallel' ? '⚡ Ενεργό Στοιχείο (Κανονική Ροή)' : 'Ενεργό Στοιχείο'))))}
                         </span>
                     </div>
                 </div>
@@ -1732,8 +1974,8 @@ window.CircuitSimulation = (function() {
                     <span class="hud-probe-icon">📦</span>
                     <div class="hud-item-title-wrap">
                         <h4 class="hud-item-title">Αντιστάτης <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Κόμβοι ${state.topology === 'series' ? 'B − C' : 'C − E'})</h4>
-                        <span class="hud-item-badge ${state.faultInstrument === 'ammeter_parallel' || state.faultInstrument === 'ammeter2_parallel' ? 'bad' : (isBroken ? 'bad' : (isShorted ? 'bad' : 'good'))}">
-                            ${state.faultInstrument === 'ammeter_parallel' ? '⚪ Παρακαμφθείς (Βραχυκύκλωμα από A₁)' : (state.faultInstrument === 'ammeter2_parallel' ? '⚪ Παρακαμφθείς (Βραχυκύκλωση από A₂)' : (isBroken ? '💥 Καταστροφή (Ανοικτό Κύκλωμα)' : (isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : 'Ενεργό Στοιχείο')))}
+                        <span class="hud-item-badge ${state.faultInstrument === 'ammeter_parallel' || state.faultInstrument === 'ammeter2_parallel' || state.faultInstrument === 'voltmeter_series' ? 'bad' : (isBroken ? 'bad' : (isShorted ? 'bad' : 'good'))}">
+                            ${state.faultInstrument === 'ammeter_parallel' ? '⚪ Παρακαμφθείς (Βραχυκύκλωμα από A₁)' : (state.faultInstrument === 'ammeter2_parallel' ? '⚪ Παρακαμφθείς (Βραχυκύκλωση από A₂)' : (state.faultInstrument === 'voltmeter_series' ? '⚪ Ανενεργός (Διακοπή Ρεύματος από Vσ)' : (isBroken ? '💥 Καταστροφή (Ανοικτό Κύκλωμα)' : (isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : 'Ενεργό Στοιχείο'))))}
                         </span>
                     </div>
                 </div>
@@ -1782,6 +2024,7 @@ window.CircuitSimulation = (function() {
         } else if (probeTarget === 'source') {
             const isFaultAmmeter1 = state.faultInstrument === 'ammeter_parallel';
             const isFaultAmmeter2 = state.faultInstrument === 'ammeter2_parallel';
+            const isFaultVoltmeter = state.faultInstrument === 'voltmeter_series';
             const isTotalShort = phys.status === 'total_short';
             const iTotDisplay = phys.I_total === Infinity ? '∞ A (Υπερένταση / Βραχυκύκλωμα!)' : `${phys.I_total.toFixed(2)} A`;
             const reqDisplay = phys.R_eq === Infinity ? '∞ Ω (Ανοικτό Κύκλωμα)' : (phys.R_eq === 0 ? '0.00 Ω (Βραχυκύκλωμα)' : `${phys.R_eq.toFixed(2)} Ω`);
@@ -1792,7 +2035,7 @@ window.CircuitSimulation = (function() {
                     <span class="hud-probe-icon">🔋</span>
                     <div class="hud-item-title-wrap">
                         <h4 class="hud-item-title">Ηλεκτρική Πηγή (DC Voltage Source)</h4>
-                        <span class="hud-item-badge ${isTotalShort ? 'bad' : (isFaultAmmeter2 ? 'warn' : 'good')}">${isTotalShort ? '⚠️ Κατάσταση Βραχυκυκλώματος' : (isFaultAmmeter2 ? '⚠️ Μερικό Βραχυκύκλωμα (R₁ ενεργό)' : 'Κύρια Τροφοδοσία')}</span>
+                        <span class="hud-item-badge ${isTotalShort ? 'bad' : (isFaultAmmeter2 ? 'warn' : (isFaultVoltmeter ? 'warn' : 'good'))}">${isTotalShort ? '⚠️ Κατάσταση Βραχυκυκλώματος' : (isFaultAmmeter2 ? '⚠️ Μερικό Βραχυκύκλωμα (R₁ ενεργό)' : (isFaultVoltmeter ? '⚪ Διακοπή Ροής (Rv → ∞)' : 'Κύρια Τροφοδοσία'))}</span>
                     </div>
                 </div>
 
@@ -1860,6 +2103,32 @@ window.CircuitSimulation = (function() {
                             <div class="step-calc-line">
                                 <div class="step-calc-header">3. Συνολική Παρεχόμενη Ισχύς:</div>
                                 <div class="step-calc-formula">$$P_{\\text{ολ}} = V_{\\text{πηγ}} \\cdot I_{\\text{ολ}} = P_1 = ${phys.P_total.toFixed(2)}\\text{ W}$$</div>
+                            </div>
+                        ` : `
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">1. Κατάσταση Κυκλώματος:</div>
+                                <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
+                            </div>
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">2. Ρεύμα:</div>
+                                <div class="step-calc-formula">$$I_{\\text{ολ}} = 0.00\\text{ A}$$</div>
+                            </div>
+                        `) : isFaultVoltmeter ? (state.switchClosed ? `
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">1. Επίδραση Λανθασμένης Σύνδεσης Βολτομέτρου σε Σειρά ($V_\\sigma$):</div>
+                                <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                                    Το βολτόμετρο $V_\\sigma$ ($R_V \\to \\infty$) συνδέθηκε ${state.topology === 'series' ? 'σε σειρά στη θέση του $A_1$' : 'σε σειρά στον κύριο αγωγό τροφοδοσίας πριν το $A_{\\text{ολ}}$'}.
+                                    Λόγω της τεράστιας εσωτερικής του αντίστασης, η ισοδύναμη αντίσταση του κυκλώματος τείνει στο άπειρο:
+                                </p>
+                                <div class="step-calc-formula">$$R_{\\text{ολ}} = R_V + R_{\\text{φορτίου}} \\to \\infty\\ \\Omega \\quad (\\text{Μπλοκάρισμα Ροής})$$</div>
+                            </div>
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">2. Ολικό Ρεύμα από τον Νόμο του Ohm:</div>
+                                <div class="step-calc-formula">$$I_{\\text{ολ}} = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} = 0.00\\text{ A}$$</div>
+                            </div>
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">3. Συνολική Παρεχόμενη Ισχύς:</div>
+                                <div class="step-calc-formula">$$P_{\\text{ολ}} = V_{\\text{πηγ}} \\cdot I_{\\text{ολ}} = ${state.V_src}\\text{ V} \\cdot 0.00\\text{ A} = 0.00\\text{ W}$$</div>
                             </div>
                         ` : `
                             <div class="step-calc-line">
@@ -1945,12 +2214,31 @@ window.CircuitSimulation = (function() {
             let vmReading = 0;
             let vmSubtitle = '';
             let vmExplanation = '';
+            let vmBadgeClass = 'good';
+            let vmBadgeText = 'RV → ∞ (Ιδανικό Όργανο)';
 
             if (probeTarget === 'voltmeter_src') {
                 vmTitle = 'Βολτόμετρο Πηγής Τάσης (Vπηγ)';
                 vmReading = state.V_src;
                 vmSubtitle = 'Συνδεδεμένο παράλληλα στους πόλους της ηλεκτρικής πηγής';
                 vmExplanation = `Το βολτόμετρο συνδέεται πάντοτε <strong>παράλληλα</strong> στους πόλους της ηλεκτρικής πηγής. Μετράει την ηλεκτρική τάση (διαφορά δυναμικού) που παρέχει η πηγή στο κύκλωμα: $V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$. Επειδή ένα ιδανικό βολτόμετρο έχει άπειρη εσωτερική αντίσταση ($R_V \\to \\infty$), δεν απορροφά ρεύμα ($I_V = 0\\text{ A}$) και δεν επηρεάζει καθόλου τη λειτουργία του κυκλώματος.`;
+            } else if (probeTarget === 'voltmeter_series') {
+                vmTitle = 'Βολτόμετρο Vσ (⚠️ ΛΑΝΘΑΣΜΕΝΗ ΣΥΝΔΕΣΗ ΣΕ ΣΕΙΡΑ)';
+                vmReading = state.switchClosed ? state.V_src : 0;
+                vmBadgeClass = 'bad';
+                vmBadgeText = '⚠️ Rv → ∞ (Διακοπή Ρεύματος)';
+                vmSubtitle = state.topology === 'series' ? 
+                    'Συνδεδεμένο σε σειρά στη θέση του A₁ (πριν τον R₁)' : 
+                    'Συνδεδεμένο σε σειρά στον κύριο αγωγό (πριν το Aολ)';
+                vmExplanation = `
+                    <strong>1. Σφάλμα Συνδεσμολογίας:</strong> Το βολτόμετρο συνδέθηκε <em>σε σειρά</em> με το κύκλωμα αντί να συνδεθεί παράλληλα στα άκρα κάποιου στοιχείου.<br>
+                    <strong>2. Τεράστια Εσωτερική Αντίσταση:</strong> Ένα ιδανικό βολτόμετρο διαθέτει σχεδόν άπειρη εσωτερική αντίσταση ($R_V \\to \\infty$). Συνδέοντάς το όμως σε σειρά, λειτουργεί σαν <strong>ανοικτός διακόπτης (τεράστιο εμπόδιο)</strong> που μπλοκάρει τη ροή των ηλεκτρονίων.<br>
+                    <strong>3. Μηδενισμός Ρεύματος:</strong> Σύμφωνα με τον Νόμο του Ohm:
+                    $$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} \\to 0.00\\text{ A}$$
+                    Κανένα ρεύμα δεν διαρρέει τους αντιστάτες ($I = 0.00\\text{ A}$), ούτε τα αμπερόμετρα.<br>
+                    <strong>4. Κατανομή Τάσης:</strong> Επειδή το ρεύμα είναι μηδέν, οι πτώσεις τάσης στα φορτία είναι $V = I \\cdot R = 0.00\\text{ V}$. Επομένως, <strong>ολόκληρη η τάση της πηγής εφαρμόζεται στα άκρα του βολτομέτρου σειράς ($V_\\sigma = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}$)</strong>!<br>
+                    <strong>5. Ασφάλεια:</strong> Σε αντίθεση με το αμπερόμετρο (που προκαλεί επικίνδυνο βραχυκύκλωμα), η σύνδεση βολτομέτρου σε σειρά είναι <em>εντελώς ακίνδυνη</em> για το όργανο, αλλά καθιστά το κύκλωμα ανενεργό.
+                `;
             } else if (probeTarget === 'voltmeter1') {
                 vmTitle = 'Βολτόμετρο Αντιστάτη R₁ (V₁)';
                 vmReading = phys.V1;
@@ -1959,6 +2247,8 @@ window.CircuitSimulation = (function() {
                     Λόγω της λανθασμένης παράλληλης τοποθέτησης του αμπερομέτρου $A_1$, η πηγή βραχυκυκλώνεται πλήρως πριν από τον $R_1$. Δεν ρέει ρεύμα προς τον $R_1$ ($I_1 = 0.00\\text{ A}$), συνεπώς η πτώση τάσης στα άκρα του είναι <strong>μηδενική: $V_1 = I_1 \\cdot R_1 = 0.00\\text{ V}$</strong>.
                 ` : state.faultInstrument === 'ammeter2_parallel' ? `
                     Το αμπερόμετρο $A_2$ έχει βραχυκυκλώσει τον $R_2$. Επομένως, ολόκληρη η τάση της πηγής εφαρμόζεται στα άκρα του $R_1$: <strong>$V_1 = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}$</strong>.
+                ` : state.faultInstrument === 'voltmeter_series' ? `
+                    Επειδή το βολτόμετρο $V_\\sigma$ συνδέθηκε σε σειρά, η τεράστια εσωτερική του αντίσταση ($R_V \\to \\infty$) διακόπτει όλο το ρεύμα ($I = 0.00\\text{ A}$). Συνεπώς, δεν υπάρχει καμία πτώση τάσης στον $R_1$: <strong>$V_1 = I_1 \\cdot R_1 = 0.00\\text{ V}$</strong>.
                 ` : state.topology === 'series' ? (state.brokenR1 ? `
                     Η συσκευή $R_1$ έχει υποστεί βλάβη/καταστροφή (ανοικτό κύκλωμα). Επειδή το ρεύμα στη σειρά μηδενίζεται ($I = 0\\text{ A}$), δεν υπάρχει πτώση τάσης στον ανέπαφο αντιστάτη $R_2$ ($V_2 = I \\cdot R_2 = 0\\text{ V}$). Συνεπώς, <strong>ολόκληρη η τάση της πηγής εμφανίζεται στα άκρα της κατεστραμμένης συσκευής: $V_1 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$</strong>!
                 ` : state.shortR1 ? `
@@ -1978,6 +2268,8 @@ window.CircuitSimulation = (function() {
                     Λόγω του ολικού βραχυκυκλώματος από το αμπερόμετρο $A_1$, ο αντιστάτης $R_2$ παρακάμπτεται πλήρως. Το ρεύμα που τον διαρρέει είναι μηδέν ($I_2 = 0.00\\text{ A}$), άρα η ένδειξη του βολτομέτρου είναι <strong>$V_2 = I_2 \\cdot R_2 = 0.00\\text{ V}$</strong>.
                 ` : state.faultInstrument === 'ammeter2_parallel' ? `
                     Λόγω της λανθασμένης τοποθέτησης του αμπερομέτρου $A_2$ μεταξύ των κόμβων K και M, ο αντιστάτης $R_2$ παρακάμπτεται πλήρως. Το ρεύμα που τον διαρρέει είναι μηδέν ($I_2 = 0.00\\text{ A}$), άρα η ένδειξη του βολτομέτρου είναι <strong>$V_2 = 0.00\\text{ V}$</strong>.
+                ` : state.faultInstrument === 'voltmeter_series' ? `
+                    Λόγω της σύνδεσης του βολτομέτρου $V_\\sigma$ σε σειρά, το ρεύμα του κυκλώματος μηδενίζεται ($I = 0.00\\text{ A}$). Επομένως, η πτώση τάσης στον $R_2$ είναι απολύτως μηδενική: <strong>$V_2 = I_2 \\cdot R_2 = 0.00\\text{ V}$</strong>.
                 ` : state.topology === 'series' ? (state.brokenR2 ? `
                     Η συσκευή $R_2$ έχει υποστεί βλάβη/καταστροφή (ανοικτό κύκλωμα). Επειδή το ρεύμα στη σειρά μηδενίζεται ($I = 0\\text{ A}$), δεν υπάρχει πτώση τάσης στον ανέπαφο αντιστάτη $R_1$ ($V_1 = I \\cdot R_1 = 0\\text{ V}$). Συνεπώς, <strong>ολόκληρη η τάση της πηγής εμφανίζεται στα άκρα της κατεστραμμένης συσκευής: $V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$</strong>!
                 ` : state.shortR2 ? `
@@ -1991,9 +2283,11 @@ window.CircuitSimulation = (function() {
                 `);
             } else if (probeTarget === 'voltmeter_par') {
                 vmTitle = 'Βολτόμετρο Παράλληλης Σύνδεσης (Vπαρ)';
-                vmReading = (!state.switchClosed || phys.status === 'total_short') ? 0 : state.V_src;
+                vmReading = (!state.switchClosed || phys.status === 'total_short' || state.faultInstrument === 'voltmeter_series') ? 0 : state.V_src;
                 vmSubtitle = 'Συνδεδεμένο στη δεξιά πλευρά (Κόμβοι C − E)';
-                vmExplanation = `Το βολτόμετρο είναι συνδεδεμένο παράλληλα στη συστοιχία των δύο παράλληλων κλάδων (μεταξύ του άνω κοινού αγωγού C και του κάτω κοινού αγωγού E). Επιβεβαιώνει πειραματικά τον θεμελιώδη κανόνα της παράλληλης σύνδεσης: <strong>όλοι οι παράλληλοι κλάδοι βρίσκονται υπό την ίδια ακριβώς ηλεκτρική τάση: $V_{\\text{παρ}} = V_1 = V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$</strong>!`;
+                vmExplanation = state.faultInstrument === 'voltmeter_series' ? `
+                    Το βολτόμετρο $V_\\sigma$ που συνδέθηκε σε σειρά στον κύριο αγωγό ($R_V \\to \\infty$) μπλοκάρει όλη την παροχή ρεύματος ($I_{\\text{ολ}} = 0.00\\text{ A}$). Ως αποτέλεσμα, η τάση στους παράλληλους κλάδους είναι <strong>$V_{\\text{παρ}} = 0.00\\text{ V}$</strong>. Ολόκληρη η τάση της πηγής ($V = ${state.V_src}\\text{ V}$) εμφανίζεται στα άκρα του $V_\\sigma$!
+                ` : `Το βολτόμετρο είναι συνδεδεμένο παράλληλα στη συστοιχία των δύο παράλληλων κλάδων (μεταξύ του άνω κοινού αγωγού C και του κάτω κοινού αγωγού E). Επιβεβαιώνει πειραματικά τον θεμελιώδη κανόνα της παράλληλης σύνδεσης: <strong>όλοι οι παράλληλοι κλάδοι βρίσκονται υπό την ίδια ακριβώς ηλεκτρική τάση: $V_{\\text{παρ}} = V_1 = V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$</strong>!`;
             }
 
             detailsHtml = `
@@ -2001,7 +2295,7 @@ window.CircuitSimulation = (function() {
                     <span class="hud-probe-icon">🟣</span>
                     <div class="hud-item-title-wrap">
                         <h4 class="hud-item-title">${vmTitle}</h4>
-                        <span class="hud-item-badge good">RV → ∞ (Ιδανικό Όργανο)</span>
+                        <span class="hud-item-badge ${vmBadgeClass}">${vmBadgeText}</span>
                     </div>
                 </div>
                 <div class="hud-readouts-grid cols-2">
@@ -2044,6 +2338,16 @@ window.CircuitSimulation = (function() {
                         ${state.switchClosed ? 'Με κλειστό διακόπτη, το ρεύμα εκτοξεύεται στο <strong>άπειρο ($I \\to \\infty$)</strong>. Στην πράξη, αυτό θα προκαλούσε ακαριαία <em>τήξη της ασφάλειας ή κάψιμο/καταστροφή του οργάνου</em>!' : 'Με ανοικτό διακόπτη, το κύκλωμα είναι ανοικτό και δεν ρέει ρεύμα ($I_{A1} = 0.00\\text{ A}$).'}<br>
                         <strong>4. Μηδενισμός Ρεύματος Φορτίων:</strong> Το ρεύμα επιλέγει εξ ολοκλήρου τη διαδρομή μηδενικής αντίστασης του $A_1$. Συνεπώς, <strong>κανένα ρεύμα δεν φτάνει στους αντιστάτες $R_1, R_2$ και στα αμπερόμετρα $A_2, A_3$</strong> ($I = 0.00\\text{ A}$).
                     `;
+                } else if (state.faultInstrument === 'voltmeter_series') {
+                    amTitle = state.topology === 'series' ? 'Αμπερόμετρο A₁ (Αντικαταστάθηκε από Vσ)' : 'Αμπερόμετρο A₁ (Κλάδος R₁)';
+                    amBadgeClass = 'warn';
+                    amBadgeText = 'Μηδενικό Ρεύμα (I = 0 A)';
+                    amReading = 0;
+                    amExplanation = state.topology === 'series' ? `
+                        Στη συνδεσμολογία αυτή, το αμπερόμετρο $A_1$ <strong>έχει αφαιρεθεί πλήρως</strong> και στη θέση του τοποθετήθηκε το βολτόμετρο $V_\\sigma$ σε σειρά.
+                    ` : `
+                        Το βολτόμετρο $V_\\sigma$ συνδέθηκε σε σειρά στον κύριο αγωγό ($R_V \\to \\infty$), μπλοκάροντας όλη την παροχή ρεύματος ($I_{\\text{ολ}} = 0.00\\text{ A}$). Συνεπώς, κανένα ρεύμα δεν φτάνει στον 1ο παράλληλο κλάδο και το αμπερόμετρο $A_1$ δείχνει <strong>$I_1 = 0.00\\text{ A}$</strong>.
+                    `;
                 } else if (state.topology === 'series') {
                     amTitle = 'Αμπερόμετρο A₁ (Σειρά - Πριν τον R₁)';
                     amReading = phys.I_total;
@@ -2070,6 +2374,16 @@ window.CircuitSimulation = (function() {
                         <strong>2. Μηδενική Εσωτερική Αντίσταση & Βραχυκύκλωση $R_2$:</strong> Ένα ιδανικό αμπερόμετρο διαθέτει μηδενική αντίσταση ($R_{A2} \\approx 0\\ \\Omega$). Προσφέρει στο ρεύμα μια διαδρομή μηδενικής αντίστασης κατευθείαν προς τη γραμμή επιστροφής, παρακάμπτοντας πλήρως τον $R_2$ ($I_2 = 0.00\\text{ A}, V_2 = 0.00\\text{ V}$).<br>
                         <strong>3. Ρεύμα Οργάνου:</strong> Το ρεύμα που διέρχεται από το $A_2$ ισούται με το ρεύμα του $R_1$: $I_{A2} = I_1 = ${phys.I_total.toFixed(2)}\\text{ A}$.
                     `;
+                } else if (state.faultInstrument === 'voltmeter_series') {
+                    amTitle = state.topology === 'series' ? 'Αμπερόμετρο A₂ (Σειρά - Ανάμεσα στους R₁ & R₂)' : 'Αμπερόμετρο A₂ (Κλάδος R₂)';
+                    amBadgeClass = 'warn';
+                    amBadgeText = 'Μηδενικό Ρεύμα (I = 0 A)';
+                    amReading = 0;
+                    amExplanation = state.topology === 'series' ? `
+                        Επειδή το βολτόμετρο $V_\\sigma$ συνδέθηκε σε σειρά στην αρχή του κυκλώματος ($R_V \\to \\infty$), η ροή του ρεύματος μηδενίζεται πλήρως ($I = 0.00\\text{ A}$). Συνεπώς, το αμπερόμετρο $A_2$ δείχνει <strong>$I_{A2} = 0.00\\text{ A}$</strong>.
+                    ` : `
+                        Το βολτόμετρο $V_\\sigma$ στον κύριο αγωγό ($R_V \\to \\infty$) διακόπτει όλη την παροχή ρεύματος ($I_{\\text{ολ}} = 0.00\\text{ A}$). Κανένα ρεύμα δεν φτάνει στον 2ο κλάδο, άρα το $A_2$ δείχνει <strong>$I_2 = 0.00\\text{ A}$</strong>.
+                    `;
                 } else if (state.topology === 'series') {
                     amTitle = 'Αμπερόμετρο A₂ (Σειρά - Ανάμεσα στους R₁ & R₂)';
                     amReading = phys.I_total;
@@ -2090,6 +2404,12 @@ window.CircuitSimulation = (function() {
                     ` : `
                         Το αμπερόμετρο $A_3$ βρίσκεται μετά τον δεύτερο αντιστάτη $R_2$. Λόγω του ολικού βραχυκυκλώματος στον κόμβο $K$, κανένα ρεύμα δεν φτάνει στον κλάδο των $R_1, R_2$, άρα η ένδειξη του $A_3$ είναι <strong>απολύτως μηδενική ($I_{A3} = 0.00\\text{ A}$)</strong>.
                     `;
+                } else if (state.faultInstrument === 'voltmeter_series') {
+                    amTitle = 'Αμπερόμετρο A₃ (Σειρά - Μετά τον R₂)';
+                    amReading = 0;
+                    amBadgeClass = 'warn';
+                    amBadgeText = 'Μηδενικό Ρεύμα (I = 0 A)';
+                    amExplanation = `Λόγω της τεράστιας εσωτερικής αντίστασης του βολτομέτρου $V_\\sigma$ που συνδέθηκε σε σειρά ($R_V \\to \\infty$), το κύκλωμα δεν διαρρέεται από ρεύμα ($I = 0.00\\text{ A}$). Συνεπώς, το $A_3$ δείχνει <strong>$I_{A3} = 0.00\\text{ A}$</strong>.`;
                 } else {
                     amTitle = 'Αμπερόμετρο A₃ (Σειρά - Μετά τον R₂)';
                     amReading = phys.I_total;
@@ -2097,13 +2417,21 @@ window.CircuitSimulation = (function() {
                 }
             } else {
                 // Main Ammeter
-                amTitle = state.topology === 'parallel' ? 'Κύριο Αμπερόμετρο Aολ (Κύριος Αγωγός)' : 'Ιδανικό Αμπερόμετρο A (Σειρά)';
-                amReading = phys.I_total;
-                amExplanation = state.topology === 'parallel' ? `
-                    Μετράει το συνολικό ρεύμα $I_{\\text{ολ}}$ που εξέρχεται από την ηλεκτρική πηγή. Σύμφωνα με τον 1ο Κανόνα του Kirchhoff, διακλαδίζεται στους δύο κλάδους: $I_{\\text{ολ}} = I_1 + I_2 = ${phys.I1.toFixed(2)}\\text{ A} + ${phys.I2.toFixed(2)}\\text{ A} = ${phys.I_total.toFixed(2)}\\text{ A}$.
-                ` : `
-                    Το αμπερόμετρο συνδέεται πάντοτε <strong>στη σειρά</strong> και διαθέτει μηδενική εσωτερική αντίσταση ($R_A = 0\\ \\Omega$) ώστε να μετράει το ρεύμα χωρίς να προκαλεί καμία πτώση τάσης.
-                `;
+                if (state.faultInstrument === 'voltmeter_series' && state.topology === 'parallel') {
+                    amTitle = 'Κύριο Αμπερόμετρο Aολ (Κύριος Αγωγός)';
+                    amReading = 0;
+                    amBadgeClass = 'warn';
+                    amBadgeText = 'Μηδενικό Ρεύμα (I = 0 A)';
+                    amExplanation = `Το αμπερόμετρο $A_{\\text{ολ}}$ βρίσκεται στον κύριο αγωγό αμέσως μετά το βολτόμετρο $V_\\sigma$. Επειδή το βολτόμετρο έχει άπειρη αντίσταση ($R_V \\to \\infty$), εμποδίζει τη διέλευση του ρεύματος. Έτσι, το $A_{\\text{ολ}}$ μετράει <strong>$I_{\\text{ολ}} = 0.00\\text{ A}$</strong>.`;
+                } else {
+                    amTitle = state.topology === 'parallel' ? 'Κύριο Αμπερόμετρο Aολ (Κύριος Αγωγός)' : 'Ιδανικό Αμπερόμετρο A (Σειρά)';
+                    amReading = phys.I_total;
+                    amExplanation = state.topology === 'parallel' ? `
+                        Μετράει το συνολικό ρεύμα $I_{\\text{ολ}}$ που εξέρχεται από την ηλεκτρική πηγή. Σύμφωνα με τον 1ο Κανόνα του Kirchhoff, διακλαδίζεται στους δύο κλάδους: $I_{\\text{ολ}} = I_1 + I_2 = ${phys.I1.toFixed(2)}\\text{ A} + ${phys.I2.toFixed(2)}\\text{ A} = ${phys.I_total.toFixed(2)}\\text{ A}$.
+                    ` : `
+                        Το αμπερόμετρο συνδέεται πάντοτε <strong>στη σειρά</strong> και διαθέτει μηδενική εσωτερική αντίσταση ($R_A = 0\\ \\Omega$) ώστε να μετράει το ρεύμα χωρίς να προκαλεί καμία πτώση τάσης.
+                    `;
+                }
             }
 
             const amReadingStr = amReading === Infinity ? '∞ A (Υπερένταση / Βραχυκύκλωμα!)' : `${amReading.toFixed(2)} A`;
@@ -2152,6 +2480,8 @@ window.CircuitSimulation = (function() {
                     } else {
                         nodeCurrent = 0;
                     }
+                } else if (state.faultInstrument === 'voltmeter_series') {
+                    nodeCurrent = 0;
                 } else if (phys.status !== 'total_short') {
                     if (state.topology === 'series') {
                         nodeCurrent = phys.I_total;
@@ -2343,7 +2673,9 @@ window.CircuitSimulation = (function() {
 
         setTopology: function(topo) {
             state.topology = topo;
-            state.faultInstrument = 'none';
+            if (state.faultInstrument !== 'voltmeter_series') {
+                state.faultInstrument = 'none';
+            }
             // Uncheck parallel short if switching to parallel to avoid immediate total short
             if (topo === 'parallel') {
                 state.shortR1 = false;
@@ -2360,6 +2692,13 @@ window.CircuitSimulation = (function() {
             } else if (faultKey === 'ammeter2_parallel') {
                 state.activeProbe = 'ammeter2';
                 showToast('⚠️ Λανθασμένη Τοποθέτηση Αμπερομέτρου II: Συνδέθηκε μεταξύ K − M! Βραχυκυκλώνει τον R₂ (I₂ = 0 A), ενώ ο R₁ λειτουργεί κανονικά.');
+            } else if (faultKey === 'voltmeter_series') {
+                state.activeProbe = 'voltmeter_series';
+                if (state.topology === 'series') {
+                    showToast('⚠️ Λανθασμένη Τοποθέτηση Βολτομέτρου: Συνδέθηκε σε σειρά στη θέση του A₁ (Rv → ∞)! Μηδενίζει το ρεύμα (I = 0 A) και στα άκρα του εμφανίζεται όλη η τάση.');
+                } else {
+                    showToast('⚠️ Λανθασμένη Τοποθέτηση Βολτομέτρου: Συνδέθηκε σε σειρά στον κύριο αγωγό (Rv → ∞)! Μηδενίζει το ολικό ρεύμα (Iολ = 0 A) και στα άκρα του εμφανίζεται όλη η τάση.');
+                }
             } else {
                 state.activeProbe = 'R1';
                 showToast('✅ Ορθή Τοποθέτηση Οργάνων: Όλα τα όργανα λειτουργούν στις κανονικές τους θέσεις.');
@@ -2495,7 +2834,9 @@ window.CircuitSimulation = (function() {
             state.brokenR1 = !!p.brokenR1;
             state.brokenR2 = !!p.brokenR2;
             state.faultInstrument = p.faultInstrument || 'none';
-            state.activeProbe = state.faultInstrument === 'ammeter_parallel' ? 'ammeter1' : 'R1';
+            state.activeProbe = (state.faultInstrument === 'ammeter_parallel' ? 'ammeter1' : 
+                                (state.faultInstrument === 'ammeter2_parallel' ? 'ammeter2' : 
+                                (state.faultInstrument === 'voltmeter_series' ? 'voltmeter_series' : 'R1')));
 
             if (state.containerEl) render(state.containerEl);
             showToast(`🎯 Φορτώθηκε: ${p.name}`);
