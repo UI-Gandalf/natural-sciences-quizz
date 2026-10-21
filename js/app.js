@@ -601,16 +601,16 @@ function renderQuizSelection(classKey, subjectKey) {
         const theoryMount = document.getElementById('theory-mount');
         if (theoryMount && window.TheoryNotes) {
             window.TheoryNotes.renderPhysicsG(theoryMount);
-            if (currentTab === 'theory' && window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetPromise([theoryMount]).catch(err => console.warn('MathJax error:', err));
+            if (currentTab === 'theory' && window.renderMath) {
+                window.renderMath(theoryMount);
             }
         }
 
         const examMount = document.getElementById('exam-solutions-mount');
         if (examMount && window.ExamSolutionsGuide) {
             window.ExamSolutionsGuide.render(examMount);
-            if (currentTab === 'exam_solutions' && window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetPromise([examMount]).catch(err => console.warn('MathJax error:', err));
+            if (currentTab === 'exam_solutions' && window.renderMath) {
+                window.renderMath(examMount);
             }
         }
     }
@@ -707,8 +707,8 @@ function switchSubjectTab(tabKey) {
             if (theoryMount && window.TheoryNotes && (!theoryMount.hasChildNodes() || theoryMount.children.length === 0)) {
                 window.TheoryNotes.renderPhysicsG(theoryMount);
             }
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetPromise([theoryPanel]).catch(err => console.warn('MathJax error:', err));
+            if (window.renderMath) {
+                window.renderMath(theoryPanel);
             }
         }
     }
@@ -720,8 +720,8 @@ function switchSubjectTab(tabKey) {
             if (examMount && window.ExamSolutionsGuide && (!examMount.hasChildNodes() || examMount.children.length === 0)) {
                 window.ExamSolutionsGuide.render(examMount);
             }
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetPromise([examPanel]).catch(err => console.warn('MathJax error:', err));
+            if (window.renderMath) {
+                window.renderMath(examPanel);
             }
         }
     }

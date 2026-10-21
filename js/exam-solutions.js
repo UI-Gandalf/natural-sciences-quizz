@@ -65,7 +65,9 @@ window.ExamSolutionsGuide = (function() {
             btnEl.innerHTML = isHidden 
                 ? '<span>🔼</span><span>Σύμπτυξη Επίλυσης</span>' 
                 : '<span>👁️</span><span>Προβολή Αναλυτικής Επίλυσης</span>';
-            if (isHidden && window.MathJax && window.MathJax.typesetPromise) {
+            if (isHidden && window.renderMath) {
+                window.renderMath(solEl);
+            } else if (isHidden && window.MathJax && window.MathJax.typesetPromise) {
                 window.MathJax.typesetPromise([solEl]).catch(function(err) { console.warn(err); });
             }
         }
@@ -80,7 +82,9 @@ window.ExamSolutionsGuide = (function() {
                 ? '<span>🔼</span><span>Σύμπτυξη Επίλυσης</span>' 
                 : '<span>👁️</span><span>Προβολή Αναλυτικής Επίλυσης</span>';
         });
-        if (expand && window.MathJax && window.MathJax.typesetPromise) {
+        if (expand && window.renderMath) {
+            window.renderMath(document.getElementById('exam-solutions-mount'));
+        } else if (expand && window.MathJax && window.MathJax.typesetPromise) {
             window.MathJax.typesetPromise().catch(function(err) { console.warn(err); });
         }
     }
@@ -345,9 +349,9 @@ window.ExamSolutionsGuide = (function() {
                             <div>
                                 <h3 style="color: #a78bfa; margin-bottom: 8px;">Δεδομένα Κυκλώματος Θέματος Α1</h3>
                                 <ul style="line-height: 1.7; font-size: 0.95rem; color: var(--text-secondary); padding-left: 20px;">
-                                    <li>Τάση πηγής: <strong>$$V = 60\\text{ V}$$</strong></li>
-                                    <li>Αντιστάτης 1: <strong>$$R_1 = 5\\ \\Omega$$</strong></li>
-                                    <li>Αντιστάτης 2: <strong>$$R_2 = 15\\ \\Omega$$</strong></li>
+                                    <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                    <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                    <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
                                     <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
                                     <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
                                     <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
@@ -424,7 +428,7 @@ window.ExamSolutionsGuide = (function() {
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Εφαρμόζουμε τον νόμο του Ohm για το ισοδύναμο κύκλωμα με την ολική αντίσταση:</p>
                                         <div class="formula-latex">$$I = \\frac{V}{R_{\\text{ολ}}} = \\frac{60\\text{ V}}{20\\ \\Omega} = 3\\text{ A}$$</div>
-                                        <p>Επειδή το κύκλωμα είναι σε σειρά, η ένταση είναι ίδια σε κάθε σημείο του: $I = I_1 = I_2 = 3\\text{ A}$.</p>
+                                        <p>Επειδή το κύκλωμα είναι σε σειρά, η ένταση είναι ίδια σε κάθε σημείο του: $I_{\\text{ολ}} = I_1 = I_2 = 3\\text{ A}$.</p>
                                     </div>
                                 </div>
                             </div>
@@ -935,9 +939,9 @@ window.ExamSolutionsGuide = (function() {
                             <div>
                                 <h3 style="color: #67e8f9; margin-bottom: 8px;">Δεδομένα Κυκλώματος Θέματος Α2</h3>
                                 <ul style="line-height: 1.7; font-size: 0.95rem; color: var(--text-secondary); padding-left: 20px;">
-                                    <li>Τάση πηγής: <strong>$$V = 75\\text{ V}$$</strong></li>
-                                    <li>Αντιστάτης 1: <strong>$$R_1 = 30\\ \\Omega$$</strong></li>
-                                    <li>Αντιστάτης 2: <strong>$$R_2 = 10\\ \\Omega$$</strong></li>
+                                    <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                    <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                    <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                     <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
                                     <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                 </ul>
@@ -1528,18 +1532,18 @@ window.ExamSolutionsGuide = (function() {
                                 </tr>
                                 <tr>
                                     <td><strong>Ένταση Ρεύματος ($I$)</strong></td>
-                                    <td>Κοινή παντού: $$I = I_1 = I_2$$</td>
-                                    <td>Επιμερίζεται: $$I_{\\text{ολ}} = I_1 + I_2$$</td>
+                                    <td>Κοινή παντού: $I = I_1 = I_2$</td>
+                                    <td>Επιμερίζεται: $I_{\\text{ολ}} = I_1 + I_2$</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Διαφορά Δυναμικού ($V$)</strong></td>
-                                    <td>Επιμερίζεται: $$V = V_1 + V_2$$</td>
-                                    <td>Κοινή παντού: $$V = V_1 = V_2$$</td>
+                                    <td>Επιμερίζεται: $V = V_1 + V_2$</td>
+                                    <td>Κοινή παντού: $V = V_1 = V_2$</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Ισοδύναμη Αντίσταση ($R_{\\text{ολ}}$)</strong></td>
-                                    <td>$$R_{\\text{ολ}} = R_1 + R_2$$ ($R_{\\text{ολ}} > R_{\\text{max}}$)</td>
-                                    <td>$$\\frac{1}{R_{\\text{ολ}}} = \\frac{1}{R_1} + \\frac{1}{R_2}$$ ($R_{\\text{ολ}} < R_{\\text{min}}$)</td>
+                                    <td>$R_{\\text{ολ}} = R_1 + R_2$ ($R_{\\text{ολ}} > R_{\\text{max}}$)</td>
+                                    <td>$\\frac{1}{R_{\\text{ολ}}} = \\frac{1}{R_1} + \\frac{1}{R_2}$ ($R_{\\text{ολ}} < R_{\\text{min}}$)</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Συνέπεια Διακοπής ενός Κλάδου</strong></td>
@@ -1553,8 +1557,8 @@ window.ExamSolutionsGuide = (function() {
                                 </tr>
                                 <tr>
                                     <td><strong>Ολική Ισχύς ($P_{\\text{ολ}}$)</strong></td>
-                                    <td>$$P_{\\text{ολ}} = P_1 + P_2 = V \\cdot I$$</td>
-                                    <td>$$P_{\\text{ολ}} = P_1 + P_2 = V \\cdot I_{\\text{ολ}}$$</td>
+                                    <td>$P_{\\text{ολ}} = P_1 + P_2 = V \\cdot I$</td>
+                                    <td>$P_{\\text{ολ}} = P_1 + P_2 = V \\cdot I_{\\text{ολ}}$</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1592,16 +1596,13 @@ window.ExamSolutionsGuide = (function() {
             </div>
         `;
 
-        function typesetExamMath() {
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetPromise([container]).catch(function(err) {
-                    console.warn('MathJax exam typesetting error:', err);
-                });
-            } else {
-                setTimeout(typesetExamMath, 150);
-            }
+        if (window.renderMath) {
+            window.renderMath(container);
+        } else if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise([container]).catch(function(err) {
+                console.warn('MathJax exam typesetting error:', err);
+            });
         }
-        typesetExamMath();
     }
 
     return {

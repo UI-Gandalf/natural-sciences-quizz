@@ -969,19 +969,10 @@ window.TheoryNotes = (function() {
 
     function ensureMathTypeset(targetElem) {
         if (!targetElem) return;
-        if (window.MathJax && window.MathJax.typesetPromise) {
+        if (window.renderMath) {
+            window.renderMath(targetElem);
+        } else if (window.MathJax && window.MathJax.typesetPromise) {
             window.MathJax.typesetPromise([targetElem]).catch(err => console.warn('MathJax error:', err));
-        } else {
-            let attempts = 0;
-            const timer = setInterval(() => {
-                attempts++;
-                if (window.MathJax && window.MathJax.typesetPromise) {
-                    clearInterval(timer);
-                    window.MathJax.typesetPromise([targetElem]).catch(err => console.warn('MathJax error:', err));
-                } else if (attempts >= 30) {
-                    clearInterval(timer);
-                }
-            }, 150);
         }
     }
 
