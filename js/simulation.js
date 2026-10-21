@@ -20,7 +20,7 @@ window.CircuitSimulation = (function() {
         shortR2: false,          // Boolean: Short-circuit bypass
         brokenR1: false,         // Boolean: Device malfunction / open circuit
         brokenR2: false,         // Boolean: Device malfunction / open circuit
-        faultInstrument: 'none', // 'none' | 'ammeter_parallel' | 'voltmeter_series'
+        faultInstrument: 'none', // 'none' | 'ammeter_parallel' | 'ammeter2_parallel' | 'voltmeter_series'
         showSteps: true,         // Boolean: Show detailed calculation steps
         activeProbe: 'R1',       // Currently inspected component
         hoverProbe: null,        // Hovered element
@@ -43,7 +43,7 @@ window.CircuitSimulation = (function() {
             faultInstrument: 'none'
         },
         'q_fault_ammeter': {
-            name: '⚠️ Σφάλμα: Αμπερόμετρο A₁ παράλληλα (Βραχυκύκλωμα)',
+            name: '⚠️ Σφάλμα I: Αμπερόμετρο A₁ παράλληλα στην πηγή (Ολικό Βραχυκύκλωμα)',
             topology: 'series',
             V_src: 20,
             R1: 4,
@@ -54,6 +54,19 @@ window.CircuitSimulation = (function() {
             brokenR1: false,
             brokenR2: false,
             faultInstrument: 'ammeter_parallel'
+        },
+        'q_fault_ammeter2': {
+            name: '⚠️ Σφάλμα II: Αμπερόμετρο A₂ παράλληλα στον R₂ (Βραχυκύκλωση R₂)',
+            topology: 'series',
+            V_src: 20,
+            R1: 4,
+            R2: 6,
+            switchClosed: true,
+            shortR1: false,
+            shortR2: false,
+            brokenR1: false,
+            brokenR2: false,
+            faultInstrument: 'ammeter2_parallel'
         },
         'q4_parallel': {
             name: 'Πρόβλημα 4 (Παράλληλα: 30V, 10Ω || 30Ω)',
@@ -157,7 +170,7 @@ window.CircuitSimulation = (function() {
         res.V_src_meter = V_src;
 
         if (topology === 'series') {
-            // Check for faulty instrument placement (Ammeter in parallel with source)
+            // Check for faulty instrument placement (Case I: Ammeter A1 in parallel with source)
             if (faultInstrument === 'ammeter_parallel') {
                 res.status = 'total_short';
                 res.statusText = '⚠️ Ολικό Βραχυκύκλωμα Πηγής (Λανθασμένη Τοποθέτηση Αμπερομέτρου A₁ παράλληλα στην πηγή)!';
@@ -177,11 +190,106 @@ window.CircuitSimulation = (function() {
                 res.VD = 0;
                 res.VE = 0;
                 res.VF = 0;
+                res.VM = 0;
                 res.VC = 0;
                 res.VB = 0;
                 res.VA = 0;
                 res.VK = 0;
                 res.VG = 0;
+                res.V_src_meter = V_src;
+                return res;
+            }
+
+            // Check for faulty instrument placement (Case II: Ammeter A2 in parallel with R2, between K and M)
+            if (faultInstrument === 'ammeter2_parallel') {
+                if (brokenR1) {
+                    res.status = 'broken_circuit';
+                    res.statusText = '💥 Καταστροφή R₁ (Διακοπή Σειράς - I = 0 A)';
+                    res.R_eq = Infinity;
+                    res.I_total = 0;
+                    res.I_switch = 0;
+                    res.P_total = 0;
+                    res.I_A1 = 0;
+                    res.I_A2 = 0;
+                    res.I_A3 = 0;
+                    res.V1 = V_src;
+                    res.I1 = 0;
+                    res.P1 = 0;
+                    res.V2 = 0;
+                    res.I2 = 0;
+                    res.P2 = 0;
+                    res.VD = 0;
+                    res.VE = 0;
+                    res.VF = 0;
+                    res.VM = 0;
+                    res.VC = 0;
+                    res.VB = 0;
+                    res.VA = V_src;
+                    res.VK = 0;
+                    res.VG = V_src;
+                    res.V_src_meter = V_src;
+                    return res;
+                }
+
+                if (shortR1) {
+                    res.status = 'total_short';
+                    res.statusText = '⚠️ Ολικό Βραχυκύκλωμα Πηγής (R₁ βραχυκυκλωμένος & A₂ παράλληλα)!';
+                    res.R_eq = 0;
+                    res.I_total = Infinity;
+                    res.I_switch = Infinity;
+                    res.P_total = Infinity;
+                    res.I_A1 = Infinity;
+                    res.I_A2 = Infinity;
+                    res.I_A3 = 0;
+                    res.V1 = 0;
+                    res.I1 = 0;
+                    res.P1 = 0;
+                    res.V2 = 0;
+                    res.I2 = 0;
+                    res.P2 = 0;
+                    res.VD = 0;
+                    res.VE = 0;
+                    res.VF = 0;
+                    res.VM = 0;
+                    res.VC = 0;
+                    res.VB = 0;
+                    res.VA = 0;
+                    res.VK = 0;
+                    res.VG = 0;
+                    res.V_src_meter = V_src;
+                    return res;
+                }
+
+                // Normal Case II: R1 is active, R2 is short-circuited by A2
+                const I1 = V_src / R1;
+                res.status = 'partial_short';
+                res.statusText = '⚠️ Μερικό Βραχυκύκλωμα (Λανθασμένη Τοποθέτηση Α₂ μεταξύ K − M: Βραχυκύκλωση R₂)';
+                res.R_eq = R1;
+                res.I_total = I1;
+                res.I_switch = I1;
+                res.P_total = V_src * I1;
+                res.I_A1 = I1;
+                res.I_A2 = I1;
+                res.I_A3 = 0;
+
+                res.V1 = V_src;
+                res.I1 = I1;
+                res.P1 = V_src * I1;
+
+                res.V2 = 0;
+                res.I2 = 0;
+                res.P2 = 0;
+
+                // Potentials
+                res.VD = 0;
+                res.VE = 0;
+                res.VF = 0;
+                res.VM = 0;
+                res.VC = 0;
+                res.VB = 0;
+                res.VK = 0;
+                res.VA = V_src;
+                res.VG = V_src;
                 res.V_src_meter = V_src;
                 return res;
             }
@@ -536,13 +644,15 @@ window.CircuitSimulation = (function() {
 
                         <!-- Faulty Instrument Placement (Series Circuit) -->
                         ${state.topology === 'series' ? `
-                            <div class="sim-control-group sim-fault-group ${state.faultInstrument === 'ammeter_parallel' ? 'is-shorted' : ''}" id="sim-fault-group">
+                            <div class="sim-control-group sim-fault-group ${state.faultInstrument === 'ammeter_parallel' ? 'is-shorted' : (state.faultInstrument === 'ammeter2_parallel' ? 'is-partial' : '')}" id="sim-fault-group">
                                 <div class="sim-control-header">
                                     <span class="sim-group-title">
                                         <strong>⚠️ Τοποθέτηση Οργάνων</strong>
                                     </span>
                                     ${state.faultInstrument === 'ammeter_parallel' ? `
-                                        <span class="warn-badge">Βραχυκύκλωμα</span>
+                                        <span class="warn-badge">Ολικό Βραχυκύκλωμα</span>
+                                    ` : state.faultInstrument === 'ammeter2_parallel' ? `
+                                        <span class="warn-badge" style="background: rgba(245, 158, 11, 0.18); color: #f59e0b; border-color: rgba(245, 158, 11, 0.4);">Βραχυκύκλωση R₂</span>
                                     ` : `
                                         <span class="ok-badge">Ορθή Σύνδεση</span>
                                     `}
@@ -555,7 +665,7 @@ window.CircuitSimulation = (function() {
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title">Ορθή συνδεσμολογία</span>
-                                            <span class="radio-card-desc">Αμπερόμετρο <span class="math-expr"><i class="math-var">A</i><sub class="math-sub">1</sub></span> σε σειρά πριν τον <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span></span>
+                                            <span class="radio-card-desc">Όλα τα όργανα σε σειρά (<span class="math-expr"><i class="math-var">A</i><sub class="math-sub">1</sub></span>, <span class="math-expr"><i class="math-var">A</i><sub class="math-sub">2</sub></span>, <span class="math-expr"><i class="math-var">A</i><sub class="math-sub">3</sub></span>)</span>
                                         </div>
                                     </label>
 
@@ -565,8 +675,19 @@ window.CircuitSimulation = (function() {
                                                onchange="CircuitSimulation.setFaultInstrument('ammeter_parallel')">
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
-                                            <span class="radio-card-title"><strong>(1) Λανθασμένη τοποθέτηση αμπερομέτρου</strong></span>
-                                            <span class="radio-card-desc">Παράλληλα στην πηγή (Κόμβοι K − F) ➔ Βραχυκύκλωμα!</span>
+                                            <span class="radio-card-title"><strong>(1) Λανθασμένη τοποθέτηση αμπερομέτρου I</strong></span>
+                                            <span class="radio-card-desc">Παράλληλα στην πηγή (Κόμβοι K − F) ➔ Ολικό Βραχυκύκλωμα!</span>
+                                        </div>
+                                    </label>
+
+                                    <label class="sim-radio-card warn ${state.faultInstrument === 'ammeter2_parallel' ? 'active' : ''}">
+                                        <input type="radio" name="sim-fault-instrument" value="ammeter2_parallel" 
+                                               ${state.faultInstrument === 'ammeter2_parallel' ? 'checked' : ''} 
+                                               onchange="CircuitSimulation.setFaultInstrument('ammeter2_parallel')">
+                                        <span class="radio-card-dot"></span>
+                                        <div class="radio-card-content">
+                                            <span class="radio-card-title"><strong>(2) Λανθασμένη τοποθέτηση αμπερομέτρου II</strong></span>
+                                            <span class="radio-card-desc">Παράλληλα στον <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Κόμβοι K − M) ➔ Βραχυκύκλωση <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span></span>
                                         </div>
                                     </label>
 
@@ -574,7 +695,7 @@ window.CircuitSimulation = (function() {
                                         <input type="radio" name="sim-fault-instrument" value="voltmeter_series" disabled>
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
-                                            <span class="radio-card-title">(2) Λανθασμένη τοποθέτηση βολτομέτρου</span>
+                                            <span class="radio-card-title">(3) Λανθασμένη τοποθέτηση βολτομέτρου</span>
                                             <span class="radio-card-desc">Σύνδεση βολτομέτρου σε σειρά <em>(Προσεχώς)</em></span>
                                         </div>
                                     </label>
@@ -646,7 +767,9 @@ window.CircuitSimulation = (function() {
 
         const phys = computePhysics();
         const isClosed = state.switchClosed;
-        const isFaultAmmeter = state.topology === 'series' && state.faultInstrument === 'ammeter_parallel';
+        const isFaultAmmeter1 = state.topology === 'series' && state.faultInstrument === 'ammeter_parallel';
+        const isFaultAmmeter2 = state.topology === 'series' && state.faultInstrument === 'ammeter2_parallel';
+        const isFaultAmmeter = isFaultAmmeter1 || isFaultAmmeter2;
         const isShortTotal = phys.status === 'total_short';
         const isBrokenSeries = state.topology === 'series' && (state.brokenR1 || state.brokenR2);
         const hasCurrent = isClosed && !isShortTotal && !isBrokenSeries && phys.I_total > 0;
@@ -690,13 +813,16 @@ window.CircuitSimulation = (function() {
                     <!-- Background Base Wire Path (Gray) -->
                     <rect x="100" y="80" width="680" height="270" rx="16" ry="16" class="circuit-wire-base" />
 
-                    <!-- If Faulty Ammeter: Vertical Cable Joining Knot K (260, 80) and Knot F (260, 350) -->
-                    ${isFaultAmmeter ? `
+                    <!-- Vertical Cable for Faulty Ammeter Cases -->
+                    ${isFaultAmmeter1 ? `
                         <line x1="260" y1="80" x2="260" y2="350" class="circuit-wire-base wire-short-vertical" />
+                    ` : ''}
+                    ${isFaultAmmeter2 ? `
+                        <line x1="495" y1="80" x2="495" y2="350" class="circuit-wire-base wire-short-vertical" />
                     ` : ''}
 
                     <!-- Active Animated Current Overlay Path -->
-                    ${isFaultAmmeter ? `
+                    ${isFaultAmmeter1 ? `
                         ${isClosed ? `
                             <!-- Closed Short-Circuit Loop: Battery(+) -> Switch -> Knot K -> A1 -> Knot F -> Battery(-) -->
                             <path d="M 100 200 L 100 80 L 260 80 L 260 350 L 100 350 L 100 230" 
@@ -707,6 +833,23 @@ window.CircuitSimulation = (function() {
                             <path d="M 260 105 L 260 165" marker-end="url(#current-arrow-short)" class="flow-arrow-path short-arrow" />
                             <path d="M 260 260 L 260 320" marker-end="url(#current-arrow-short)" class="flow-arrow-path short-arrow" />
                             <path d="M 240 350 L 160 350" marker-end="url(#current-arrow-short)" class="flow-arrow-path short-arrow" />
+                        ` : ''}
+                    ` : isFaultAmmeter2 ? `
+                        ${hasCurrent ? `
+                            <!-- Closed Loop through R1 and A2: Battery(+) -> Switch -> A1 -> R1 -> Knot K -> A2 -> Knot M -> Battery(-) -->
+                            <path d="M 100 200 L 100 80 L 495 80 L 495 350 L 100 350 L 100 230" 
+                                  class="circuit-wire-current ${currentLineClass}" 
+                                  style="animation-duration: ${animSpeed}s;" />
+                            <!-- Directional arrows in R1-A2 loop -->
+                            <path d="M 100 200 L 100 135" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                            <path d="M 205 80 L 235 80" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                            <path d="M 275 80 L 305 80" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                            <path d="M 445 80 L 485 80" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                            <path d="M 495 105 L 495 175" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                            <path d="M 495 255 L 495 320" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                            <path d="M 470 350 L 410 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                            <path d="M 380 350 L 320 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
+                            <path d="M 210 350 L 150 350" marker-end="url(#current-arrow)" class="flow-arrow-path" />
                         ` : ''}
                     ` : `
                         <rect x="100" y="80" width="680" height="270" rx="16" ry="16" 
@@ -724,11 +867,19 @@ window.CircuitSimulation = (function() {
                     `}
 
                     <!-- Informative warning badge when faulty ammeter is active -->
-                    ${isFaultAmmeter ? `
+                    ${isFaultAmmeter1 ? `
                         <g class="sim-bypass-alert-badge">
                             <rect x="325" y="240" width="440" height="34" rx="8" class="sim-bypass-warning-banner" />
                             <text x="545" y="262" class="sim-bypass-warning-text" text-anchor="middle">
                                 ${isClosed ? '⚡ Όλο το ρεύμα διαρρέει το Α₁ (Βραχυκύκλωμα) — Στους R₁ & R₂: I = 0 A' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
+                            </text>
+                        </g>
+                    ` : ''}
+                    ${isFaultAmmeter2 ? `
+                        <g class="sim-bypass-alert-badge">
+                            <rect x="330" y="260" width="445" height="34" rx="8" class="sim-bypass-warning-banner" style="stroke: rgba(245, 158, 11, 0.5); fill: rgba(245, 158, 11, 0.12);" />
+                            <text x="552" y="282" class="sim-bypass-warning-text" style="fill: #fcd34d;" text-anchor="middle">
+                                ${isClosed ? '⚡ Το ρεύμα διαρρέει μόνο το R₁ και το A₂ — Στον R₂ και A₃: I = 0 A (Βραχυκύκλωση R₂)' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
                             </text>
                         </g>
                     ` : ''}
@@ -785,7 +936,7 @@ window.CircuitSimulation = (function() {
                     </g>
 
                     <!-- 4. AMMETER A1 / KNOT K SETUP -->
-                    ${isFaultAmmeter ? `
+                    ${isFaultAmmeter1 ? `
                         <!-- KNOT K (x=260, y=80) - In A1's previous location -->
                         <g class="circuit-node-group node-knot-group" onmouseenter="CircuitSimulation.hoverProbe('nodeK')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeK')">
                             <circle cx="260" cy="80" r="14" class="comp-hitbox" fill="transparent" />
@@ -871,16 +1022,38 @@ window.CircuitSimulation = (function() {
                         <text x="390" y="200" class="voltmeter-reading-tag">${phys.V1.toFixed(1)} V</text>
                     </g>
 
-                    <!-- 7. AMMETER A2 between R1 and R2 (x=495, y=80) -->
-                    <g class="comp-interactive comp-meter" data-probe="ammeter2"
-                       onmouseenter="CircuitSimulation.hoverProbe('ammeter2')" 
-                       onmouseleave="CircuitSimulation.hoverProbe(null)"
-                       onclick="CircuitSimulation.selectProbe('ammeter2')">
-                        <rect x="475" y="55" width="45" height="65" class="comp-hitbox" />
-                        <circle cx="495" cy="80" r="17" class="meter-circle" />
-                        <text x="495" y="80" class="meter-text">A₂</text>
-                        <text x="495" y="112" class="meter-reading-tag">${(phys.I_A2 !== undefined ? phys.I_A2 : phys.I_total).toFixed(2)} A</text>
-                    </g>
+                    <!-- 7. AMMETER A2 / KNOT K SETUP -->
+                    ${isFaultAmmeter2 ? `
+                        <!-- KNOT K (x=495, y=80) - In A2's previous location -->
+                        <g class="circuit-node-group node-knot-group" onmouseenter="CircuitSimulation.hoverProbe('nodeK')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeK')">
+                            <circle cx="495" cy="80" r="14" class="comp-hitbox" fill="transparent" />
+                            <circle cx="495" cy="80" r="5" class="circuit-node-dot knot-k-dot" />
+                            <text x="495" y="65" class="node-letter knot-k-letter">K</text>
+                        </g>
+
+                        <!-- AMMETER A2 (Perpendicular in the middle of cable joining K and M: x=495, y=215) -->
+                        <g class="comp-interactive comp-meter faulty-ammeter" data-probe="ammeter2"
+                           onmouseenter="CircuitSimulation.hoverProbe('ammeter2')" 
+                           onmouseleave="CircuitSimulation.hoverProbe(null)"
+                           onclick="CircuitSimulation.selectProbe('ammeter2')">
+                            <rect x="465" y="175" width="60" height="80" class="comp-hitbox" />
+                            <circle cx="495" cy="215" r="20" class="meter-circle meter-faulty-orange" />
+                            <text x="495" y="215" class="meter-text faulty-text-orange">A₂</text>
+                            <text x="495" y="248" class="meter-reading-tag warning-reading">
+                                ${!isClosed ? '0.00 A' : (phys.I_A2 !== undefined ? phys.I_A2.toFixed(2) : phys.I_total.toFixed(2)) + ' A'}
+                            </text>
+                        </g>
+                    ` : `
+                        <g class="comp-interactive comp-meter" data-probe="ammeter2"
+                           onmouseenter="CircuitSimulation.hoverProbe('ammeter2')" 
+                           onmouseleave="CircuitSimulation.hoverProbe(null)"
+                           onclick="CircuitSimulation.selectProbe('ammeter2')">
+                            <rect x="475" y="55" width="45" height="65" class="comp-hitbox" />
+                            <circle cx="495" cy="80" r="17" class="meter-circle" />
+                            <text x="495" y="80" class="meter-text">A₂</text>
+                            <text x="495" y="112" class="meter-reading-tag">${(phys.I_A2 !== undefined ? phys.I_A2 : phys.I_total).toFixed(2)} A</text>
+                        </g>
+                    `}
 
                     <!-- NODE B (x=545, y=80) -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeB')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeB')">
@@ -958,10 +1131,10 @@ window.CircuitSimulation = (function() {
                     </g>
 
                     <!-- NODE F (x=260, y=350) - Left of Ground D / Landing of Vertical Cable -->
-                    <g class="circuit-node-group ${isFaultAmmeter ? 'node-knot-group' : ''}" onmouseenter="CircuitSimulation.hoverProbe('nodeF')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeF')">
+                    <g class="circuit-node-group ${isFaultAmmeter1 ? 'node-knot-group' : ''}" onmouseenter="CircuitSimulation.hoverProbe('nodeF')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeF')">
                         <circle cx="260" cy="350" r="14" class="comp-hitbox" fill="transparent" />
-                        <circle cx="260" cy="350" r="${isFaultAmmeter ? 5 : 4}" class="circuit-node-dot ${isFaultAmmeter ? 'knot-f-dot' : ''}" />
-                        <text x="260" y="335" class="node-letter ${isFaultAmmeter ? 'knot-f-letter' : ''}">F</text>
+                        <circle cx="260" cy="350" r="${isFaultAmmeter1 ? 5 : 4}" class="circuit-node-dot ${isFaultAmmeter1 ? 'knot-f-dot' : ''}" />
+                        <text x="260" y="335" class="node-letter ${isFaultAmmeter1 ? 'knot-f-letter' : ''}">F</text>
                     </g>
 
                     <!-- NODE D (GROUND) at Bottom (x=440, y=350) -->
@@ -975,6 +1148,15 @@ window.CircuitSimulation = (function() {
                         <line x1="435" y1="395" x2="445" y2="395" class="ground-line" />
                         <text x="462" y="380" class="node-letter ground-label" text-anchor="start">D (0 V)</text>
                     </g>
+
+                    <!-- KNOT M (x=495, y=350) - Landing of Vertical Cable from A2 -->
+                    ${isFaultAmmeter2 ? `
+                        <g class="circuit-node-group node-knot-group" onmouseenter="CircuitSimulation.hoverProbe('nodeM')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeM')">
+                            <circle cx="495" cy="350" r="14" class="comp-hitbox" fill="transparent" />
+                            <circle cx="495" cy="350" r="5" class="circuit-node-dot knot-m-dot" />
+                            <text x="512" y="342" class="node-letter knot-m-letter">M</text>
+                        </g>
+                    ` : ''}
 
                     <!-- NODE E (x=620, y=350) - Right of Ground D -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeE')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeE')">
@@ -1314,6 +1496,48 @@ window.CircuitSimulation = (function() {
                 `;
             }
 
+            if (state.faultInstrument === 'ammeter2_parallel') {
+                if (resistorKey === 'R1') {
+                    return `
+                        <div class="step-calc-line">
+                            <div class="step-calc-header">1. Ολική Αντίσταση Σειράς υπό Βραχυκύκλωμα A₂:</div>
+                            <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 = ${state.R1}\\ \\Omega \\quad (\\text{Το } A_2 \\text{ συνδέθηκε μεταξύ K και M, βραχυκυκλώνοντας τον } R_2)$$</div>
+                        </div>
+                        <div class="step-calc-line">
+                            <div class="step-calc-header">2. Ρεύμα και Πτώση Τάσης στον $R_1$:</div>
+                            <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                                Το ρεύμα διαρρέει κανονικά τον αντιστάτη $R_1$ και στη συνέχεια επιστρέφει απευθείας στην πηγή μέσω του αμπερομέτρου $A_2$ (μηδενικής αντίστασης $R_{A2} = 0\\ \\Omega$):
+                            </p>
+                            <div class="step-calc-formula">$$I_1 = \\frac{V_{\\text{πηγ}}}{R_1} = \\frac{${state.V_src}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}$$</div>
+                            <div class="step-calc-formula">$$V_1 = I_1 \\cdot R_1 = ${phys.I1.toFixed(2)}\\text{ A} \\cdot ${state.R1}\\ \\Omega = ${phys.V1.toFixed(2)}\\text{ V} = V_{\\text{πηγ}}$$</div>
+                        </div>
+                        <div class="step-calc-line">
+                            <div class="step-calc-header">3. Ισχύς Κατανάλωσης & Θερμότητα:</div>
+                            <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${phys.V1.toFixed(2)}\\text{ V} \\cdot ${phys.I1.toFixed(2)}\\text{ A} = ${p1.toFixed(2)}\\text{ W}$$</div>
+                            <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="step-calc-line">
+                            <div class="step-calc-header">1. Ολική Αντίσταση Σειράς υπό Βραχυκύκλωμα A₂:</div>
+                            <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 = ${state.R1}\\ \\Omega \\quad (\\text{Ο } R_2 \\text{ έχει παρακαμφθεί πλήρως})$$</div>
+                        </div>
+                        <div class="step-calc-line">
+                            <div class="step-calc-header">2. Παράκαμψη Αντιστάτη $R_2$ (Βραχυκύκλωση):</div>
+                            <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                                Επειδή όλο το ρεύμα από τον κόμβο $K$ εκτρέπεται μέσω του αμπερομέτρου $A_2$ ($R_{A2} \\approx 0\\ \\Omega$) κατευθείαν στον κόμβο επιστροφής $M$, η διαφορά δυναμικού στα άκρα του κλάδου του $R_2$ μηδενίζεται ($V_{KM} = 0.00\\text{ V}$). Συνεπώς, δεν διαρρέεται από ρεύμα:
+                            </p>
+                            <div class="step-calc-formula">$$V_2 = 0.00\\text{ V}, \\quad I_2 = \\frac{0.00\\text{ V}}{${state.R2}\\ \\Omega} = 0.00\\text{ A}$$</div>
+                        </div>
+                        <div class="step-calc-line">
+                            <div class="step-calc-header">3. Ισχύς Κατανάλωσης & Θερμότητα:</div>
+                            <div class="step-calc-formula">$$P_2 = 0.00\\text{ W}, \\quad E_2 = 0.0\\text{ J}$$</div>
+                        </div>
+                    `;
+                }
+            }
+
             let rEqFormula = '';
             if (!state.switchClosed) {
                 rEqFormula = `$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$`;
@@ -1447,7 +1671,7 @@ window.CircuitSimulation = (function() {
                     <div class="hud-item-title-wrap">
                         <h4 class="hud-item-title">Αντιστάτης <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> (Κόμβοι A − B)</h4>
                         <span class="hud-item-badge ${state.faultInstrument === 'ammeter_parallel' ? 'bad' : (isBroken ? 'bad' : (isShorted ? 'bad' : 'good'))}">
-                            ${state.faultInstrument === 'ammeter_parallel' ? '⚪ Παρακαμφθείς (Βραχυκύκλωμα από A₁)' : (isBroken ? '💥 Καταστροφή (Ανοικτό Κύκλωμα)' : (isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : 'Ενεργό Στοιχείο'))}
+                            ${state.faultInstrument === 'ammeter_parallel' ? '⚪ Παρακαμφθείς (Βραχυκύκλωμα από A₁)' : (isBroken ? '💥 Καταστροφή (Ανοικτό Κύκλωμα)' : (isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : (state.faultInstrument === 'ammeter2_parallel' ? '⚡ Ενεργό Στοιχείο (Κανονική Ροή)' : 'Ενεργό Στοιχείο')))}
                         </span>
                     </div>
                 </div>
@@ -1508,8 +1732,8 @@ window.CircuitSimulation = (function() {
                     <span class="hud-probe-icon">📦</span>
                     <div class="hud-item-title-wrap">
                         <h4 class="hud-item-title">Αντιστάτης <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Κόμβοι ${state.topology === 'series' ? 'B − C' : 'C − E'})</h4>
-                        <span class="hud-item-badge ${state.faultInstrument === 'ammeter_parallel' ? 'bad' : (isBroken ? 'bad' : (isShorted ? 'bad' : 'good'))}">
-                            ${state.faultInstrument === 'ammeter_parallel' ? '⚪ Παρακαμφθείς (Βραχυκύκλωμα από A₁)' : (isBroken ? '💥 Καταστροφή (Ανοικτό Κύκλωμα)' : (isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : 'Ενεργό Στοιχείο'))}
+                        <span class="hud-item-badge ${state.faultInstrument === 'ammeter_parallel' || state.faultInstrument === 'ammeter2_parallel' ? 'bad' : (isBroken ? 'bad' : (isShorted ? 'bad' : 'good'))}">
+                            ${state.faultInstrument === 'ammeter_parallel' ? '⚪ Παρακαμφθείς (Βραχυκύκλωμα από A₁)' : (state.faultInstrument === 'ammeter2_parallel' ? '⚪ Παρακαμφθείς (Βραχυκύκλωση από A₂)' : (isBroken ? '💥 Καταστροφή (Ανοικτό Κύκλωμα)' : (isShorted ? '⚠️ Βραχυκυκλωμένος (Παρακαμφθείς)' : 'Ενεργό Στοιχείο')))}
                         </span>
                     </div>
                 </div>
@@ -1556,7 +1780,8 @@ window.CircuitSimulation = (function() {
                 ` : ''}
             `;
         } else if (probeTarget === 'source') {
-            const isFaultAmmeter = state.faultInstrument === 'ammeter_parallel';
+            const isFaultAmmeter1 = state.faultInstrument === 'ammeter_parallel';
+            const isFaultAmmeter2 = state.faultInstrument === 'ammeter2_parallel';
             const isTotalShort = phys.status === 'total_short';
             const iTotDisplay = phys.I_total === Infinity ? '∞ A (Υπερένταση / Βραχυκύκλωμα!)' : `${phys.I_total.toFixed(2)} A`;
             const reqDisplay = phys.R_eq === Infinity ? '∞ Ω (Ανοικτό Κύκλωμα)' : (phys.R_eq === 0 ? '0.00 Ω (Βραχυκύκλωμα)' : `${phys.R_eq.toFixed(2)} Ω`);
@@ -1567,7 +1792,7 @@ window.CircuitSimulation = (function() {
                     <span class="hud-probe-icon">🔋</span>
                     <div class="hud-item-title-wrap">
                         <h4 class="hud-item-title">Ηλεκτρική Πηγή (DC Voltage Source)</h4>
-                        <span class="hud-item-badge ${isTotalShort ? 'bad' : 'good'}">${isTotalShort ? '⚠️ Κατάσταση Βραχυκυκλώματος' : 'Κύρια Τροφοδοσία'}</span>
+                        <span class="hud-item-badge ${isTotalShort ? 'bad' : (isFaultAmmeter2 ? 'warn' : 'good')}">${isTotalShort ? '⚠️ Κατάσταση Βραχυκυκλώματος' : (isFaultAmmeter2 ? '⚠️ Μερικό Βραχυκύκλωμα (R₁ ενεργό)' : 'Κύρια Τροφοδοσία')}</span>
                     </div>
                 </div>
 
@@ -1593,7 +1818,7 @@ window.CircuitSimulation = (function() {
                 ${isSteps ? `
                     <div class="hud-steps-box">
                         <div class="hud-steps-title">📐 Επιστημονική Ανάλυση Πηγής:</div>
-                        ${isFaultAmmeter ? (state.switchClosed ? `
+                        ${isFaultAmmeter1 ? (state.switchClosed ? `
                             <div class="step-calc-line">
                                 <div class="step-calc-header">1. Επίδραση Λανθασμένης Σύνδεσης Αμπερομέτρου A₁:</div>
                                 <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
@@ -1609,6 +1834,32 @@ window.CircuitSimulation = (function() {
                             <div class="step-calc-line">
                                 <div class="step-calc-header">3. Συνολική Παρεχόμενη Ισχύς:</div>
                                 <div class="step-calc-formula">$$P_{\\text{ολ}} = V_{\\text{πηγ}} \\cdot I_{\\text{ολ}} \\to \\infty\\text{ W} \\quad (\\text{Κίνδυνος Άμεσης Καταστροφής})$$</div>
+                            </div>
+                        ` : `
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">1. Κατάσταση Κυκλώματος:</div>
+                                <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
+                            </div>
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">2. Ρεύμα:</div>
+                                <div class="step-calc-formula">$$I_{\\text{ολ}} = 0.00\\text{ A}$$</div>
+                            </div>
+                        `) : isFaultAmmeter2 ? (state.switchClosed ? `
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">1. Επίδραση Λανθασμένης Σύνδεσης Αμπερομέτρου A₂:</div>
+                                <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                                    Το αμπερόμετρο $A_2$ ($R_A \\approx 0\\ \\Omega$) συνδέθηκε κάθετα μεταξύ κόμβου $K$ και κόμβου $M$, παρακάμπτοντας τον αντιστάτη $R_2 = ${state.R2}\\ \\Omega$.
+                                    Η ισοδύναμη αντίσταση του κυκλώματος είναι αποκλειστικά ο $R_1$:
+                                </p>
+                                <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 = ${state.R1.toFixed(1)}\\ \\Omega \\quad (\\text{Μερικό Βραχυκύκλωμα})$$</div>
+                            </div>
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">2. Ολικό Ρεύμα από τον Νόμο του Ohm:</div>
+                                <div class="step-calc-formula">$$I_{\\text{ολ}} = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
+                            </div>
+                            <div class="step-calc-line">
+                                <div class="step-calc-header">3. Συνολική Παρεχόμενη Ισχύς:</div>
+                                <div class="step-calc-formula">$$P_{\\text{ολ}} = V_{\\text{πηγ}} \\cdot I_{\\text{ολ}} = P_1 = ${phys.P_total.toFixed(2)}\\text{ W}$$</div>
                             </div>
                         ` : `
                             <div class="step-calc-line">
@@ -1706,6 +1957,8 @@ window.CircuitSimulation = (function() {
                 vmSubtitle = state.topology === 'series' ? 'Συνδεδεμένο παράλληλα στα άκρα του R₁ (Σειρά)' : 'Συνδεδεμένο στον κλάδο του R₁ (Παράλληλα)';
                 vmExplanation = state.faultInstrument === 'ammeter_parallel' ? `
                     Λόγω της λανθασμένης παράλληλης τοποθέτησης του αμπερομέτρου $A_1$, η πηγή βραχυκυκλώνεται πλήρως πριν από τον $R_1$. Δεν ρέει ρεύμα προς τον $R_1$ ($I_1 = 0.00\\text{ A}$), συνεπώς η πτώση τάσης στα άκρα του είναι <strong>μηδενική: $V_1 = I_1 \\cdot R_1 = 0.00\\text{ V}$</strong>.
+                ` : state.faultInstrument === 'ammeter2_parallel' ? `
+                    Το αμπερόμετρο $A_2$ έχει βραχυκυκλώσει τον $R_2$. Επομένως, ολόκληρη η τάση της πηγής εφαρμόζεται στα άκρα του $R_1$: <strong>$V_1 = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}$</strong>.
                 ` : state.topology === 'series' ? (state.brokenR1 ? `
                     Η συσκευή $R_1$ έχει υποστεί βλάβη/καταστροφή (ανοικτό κύκλωμα). Επειδή το ρεύμα στη σειρά μηδενίζεται ($I = 0\\text{ A}$), δεν υπάρχει πτώση τάσης στον ανέπαφο αντιστάτη $R_2$ ($V_2 = I \\cdot R_2 = 0\\text{ V}$). Συνεπώς, <strong>ολόκληρη η τάση της πηγής εμφανίζεται στα άκρα της κατεστραμμένης συσκευής: $V_1 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$</strong>!
                 ` : state.shortR1 ? `
@@ -1723,6 +1976,8 @@ window.CircuitSimulation = (function() {
                 vmSubtitle = state.topology === 'series' ? 'Συνδεδεμένο παράλληλα στα άκρα του R₂ (Σειρά)' : 'Συνδεδεμένο στον κλάδο του R₂ (Παράλληλα)';
                 vmExplanation = state.faultInstrument === 'ammeter_parallel' ? `
                     Λόγω του ολικού βραχυκυκλώματος από το αμπερόμετρο $A_1$, ο αντιστάτης $R_2$ παρακάμπτεται πλήρως. Το ρεύμα που τον διαρρέει είναι μηδέν ($I_2 = 0.00\\text{ A}$), άρα η ένδειξη του βολτομέτρου είναι <strong>$V_2 = I_2 \\cdot R_2 = 0.00\\text{ V}$</strong>.
+                ` : state.faultInstrument === 'ammeter2_parallel' ? `
+                    Λόγω της λανθασμένης τοποθέτησης του αμπερομέτρου $A_2$ μεταξύ των κόμβων K και M, ο αντιστάτης $R_2$ παρακάμπτεται πλήρως. Το ρεύμα που τον διαρρέει είναι μηδέν ($I_2 = 0.00\\text{ A}$), άρα η ένδειξη του βολτομέτρου είναι <strong>$V_2 = 0.00\\text{ V}$</strong>.
                 ` : state.topology === 'series' ? (state.brokenR2 ? `
                     Η συσκευή $R_2$ έχει υποστεί βλάβη/καταστροφή (ανοικτό κύκλωμα). Επειδή το ρεύμα στη σειρά μηδενίζεται ($I = 0\\text{ A}$), δεν υπάρχει πτώση τάσης στον ανέπαφο αντιστάτη $R_1$ ($V_1 = I \\cdot R_1 = 0\\text{ V}$). Συνεπώς, <strong>ολόκληρη η τάση της πηγής εμφανίζεται στα άκρα της κατεστραμμένης συσκευής: $V_2 = V_{\\text{πηγ}} = ${state.V_src}\\text{ V}$</strong>!
                 ` : state.shortR2 ? `
@@ -1792,7 +2047,7 @@ window.CircuitSimulation = (function() {
                 } else if (state.topology === 'series') {
                     amTitle = 'Αμπερόμετρο A₁ (Σειρά - Πριν τον R₁)';
                     amReading = phys.I_total;
-                    amExplanation = `Συνδεδεμένο στη σειρά πριν τον πρώτο αντιστάτη $R_1$. Μετράει το κοινό ρεύμα του κυκλώματος: $I_{A1} = ${phys.I_total.toFixed(2)}\\text{ A}$.`;
+                    amExplanation = `Συνδεδεμένο στη σειρά πριν τον πρώτο αντιστάτη $R_1$. Μετράει το ρεύμα που εξέρχεται από την πηγή και διέρχεται από τον $R_1$: $I_{A1} = ${phys.I_total.toFixed(2)}\\text{ A}$.`;
                 } else {
                     amTitle = 'Αμπερόμετρο A₁ (Κλάδος R₁)';
                     amReading = phys.I1;
@@ -1805,6 +2060,16 @@ window.CircuitSimulation = (function() {
                     amBadgeClass = 'warn';
                     amBadgeText = 'Παράκαμψη (I = 0 A)';
                     amExplanation = `Το αμπερόμετρο $A_2$ βρίσκεται ανάμεσα στους αντιστάτες $R_1$ και $R_2$. Επειδή το αμπερόμετρο $A_1$ βραχυκυκλώνει πλήρως την πηγή στον κόμβο $K$, όλο το ρεύμα εκτρέπεται μέσω του $A_1$. Συνεπώς, <strong>δεν διέρχεται ρεύμα από το $A_2$ ($I_{A2} = 0.00\\text{ A}$)</strong>.`;
+                } else if (state.faultInstrument === 'ammeter2_parallel') {
+                    amTitle = 'Αμπερόμετρο A₂ (⚠️ ΛΑΝΘΑΣΜΕΝΗ ΤΟΠΟΘΕΤΗΣΗ ΜΕΤΑΞΥ K − M)';
+                    amBadgeClass = 'warn';
+                    amBadgeText = '⚠️ Βραχυκύκλωση R₂ (RA ≈ 0 Ω)';
+                    amReading = state.switchClosed ? (phys.I_A2 !== undefined ? phys.I_A2 : phys.I_total) : 0;
+                    amExplanation = `
+                        <strong>1. Σφάλμα Συνδεσμολογίας:</strong> Το αμπερόμετρο $A_2$ τοποθετήθηκε <em>κάθετα</em> μεταξύ του άνω κόμβου $K$ και του κάτω κόμβου επιστροφής $M$. Έτσι συνδέθηκε <strong>παράλληλα στη συστοιχία του $R_2$</strong> αντί να συνδεθεί σε σειρά.<br>
+                        <strong>2. Μηδενική Εσωτερική Αντίσταση & Βραχυκύκλωση $R_2$:</strong> Ένα ιδανικό αμπερόμετρο διαθέτει μηδενική αντίσταση ($R_{A2} \\approx 0\\ \\Omega$). Προσφέρει στο ρεύμα μια διαδρομή μηδενικής αντίστασης κατευθείαν προς τη γραμμή επιστροφής, παρακάμπτοντας πλήρως τον $R_2$ ($I_2 = 0.00\\text{ A}, V_2 = 0.00\\text{ V}$).<br>
+                        <strong>3. Ρεύμα Οργάνου:</strong> Το ρεύμα που διέρχεται από το $A_2$ ισούται με το ρεύμα του $R_1$: $I_{A2} = I_1 = ${phys.I_total.toFixed(2)}\\text{ A}$.
+                    `;
                 } else if (state.topology === 'series') {
                     amTitle = 'Αμπερόμετρο A₂ (Σειρά - Ανάμεσα στους R₁ & R₂)';
                     amReading = phys.I_total;
@@ -1815,12 +2080,16 @@ window.CircuitSimulation = (function() {
                     amExplanation = `Συνδεδεμένο στον 2ο παράλληλο κλάδο. Μετράει αποκλειστικά το ρεύμα που διαρρέει τον αντιστάτη $R_2$: $I_2 = V_2 / R_2 = ${phys.I2.toFixed(2)}\\text{ A}$.`;
                 }
             } else if (probeTarget === 'ammeter3') {
-                if (state.faultInstrument === 'ammeter_parallel') {
+                if (state.faultInstrument === 'ammeter_parallel' || state.faultInstrument === 'ammeter2_parallel') {
                     amTitle = 'Αμπερόμετρο A₃ (Παρακαμφθέν από το Βραχυκύκλωμα)';
                     amReading = 0;
                     amBadgeClass = 'warn';
                     amBadgeText = 'Παράκαμψη (I = 0 A)';
-                    amExplanation = `Το αμπερόμετρο $A_3$ βρίσκεται μετά τον δεύτερο αντιστάτη $R_2$. Λόγω του ολικού βραχυκυκλώματος στον κόμβο $K$, κανένα ρεύμα δεν φτάνει στον κλάδο των $R_1, R_2$, άρα η ένδειξη του $A_3$ είναι <strong>απολύτως μηδενική ($I_{A3} = 0.00\\text{ A}$)</strong>.`;
+                    amExplanation = state.faultInstrument === 'ammeter2_parallel' ? `
+                        Το αμπερόμετρο $A_3$ βρίσκεται μετά τον δεύτερο αντιστάτη $R_2$. Επειδή όλο το ρεύμα εκτρέπεται μέσω του λανθασμένα τοποθετημένου αμπερομέτρου $A_2$ προς τον κάτω κόμβο επιστροφής $M$, **κανένα ρεύμα δεν διαρρέει τον $R_2$ και το $A_3$ ($I_{A3} = 0.00\\text{ A}$)**.
+                    ` : `
+                        Το αμπερόμετρο $A_3$ βρίσκεται μετά τον δεύτερο αντιστάτη $R_2$. Λόγω του ολικού βραχυκυκλώματος στον κόμβο $K$, κανένα ρεύμα δεν φτάνει στον κλάδο των $R_1, R_2$, άρα η ένδειξη του $A_3$ είναι <strong>απολύτως μηδενική ($I_{A3} = 0.00\\text{ A}$)</strong>.
+                    `;
                 } else {
                     amTitle = 'Αμπερόμετρο A₃ (Σειρά - Μετά τον R₂)';
                     amReading = phys.I_total;
@@ -1877,6 +2146,12 @@ window.CircuitSimulation = (function() {
                     } else {
                         nodeCurrent = 0;
                     }
+                } else if (state.faultInstrument === 'ammeter2_parallel') {
+                    if (nodeKey === 'G' || nodeKey === 'A' || nodeKey === 'K' || nodeKey === 'M' || nodeKey === 'D') {
+                        nodeCurrent = phys.I1;
+                    } else {
+                        nodeCurrent = 0;
+                    }
                 } else if (phys.status !== 'total_short') {
                     if (state.topology === 'series') {
                         nodeCurrent = phys.I_total;
@@ -1886,7 +2161,8 @@ window.CircuitSimulation = (function() {
                 }
             }
             const nodeCurrentStr = nodeCurrent === Infinity ? '∞ A (Υπερένταση / Βραχυκύκλωμα)' : `${nodeCurrent.toFixed(2)} A`;
-            const isKnot = (nodeKey === 'K' || nodeKey === 'F') && state.faultInstrument === 'ammeter_parallel';
+            const isKnot = ((nodeKey === 'K' || nodeKey === 'F') && state.faultInstrument === 'ammeter_parallel') ||
+                           ((nodeKey === 'K' || nodeKey === 'M') && state.faultInstrument === 'ammeter2_parallel');
 
             detailsHtml = `
                 <div class="hud-item-header">
@@ -1911,8 +2187,12 @@ window.CircuitSimulation = (function() {
                         <div class="hud-steps-title">💡 Ανάλυση Ρεύματος & Ηλεκτρικού Δυναμικού (Κόμβος ${nodeKey}):</div>
                         <p style="font-size: 0.88rem; line-height: 1.5; margin: 0;">
                             ${nodeKey === 'K' ? `
-                                <strong>1. Ένταση Ρεύματος:</strong> Στον άνω κόμβο K ${state.faultInstrument === 'ammeter_parallel' ? 'φτάνει το ρεύμα από την πηγή και <strong>εκτρέπεται εξ ολοκλήρου προς το κάθετο αμπερόμετρο $A_1$</strong> ($I_{A1} \\to \\infty$), παρακάμπτοντας πλήρως τον αντιστάτη $R_1$ ($I_{R1} = 0.00\\text{ A}$).' : 'βρίσκεται το σημείο σύνδεσης με ρεύμα $I = ' + nodeCurrent.toFixed(2) + '\\text{ A}$.'}<br>
-                                <strong>2. Ηλεκτρικό Δυναμικό:</strong> Συνδέεται με τον θετικό πόλο της πηγής μέσω του διακόπτη K.
+                                <strong>1. Ένταση Ρεύματος:</strong> Στον άνω κόμβο K ${state.faultInstrument === 'ammeter_parallel' ? 'φτάνει το ρεύμα από την πηγή και <strong>εκτρέπεται εξ ολοκλήρου προς το κάθετο αμπερόμετρο $A_1$</strong> ($I_{A1} \\to \\infty$), παρακάμπτοντας πλήρως τον αντιστάτη $R_1$ ($I_{R1} = 0.00\\text{ A}$).' : (state.faultInstrument === 'ammeter2_parallel' ? 'φτάνει το ρεύμα από τον $R_1$ ($I_1 = ' + phys.I1.toFixed(2) + '\\text{ A}$) και <strong>εκτρέπεται εξ ολοκλήρου προς το κάθετο αμπερόμετρο $A_2$</strong>, παρακάμπτοντας πλήρως τον $R_2$ ($I_2 = 0.00\\text{ A}$).' : 'βρίσκεται το σημείο σύνδεσης με ρεύμα $I = ' + nodeCurrent.toFixed(2) + '\\text{ A}$.')}<br>
+                                <strong>2. Ηλεκτρικό Δυναμικό:</strong> ${state.faultInstrument === 'ammeter2_parallel' ? 'Συνδέεται μέσω του ιδανικού $A_2$ απευθείας με τον κόμβο M στη γραμμή γείωσης, άρα $V_K = 0.00\\text{ V}$.' : 'Συνδέεται με τον θετικό πόλο της πηγής μέσω του διακόπτη K.'}
+                            ` : ''}
+                            ${nodeKey === 'M' ? `
+                                <strong>1. Ένταση Ρεύματος:</strong> Στον κάτω κόμβο M επιστροφής ${state.faultInstrument === 'ammeter2_parallel' ? 'καταλήγει το ρεύμα $I_1 = ' + phys.I1.toFixed(2) + '\\text{ A}$ από το κάθετο αμπερόμετρο $A_2$ και συνεχίζει αριστερά προς τη γείωση D και τον αρνητικό πόλο (−) της πηγής.' : 'διέρχεται το ρεύμα επιστροφής.'}<br>
+                                <strong>2. Ηλεκτρικό Δυναμικό:</strong> Βρίσκεται πάνω στον ιδανικό αγωγό επιστροφής που συνδέεται με τη γείωση D ($R = 0\\ \\Omega$), συνεπώς $V_M = V_D = 0.00\\text{ V}$.
                             ` : ''}
                             ${nodeKey === 'G' ? (state.topology === 'series' ? `
                                 <strong>1. Ένταση Ρεύματος:</strong> Στον κόμβο G (πάνω από την πηγή) διέρχεται το ολικό ρεύμα του κυκλώματος $I = ${nodeCurrentStr}$.<br>
@@ -1929,28 +2209,28 @@ window.CircuitSimulation = (function() {
                                 <strong>2. Ηλεκτρικό Δυναμικό:</strong> Συνδέεται μετά τον διακόπτη με τον θετικό πόλο της πηγής, άρα με κλειστό διακόπτη $V_A = V_{\\text{πηγ}} = ${phys.V_src}\\text{ V}$.
                             `) : ''}
                             ${nodeKey === 'B' ? (state.topology === 'series' ? `
-                                <strong>1. Ένταση Ρεύματος:</strong> Στον ενδιάμεσο κόμβο B ${state.faultInstrument === 'ammeter_parallel' ? 'το ρεύμα είναι μηδενικό ($I_B = 0.00\\text{ A}$).' : 'διέρχεται το κοινό ρεύμα σειράς $I = ' + nodeCurrent.toFixed(2) + '\\text{ A}$.'}<br>
-                                <strong>2. Ηλεκτρικό Δυναμικό:</strong> Βρίσκεται μεταξύ $R_1$ και $R_2$. ${state.faultInstrument === 'ammeter_parallel' ? 'Είναι $V_B = 0.00\\text{ V}$.' : 'Η πτώση τάσης στον $R_2$ ως προς τη γείωση δίνει δυναμικό $V_B = V_2 = ' + phys.VB.toFixed(2) + '\\text{ V}$.'}
+                                <strong>1. Ένταση Ρεύματος:</strong> Στον ενδιάμεσο κόμβο B ${state.faultInstrument === 'ammeter_parallel' || state.faultInstrument === 'ammeter2_parallel' ? 'το ρεύμα είναι μηδενικό ($I_B = 0.00\\text{ A}$) λόγω της παράκαμψης.' : 'διέρχεται το κοινό ρεύμα σειράς $I = ' + nodeCurrent.toFixed(2) + '\\text{ A}$.'}<br>
+                                <strong>2. Ηλεκτρικό Δυναμικό:</strong> Βρίσκεται μεταξύ $R_1$ και $R_2$. ${state.faultInstrument === 'ammeter_parallel' || state.faultInstrument === 'ammeter2_parallel' ? 'Είναι $V_B = 0.00\\text{ V}$.' : 'Η πτώση τάσης στον $R_2$ ως προς τη γείωση δίνει δυναμικό $V_B = V_2 = ' + phys.VB.toFixed(2) + '\\text{ V}$.'}
                             ` : `
                                 <strong>1. Ένταση Ρεύματος:</strong> Ο κόμβος B είναι ο κόμβος συμβολής των δύο κλάδων: το ρεύμα $I_1 = ${phys.I1.toFixed(2)}\\text{ A}$ (από $R_1$) ενώνεται με το ρεύμα $I_2 = ${phys.I2.toFixed(2)}\\text{ A}$ (από $R_2$) ανασυστήνοντας το ολικό ρεύμα επιστροφής $I_{\\text{ολ}} = ${nodeCurrentStr}$ ($I = I_1 + I_2$).<br>
                                 <strong>2. Ηλεκτρικό Δυναμικό:</strong> Συνδέεται με τη γείωση D μέσω ιδανικού αγωγού ($R = 0\\ \\Omega$), άρα $V_B = 0\\text{ V}$.
                             `) : ''}
                             ${nodeKey === 'C' ? (state.topology === 'series' ? `
-                                <strong>1. Ένταση Ρεύματος:</strong> Ο κόμβος C ${state.faultInstrument === 'ammeter_parallel' ? 'δεν διαρρέεται από ρεύμα ($I_C = 0.00\\text{ A}$).' : 'διαρρέεται από το ρεύμα $I = ' + nodeCurrent.toFixed(2) + '\\text{ A}$.'}<br>
+                                <strong>1. Ένταση Ρεύματος:</strong> Ο κόμβος C ${state.faultInstrument === 'ammeter_parallel' || state.faultInstrument === 'ammeter2_parallel' ? 'δεν διαρρέεται από ρεύμα ($I_C = 0.00\\text{ A}$).' : 'διαρρέεται από το ρεύμα $I = ' + nodeCurrent.toFixed(2) + '\\text{ A}$.'}<br>
                                 <strong>2. Ηλεκτρικό Δυναμικό:</strong> Συνδέεται με τη γείωση D μέσω ιδανικού αγωγού ($R = 0\\ \\Omega$), άρα $V_C = V_D = 0\\text{ V}$.
                             ` : `
                                 <strong>1. Ένταση Ρεύματος:</strong> Στον πάνω κόμβο C του δεύτερου κλάδου εισέρχεται το ρεύμα $I_2 = ${nodeCurrentStr}$ που κατέρχεται μέσω του αντιστάτη $R_2$.<br>
                                 <strong>2. Ηλεκτρικό Δυναμικό:</strong> Συνδέεται με τον κόμβο A μέσω ιδανικού αγωγού ($R = 0\\ \\Omega$), συνεπώς $V_C = V_A = ${phys.VC.toFixed(2)}\\text{ V}$.
                             `) : ''}
                             ${nodeKey === 'D' ? (state.topology === 'series' ? `
-                                <strong>1. Ένταση Ρεύματος:</strong> Το ρεύμα που διέρχεται από τον αγωγό στο σημείο D είναι ${state.faultInstrument === 'ammeter_parallel' ? 'μηδενικό ($I_D = 0.00\\text{ A}$), καθώς το ρεύμα επιστρέφει απευθείας μέσω του κόμβου F.' : '$I = ' + nodeCurrent.toFixed(2) + '\\text{ A}$ (στη γραμμή γείωσης δεν διαφεύγει ρεύμα).'}<br>
+                                <strong>1. Ένταση Ρεύματος:</strong> Το ρεύμα που διέρχεται από τον αγωγό στο σημείο D είναι ${state.faultInstrument === 'ammeter_parallel' ? 'μηδενικό ($I_D = 0.00\\text{ A}$), καθώς το ρεύμα επιστρέφει απευθείας μέσω του κόμβου F.' : (state.faultInstrument === 'ammeter2_parallel' ? '$I = ' + phys.I1.toFixed(2) + '\\text{ A}$ (ρέει από τον κόμβο M επιστροφής προς τον αρνητικό πόλο).' : '$I = ' + nodeCurrent.toFixed(2) + '\\text{ A}$ (στη γραμμή γείωσης δεν διαφεύγει ρεύμα).')}<br>
                                 <strong>2. Ηλεκτρικό Δυναμικό:</strong> Το σημείο D αποτελεί τη γείωση αναφοράς του κυκλώματος ($V_D = 0\\text{ V}$).
                             ` : `
                                 <strong>1. Ένταση Ρεύματος:</strong> Στον κάτω αγωγό στο σημείο D διέρχεται το ρεύμα επιστροφής του δεύτερου κλάδου $I_2 = ${nodeCurrentStr}$ καθοδόν προς τον κόμβο B. Στη γραμμή γείωσης δεν διαφεύγει ρεύμα.<br>
                                 <strong>2. Ηλεκτρικό Δυναμικό:</strong> Το σημείο D αποτελεί τη γείωση αναφοράς του κυκλώματος ($V_D = 0\\text{ V}$).
                             `) : ''}
                             ${nodeKey === 'E' ? (state.topology === 'series' ? `
-                                <strong>1. Ένταση Ρεύματος:</strong> Στον κόμβο E του κάτω αγωγού ${state.faultInstrument === 'ammeter_parallel' ? 'το ρεύμα είναι μηδέν ($I_E = 0.00\\text{ A}$).' : 'διέρχεται το ρεύμα επιστροφής $I = ' + nodeCurrent.toFixed(2) + '\\text{ A}$.'}<br>
+                                <strong>1. Ένταση Ρεύματος:</strong> Στον κόμβο E του κάτω αγωγού ${state.faultInstrument === 'ammeter_parallel' || state.faultInstrument === 'ammeter2_parallel' ? 'το ρεύμα είναι μηδέν ($I_E = 0.00\\text{ A}$).' : 'διέρχεται το ρεύμα επιστροφής $I = ' + nodeCurrent.toFixed(2) + '\\text{ A}$.'}<br>
                                 <strong>2. Ηλεκτρικό Δυναμικό:</strong> Βρίσκεται δεξιά της γείωσης D πάνω στον ιδανικό αγωγό ($R = 0\\ \\Omega$), συνεπώς $V_E = V_D = 0\\text{ V}$.
                             ` : `
                                 <strong>1. Ένταση Ρεύματος:</strong> Στον κάτω κόμβο E του δεύτερου κλάδου εξέρχεται το ρεύμα $I_2 = ${nodeCurrentStr}$ από τον αντιστάτη $R_2$ και ρέει αριστερά προς τη γείωση D και τον κόμβο B.<br>
@@ -2076,10 +2356,13 @@ window.CircuitSimulation = (function() {
             state.faultInstrument = faultKey || 'none';
             if (faultKey === 'ammeter_parallel') {
                 state.activeProbe = 'ammeter1';
-                showToast('⚠️ Λανθασμένη Τοποθέτηση Αμπερομέτρου: Συνδέθηκε παράλληλα στην πηγή (Κόμβοι K - F)! Προκαλείται ολικό βραχυκύκλωμα (I → ∞).');
+                showToast('⚠️ Λανθασμένη Τοποθέτηση Αμπερομέτρου I: Συνδέθηκε παράλληλα στην πηγή (Κόμβοι K − F)! Προκαλείται ολικό βραχυκύκλωμα (I → ∞).');
+            } else if (faultKey === 'ammeter2_parallel') {
+                state.activeProbe = 'ammeter2';
+                showToast('⚠️ Λανθασμένη Τοποθέτηση Αμπερομέτρου II: Συνδέθηκε μεταξύ K − M! Βραχυκυκλώνει τον R₂ (I₂ = 0 A), ενώ ο R₁ λειτουργεί κανονικά.');
             } else {
                 state.activeProbe = 'R1';
-                showToast('✅ Ορθή Τοποθέτηση Οργάνων: Το αμπερόμετρο A₁ επαναφέρθηκε σε σειρά.');
+                showToast('✅ Ορθή Τοποθέτηση Οργάνων: Όλα τα όργανα λειτουργούν στις κανονικές τους θέσεις.');
             }
             if (state.containerEl) {
                 render(state.containerEl);
