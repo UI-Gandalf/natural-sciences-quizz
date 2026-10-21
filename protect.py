@@ -52,6 +52,7 @@ def bump_version_in_html():
         html = re.sub(r'quiz-data\.js\?v=\d+', f'quiz-data.js?v={new_v}', html)
         html = re.sub(r'simulation\.js\?v=\d+', f'simulation.js?v={new_v}', html)
         html = re.sub(r'theory\.js\?v=\d+', f'theory.js?v={new_v}', html)
+        html = re.sub(r'exam-solutions\.js\?v=\d+', f'exam-solutions.js?v={new_v}', html)
         html = re.sub(r'app\.js\?v=\d+', f'app.js?v={new_v}', html)
         with open(INDEX_HTML, 'w', encoding='utf-8') as f:
             f.write(html)

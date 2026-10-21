@@ -1607,29 +1607,54 @@ body[data-subject] .bg-overlay {
     justify-content: center;
     background: var(--badge-bg);
     border: 1px solid var(--badge-border);
-    padding: 6px;
-    border-radius: 999px;
-    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 30px;
+    gap: 8px;
     margin: 22px auto 0 auto;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     flex-wrap: wrap;
     backdrop-filter: blur(12px);
+    max-width: 100%;
 }
 
 .subject-tab-btn {
     background: transparent;
     border: none;
     color: var(--text-secondary);
-    padding: 10px 22px;
-    border-radius: 999px;
-    font-size: 0.92rem;
+    padding: 8px 18px;
+    border-radius: 22px;
+    font-size: 0.90rem;
     font-weight: 700;
     font-family: inherit;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: center;
+}
+
+.tab-multiline {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.25;
+    text-align: center;
+}
+
+.tab-line-main {
+    font-size: 0.88rem;
+    font-weight: 700;
+    white-space: normal;
+}
+
+.tab-line-sub {
+    font-size: 0.74rem;
+    font-weight: 500;
+    opacity: 0.90;
+    white-space: normal;
 }
 
 .subject-tab-btn:hover:not(.active) {
@@ -5864,5 +5889,208 @@ mjx-container[display="true"], .katex-display {
     .theory-table th {
         background: #f0f0f0 !important;
         color: #000000 !important;
+    }
+}
+
+/* ==========================================================================
+   Exam Solutions & Guide Module Styles
+   ========================================================================== */
+.exam-guide-wrapper {
+    max-width: 1040px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    animation: fadeIn 0.35s ease;
+}
+
+.exam-nav-pill.active {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.45);
+}
+
+.exam-filter-pill {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.exam-filter-pill:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.exam-filter-pill.active {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+}
+
+.exam-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.exam-action-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-1px);
+}
+
+.exam-questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.exam-question-card {
+    padding: 22px 24px;
+    border-radius: 18px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.exam-question-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.exam-q-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.exam-q-badge {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    color: #c4b5fd;
+}
+
+.exam-q-title {
+    font-size: 1.12rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.exam-q-prompt {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+.exam-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.exam-opt-pill {
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.exam-opt-pill.is-correct {
+    background: rgba(16, 185, 129, 0.16);
+    border-color: rgba(16, 185, 129, 0.45);
+    color: #34d399;
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.15);
+}
+
+.exam-opt-pill.is-correct .opt-check {
+    margin-left: 6px;
+    font-size: 0.76rem;
+    background: #10b981;
+    color: #ffffff;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-weight: 800;
+}
+
+.exam-sol-wrap {
+    margin-top: 14px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+}
+
+.exam-sol-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--primary);
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.exam-sol-toggle-btn:hover {
+    background: rgba(37, 99, 235, 0.1);
+    border-color: var(--primary);
+}
+
+.exam-solution-body {
+    margin-top: 12px;
+    animation: fadeIn 0.25s ease;
+}
+
+.exam-sol-inner {
+    background: rgba(0, 0, 0, 0.2);
+    border-left: 3px solid #2563eb;
+    padding: 16px 20px;
+    border-radius: 12px;
+    font-size: 0.94rem;
+    line-height: 1.65;
+    color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+    .wheel-grid-layout, .circuit-overview-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .exam-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }

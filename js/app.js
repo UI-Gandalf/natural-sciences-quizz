@@ -131,6 +131,16 @@ function handleRoute() {
                 return;
             }
 
+            // e.g. #/class/Γ/subject/physics/exam_solutions
+            if (parts[4] === 'exam_solutions' || parts[4] === 'exam-solutions') {
+                AppState.currentQuiz = null;
+                AppState.currentSubjectTab = 'exam_solutions';
+                renderQuizSelection(classKey, subjectKey);
+                updateDynamicBg(SUBJECT_CONFIG[subjectKey].bgImage, subjectKey);
+                updateBreadcrumbs();
+                return;
+            }
+
             // e.g. #/class/Γ/subject/physics/simulation
             if (parts[4] === 'simulation') {
                 AppState.currentQuiz = null;
@@ -203,7 +213,11 @@ function updateBreadcrumbs() {
             } else if (AppState.currentSubjectTab === 'theory') {
                 html += `<a class="crumb-item" onclick="switchSubjectTab('quizzes')">${subConf.emoji} ${subConf.name}</a>`;
                 html += `<span class="crumb-sep">/</span>`;
-                html += `<span class="crumb-active">📖 Θεωρία & Σημειώσεις</span>`;
+                html += `<span class="crumb-active">📖 Θεωρία και Επίλυση κυκλωμάτων</span>`;
+            } else if (AppState.currentSubjectTab === 'exam_solutions') {
+                html += `<a class="crumb-item" onclick="switchSubjectTab('quizzes')">${subConf.emoji} ${subConf.name}</a>`;
+                html += `<span class="crumb-sep">/</span>`;
+                html += `<span class="crumb-active">📑 Υποδειγματική Επίλυση Διαγωνίσματος</span>`;
             } else {
                 // Non-quiz page: display emoji as an icon!
                 html += `<span class="crumb-active">${subConf.emoji} ${subConf.name}</span>`;
@@ -361,7 +375,7 @@ function renderQuizSelection(classKey, subjectKey) {
                 Επιλέξτε ένα διαδραστικό κουίζ αυτοαξιολόγησης ή μελετήστε τη βασική θεωρία του μαθήματος.
             </p>
 
-            <!-- Navigation Tabs: Quizzes vs Theory vs Simulation -->
+            <!-- Navigation Tabs: Quizzes vs Theory vs Exam Solutions vs Simulation -->
             <div class="subject-tabs-container">
                 <button class="subject-tab-btn ${currentTab === 'quizzes' ? 'active' : ''}" id="tab-btn-quizzes" onclick="switchSubjectTab('quizzes')">
                     <span class="tab-icon">📝</span>
@@ -369,8 +383,19 @@ function renderQuizSelection(classKey, subjectKey) {
                 </button>
                 <button class="subject-tab-btn ${currentTab === 'theory' ? 'active' : ''}" id="tab-btn-theory" onclick="switchSubjectTab('theory')">
                     <span class="tab-icon">📖</span>
-                    <span>Θεωρία Μαθήματος</span>
+                    <span class="tab-multiline">
+                        <span class="tab-line-main">Θεωρία και Επίλυση κυκλωμάτων</span>
+                    </span>
                 </button>
+                ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') ? `
+                <button class="subject-tab-btn ${currentTab === 'exam_solutions' ? 'active' : ''}" id="tab-btn-exam-solutions" onclick="switchSubjectTab('exam_solutions')">
+                    <span class="tab-icon">📑</span>
+                    <span class="tab-multiline">
+                        <span class="tab-line-main">Υποδειγματική επίλυση ενδεικτικού διαγωνίσματος</span>
+                        <span class="tab-line-sub">και συναφής θεωρία</span>
+                    </span>
+                </button>
+                ` : ''}
                 ${subjectKey === 'physics' ? `
                 <button class="subject-tab-btn ${currentTab === 'simulation' ? 'active' : ''}" id="tab-btn-simulation" onclick="switchSubjectTab('simulation')">
                     <span class="tab-icon">⚡</span>
@@ -554,8 +579,15 @@ function renderQuizSelection(classKey, subjectKey) {
             `}
         </div>
 
+        ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') ? `
+        <!-- TAB 3: EXAM SOLUTIONS PANEL -->
+        <div class="tab-panel" id="tab-panel-exam-solutions" style="display: ${currentTab === 'exam_solutions' ? 'block' : 'none'};">
+            <div id="exam-solutions-mount"></div>
+        </div>
+        ` : ''}
+
         ${subjectKey === 'physics' ? `
-        <!-- TAB 3: SIMULATION PANEL -->
+        <!-- TAB 4: SIMULATION PANEL -->
         <div class="tab-panel" id="tab-panel-simulation" style="display: ${currentTab === 'simulation' ? 'block' : 'none'};">
             <div id="simulation-mount"></div>
         </div>
@@ -571,6 +603,14 @@ function renderQuizSelection(classKey, subjectKey) {
             window.TheoryNotes.renderPhysicsG(theoryMount);
             if (currentTab === 'theory' && window.MathJax && window.MathJax.typesetPromise) {
                 window.MathJax.typesetPromise([theoryMount]).catch(err => console.warn('MathJax error:', err));
+            }
+        }
+
+        const examMount = document.getElementById('exam-solutions-mount');
+        if (examMount && window.ExamSolutionsGuide) {
+            window.ExamSolutionsGuide.render(examMount);
+            if (currentTab === 'exam_solutions' && window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([examMount]).catch(err => console.warn('MathJax error:', err));
             }
         }
     }
@@ -646,13 +686,16 @@ function switchSubjectTab(tabKey) {
     
     const quizzesBtn = document.getElementById('tab-btn-quizzes');
     const theoryBtn = document.getElementById('tab-btn-theory');
+    const examBtn = document.getElementById('tab-btn-exam-solutions');
     const simBtn = document.getElementById('tab-btn-simulation');
     const quizzesPanel = document.getElementById('tab-panel-quizzes');
     const theoryPanel = document.getElementById('tab-panel-theory');
+    const examPanel = document.getElementById('tab-panel-exam-solutions');
     const simPanel = document.getElementById('tab-panel-simulation');
 
     if (quizzesBtn) quizzesBtn.classList.toggle('active', tabKey === 'quizzes');
     if (theoryBtn) theoryBtn.classList.toggle('active', tabKey === 'theory');
+    if (examBtn) examBtn.classList.toggle('active', tabKey === 'exam_solutions');
     if (simBtn) simBtn.classList.toggle('active', tabKey === 'simulation');
 
     if (quizzesPanel) quizzesPanel.style.display = tabKey === 'quizzes' ? 'block' : 'none';
@@ -666,6 +709,19 @@ function switchSubjectTab(tabKey) {
             }
             if (window.MathJax && window.MathJax.typesetPromise) {
                 window.MathJax.typesetPromise([theoryPanel]).catch(err => console.warn('MathJax error:', err));
+            }
+        }
+    }
+    if (examPanel) {
+        examPanel.style.display = tabKey === 'exam_solutions' ? 'block' : 'none';
+        if (tabKey === 'exam_solutions') {
+            examPanel.style.animation = 'fadeIn 0.3s ease';
+            const examMount = document.getElementById('exam-solutions-mount');
+            if (examMount && window.ExamSolutionsGuide && (!examMount.hasChildNodes() || examMount.children.length === 0)) {
+                window.ExamSolutionsGuide.render(examMount);
+            }
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([examPanel]).catch(err => console.warn('MathJax error:', err));
             }
         }
     }
