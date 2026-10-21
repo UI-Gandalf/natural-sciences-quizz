@@ -3863,6 +3863,177 @@ mjx-container[display="true"], .katex-display {
     text-anchor: middle;
 }
 
+.short-contact-dot {
+    fill: #ef4444;
+    stroke: #ffffff;
+    stroke-width: 1.5;
+}
+
+/* Harmless Equipotential Connection Wire in SVG */
+.harmless-bypass-wire {
+    fill: none;
+    stroke: #10b981;
+    stroke-width: 3.5;
+    stroke-dasharray: 8 5;
+    animation: harmlessGlow 1.8s infinite alternate;
+}
+
+@keyframes harmlessGlow {
+    from {
+        stroke: #10b981;
+        filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.5));
+    }
+    to {
+        stroke: #34d399;
+        filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.85));
+    }
+}
+
+.harmless-contact-dot {
+    fill: #10b981;
+    stroke: #ffffff;
+    stroke-width: 1.5;
+}
+
+.harmless-wire-label {
+    fill: #34d399;
+    font-size: 15px;
+    font-weight: 800;
+    text-anchor: middle;
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.8));
+}
+
+.harmless-wire-sublabel {
+    fill: #a7f3d0;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-anchor: middle;
+}
+
+/* Short Circuit Mode Segmented Switcher under Checkboxes */
+.sim-short-mode-wrap {
+    margin-top: 6px;
+    padding: 8px 10px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.sim-sub-label {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.sim-mode-toggle {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sim-mode-btn {
+    flex: 1;
+    padding: 6px 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: inherit;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sim-mode-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sim-mode-btn.active {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+}
+
+[data-theme="light"] .sim-short-mode-wrap {
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.22);
+}
+
+[data-theme="light"] .sim-mode-btn {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+}
+
+[data-theme="light"] .sim-mode-btn:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+[data-theme="light"] .sim-mode-btn.active {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: #ffffff;
+}
+
+/* Harmless / Equipotential Connections Group & Pills */
+.sim-harmless-group {
+    background: rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.25);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.sim-sub-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.sim-harmless-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sim-radio-card.harmless.active {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+}
+
+.sim-radio-card.harmless .radio-card-dot {
+    border-color: rgba(16, 185, 129, 0.5);
+}
+
+.sim-radio-card.harmless input[type="radio"]:checked + .radio-card-dot {
+    background: #10b981;
+    border-color: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+[data-theme="light"] .sim-harmless-group {
+    background: rgba(16, 185, 129, 0.04);
+    border-color: rgba(16, 185, 129, 0.22);
+}
+
 .ground-stem, .ground-line {
     stroke: #94a3b8;
     stroke-width: 2.5;
