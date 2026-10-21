@@ -1103,61 +1103,42 @@ window.CircuitSimulation = (function() {
                                 `}
                             </div>
                             <div class="sim-harmless-options-list">
-                                <label class="sim-radio-card harmless ${state.harmlessConnection === 'none' ? 'active' : ''}">
-                                    <input type="radio" name="sim-harmless-conn" value="none" 
-                                           ${state.harmlessConnection === 'none' ? 'checked' : ''} 
-                                           onchange="CircuitSimulation.setHarmlessConnection('none')">
-                                    <span class="radio-card-dot"></span>
-                                    <div class="radio-card-content">
-                                        <span class="radio-card-title">Χωρίς πρόσθετο καλώδιο</span>
-                                        <span class="radio-card-desc">Κανονική συνδεσμολογία κυκλώματος</span>
-                                    </div>
-                                </label>
-
                                 ${state.topology === 'series' ? `
-                                    <label class="sim-radio-card harmless ${state.harmlessConnection === 'series_GA' ? 'active' : ''}">
-                                        <input type="radio" name="sim-harmless-conn" value="series_GA" 
-                                               ${state.harmlessConnection === 'series_GA' ? 'checked' : ''} 
-                                               onchange="CircuitSimulation.setHarmlessConnection('series_GA')">
+                                    <div class="sim-radio-card harmless ${state.harmlessConnection === 'series_GA' ? 'active' : ''}"
+                                         onclick="CircuitSimulation.setHarmlessConnection('series_GA')" role="button" tabindex="0">
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title"><strong>(1) Σύνδεση G με A (Άνω γραμμή)</strong></span>
                                             <span class="radio-card-desc">Ενώνει 2 σημεία στο ίδιο δυναμικό (<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">G</sub> = <i class="math-var">V</i><sub class="math-sub">A</sub> = <i class="math-var">V</i><sub class="math-sub">πηγ</sub></span>) ➔ Κανένα βραχυκύκλωμα!</span>
                                         </div>
-                                    </label>
+                                    </div>
 
-                                    <label class="sim-radio-card harmless ${state.harmlessConnection === 'series_FC' ? 'active' : ''}">
-                                        <input type="radio" name="sim-harmless-conn" value="series_FC" 
-                                               ${state.harmlessConnection === 'series_FC' ? 'checked' : ''} 
-                                               onchange="CircuitSimulation.setHarmlessConnection('series_FC')">
+                                    <div class="sim-radio-card harmless ${state.harmlessConnection === 'series_FC' ? 'active' : ''}"
+                                         onclick="CircuitSimulation.setHarmlessConnection('series_FC')" role="button" tabindex="0">
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title"><strong>(2) Σύνδεση F με C (Αγωγός επιστροφής)</strong></span>
                                             <span class="radio-card-desc">Ενώνει 2 σημεία μηδενικού δυναμικού (<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">F</sub> = <i class="math-var">V</i><sub class="math-sub">C</sub> = 0 V</span>) ➔ Κανένα βραχυκύκλωμα!</span>
                                         </div>
-                                    </label>
+                                    </div>
                                 ` : `
-                                    <label class="sim-radio-card harmless ${state.harmlessConnection === 'parallel_AC' ? 'active' : ''}">
-                                        <input type="radio" name="sim-harmless-conn" value="parallel_AC" 
-                                               ${state.harmlessConnection === 'parallel_AC' ? 'checked' : ''} 
-                                               onchange="CircuitSimulation.setHarmlessConnection('parallel_AC')">
+                                    <div class="sim-radio-card harmless ${state.harmlessConnection === 'parallel_AC' ? 'active' : ''}"
+                                         onclick="CircuitSimulation.setHarmlessConnection('parallel_AC')" role="button" tabindex="0">
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title"><strong>(1) Σύνδεση A με C (Άνω γραμμή)</strong></span>
                                             <span class="radio-card-desc">Ενώνει 2 σημεία της ίδιας άνω γραμμής (<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">A</sub> = <i class="math-var">V</i><sub class="math-sub">C</sub> = <i class="math-var">V</i><sub class="math-sub">πηγ</sub></span>) ➔ Κανένα βραχυκύκλωμα!</span>
                                         </div>
-                                    </label>
+                                    </div>
 
-                                    <label class="sim-radio-card harmless ${state.harmlessConnection === 'parallel_FE' ? 'active' : ''}">
-                                        <input type="radio" name="sim-harmless-conn" value="parallel_FE" 
-                                               ${state.harmlessConnection === 'parallel_FE' ? 'checked' : ''} 
-                                               onchange="CircuitSimulation.setHarmlessConnection('parallel_FE')">
+                                    <div class="sim-radio-card harmless ${state.harmlessConnection === 'parallel_FE' ? 'active' : ''}"
+                                         onclick="CircuitSimulation.setHarmlessConnection('parallel_FE')" role="button" tabindex="0">
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title"><strong>(2) Σύνδεση F με E (Κάτω γραμμή)</strong></span>
                                             <span class="radio-card-desc">Ενώνει 2 σημεία της κοινής επιστροφής (<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">F</sub> = <i class="math-var">V</i><sub class="math-sub">E</sub> = 0 V</span>) ➔ Κανένα βραχυκύκλωμα!</span>
                                         </div>
-                                    </label>
+                                    </div>
                                 `}
                             </div>
                         </div>
@@ -3553,22 +3534,29 @@ window.CircuitSimulation = (function() {
         },
 
         setHarmlessConnection: function(connKey) {
-            state.harmlessConnection = connKey || 'none';
-            if (connKey === 'series_GA') {
-                state.activeProbe = 'harmless_wire';
-                showToast('✅ Σύνδεση G ↔ A: Συνδέει δύο ισοδυναμικά σημεία (VG = VA = Vπηγ) κατά μήκος του ιδανικού αμπερομέτρου A1. Δεν προκαλεί καμία αλλοίωση ή βραχυκύκλωμα!');
-            } else if (connKey === 'series_FC') {
-                state.activeProbe = 'harmless_wire';
-                showToast('✅ Σύνδεση F ↔ C: Συνδέει δύο σημεία του ίδιου αγωγού επιστροφής μηδενικού δυναμικού (VF = VC = 0 V). Δεν προκαλεί καμία αλλοίωση ή βραχυκύκλωμα!');
-            } else if (connKey === 'parallel_AC') {
-                state.activeProbe = 'harmless_wire';
-                showToast('✅ Σύνδεση A ↔ C: Συνδέει δύο σημεία της κοινής άνω γραμμής (VA = VC = Vπηγ). Δεν αλλάζει καθόλου τη λειτουργία και δεν προκαλεί βραχυκύκλωμα!');
-            } else if (connKey === 'parallel_FE') {
-                state.activeProbe = 'harmless_wire';
-                showToast('✅ Σύνδεση F ↔ E: Συνδέει δύο σημεία της κοινής κάτω γραμμής επιστροφής (VF = VE = 0 V). Δεν αλλάζει καθόλου τη λειτουργία και δεν προκαλεί βραχυκύκλωμα!');
-            } else {
+            // Toggle off if already active
+            if (state.harmlessConnection === connKey) {
+                state.harmlessConnection = 'none';
                 state.activeProbe = 'R1';
                 showToast('ℹ️ Αποσυνδέθηκαν τα πρόσθετα εξωτερικά καλώδια.');
+            } else {
+                state.harmlessConnection = connKey || 'none';
+                if (connKey === 'series_GA') {
+                    state.activeProbe = 'harmless_wire';
+                    showToast('✅ Σύνδεση G ↔ A: Συνδέει δύο ισοδυναμικά σημεία (VG = VA = Vπηγ) κατά μήκος του ιδανικού αμπερομέτρου A1. Δεν προκαλεί καμία αλλοίωση ή βραχυκύκλωμα!');
+                } else if (connKey === 'series_FC') {
+                    state.activeProbe = 'harmless_wire';
+                    showToast('✅ Σύνδεση F ↔ C: Συνδέει δύο σημεία του ίδιου αγωγού επιστροφής μηδενικού δυναμικού (VF = VC = 0 V). Δεν προκαλεί καμία αλλοίωση ή βραχυκύκλωμα!');
+                } else if (connKey === 'parallel_AC') {
+                    state.activeProbe = 'harmless_wire';
+                    showToast('✅ Σύνδεση A ↔ C: Συνδέει δύο σημεία της κοινής άνω γραμμής (VA = VC = Vπηγ). Δεν αλλάζει καθόλου τη λειτουργία και δεν προκαλεί βραχυκύκλωμα!');
+                } else if (connKey === 'parallel_FE') {
+                    state.activeProbe = 'harmless_wire';
+                    showToast('✅ Σύνδεση F ↔ E: Συνδέει δύο σημεία της κοινής κάτω γραμμής επιστροφής (VF = VE = 0 V). Δεν αλλάζει καθόλου τη λειτουργία και δεν προκαλεί βραχυκύκλωμα!');
+                } else {
+                    state.activeProbe = 'R1';
+                    showToast('ℹ️ Αποσυνδέθηκαν τα πρόσθετα εξωτερικά καλώδια.');
+                }
             }
             if (state.containerEl) {
                 render(state.containerEl);

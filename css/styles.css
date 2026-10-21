@@ -4061,6 +4061,7 @@ mjx-container[display="true"], .katex-display {
     border-color: rgba(16, 185, 129, 0.5);
 }
 
+.sim-radio-card.harmless.active .radio-card-dot,
 .sim-radio-card.harmless input[type="radio"]:checked + .radio-card-dot {
     background: #10b981;
     border-color: #10b981;
