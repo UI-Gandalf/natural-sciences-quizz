@@ -3910,6 +3910,44 @@ mjx-container[display="true"], .katex-display {
     text-anchor: middle;
 }
 
+/* Prominent Centered Explanatory Banner for Harmless Connections */
+.harmless-center-banner {
+    fill: rgba(15, 23, 42, 0.94);
+    stroke: #10b981;
+    stroke-width: 2px;
+    filter: drop-shadow(0 4px 16px rgba(16, 185, 129, 0.4));
+    transition: all 0.2s ease;
+}
+
+[data-theme="light"] .harmless-center-banner {
+    fill: rgba(255, 255, 255, 0.97);
+    stroke: #059669;
+    filter: drop-shadow(0 4px 14px rgba(5, 150, 105, 0.25));
+}
+
+.harmless-banner-title {
+    fill: #34d399;
+    font-size: 19px;
+    font-weight: 800;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+}
+
+[data-theme="light"] .harmless-banner-title {
+    fill: #047857;
+}
+
+.harmless-banner-sub {
+    fill: #a7f3d0;
+    font-size: 13.5px;
+    font-weight: 700;
+    font-family: inherit;
+}
+
+[data-theme="light"] .harmless-banner-sub {
+    fill: #065f46;
+}
+
 /* Short Circuit Mode Segmented Switcher under Checkboxes */
 .sim-short-mode-wrap {
     margin-top: 6px;
