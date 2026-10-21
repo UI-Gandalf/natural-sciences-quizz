@@ -1289,6 +1289,136 @@ window.CircuitSimulation = (function() {
     }
 
     /**
+     * Helper to render step-by-step physical calculations for resistors (R1 / R2)
+     */
+    function buildCalculationStepsHtml(resistorKey, phys, p1, p2, e1, e2) {
+        if (state.topology === 'series') {
+            if (state.faultInstrument === 'ammeter_parallel') {
+                const targetR = resistorKey === 'R1' ? state.R1 : state.R2;
+                return `
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">1. Ολική Αντίσταση Σειράς υπό Βραχυκύκλωμα A₁:</div>
+                        <div class="step-calc-formula">$$R_{\\text{ολ}} = R_A = 0.00\\ \\Omega \\quad (\\text{Το } A_1 \\text{ συνδέθηκε παράλληλα στην πηγή})$$</div>
+                    </div>
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">2. Παράκαμψη Αντιστάτη $${resistorKey}$:</div>
+                        <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                            Επειδή όλο το ρεύμα διαρρέει το αμπερόμετρο $A_1$ μηδενικής αντίστασης, η διαφορά δυναμικού στα άκρα του κλάδου μηδενίζεται ($V_{KF} = 0\\text{ V}$). Συνεπώς, δεν φτάνει καθόλου ρεύμα στον $${resistorKey}$:
+                        </p>
+                        <div class="step-calc-formula">$$V_${resistorKey === 'R1' ? '1' : '2'} = 0.00\\text{ V}, \\quad I_${resistorKey === 'R1' ? '1' : '2'} = \\frac{0.00\\text{ V}}{${targetR}\\ \\Omega} = 0.00\\text{ A}$$</div>
+                    </div>
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">3. Ισχύς Κατανάλωσης & Θερμότητα:</div>
+                        <div class="step-calc-formula">$$P_${resistorKey === 'R1' ? '1' : '2'} = 0.00\\text{ W}, \\quad E_${resistorKey === 'R1' ? '1' : '2'} = 0.0\\text{ J}$$</div>
+                    </div>
+                `;
+            }
+
+            let rEqFormula = '';
+            if (!state.switchClosed) {
+                rEqFormula = `$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$`;
+            } else if (state.brokenR1 || state.brokenR2) {
+                rEqFormula = `$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Διακοπή λόγω Καταστροφής})$$`;
+            } else {
+                rEqFormula = `$$R_{\\text{ολ}} = R_1 + R_2 = ${state.shortR1 ? '0' : state.R1} + ${state.shortR2 ? '0' : state.R2} = ${phys.R_eq.toFixed(1)}\\ \\Omega$$`;
+            }
+
+            let iFormula = '';
+            if (!state.switchClosed || state.brokenR1 || state.brokenR2) {
+                iFormula = `$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} = 0.00\\text{ A}$$`;
+            } else {
+                iFormula = `$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{${phys.R_eq.toFixed(1)}\\ \\Omega} = ${phys.I_total.toFixed(2)}\\text{ A}$$`;
+            }
+
+            let vStep = '';
+            if (state.brokenR1) {
+                vStep = `
+                    <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                        Λόγω καταστροφής του $R_1$, το ρεύμα είναι μηδέν ($I = 0\\text{ A}$) και $V_2 = 0\\text{ V}$. <strong>Ολόκληρη η τάση της πηγής εμφανίζεται στα άκρα του κατεστραμμένου $R_1$</strong>:
+                    </p>
+                    <div class="step-calc-formula">$$V_1 = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}, \\quad V_2 = 0.00\\text{ V}$$</div>
+                `;
+            } else if (state.brokenR2) {
+                vStep = `
+                    <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                        Λόγω καταστροφής του $R_2$, το ρεύμα είναι μηδέν ($I = 0\\text{ A}$), άρα $V_1 = 0\\text{ V}$, ενώ στα άκρα του $R_2$ εμφανίζεται ολόκληρη η τάση:
+                    </p>
+                    <div class="step-calc-formula">$$V_1 = 0.00\\text{ V}, \\quad V_2 = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}$$</div>
+                `;
+            } else {
+                vStep = `
+                    <div class="step-calc-formula">$$V_1 = I \\cdot R_1 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR1 ? 0 : state.R1}\\ \\Omega = ${phys.V1.toFixed(2)}\\text{ V}$$</div>
+                    <div class="step-calc-formula">$$V_2 = I \\cdot R_2 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR2 ? 0 : state.R2}\\ \\Omega = ${phys.V2.toFixed(2)}\\text{ V}$$</div>
+                `;
+            }
+
+            return `
+                <div class="step-calc-line">
+                    <div class="step-calc-header">1. Ολική Αντίσταση Σειράς:</div>
+                    ${rEqFormula}
+                </div>
+                <div class="step-calc-line">
+                    <div class="step-calc-header">2. Κοινό Ρεύμα Κυκλώματος:</div>
+                    ${iFormula}
+                </div>
+                <div class="step-calc-line">
+                    <div class="step-calc-header">3. Πτώσεις Τάσης Αντιστατών:</div>
+                    ${vStep}
+                </div>
+                <div class="step-calc-line">
+                    <div class="step-calc-header">4. Θερμική Ισχύς Κατανάλωσης (σε Watt):</div>
+                    <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${phys.V1.toFixed(2)}\\text{ V} \\cdot ${phys.I1.toFixed(2)}\\text{ A} = ${p1.toFixed(2)}\\text{ W}$$</div>
+                    <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${phys.V2.toFixed(2)}\\text{ V} \\cdot ${phys.I2.toFixed(2)}\\text{ A} = ${p2.toFixed(2)}\\text{ W}$$</div>
+                </div>
+                <div class="step-calc-line">
+                    <div class="step-calc-header">5. Εκλυόμενη Θερμότητα / Ενέργεια ($t = 10\\text{ s}$ - Νόμος Joule σε Joule):</div>
+                    <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
+                    <div class="step-calc-formula">$$E_2 = P_2 \\cdot t = ${p2.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e2.toFixed(1)}\\text{ J}$$</div>
+                </div>
+            `;
+        } else {
+            // Parallel circuit
+            let vPar = !state.switchClosed ?
+                `$$V_1 = V_2 = 0.00\\text{ V} \\quad (\\text{Ανοικτός Διακόπτης})$$` :
+                `$$V_1 = ${state.brokenR1 ? '0.00' : state.V_src.toFixed(1)}\\text{ V}, \\quad V_2 = ${state.brokenR2 ? '0.00' : state.V_src.toFixed(1)}\\text{ V}$$`;
+
+            let iPar = '';
+            if (!state.switchClosed || (state.brokenR1 && state.brokenR2)) {
+                iPar = `$$I_1 = 0.00\\text{ A}, \\quad I_2 = 0.00\\text{ A}, \\quad I_{\\text{ολ}} = 0.00\\text{ A}$$`;
+            } else if (state.brokenR1) {
+                iPar = `$$I_1 = 0.00\\text{ A}\\ (\\text{Καταστροφή}), \\quad I_2 = \\frac{${state.V_src}\\text{ V}}{${state.R2}\\ \\Omega} = ${phys.I2.toFixed(2)}\\text{ A}, \\quad I_{\\text{ολ}} = I_2 = ${phys.I_total.toFixed(2)}\\text{ A}$$`;
+            } else if (state.brokenR2) {
+                iPar = `$$I_1 = \\frac{${state.V_src}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}, \\quad I_2 = 0.00\\text{ A}\\ (\\text{Καταστροφή}), \\quad I_{\\text{ολ}} = I_1 = ${phys.I_total.toFixed(2)}\\text{ A}$$`;
+            } else {
+                iPar = `$$I_1 = \\frac{V_1}{R_1} = \\frac{${phys.V1.toFixed(1)}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}$$
+                        $$I_2 = \\frac{V_2}{R_2} = \\frac{${phys.V2.toFixed(1)}\\text{ V}}{${state.R2}\\ \\Omega} = ${phys.I2.toFixed(2)}\\text{ A}$$
+                        $$I_{\\text{ολ}} = I_1 + I_2 = ${phys.I1.toFixed(2)}\\text{ A} + ${phys.I2.toFixed(2)}\\text{ A} = ${phys.I_total.toFixed(2)}\\text{ A}$$`;
+            }
+
+            return `
+                <div class="step-calc-line">
+                    <div class="step-calc-header">1. Τάσεις Παράλληλων Κλάδων:</div>
+                    <div class="step-calc-formula">${vPar}</div>
+                </div>
+                <div class="step-calc-line">
+                    <div class="step-calc-header">2. Ρεύματα Κλάδων (Νόμος Ohm):</div>
+                    <div class="step-calc-formula">${iPar}</div>
+                </div>
+                <div class="step-calc-line">
+                    <div class="step-calc-header">3. Θερμική Ισχύς Κατανάλωσης (σε Watt):</div>
+                    <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${phys.V1.toFixed(2)}\\text{ V} \\cdot ${phys.I1.toFixed(2)}\\text{ A} = ${p1.toFixed(2)}\\text{ W}$$</div>
+                    <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${phys.V2.toFixed(2)}\\text{ V} \\cdot ${phys.I2.toFixed(2)}\\text{ A} = ${p2.toFixed(2)}\\text{ W}$$</div>
+                </div>
+                <div class="step-calc-line">
+                    <div class="step-calc-header">4. Εκλυόμενη Θερμότητα / Ενέργεια ($t = 10\\text{ s}$ - Νόμος Joule σε Joule):</div>
+                    <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
+                    <div class="step-calc-formula">$$E_2 = P_2 \\cdot t = ${p2.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e2.toFixed(1)}\\text{ J}$$</div>
+                </div>
+            `;
+        }
+    }
+
+    /**
      * Render the Multimeter & Detailed Calculation Steps HUD
      */
     function updateHud() {
@@ -1359,104 +1489,7 @@ window.CircuitSimulation = (function() {
                 ${isSteps ? `
                     <div class="hud-steps-box" style="margin-top: 14px;">
                         <div class="hud-steps-title">📐 Αναλυτική Διαδικασία Υπολογισμού:</div>
-                        ${state.topology === 'series' ? (state.faultInstrument === 'ammeter_parallel' ? `
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">1. Ολική Αντίσταση Σειράς υπό Βραχυκύκλωμα A₁:</div>
-                                <div class="step-calc-formula">$$R_{\\text{ολ}} = R_A = 0.00\\ \\Omega \\quad (\\text{Το } A_1 \\text{ συνδέθηκε παράλληλα στην πηγή})$$</div>
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">2. Παράκαμψη Αντιστάτη $R_1$:</div>
-                                <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
-                                    Επειδή όλο το ρεύμα διαρρέει το αμπερόμετρο $A_1$ μηδενικής αντίστασης, η διαφορά δυναμικού στα άκρα του κλάδου μηδενίζεται ($V_{KF} = 0\\text{ V}$). Συνεπώς, δεν φτάνει καθόλου ρεύμα στον $R_1$:
-                                </p>
-                                <div class="step-calc-formula">$$V_1 = 0.00\\text{ V}, \\quad I_1 = \\frac{V_1}{R_1} = \\frac{0.00\\text{ V}}{${state.R1}\\ \\Omega} = 0.00\\text{ A}$$</div>
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">3. Ισχύς Κατανάλωσης & Θερμότητα:</div>
-                                <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = 0.00\\text{ W}, \\quad E_1 = P_1 \\cdot t = 0.0\\text{ J}$$</div>
-                            </div>
-                        ` : `
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">1. Ολική Αντίσταση Σειράς:</div>
-                                ${!state.switchClosed ? `
-                                    <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
-                                ` : (state.brokenR1 || state.brokenR2) ? `
-                                    <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Διακοπή λόγω Καταστροφής})$$</div>
-                                ` : `
-                                    <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${state.shortR1 ? '0' : state.R1} + ${state.shortR2 ? '0' : state.R2} = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
-                                `}
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">2. Κοινό Ρεύμα Κυκλώματος:</div>
-                                ${(!state.switchClosed || state.brokenR1 || state.brokenR2) ? `
-                                    <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} = 0.00\\text{ A}$$</div>
-                                ` : `
-                                    <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{${phys.R_eq.toFixed(1)}\\ \\Omega} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
-                                `}
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">3. Πτώσεις Τάσης Αντιστατών:</div>
-                                ${state.brokenR1 ? `
-                                    <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
-                                        Λόγω καταστροφής του $R_1$, το ρεύμα είναι μηδέν ($I = 0\\text{ A}$) και $V_2 = 0\\text{ V}$. <strong>Ολόκληρη η τάση της πηγής εμφανίζεται στα άκρα του κατεστραμμένου $R_1$</strong>:
-                                    </p>
-                                    <div class="step-calc-formula">$$V_1 = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}, \\quad V_2 = 0.00\\text{ V}$$</div>
-                                ` : state.brokenR2 ? `
-                                    <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
-                                        Λόγω καταστροφής του $R_2$, το ρεύμα είναι μηδέν ($I = 0\\text{ A}$), άρα $V_1 = I \\cdot R_1 = 0\\text{ V}$, ενώ στα άκρα του $R_2$ εμφανίζεται ολόκληρη η τάση:
-                                    </p>
-                                    <div class="step-calc-formula">$$V_1 = 0.00\\text{ V}, \\quad V_2 = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}$$</div>
-                                ` : `
-                                    <div class="step-calc-formula">$$V_1 = I \\cdot R_1 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR1 ? 0 : state.R1}\\ \\Omega = ${phys.V1.toFixed(2)}\\text{ V}$$</div>
-                                    <div class="step-calc-formula">$$V_2 = I \\cdot R_2 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR2 ? 0 : state.R2}\\ \\Omega = ${phys.V2.toFixed(2)}\\text{ V}$$</div>
-                                `}
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">4. Θερμική Ισχύς Κατανάλωσης (σε Watt):</div>
-                                <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${phys.V1.toFixed(2)}\\text{ V} \\cdot ${phys.I1.toFixed(2)}\\text{ A} = ${p1.toFixed(2)}\\text{ W}$$</div>
-                                <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${phys.V2.toFixed(2)}\\text{ V} \\cdot ${phys.I2.toFixed(2)}\\text{ A} = ${p2.toFixed(2)}\\text{ W}$$</div>
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">5. Εκλυόμενη Θερμότητα / Ενέργεια ($t = 10\\text{ s}$ - Νόμος Joule σε Joule):</div>
-                                <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
-                                <div class="step-calc-formula">$$E_2 = P_2 \\cdot t = ${p2.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e2.toFixed(1)}\\text{ J}$$</div>
-                            </div>
-                        `) : `
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">1. Τάσεις Παράλληλων Κλάδων:</div>
-                                ${!state.switchClosed ? `
-                                    <div class="step-calc-formula">$$V_1 = V_2 = 0.00\\text{ V} \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
-                                ` : `
-                                    <div class="step-calc-formula">$$V_1 = ${state.brokenR1 ? '0.00' : state.V_src.toFixed(1)}\\text{ V}, \\quad V_2 = ${state.brokenR2 ? '0.00' : state.V_src.toFixed(1)}\\text{ V}$$</div>
-                                `}
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">2. Ρεύματα Κλάδων (Νόμος Ohm):</div>
-                                ${!state.switchClosed ? `
-                                    <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}, \\quad I_2 = 0.00\\text{ A}, \\quad I_{\\text{ολ}} = 0.00\\text{ A}$$</div>
-                                ` : (state.brokenR1 && state.brokenR2) ? `
-                                    <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}, \\quad I_2 = 0.00\\text{ A}, \\quad I_{\\text{ολ}} = 0.00\\text{ A}$$</div>
-                                ` : state.brokenR1 ? `
-                                    <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}\\ (\\text{Καταστροφή}), \\quad I_2 = \\frac{${state.V_src}\\text{ V}}{${state.R2}\\ \\Omega} = ${phys.I2.toFixed(2)}\\text{ A}, \\quad I_{\\text{ολ}} = I_2 = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
-                                ` : state.brokenR2 ? `
-                                    <div class="step-calc-formula">$$I_1 = \\frac{${state.V_src}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}, \\quad I_2 = 0.00\\text{ A}\\ (\\text{Καταστροφή}), \\quad I_{\\text{ολ}} = I_1 = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
-                                ` : `
-                                    <div class="step-calc-formula">$$I_1 = \\frac{V_1}{R_1} = \\frac{${phys.V1.toFixed(1)}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}$$</div>
-                                    <div class="step-calc-formula">$$I_2 = \\frac{V_2}{R_2} = \\frac{${phys.V2.toFixed(1)}\\text{ V}}{${state.R2}\\ \\Omega} = ${phys.I2.toFixed(2)}\\text{ A}$$</div>
-                                    <div class="step-calc-formula">$$I_{\\text{ολ}} = I_1 + I_2 = ${phys.I1.toFixed(2)}\\text{ A} + ${phys.I2.toFixed(2)}\\text{ A} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
-                                `}
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">3. Θερμική Ισχύς Κατανάλωσης (σε Watt):</div>
-                                <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${phys.V1.toFixed(2)}\\text{ V} \\cdot ${phys.I1.toFixed(2)}\\text{ A} = ${p1.toFixed(2)}\\text{ W}$$</div>
-                                <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${phys.V2.toFixed(2)}\\text{ V} \\cdot ${phys.I2.toFixed(2)}\\text{ A} = ${p2.toFixed(2)}\\text{ W}$$</div>
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">4. Εκλυόμενη Θερμότητα / Ενέργεια ($t = 10\\text{ s}$ - Νόμος Joule σε Joule):</div>
-                                <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
-                                <div class="step-calc-formula">$$E_2 = P_2 \\cdot t = ${p2.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e2.toFixed(1)}\\text{ J}$$</div>
-                            </div>
-                        `}
+                        ${buildCalculationStepsHtml('R1', phys, p1, p2, e1, e2)}
                     </div>
                 ` : ''}
             `;
@@ -1518,104 +1551,7 @@ window.CircuitSimulation = (function() {
                 ${isSteps ? `
                     <div class="hud-steps-box" style="margin-top: 14px;">
                         <div class="hud-steps-title">📐 Αναλυτική Διαδικασία Υπολογισμού:</div>
-                        ${state.topology === 'series' ? (state.faultInstrument === 'ammeter_parallel' ? `
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">1. Ολική Αντίσταση Σειράς υπό Βραχυκύκλωμα A₁:</div>
-                                <div class="step-calc-formula">$$R_{\\text{ολ}} = R_A = 0.00\\ \\Omega \\quad (\\text{Το } A_1 \\text{ συνδέθηκε παράλληλα στην πηγή})$$</div>
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">2. Παράκαμψη Αντιστάτη $R_2$:</div>
-                                <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
-                                    Επειδή όλο το ρεύμα εκτρέπεται μέσω του αμπερομέτρου $A_1$ μηδενικής αντίστασης, η διαφορά δυναμικού στα άκρα του κλάδου μηδενίζεται ($V_{KF} = 0\\text{ V}$). Συνεπώς, δεν φτάνει καθόλου ρεύμα στον $R_2$:
-                                </p>
-                                <div class="step-calc-formula">$$V_2 = 0.00\\text{ V}, \\quad I_2 = \\frac{V_2}{R_2} = \\frac{0.00\\text{ V}}{${state.R2}\\ \\Omega} = 0.00\\text{ A}$$</div>
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">3. Ισχύς Κατανάλωσης & Θερμότητα:</div>
-                                <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = 0.00\\text{ W}, \\quad E_2 = P_2 \\cdot t = 0.0\\text{ J}$$</div>
-                            </div>
-                        ` : `
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">1. Ολική Αντίσταση Σειράς:</div>
-                                ${!state.switchClosed ? `
-                                    <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
-                                ` : (state.brokenR1 || state.brokenR2) ? `
-                                    <div class="step-calc-formula">$$R_{\\text{ολ}} = \\infty\\ \\Omega \\quad (\\text{Διακοπή λόγω Καταστροφής})$$</div>
-                                ` : `
-                                    <div class="step-calc-formula">$$R_{\\text{ολ}} = R_1 + R_2 = ${phys.R_eq.toFixed(1)}\\ \\Omega$$</div>
-                                `}
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">2. Κοινό Ρεύμα Σειράς:</div>
-                                ${(!state.switchClosed || state.brokenR1 || state.brokenR2) ? `
-                                    <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\frac{${state.V_src}\\text{ V}}{\\infty\\ \\Omega} = 0.00\\text{ A}$$</div>
-                                ` : `
-                                    <div class="step-calc-formula">$$I = \\frac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
-                                `}
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">3. Πτώσεις Τάσης Αντιστατών:</div>
-                                ${state.brokenR2 ? `
-                                    <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
-                                        Λόγω καταστροφής του $R_2$, το ρεύμα είναι μηδέν ($I = 0\\text{ A}$), άρα $V_1 = 0\\text{ V}$, ενώ στα άκρα του κατεστραμμένου $R_2$ εμφανίζεται ολόκληρη η τάση:
-                                    </p>
-                                    <div class="step-calc-formula">$$V_1 = 0.00\\text{ V}, \\quad V_2 = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}$$</div>
-                                ` : state.brokenR1 ? `
-                                    <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
-                                        Λόγω καταστροφής του $R_1$, το ρεύμα είναι μηδέν ($I = 0\\text{ A}$), άρα $V_2 = I \\cdot R_2 = 0\\text{ V}$, ενώ στα άκρα του $R_1$ εμφανίζεται ολόκληρη η τάση:
-                                    </p>
-                                    <div class="step-calc-formula">$$V_1 = V_{\\text{πηγ}} = ${state.V_src.toFixed(1)}\\text{ V}, \\quad V_2 = 0.00\\text{ V}$$</div>
-                                ` : `
-                                    <div class="step-calc-formula">$$V_1 = I \\cdot R_1 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR1 ? 0 : state.R1}\\ \\Omega = ${phys.V1.toFixed(2)}\\text{ V}$$</div>
-                                    <div class="step-calc-formula">$$V_2 = I \\cdot R_2 = ${phys.I_total.toFixed(2)}\\text{ A} \\cdot ${state.shortR2 ? 0 : state.R2}\\ \\Omega = ${phys.V2.toFixed(2)}\\text{ V}$$</div>
-                                `}
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">4. Θερμική Ισχύς Κατανάλωσης (σε Watt):</div>
-                                <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${phys.V1.toFixed(2)}\\text{ V} \\cdot ${phys.I1.toFixed(2)}\\text{ A} = ${p1.toFixed(2)}\\text{ W}$$</div>
-                                <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${phys.V2.toFixed(2)}\\text{ V} \\cdot ${phys.I2.toFixed(2)}\\text{ A} = ${p2.toFixed(2)}\\text{ W}$$</div>
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">5. Εκλυόμενη Θερμότητα / Ενέργεια ($t = 10\\text{ s}$ - Νόμος Joule σε Joule):</div>
-                                <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
-                                <div class="step-calc-formula">$$E_2 = P_2 \\cdot t = ${p2.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e2.toFixed(1)}\\text{ J}$$</div>
-                            </div>
-                        `) : `
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">1. Τάσεις Παράλληλων Κλάδων:</div>
-                                ${!state.switchClosed ? `
-                                    <div class="step-calc-formula">$$V_1 = V_2 = 0.00\\text{ V} \\quad (\\text{Ανοικτός Διακόπτης})$$</div>
-                                ` : `
-                                    <div class="step-calc-formula">$$V_1 = ${state.brokenR1 ? '0.00' : state.V_src.toFixed(1)}\\text{ V}, \\quad V_2 = ${state.brokenR2 ? '0.00' : state.V_src.toFixed(1)}\\text{ V}$$</div>
-                                `}
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">2. Ρεύματα Κλάδων (Νόμος Ohm):</div>
-                                ${!state.switchClosed ? `
-                                    <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}, \\quad I_2 = 0.00\\text{ A}, \\quad I_{\\text{ολ}} = 0.00\\text{ A}$$</div>
-                                ` : (state.brokenR1 && state.brokenR2) ? `
-                                    <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}, \\quad I_2 = 0.00\\text{ A}, \\quad I_{\\text{ολ}} = 0.00\\text{ A}$$</div>
-                                ` : state.brokenR2 ? `
-                                    <div class="step-calc-formula">$$I_1 = \\frac{${state.V_src}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}, \\quad I_2 = 0.00\\text{ A}\\ (\\text{Καταστροφή}), \\quad I_{\\text{ολ}} = I_1 = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
-                                ` : state.brokenR1 ? `
-                                    <div class="step-calc-formula">$$I_1 = 0.00\\text{ A}\\ (\\text{Καταστροφή}), \\quad I_2 = \\frac{${state.V_src}\\text{ V}}{${state.R2}\\ \\Omega} = ${phys.I2.toFixed(2)}\\text{ A}, \\quad I_{\\text{ολ}} = I_2 = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
-                                ` : `
-                                    <div class="step-calc-formula">$$I_1 = \\frac{V_1}{R_1} = \\frac{${phys.V1.toFixed(1)}\\text{ V}}{${state.R1}\\ \\Omega} = ${phys.I1.toFixed(2)}\\text{ A}$$</div>
-                                    <div class="step-calc-formula">$$I_2 = \\frac{V_2}{R_2} = \\frac{${phys.V2.toFixed(1)}\\text{ V}}{${state.R2}\\ \\Omega} = ${phys.I2.toFixed(2)}\\text{ A}$$</div>
-                                    <div class="step-calc-formula">$$I_{\\text{ολ}} = I_1 + I_2 = ${phys.I1.toFixed(2)}\\text{ A} + ${phys.I2.toFixed(2)}\\text{ A} = ${phys.I_total.toFixed(2)}\\text{ A}$$</div>
-                                `}
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">3. Θερμική Ισχύς Κατανάλωσης (σε Watt):</div>
-                                <div class="step-calc-formula">$$P_1 = V_1 \\cdot I_1 = ${phys.V1.toFixed(2)}\\text{ V} \\cdot ${phys.I1.toFixed(2)}\\text{ A} = ${p1.toFixed(2)}\\text{ W}$$</div>
-                                <div class="step-calc-formula">$$P_2 = V_2 \\cdot I_2 = ${phys.V2.toFixed(2)}\\text{ V} \\cdot ${phys.I2.toFixed(2)}\\text{ A} = ${p2.toFixed(2)}\\text{ W}$$</div>
-                            </div>
-                            <div class="step-calc-line">
-                                <div class="step-calc-header">4. Εκλυόμενη Θερμότητα / Ενέργεια ($t = 10\\text{ s}$ - Νόμος Joule σε Joule):</div>
-                                <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
-                                <div class="step-calc-formula">$$E_2 = P_2 \\cdot t = ${p2.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e2.toFixed(1)}\\text{ J}$$</div>
-                            </div>
-                        `}
+                        ${buildCalculationStepsHtml('R2', phys, p1, p2, e1, e2)}
                     </div>
                 ` : ''}
             `;

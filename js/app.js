@@ -576,10 +576,68 @@ function renderQuizSelection(classKey, subjectKey) {
     }
 
     if (currentTab === 'simulation' && subjectKey === 'physics') {
-        const mount = document.getElementById('simulation-mount');
-        if (mount && window.CircuitSimulation) {
+        renderSimulationView();
+    }
+}
+
+/**
+ * Robust Circuit Simulation renderer with auto-poll, fallback reload, and error handling
+ */
+function renderSimulationView() {
+    const mount = document.getElementById('simulation-mount');
+    if (!mount) return;
+
+    if (window.CircuitSimulation && typeof window.CircuitSimulation.render === 'function') {
+        try {
             window.CircuitSimulation.render(mount);
+        } catch (err) {
+            console.error('Error rendering CircuitSimulation:', err);
+            mount.innerHTML = `
+                <div class="glass-card" style="text-align: center; padding: 40px; margin: 20px auto; max-width: 600px;">
+                    <div style="font-size: 3rem; margin-bottom: 12px;">⚠️</div>
+                    <h3 style="color: #ef4444; margin-bottom: 10px;">Σφάλμα Εκκίνησης Εργαστηρίου</h3>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 16px;">
+                        Παρουσιάστηκε πρόβλημα κατά τη φόρτωση (${err.message || err}). Παρακαλούμε πατήστε το παρακάτω κουμπί για επαναφόρτωση της νεότερης έκδοσης.
+                    </p>
+                    <button class="theory-btn theory-btn-primary" onclick="location.reload(true)" style="margin: 0 auto;">
+                        🔄 Ανανέωση Σελίδας
+                    </button>
+                </div>
+            `;
         }
+    } else {
+        // Script still loading or cached older version
+        mount.innerHTML = `
+            <div class="glass-card" style="text-align: center; padding: 40px; margin: 20px auto; max-width: 600px;">
+                <div style="font-size: 3rem; margin-bottom: 12px;">⚡</div>
+                <h3 style="margin-bottom: 10px;">Φόρτωση Εργαστηρίου Κυκλωμάτων...</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 16px;">
+                    Προετοιμασία διαδραστικού κυκλώματος. Αν δεν εμφανιστεί άμεσα, πατήστε το κουμπί ανανέωσης.
+                </p>
+                <button class="theory-btn theory-btn-primary" onclick="location.reload(true)" style="margin: 0 auto;">
+                    🔄 Ανανέωση Σελίδας
+                </button>
+            </div>
+        `;
+        let attempts = 0;
+        const interval = setInterval(() => {
+            attempts++;
+            if (window.CircuitSimulation && typeof window.CircuitSimulation.render === 'function') {
+                clearInterval(interval);
+                window.CircuitSimulation.render(mount);
+            } else if (attempts >= 10) {
+                clearInterval(interval);
+                // Dynamically append a fresh script tag with timestamp cache-buster
+                const freshScript = document.createElement('script');
+                freshScript.src = `js/simulation.js?t=${Date.now()}`;
+                freshScript.onload = () => {
+                    if (window.CircuitSimulation && typeof window.CircuitSimulation.render === 'function') {
+                        window.CircuitSimulation.render(mount);
+                    }
+                };
+                document.body.appendChild(freshScript);
+            }
+        }, 200);
     }
 }
 
@@ -615,10 +673,7 @@ function switchSubjectTab(tabKey) {
         simPanel.style.display = tabKey === 'simulation' ? 'block' : 'none';
         if (tabKey === 'simulation') {
             simPanel.style.animation = 'fadeIn 0.3s ease';
-            const mount = document.getElementById('simulation-mount');
-            if (mount && window.CircuitSimulation) {
-                window.CircuitSimulation.render(mount);
-            }
+            renderSimulationView();
         }
     }
 
