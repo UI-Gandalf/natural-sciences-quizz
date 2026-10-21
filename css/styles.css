@@ -3447,25 +3447,27 @@ mjx-container[display="true"], .katex-display {
 
 .text-positive {
     fill: #ef4444;
-    font-size: 20px;
+    font-size: 25px;
+    font-weight: 900;
 }
 
 .text-negative {
     fill: #38bdf8;
-    font-size: 22px;
+    font-size: 28px;
+    font-weight: 900;
 }
 
 .comp-value-tag {
     fill: var(--text-secondary, #cbd5e1);
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 700;
     text-anchor: middle;
 }
 
 .comp-title-tag {
     fill: var(--text-primary, #f8fafc);
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 16.5px;
+    font-weight: 800;
     text-anchor: middle;
 }
 
@@ -3490,15 +3492,15 @@ mjx-container[display="true"], .katex-display {
 
 .meter-text {
     fill: #06b6d4;
-    font-size: 18px;
-    font-weight: 800;
+    font-size: 22px;
+    font-weight: 900;
     text-anchor: middle;
     dominant-baseline: middle;
 }
 
 .meter-reading-tag {
     fill: #38bdf8;
-    font-size: 13px;
+    font-size: 16.5px;
     font-weight: 800;
     text-anchor: middle;
 }
@@ -3518,16 +3520,16 @@ mjx-container[display="true"], .katex-display {
 
 .node-letter {
     fill: #38bdf8;
-    font-size: 13px;
-    font-weight: 800;
+    font-size: 17px;
+    font-weight: 900;
     text-anchor: middle;
 }
 
 .ground-label {
     text-anchor: start !important;
     fill: #38bdf8;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 17px;
+    font-weight: 800;
     font-family: 'STIX Two Text', 'Outfit', 'Inter', monospace;
 }
 
@@ -3537,44 +3539,44 @@ mjx-container[display="true"], .katex-display {
 
 .comp-resistor-top {
     fill: #fbbf24;
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 19px;
+    font-weight: 800;
     font-family: 'STIX Two Text', 'Outfit', 'Inter', serif;
 }
 
 .comp-resistor-bottom {
     fill: #38bdf8;
-    font-size: 15px;
-    font-weight: 700;
+    font-size: 19px;
+    font-weight: 800;
     font-family: 'STIX Two Text', 'Outfit', 'Inter', serif;
 }
 
 .comp-resistor-current {
     fill: #34d399;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 800;
     font-family: 'STIX Two Text', 'Outfit', 'Inter', serif;
 }
 
 /* Parallel Circuit Resistor Labels (approx. 25% larger for enhanced visibility) */
 .comp-resistor-par-top {
     fill: #fbbf24;
-    font-size: 19px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
     font-family: 'STIX Two Text', 'Outfit', 'Inter', serif;
 }
 
 .comp-resistor-par-bottom {
     fill: #38bdf8;
-    font-size: 19px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
     font-family: 'STIX Two Text', 'Outfit', 'Inter', serif;
 }
 
 .comp-resistor-par-current {
     fill: #34d399;
-    font-size: 17.5px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 800;
     font-family: 'STIX Two Text', 'Outfit', 'Inter', serif;
 }
 
@@ -3597,7 +3599,7 @@ mjx-container[display="true"], .katex-display {
 
 .resistor-inner-text {
     fill: #fbbf24;
-    font-size: 14px;
+    font-size: 17px;
     font-weight: 800;
     text-anchor: middle;
     dominant-baseline: middle;
@@ -3622,8 +3624,8 @@ mjx-container[display="true"], .katex-display {
 
 .short-wire-label {
     fill: #f87171;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 800;
     text-anchor: middle;
 }
 
@@ -3657,15 +3659,15 @@ mjx-container[display="true"], .katex-display {
 
 .voltmeter-text {
     fill: #c084fc;
-    font-size: 14.5px;
-    font-weight: 800;
+    font-size: 19px;
+    font-weight: 900;
     text-anchor: middle;
     dominant-baseline: central;
 }
 
 .voltmeter-reading-tag {
     fill: #d8b4fe;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 800;
     text-anchor: middle;
     font-family: 'STIX Two Text', 'Outfit', 'Inter', monospace;
@@ -3704,7 +3706,7 @@ mjx-container[display="true"], .katex-display {
 
 .broken-badge-text {
     fill: #f87171;
-    font-size: 11px;
+    font-size: 15px;
     font-weight: 800;
     text-anchor: middle;
 }
@@ -4199,12 +4201,13 @@ mjx-container[display="true"], .katex-display {
 .meter-text.faulty-text {
     fill: #f87171;
     font-weight: 900;
+    font-size: 22px;
 }
 
 .meter-reading-tag.danger-reading {
     fill: #ef4444 !important;
     font-weight: 900 !important;
-    font-size: 13px !important;
+    font-size: 16.5px !important;
     filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.7));
 }
 
@@ -4223,7 +4226,7 @@ mjx-container[display="true"], .katex-display {
 .knot-k-letter {
     fill: #f59e0b;
     font-weight: 900;
-    font-size: 14px;
+    font-size: 19px;
 }
 
 .node-knot-group .knot-f-dot {
@@ -4240,7 +4243,7 @@ mjx-container[display="true"], .katex-display {
 .knot-f-letter {
     fill: #38bdf8;
     font-weight: 900;
-    font-size: 14px;
+    font-size: 19px;
 }
 
 .node-knot-group .knot-m-dot {
@@ -4258,7 +4261,7 @@ mjx-container[display="true"], .katex-display {
 .knot-m-letter {
     fill: #38bdf8;
     font-weight: 900;
-    font-size: 14px;
+    font-size: 19px;
 }
 
 .meter-circle.meter-faulty-orange {
@@ -4271,12 +4274,13 @@ mjx-container[display="true"], .katex-display {
 .meter-text.faulty-text-orange {
     fill: #f59e0b;
     font-weight: 900;
+    font-size: 22px;
 }
 
 .meter-reading-tag.warning-reading {
     fill: #f59e0b !important;
     font-weight: 800 !important;
-    font-size: 12px !important;
+    font-size: 16.5px !important;
 }
 
 .sim-fault-group.is-partial {
@@ -4299,24 +4303,27 @@ mjx-container[display="true"], .katex-display {
 .meter-text.faulty-text-purple {
     fill: #d8b4fe;
     font-weight: 900;
+    font-size: 22px;
 }
 
 .meter-reading-tag.purple-reading {
     fill: #c084fc !important;
     font-weight: 800 !important;
-    font-size: 12px !important;
+    font-size: 16.5px !important;
 }
 
 .sim-bypass-warning-banner {
-    fill: rgba(239, 68, 68, 0.12);
-    stroke: rgba(239, 68, 68, 0.4);
-    stroke-dasharray: 4 3;
+    fill: rgba(15, 23, 42, 0.94);
+    stroke: rgba(239, 68, 68, 0.65);
+    stroke-width: 2.2;
+    stroke-dasharray: 6 4;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
 }
 
 .sim-bypass-warning-text {
     fill: #fca5a5;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 800;
     letter-spacing: 0.01em;
 }
 

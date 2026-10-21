@@ -1107,28 +1107,31 @@ window.CircuitSimulation = (function() {
                         ` : ''}
                     `}
 
-                    <!-- Informative warning badge when faulty ammeter is active -->
+                    <!-- Informative warning badge when faulty ammeter/voltmeter is active -->
                     ${isFaultAmmeter1 ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="325" y="240" width="440" height="34" rx="8" class="sim-bypass-warning-banner" />
-                            <text x="545" y="262" class="sim-bypass-warning-text" text-anchor="middle">
-                                ${isClosed ? '⚡ Όλο το ρεύμα διαρρέει το Α₁ (Βραχυκύκλωμα) — Στους R₁ & R₂: I = 0 A' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
+                            <rect x="345" y="248" width="480" height="66" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(239, 68, 68, 0.7); fill: rgba(15, 23, 42, 0.94);" />
+                            <text x="585" y="272" class="sim-bypass-warning-text" text-anchor="middle">
+                                <tspan x="585" dy="0">${isClosed ? '⚡ Όλο το ρεύμα διαρρέει το Α₁ (Βραχυκύκλωμα)' : '⚪ Ανοικτός διακόπτης'}</tspan>
+                                <tspan x="585" dy="25">${isClosed ? 'Στους αντιστάτες R₁ &amp; R₂: I = 0 A (Πλήρης παράκαμψη)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
                             </text>
                         </g>
                     ` : ''}
                     ${isFaultAmmeter2 ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="330" y="260" width="445" height="34" rx="8" class="sim-bypass-warning-banner" style="stroke: rgba(245, 158, 11, 0.5); fill: rgba(245, 158, 11, 0.12);" />
-                            <text x="552" y="282" class="sim-bypass-warning-text" style="fill: #fcd34d;" text-anchor="middle">
-                                ${isClosed ? '⚡ Το ρεύμα διαρρέει μόνο το R₁ και το A₂ — Στον R₂ και A₃: I = 0 A (Βραχυκύκλωση R₂)' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
+                            <rect x="180" y="260" width="640" height="66" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(245, 158, 11, 0.7); fill: rgba(15, 23, 42, 0.95);" />
+                            <text x="500" y="284" class="sim-bypass-warning-text" style="fill: #fcd34d;" text-anchor="middle">
+                                <tspan x="500" dy="0">${isClosed ? '⚡ Το ρεύμα διαρρέει μόνο το R₁ και το A₂' : '⚪ Ανοικτός διακόπτης'}</tspan>
+                                <tspan x="500" dy="25">${isClosed ? 'Στον R₂ και A₃: I = 0 A (Βραχυκύκλωση R₂)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
                             </text>
                         </g>
                     ` : ''}
                     ${isFaultVoltmeter ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="275" y="260" width="520" height="34" rx="8" class="sim-bypass-warning-banner" style="stroke: rgba(168, 85, 247, 0.5); fill: rgba(168, 85, 247, 0.12);" />
-                            <text x="535" y="282" class="sim-bypass-warning-text" style="fill: #d8b4fe;" text-anchor="middle">
-                                ${isClosed ? '⚠️ Το βολτόμετρο συνδέθηκε σε σειρά (Rv → ∞) — Μηδενίζει το ρεύμα (I = 0 A) & τις τάσεις (V₁ = V₂ = 0 V)' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
+                            <rect x="170" y="248" width="660" height="66" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(168, 85, 247, 0.7); fill: rgba(15, 23, 42, 0.94);" />
+                            <text x="500" y="272" class="sim-bypass-warning-text" style="fill: #d8b4fe;" text-anchor="middle">
+                                <tspan x="500" dy="0">${isClosed ? '⚠️ Το βολτόμετρο συνδέθηκε σε σειρά (Rv → ∞)' : '⚪ Ανοικτός διακόπτης'}</tspan>
+                                <tspan x="500" dy="25">${isClosed ? 'Μηδενίζει το ρεύμα (I = 0 A) &amp; τις τάσεις (V₁ = V₂ = 0 V)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
                             </text>
                         </g>
                     ` : ''}
@@ -1144,9 +1147,9 @@ window.CircuitSimulation = (function() {
                         <circle cx="100" cy="160" r="3.5" class="voltmeter-contact-dot" />
                         <circle cx="100" cy="270" r="3.5" class="voltmeter-contact-dot" />
                         <!-- Voltmeter Instrument Body -->
-                        <circle cx="42" cy="215" r="18" class="voltmeter-circle" />
+                        <circle cx="42" cy="215" r="18.5" class="voltmeter-circle" />
                         <text x="42" y="215" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.7em" dy="2">πηγ</tspan></text>
-                        <text x="42" y="246" class="voltmeter-reading-tag">${state.V_src} V</text>
+                        <text x="42" y="250" class="voltmeter-reading-tag">${state.V_src} V</text>
                     </g>
 
                     <!-- 2. DC VOLTAGE SOURCE (BATTERY) at Left (x=100, y=215) -->
@@ -1199,9 +1202,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter1')">
                             <rect x="225" y="175" width="70" height="80" class="comp-hitbox" />
-                            <circle cx="260" cy="215" r="20" class="meter-circle meter-faulty ${isClosed ? 'short-alarm' : ''}" />
+                            <circle cx="260" cy="215" r="21" class="meter-circle meter-faulty ${isClosed ? 'short-alarm' : ''}" />
                             <text x="260" y="215" class="meter-text faulty-text">A₁</text>
-                            <text x="260" y="248" class="meter-reading-tag danger-reading">
+                            <text x="260" y="250" class="meter-reading-tag danger-reading">
                                 ${!isClosed ? '0.00 A' : 'I → ∞ (Βραχυκύκλωμα!)'}
                             </text>
                         </g>
@@ -1212,9 +1215,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('voltmeter_series')">
                             <rect x="230" y="55" width="50" height="65" class="comp-hitbox" />
-                            <circle cx="255" cy="80" r="18" class="voltmeter-circle meter-faulty-purple" />
+                            <circle cx="255" cy="80" r="18.5" class="voltmeter-circle meter-faulty-purple" />
                             <text x="255" y="80" class="voltmeter-text faulty-text-purple"><tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="2">σ</tspan></text>
-                            <text x="255" y="112" class="meter-reading-tag purple-reading">${!isClosed ? '0.0 V' : phys.V_src.toFixed(1) + ' V'}</text>
+                            <text x="255" y="115" class="meter-reading-tag purple-reading">${!isClosed ? '0.0 V' : phys.V_src.toFixed(1) + ' V'}</text>
                         </g>
                     ` : `
                         <!-- 4. AMMETER A1 at Top (before R1: x=255, y=80) -->
@@ -1223,9 +1226,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter1')">
                             <rect x="235" y="55" width="45" height="65" class="comp-hitbox" />
-                            <circle cx="255" cy="80" r="17" class="meter-circle" />
+                            <circle cx="255" cy="80" r="18.5" class="meter-circle" />
                             <text x="255" y="80" class="meter-text">A₁</text>
-                            <text x="255" y="112" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
+                            <text x="255" y="115" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
                         </g>
                     `}
 
@@ -1248,7 +1251,7 @@ window.CircuitSimulation = (function() {
                             <!-- Broken Resistor Split in Two with Gap & Red Crack Symbol -->
                             <rect x="340" y="68" width="44" height="24" rx="3" class="resistor-body broken" />
                             <rect x="396" y="68" width="44" height="24" rx="3" class="resistor-body broken" />
-                            <text x="362" y="80" class="resistor-inner-text" style="font-size: 11px;"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
+                            <text x="362" y="80" class="resistor-inner-text" style="font-size: 14.5px;"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
                             <path d="M 388 64 L 396 96 M 396 64 L 388 96" class="resistor-crack-symbol" />
                             <text x="390" y="118" class="broken-badge-text" text-anchor="middle">💥 ΚΑΤΑΣΤΡΟΦΗ</text>
                         ` : `
@@ -1277,9 +1280,9 @@ window.CircuitSimulation = (function() {
                         <path d="M 407 170 L 470 170 L 470 80" class="voltmeter-lead" />
                         <circle cx="310" cy="80" r="3.5" class="voltmeter-contact-dot" />
                         <circle cx="470" cy="80" r="3.5" class="voltmeter-contact-dot" />
-                        <circle cx="390" cy="170" r="17" class="voltmeter-circle" />
+                        <circle cx="390" cy="170" r="18.5" class="voltmeter-circle" />
                         <text x="390" y="170" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="2">1</tspan></text>
-                        <text x="390" y="200" class="voltmeter-reading-tag">${phys.V1.toFixed(1)} V</text>
+                        <text x="390" y="204" class="voltmeter-reading-tag">${phys.V1.toFixed(1)} V</text>
                     </g>
 
                     <!-- 7. AMMETER A2 / KNOT K SETUP -->
@@ -1297,9 +1300,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter2')">
                             <rect x="465" y="175" width="60" height="80" class="comp-hitbox" />
-                            <circle cx="495" cy="215" r="20" class="meter-circle meter-faulty-orange" />
+                            <circle cx="495" cy="215" r="21" class="meter-circle meter-faulty-orange" />
                             <text x="495" y="215" class="meter-text faulty-text-orange">A₂</text>
-                            <text x="495" y="248" class="meter-reading-tag warning-reading">
+                            <text x="495" y="250" class="meter-reading-tag warning-reading">
                                 ${!isClosed ? '0.00 A' : (phys.I_A2 !== undefined ? phys.I_A2.toFixed(2) : phys.I_total.toFixed(2)) + ' A'}
                             </text>
                         </g>
@@ -1309,9 +1312,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter2')">
                             <rect x="475" y="55" width="45" height="65" class="comp-hitbox" />
-                            <circle cx="495" cy="80" r="17" class="meter-circle" />
+                            <circle cx="495" cy="80" r="18.5" class="meter-circle" />
                             <text x="495" y="80" class="meter-text">A₂</text>
-                            <text x="495" y="112" class="meter-reading-tag">${(phys.I_A2 !== undefined ? phys.I_A2 : phys.I_total).toFixed(2)} A</text>
+                            <text x="495" y="115" class="meter-reading-tag">${(phys.I_A2 !== undefined ? phys.I_A2 : phys.I_total).toFixed(2)} A</text>
                         </g>
                     `}
 
@@ -1333,7 +1336,7 @@ window.CircuitSimulation = (function() {
                         ${state.brokenR2 ? `
                             <rect x="570" y="68" width="44" height="24" rx="3" class="resistor-body broken" />
                             <rect x="626" y="68" width="44" height="24" rx="3" class="resistor-body broken" />
-                            <text x="592" y="80" class="resistor-inner-text" style="font-size: 11px;"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
+                            <text x="592" y="80" class="resistor-inner-text" style="font-size: 14.5px;"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
                             <path d="M 618 64 L 626 96 M 626 64 L 618 96" class="resistor-crack-symbol" />
                             <text x="620" y="118" class="broken-badge-text" text-anchor="middle">💥 ΚΑΤΑΣΤΡΟΦΗ</text>
                         ` : `
@@ -1360,9 +1363,9 @@ window.CircuitSimulation = (function() {
                         <path d="M 637 170 L 700 170 L 700 80" class="voltmeter-lead" />
                         <circle cx="545" cy="80" r="3.5" class="voltmeter-contact-dot" />
                         <circle cx="700" cy="80" r="3.5" class="voltmeter-contact-dot" />
-                        <circle cx="620" cy="170" r="17" class="voltmeter-circle" />
+                        <circle cx="620" cy="170" r="18.5" class="voltmeter-circle" />
                         <text x="620" y="170" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="2">2</tspan></text>
-                        <text x="620" y="200" class="voltmeter-reading-tag">${phys.V2.toFixed(1)} V</text>
+                        <text x="620" y="204" class="voltmeter-reading-tag">${phys.V2.toFixed(1)} V</text>
                     </g>
 
                     <!-- 10. AMMETER A3 at Top (after R2: x=725, y=80) -->
@@ -1371,9 +1374,9 @@ window.CircuitSimulation = (function() {
                        onmouseleave="CircuitSimulation.hoverProbe(null)"
                        onclick="CircuitSimulation.selectProbe('ammeter3')">
                         <rect x="705" y="55" width="45" height="65" class="comp-hitbox" />
-                        <circle cx="725" cy="80" r="17" class="meter-circle" />
+                        <circle cx="725" cy="80" r="18.5" class="meter-circle" />
                         <text x="725" y="80" class="meter-text">A₃</text>
-                        <text x="725" y="112" class="meter-reading-tag">${(phys.I_A3 !== undefined ? phys.I_A3 : phys.I_total).toFixed(2)} A</text>
+                        <text x="725" y="115" class="meter-reading-tag">${(phys.I_A3 !== undefined ? phys.I_A3 : phys.I_total).toFixed(2)} A</text>
                     </g>
 
                     <!-- NODE C (x=780, y=80) -->
@@ -1545,25 +1548,28 @@ window.CircuitSimulation = (function() {
                     <!-- Informative warning badge when faulty instrument is active in parallel -->
                     ${isFaultAmmeter1 ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="220" y="295" width="540" height="34" rx="8" class="sim-bypass-warning-banner" />
-                            <text x="490" y="317" class="sim-bypass-warning-text" text-anchor="middle">
-                                ${isClosed ? '⚡ Όλο το ρεύμα διαρρέει το Α₁ (Βραχυκύκλωμα) — Στα Aολ, R₁ & R₂: I = 0 A' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
+                            <rect x="345" y="272" width="480" height="66" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(239, 68, 68, 0.7); fill: rgba(15, 23, 42, 0.94);" />
+                            <text x="585" y="296" class="sim-bypass-warning-text" text-anchor="middle">
+                                <tspan x="585" dy="0">${isClosed ? '⚡ Όλο το ρεύμα διαρρέει το Α₁ (Βραχυκύκλωμα)' : '⚪ Ανοικτός διακόπτης'}</tspan>
+                                <tspan x="585" dy="25">${isClosed ? 'Στα Aολ, R₁ &amp; R₂: I = 0 A (Πλήρης παράκαμψη)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
                             </text>
                         </g>
                     ` : ''}
                     ${isFaultAmmeter2 ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="220" y="295" width="540" height="34" rx="8" class="sim-bypass-warning-banner" style="stroke: rgba(245, 158, 11, 0.5); fill: rgba(245, 158, 11, 0.12);" />
-                            <text x="490" y="317" class="sim-bypass-warning-text" style="fill: #fcd34d;" text-anchor="middle">
-                                ${isClosed ? '⚡ Το ρεύμα διαρρέει το Aολ και το A₂ (Βραχυκύκλωμα) — Στους R₁ & R₂: I = 0 A' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
+                            <rect x="180" y="272" width="640" height="66" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(245, 158, 11, 0.7); fill: rgba(15, 23, 42, 0.95);" />
+                            <text x="500" y="296" class="sim-bypass-warning-text" style="fill: #fcd34d;" text-anchor="middle">
+                                <tspan x="500" dy="0">${isClosed ? '⚡ Το ρεύμα διαρρέει το Aολ και το A₂ (Βραχυκύκλωμα)' : '⚪ Ανοικτός διακόπτης'}</tspan>
+                                <tspan x="500" dy="25">${isClosed ? 'Στους αντιστάτες R₁ &amp; R₂: I = 0 A (Πλήρης παράκαμψη)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
                             </text>
                         </g>
                     ` : ''}
                     ${isFaultVoltmeter ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="220" y="295" width="540" height="34" rx="8" class="sim-bypass-warning-banner" style="stroke: rgba(168, 85, 247, 0.5); fill: rgba(168, 85, 247, 0.12);" />
-                            <text x="490" y="317" class="sim-bypass-warning-text" style="fill: #d8b4fe;" text-anchor="middle">
-                                ${isClosed ? '⚠️ Το βολτόμετρο συνδέθηκε σε σειρά στον κύριο αγωγό (Rv → ∞) — Iολ = 0 A, Vπαρ = 0 V' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
+                            <rect x="170" y="272" width="660" height="66" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(168, 85, 247, 0.7); fill: rgba(15, 23, 42, 0.94);" />
+                            <text x="500" y="296" class="sim-bypass-warning-text" style="fill: #d8b4fe;" text-anchor="middle">
+                                <tspan x="500" dy="0">${isClosed ? '⚠️ Το βολτόμετρο συνδέθηκε σε σειρά (Rv → ∞)' : '⚪ Ανοικτός διακόπτης'}</tspan>
+                                <tspan x="500" dy="25">${isClosed ? 'Στον κύριο αγωγό: Iολ = 0 A &amp; Vπαρ = 0 V (Μηδενισμός)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
                             </text>
                         </g>
                     ` : ''}
@@ -1577,9 +1583,9 @@ window.CircuitSimulation = (function() {
                         <path d="M 42 233 L 42 270 L 100 270" class="voltmeter-lead" />
                         <circle cx="100" cy="160" r="3.5" class="voltmeter-contact-dot" />
                         <circle cx="100" cy="270" r="3.5" class="voltmeter-contact-dot" />
-                        <circle cx="42" cy="215" r="18" class="voltmeter-circle" />
+                        <circle cx="42" cy="215" r="18.5" class="voltmeter-circle" />
                         <text x="42" y="215" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.7em" dy="2">πηγ</tspan></text>
-                        <text x="42" y="246" class="voltmeter-reading-tag">${state.V_src} V</text>
+                        <text x="42" y="250" class="voltmeter-reading-tag">${state.V_src} V</text>
                     </g>
 
                     <!-- 2. DC SOURCE at Left (x=100, y=215) -->
@@ -1632,9 +1638,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter1')">
                             <rect x="225" y="175" width="70" height="80" class="comp-hitbox" />
-                            <circle cx="260" cy="215" r="20" class="meter-circle meter-faulty ${isClosed ? 'short-alarm' : ''}" />
+                            <circle cx="260" cy="215" r="21" class="meter-circle meter-faulty ${isClosed ? 'short-alarm' : ''}" />
                             <text x="260" y="215" class="meter-text faulty-text">A₁</text>
-                            <text x="260" y="248" class="meter-reading-tag danger-reading">
+                            <text x="260" y="250" class="meter-reading-tag danger-reading">
                                 ${!isClosed ? '0.00 A' : 'I → ∞ (Βραχυκύκλωμα!)'}
                             </text>
                         </g>
@@ -1645,9 +1651,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter_main')">
                             <rect x="298" y="55" width="45" height="65" class="comp-hitbox" />
-                            <circle cx="320" cy="80" r="17" class="meter-circle" />
+                            <circle cx="320" cy="80" r="18.5" class="meter-circle" />
                             <text x="320" y="80" class="meter-text">A<tspan font-size="0.65em" dy="2">ολ</tspan></text>
-                            <text x="320" y="112" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
+                            <text x="320" y="115" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
                         </g>
                     ` : isFaultAmmeter2 ? `
                         <!-- MAIN AMMETER Aολ shifted slightly to fit nicely (x=320, y=80) - Carrying short-circuit surge -->
@@ -1656,9 +1662,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter_main')">
                             <rect x="298" y="55" width="45" height="65" class="comp-hitbox" />
-                            <circle cx="320" cy="80" r="17" class="meter-circle meter-faulty-orange ${isClosed ? 'short-alarm' : ''}" />
+                            <circle cx="320" cy="80" r="18.5" class="meter-circle meter-faulty-orange ${isClosed ? 'short-alarm' : ''}" />
                             <text x="320" y="80" class="meter-text faulty-text-orange">A<tspan font-size="0.65em" dy="2">ολ</tspan></text>
-                            <text x="320" y="112" class="meter-reading-tag danger-reading">
+                            <text x="320" y="115" class="meter-reading-tag danger-reading">
                                 ${!isClosed ? '0.00 A' : 'I → ∞ (Βραχυκύκλωμα!)'}
                             </text>
                         </g>
@@ -1669,9 +1675,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('voltmeter_series')">
                             <rect x="228" y="55" width="45" height="65" class="comp-hitbox" />
-                            <circle cx="250" cy="80" r="17" class="voltmeter-circle meter-faulty-purple" />
+                            <circle cx="250" cy="80" r="18.5" class="voltmeter-circle meter-faulty-purple" />
                             <text x="250" y="80" class="voltmeter-text faulty-text-purple"><tspan font-style="italic">V</tspan><tspan font-size="0.75em" dy="2">σ</tspan></text>
-                            <text x="250" y="112" class="meter-reading-tag purple-reading">${!isClosed ? '0.0 V' : phys.V_src.toFixed(1) + ' V'}</text>
+                            <text x="250" y="115" class="meter-reading-tag purple-reading">${!isClosed ? '0.0 V' : phys.V_src.toFixed(1) + ' V'}</text>
                         </g>
 
                         <!-- MAIN AMMETER Aολ shifted slightly to fit nicely (x=320, y=80) -->
@@ -1680,9 +1686,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter_main')">
                             <rect x="298" y="55" width="45" height="65" class="comp-hitbox" />
-                            <circle cx="320" cy="80" r="17" class="meter-circle" />
+                            <circle cx="320" cy="80" r="18.5" class="meter-circle" />
                             <text x="320" y="80" class="meter-text">A<tspan font-size="0.65em" dy="2">ολ</tspan></text>
-                            <text x="320" y="112" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
+                            <text x="320" y="115" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
                         </g>
                     ` : `
                         <!-- 4. MAIN AMMETER Aολ on Top Rail (x=280, y=80) -->
@@ -1691,9 +1697,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter_main')">
                             <rect x="258" y="55" width="45" height="65" class="comp-hitbox" />
-                            <circle cx="280" cy="80" r="17" class="meter-circle" />
+                            <circle cx="280" cy="80" r="18.5" class="meter-circle" />
                             <text x="280" y="80" class="meter-text">A<tspan font-size="0.65em" dy="2">ολ</tspan></text>
-                            <text x="280" y="112" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
+                            <text x="280" y="115" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
                         </g>
                     `}
 
@@ -1711,9 +1717,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter1')">
                             <rect x="360" y="105" width="40" height="40" class="comp-hitbox" />
-                            <circle cx="380" cy="125" r="16" class="meter-circle" />
+                            <circle cx="380" cy="125" r="18" class="meter-circle" />
                             <text x="380" y="125" class="meter-text">A₁</text>
-                            <text x="342" y="129" class="meter-reading-tag" text-anchor="end">${phys.I1.toFixed(2)} A</text>
+                            <text x="353" y="130" class="meter-reading-tag" text-anchor="end">${phys.I1.toFixed(2)} A</text>
                         </g>
                     ` : ''}
 
@@ -1728,7 +1734,7 @@ window.CircuitSimulation = (function() {
                             <!-- Broken Vertical Resistor Split in Two with Red Crack -->
                             <rect x="368" y="175" width="24" height="34" rx="3" class="resistor-body broken" />
                             <rect x="368" y="221" width="24" height="34" rx="3" class="resistor-body broken" />
-                            <text x="380" y="192" class="resistor-inner-text" dominant-baseline="middle" text-anchor="middle" style="font-size: 11px;"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
+                            <text x="380" y="192" class="resistor-inner-text" dominant-baseline="middle" text-anchor="middle" style="font-size: 14.5px;"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">1</tspan></text>
                             <path d="M 364 213 L 396 223 M 396 213 L 364 223" class="resistor-crack-symbol" />
                             <text x="406" y="274" class="broken-badge-text" text-anchor="start">💥 ΚΑΤΑΣΤΡΟΦΗ</text>
                         ` : `
@@ -1767,9 +1773,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter2')">
                             <rect x="475" y="175" width="70" height="80" class="comp-hitbox" />
-                            <circle cx="510" cy="215" r="20" class="meter-circle meter-faulty-orange ${isClosed ? 'short-alarm' : ''}" />
+                            <circle cx="510" cy="215" r="21" class="meter-circle meter-faulty-orange ${isClosed ? 'short-alarm' : ''}" />
                             <text x="510" y="215" class="meter-text faulty-text-orange">A₂</text>
-                            <text x="510" y="248" class="meter-reading-tag danger-reading">
+                            <text x="510" y="250" class="meter-reading-tag danger-reading">
                                 ${!isClosed ? '0.00 A' : 'I → ∞ (Βραχυκύκλωμα!)'}
                             </text>
                         </g>
@@ -1796,9 +1802,9 @@ window.CircuitSimulation = (function() {
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter2')">
                             <rect x="620" y="105" width="40" height="40" class="comp-hitbox" />
-                            <circle cx="640" cy="125" r="16" class="meter-circle" />
+                            <circle cx="640" cy="125" r="18" class="meter-circle" />
                             <text x="640" y="125" class="meter-text">A₂</text>
-                            <text x="602" y="129" class="meter-reading-tag" text-anchor="end">${phys.I2.toFixed(2)} A</text>
+                            <text x="613" y="130" class="meter-reading-tag" text-anchor="end">${phys.I2.toFixed(2)} A</text>
                         </g>
                     ` : ''}
 
@@ -1812,7 +1818,7 @@ window.CircuitSimulation = (function() {
                         ${state.brokenR2 ? `
                             <rect x="628" y="175" width="24" height="34" rx="3" class="resistor-body broken" />
                             <rect x="628" y="221" width="24" height="34" rx="3" class="resistor-body broken" />
-                            <text x="640" y="192" class="resistor-inner-text" dominant-baseline="middle" text-anchor="middle" style="font-size: 11px;"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
+                            <text x="640" y="192" class="resistor-inner-text" dominant-baseline="middle" text-anchor="middle" style="font-size: 14.5px;"><tspan font-style="italic">R</tspan><tspan font-size="0.75em" dy="3">2</tspan></text>
                             <path d="M 624 213 L 656 223 M 656 213 L 624 223" class="resistor-crack-symbol" />
                             <text x="666" y="274" class="broken-badge-text" text-anchor="start">💥 ΚΑΤΑΣΤΡΟΦΗ</text>
                         ` : `
@@ -1845,9 +1851,9 @@ window.CircuitSimulation = (function() {
                         <circle cx="640" cy="80" r="3.5" class="voltmeter-contact-dot" />
                         <circle cx="640" cy="350" r="3.5" class="voltmeter-contact-dot" />
                         <!-- Voltmeter Instrument Body -->
-                        <circle cx="780" cy="215" r="18" class="voltmeter-circle" />
+                        <circle cx="780" cy="215" r="18.5" class="voltmeter-circle" />
                         <text x="780" y="215" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.7em" dy="2">παρ</tspan></text>
-                        <text x="780" y="246" class="voltmeter-reading-tag">${(!state.switchClosed || phys.status === 'total_short' || isFaultVoltmeter) ? '0.0 V' : `${phys.V_src.toFixed(1)} V`}</text>
+                        <text x="780" y="250" class="voltmeter-reading-tag">${(!state.switchClosed || phys.status === 'total_short' || isFaultVoltmeter) ? '0.0 V' : `${phys.V_src.toFixed(1)} V`}</text>
                     </g>
 
                     <!-- Wire Probe Zones -->
