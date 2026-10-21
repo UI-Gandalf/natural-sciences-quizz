@@ -81,8 +81,34 @@ window.CircuitSimulation = (function() {
             brokenR2: false,
             faultInstrument: 'voltmeter_series'
         },
+        'q_fault_ammeter_par': {
+            name: '⚠️ Σφάλμα I: Αμπερόμετρο A₁ παράλληλα στην πηγή (Παράλληλο κύκλωμα)',
+            topology: 'parallel',
+            V_src: 30,
+            R1: 10,
+            R2: 30,
+            switchClosed: true,
+            shortR1: false,
+            shortR2: false,
+            brokenR1: false,
+            brokenR2: false,
+            faultInstrument: 'ammeter_parallel'
+        },
+        'q_fault_ammeter2_par': {
+            name: '⚠️ Σφάλμα II: Αμπερόμετρο A₂ κάθετα ανάμεσα στους R₁ & R₂ (Παράλληλο)',
+            topology: 'parallel',
+            V_src: 30,
+            R1: 10,
+            R2: 30,
+            switchClosed: true,
+            shortR1: false,
+            shortR2: false,
+            brokenR1: false,
+            brokenR2: false,
+            faultInstrument: 'ammeter2_parallel'
+        },
         'q_fault_voltmeter_par': {
-            name: '⚠️ Σφάλμα: Βολτόμετρο σε σειρά στον κύριο αγωγό (Rv → ∞)',
+            name: '⚠️ Σφάλμα III: Βολτόμετρο σε σειρά στον κύριο αγωγό (Rv → ∞)',
             topology: 'parallel',
             V_src: 30,
             R1: 10,
@@ -104,7 +130,8 @@ window.CircuitSimulation = (function() {
             shortR1: false,
             shortR2: false,
             brokenR1: false,
-            brokenR2: false
+            brokenR2: false,
+            faultInstrument: 'none'
         },
         'q24_short': {
             name: 'Πρόβλημα 24 (Βραχυκύκλωμα R1: 30V, 10Ω + 5Ω)',
@@ -442,7 +469,68 @@ window.CircuitSimulation = (function() {
             res.VG = V_src;
         } else {
             // Parallel circuit
-            // Check for faulty instrument placement (Voltmeter in series on main supply rail before Aολ)
+            // Check for faulty instrument placement (Case I: Ammeter A1 vertically parallel to source before Aολ)
+            if (faultInstrument === 'ammeter_parallel') {
+                res.status = 'total_short';
+                res.statusText = '⚠️ Ολικό Βραχυκύκλωμα Πηγής (Λανθασμένη Τοποθέτηση Α₁ Παράλληλα στην Πηγή)!';
+                res.R_eq = 0;
+                res.I_total = Infinity;
+                res.I_switch = Infinity;
+                res.P_total = Infinity;
+                res.I_A1 = Infinity;
+                res.I_A2 = 0;
+                res.I_main = 0;
+                res.V1 = 0;
+                res.I1 = 0;
+                res.P1 = 0;
+                res.V2 = 0;
+                res.I2 = 0;
+                res.P2 = 0;
+                res.V_par_meter = 0;
+                res.V_src_meter = V_src;
+                res.VD = 0;
+                res.VE = 0;
+                res.VF = 0;
+                res.VB = 0;
+                res.VA = 0;
+                res.VC = 0;
+                res.VK = 0;
+                res.VG = V_src;
+                return res;
+            }
+
+            // Check for faulty instrument placement (Case II: Ammeter A2 vertically between R1 and R2)
+            if (faultInstrument === 'ammeter2_parallel') {
+                res.status = 'total_short';
+                res.statusText = '⚠️ Βραχυκύκλωση Συστοιχίας (Λανθασμένη Τοποθέτηση Α₂ Κάθετα Ανάμεσα στους R₁ & R₂)!';
+                res.R_eq = 0;
+                res.I_total = Infinity;
+                res.I_switch = Infinity;
+                res.P_total = Infinity;
+                res.I_A1 = 0;
+                res.I_A2 = Infinity;
+                res.I_main = Infinity;
+                res.V1 = 0;
+                res.I1 = 0;
+                res.P1 = 0;
+                res.V2 = 0;
+                res.I2 = 0;
+                res.P2 = 0;
+                res.V_par_meter = 0;
+                res.V_src_meter = V_src;
+                res.VD = 0;
+                res.VE = 0;
+                res.VF = 0;
+                res.VB = 0;
+                res.VA = 0;
+                res.VC = 0;
+                res.VK = 0;
+                res.VM = 0;
+                res.VG = V_src;
+                return res;
+            }
+
+            // Check for faulty instrument placement (Case III: Voltmeter in series on main supply rail before Aολ)
             if (faultInstrument === 'voltmeter_series') {
                 res.status = 'open_circuit';
                 res.statusText = '⚠️ Σφάλμα: Βολτόμετρο σε Σειρά στον Κύριο Αγωγό (Rv → ∞) — Iολ = 0 A, Vπαρ = 0 V';
@@ -792,12 +880,16 @@ window.CircuitSimulation = (function() {
                                 </div>
                             </div>
                         ` : `
-                            <div class="sim-control-group sim-fault-group ${state.faultInstrument === 'voltmeter_series' ? 'is-series-vm' : ''}" id="sim-fault-group">
+                            <div class="sim-control-group sim-fault-group ${state.faultInstrument === 'ammeter_parallel' ? 'is-faulted' : (state.faultInstrument === 'ammeter2_parallel' ? 'is-partial' : (state.faultInstrument === 'voltmeter_series' ? 'is-series-vm' : ''))}" id="sim-fault-group">
                                 <div class="sim-control-header">
                                     <span class="sim-group-title">
                                         <strong>⚠️ Τοποθέτηση Οργάνων</strong>
                                     </span>
-                                    ${state.faultInstrument === 'voltmeter_series' ? `
+                                    ${state.faultInstrument === 'ammeter_parallel' ? `
+                                        <span class="danger-badge">Βραχυκύκλωμα</span>
+                                    ` : state.faultInstrument === 'ammeter2_parallel' ? `
+                                        <span class="warn-badge" style="background: rgba(245, 158, 11, 0.18); color: #f59e0b; border-color: rgba(245, 158, 11, 0.4);">Βραχυκύκλωση R₂</span>
+                                    ` : state.faultInstrument === 'voltmeter_series' ? `
                                         <span class="warn-badge" style="background: rgba(168, 85, 247, 0.18); color: #c084fc; border-color: rgba(168, 85, 247, 0.4);">Διακοπή (Rv → ∞)</span>
                                     ` : `
                                         <span class="ok-badge">Ορθή Σύνδεση</span>
@@ -815,13 +907,35 @@ window.CircuitSimulation = (function() {
                                         </div>
                                     </label>
 
+                                    <label class="sim-radio-card warn ${state.faultInstrument === 'ammeter_parallel' ? 'active' : ''}">
+                                        <input type="radio" name="sim-fault-instrument" value="ammeter_parallel" 
+                                               ${state.faultInstrument === 'ammeter_parallel' ? 'checked' : ''} 
+                                               onchange="CircuitSimulation.setFaultInstrument('ammeter_parallel')">
+                                        <span class="radio-card-dot"></span>
+                                        <div class="radio-card-content">
+                                            <span class="radio-card-title"><strong>(1) Λανθασμένη τοποθέτηση αμπερομέτρου I</strong></span>
+                                            <span class="radio-card-desc">Παράλληλα στην πηγή (Κόμβοι K − F) ➔ Ολικό Βραχυκύκλωμα!</span>
+                                        </div>
+                                    </label>
+
+                                    <label class="sim-radio-card warn ${state.faultInstrument === 'ammeter2_parallel' ? 'active' : ''}">
+                                        <input type="radio" name="sim-fault-instrument" value="ammeter2_parallel" 
+                                               ${state.faultInstrument === 'ammeter2_parallel' ? 'checked' : ''} 
+                                               onchange="CircuitSimulation.setFaultInstrument('ammeter2_parallel')">
+                                        <span class="radio-card-dot"></span>
+                                        <div class="radio-card-content">
+                                            <span class="radio-card-title"><strong>(2) Λανθασμένη τοποθέτηση αμπερομέτρου II</strong></span>
+                                            <span class="radio-card-desc">Κάθετα ανάμεσα στους <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> & <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Κόμβοι K − M) ➔ Βραχυκύκλωση</span>
+                                        </div>
+                                    </label>
+
                                     <label class="sim-radio-card warn ${state.faultInstrument === 'voltmeter_series' ? 'active' : ''}">
                                         <input type="radio" name="sim-fault-instrument" value="voltmeter_series" 
                                                ${state.faultInstrument === 'voltmeter_series' ? 'checked' : ''} 
                                                onchange="CircuitSimulation.setFaultInstrument('voltmeter_series')">
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
-                                            <span class="radio-card-title"><strong>(1) Λανθασμένη τοποθέτηση βολτομέτρου</strong></span>
+                                            <span class="radio-card-title"><strong>(3) Λανθασμένη τοποθέτηση βολτομέτρου</strong></span>
                                             <span class="radio-card-desc">Σε σειρά στον κύριο αγωγό (πριν το <span class="math-expr"><i class="math-var">A</i><sub class="math-sub">ολ</sub></span>) ➔ <span class="math-expr"><i class="math-var">I</i><sub class="math-sub">ολ</sub> = 0 A</span></span>
                                         </div>
                                     </label>
@@ -893,8 +1007,8 @@ window.CircuitSimulation = (function() {
 
         const phys = computePhysics();
         const isClosed = state.switchClosed;
-        const isFaultAmmeter1 = state.topology === 'series' && state.faultInstrument === 'ammeter_parallel';
-        const isFaultAmmeter2 = state.topology === 'series' && state.faultInstrument === 'ammeter2_parallel';
+        const isFaultAmmeter1 = state.faultInstrument === 'ammeter_parallel';
+        const isFaultAmmeter2 = state.faultInstrument === 'ammeter2_parallel';
         const isFaultAmmeter = isFaultAmmeter1 || isFaultAmmeter2;
         const isFaultVoltmeter = state.faultInstrument === 'voltmeter_series';
         const isShortTotal = phys.status === 'total_short';
@@ -1330,8 +1444,21 @@ window.CircuitSimulation = (function() {
                                 <feMergeNode in="SourceGraphic" />
                             </feMerge>
                         </filter>
+                        <!-- Glow filter for short-circuit surge wire -->
+                        <filter id="wire-glow-danger-par" x="-30%" y="-30%" width="160%" height="160%">
+                            <feGaussianBlur stdDeviation="4.5" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                        <!-- Arrowhead marker for conventional current flow -->
                         <marker id="current-arrow-par" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                             <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8" />
+                        </marker>
+                        <!-- Arrowhead marker for short-circuit surge current -->
+                        <marker id="current-arrow-short-par" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ef4444" />
                         </marker>
                     </defs>
 
@@ -1341,41 +1468,104 @@ window.CircuitSimulation = (function() {
                     <!-- Branch 1 (Vertical from A to B at x=380) -->
                     <line x1="380" y1="80" x2="380" y2="350" class="circuit-wire-base" />
 
+                    <!-- Vertical Cable for Faulty Ammeter Cases -->
+                    ${isFaultAmmeter1 ? `
+                        <line x1="260" y1="80" x2="260" y2="350" class="circuit-wire-base wire-short-vertical" />
+                    ` : ''}
+                    ${isFaultAmmeter2 ? `
+                        <line x1="510" y1="80" x2="510" y2="350" class="circuit-wire-base wire-short-vertical" />
+                    ` : ''}
+
                     <!-- Active Animated Current Overlay Paths -->
-                    <!-- Main supply current: Battery -> G -> Switch K -> A(380,80) -->
-                    <path d="M 100 200 L 100 80 L 380 80" class="circuit-wire-current ${currentLineClass}" style="animation-duration: ${animSpeed}s;" />
-                    <!-- Main return current: B(380,350) -> F(100,350) -> Battery -->
-                    <path d="M 380 350 L 100 350 L 100 230" class="circuit-wire-current ${currentLineClass}" style="animation-duration: ${animSpeed}s;" />
+                    ${isFaultAmmeter1 ? `
+                        ${isClosed ? `
+                            <!-- Closed Short-Circuit Loop: Battery(+) -> Switch -> Knot K -> A1 -> Knot F -> Battery(-) -->
+                            <path d="M 100 200 L 100 80 L 260 80 L 260 350 L 100 350 L 100 230" 
+                                  class="circuit-wire-current wire-short-furious" />
+                            <!-- Directional arrows in short-circuit loop -->
+                            <path d="M 100 200 L 100 135" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 205 80 L 245 80" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 260 105 L 260 165" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 260 260 L 260 320" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 240 350 L 160 350" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                        ` : ''}
+                    ` : isFaultAmmeter2 ? `
+                        ${isClosed ? `
+                            <!-- Closed Short-Circuit Loop: Battery(+) -> Switch -> Aολ -> Knot K -> A2 -> Knot M -> Battery(-) -->
+                            <path d="M 100 200 L 100 80 L 510 80 L 510 350 L 100 350 L 100 230" 
+                                  class="circuit-wire-current wire-short-furious" />
+                            <!-- Directional arrows in short-circuit loop -->
+                            <path d="M 100 200 L 100 135" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 205 80 L 255 80" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 345 80 L 485 80" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 510 105 L 510 165" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 510 260 L 510 320" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 485 350 L 390 350" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 350 350 L 200 350" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 180 350 L 110 350" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                        ` : ''}
+                    ` : `
+                        <!-- Main supply current: Battery -> G -> Switch K -> A(380,80) -->
+                        <path d="M 100 200 L 100 80 L 380 80" class="circuit-wire-current ${currentLineClass}" style="animation-duration: ${animSpeed}s;" />
+                        <!-- Main return current: B(380,350) -> F(100,350) -> Battery -->
+                        <path d="M 380 350 L 100 350 L 100 230" class="circuit-wire-current ${currentLineClass}" style="animation-duration: ${animSpeed}s;" />
 
-                    <!-- Branch 1 current I1: A(380,80) down to B(380,350) -->
-                    ${hasCurrent1 ? `
-                        <line x1="380" y1="80" x2="380" y2="350" class="circuit-wire-current wire-current-active" 
-                              style="animation-duration: ${animSpeed1}s;" />
-                    ` : ''}
-
-                    <!-- Branch 2 current I2: A(380,80) -> C(640,80) -> E(640,350) -> B(380,350) -->
-                    ${hasCurrent2 ? `
-                        <path d="M 380 80 L 640 80 L 640 350 L 380 350" class="circuit-wire-current wire-current-active" 
-                              style="animation-duration: ${animSpeed2}s;" />
-                    ` : ''}
-
-                    <!-- Conventional Flow Directional Arrows (Parallel) -->
-                    ${hasCurrent ? `
-                        <path d="M 100 180 L 100 120" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <path d="M 125 80 L 145 80" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                        <!-- Branch 1 current I1: A(380,80) down to B(380,350) -->
                         ${hasCurrent1 ? `
-                            <path d="M 380 155 L 380 170" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                            <path d="M 380 265 L 380 310" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                            <line x1="380" y1="80" x2="380" y2="350" class="circuit-wire-current wire-current-active" 
+                                  style="animation-duration: ${animSpeed1}s;" />
                         ` : ''}
+
+                        <!-- Branch 2 current I2: A(380,80) -> C(640,80) -> E(640,350) -> B(380,350) -->
                         ${hasCurrent2 ? `
-                            <path d="M 440 80 L 560 80" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                            <path d="M 640 155 L 640 170" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                            <path d="M 640 265 L 640 310" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                            <path d="M 600 350 L 545 350" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                            <path d="M 475 350 L 415 350" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                            <path d="M 380 80 L 640 80 L 640 350 L 380 350" class="circuit-wire-current wire-current-active" 
+                                  style="animation-duration: ${animSpeed2}s;" />
                         ` : ''}
-                        <path d="M 280 350 L 180 350" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
-                        <path d="M 100 320 L 100 260" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+
+                        <!-- Conventional Flow Directional Arrows (Parallel) -->
+                        ${hasCurrent ? `
+                            <path d="M 100 180 L 100 120" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                            <path d="M 125 80 L 145 80" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                            ${hasCurrent1 ? `
+                                <path d="M 380 155 L 380 170" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                                <path d="M 380 265 L 380 310" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                            ` : ''}
+                            ${hasCurrent2 ? `
+                                <path d="M 440 80 L 560 80" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                                <path d="M 640 155 L 640 170" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                                <path d="M 640 265 L 640 310" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                                <path d="M 600 350 L 545 350" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                                <path d="M 475 350 L 415 350" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                            ` : ''}
+                            <path d="M 280 350 L 180 350" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                            <path d="M 100 320 L 100 260" marker-end="url(#current-arrow-par)" class="flow-arrow-path" />
+                        ` : ''}
+                    `}
+
+                    <!-- Informative warning badge when faulty instrument is active in parallel -->
+                    ${isFaultAmmeter1 ? `
+                        <g class="sim-bypass-alert-badge">
+                            <rect x="220" y="295" width="540" height="34" rx="8" class="sim-bypass-warning-banner" />
+                            <text x="490" y="317" class="sim-bypass-warning-text" text-anchor="middle">
+                                ${isClosed ? '⚡ Όλο το ρεύμα διαρρέει το Α₁ (Βραχυκύκλωμα) — Στα Aολ, R₁ & R₂: I = 0 A' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
+                            </text>
+                        </g>
+                    ` : ''}
+                    ${isFaultAmmeter2 ? `
+                        <g class="sim-bypass-alert-badge">
+                            <rect x="220" y="295" width="540" height="34" rx="8" class="sim-bypass-warning-banner" style="stroke: rgba(245, 158, 11, 0.5); fill: rgba(245, 158, 11, 0.12);" />
+                            <text x="490" y="317" class="sim-bypass-warning-text" style="fill: #fcd34d;" text-anchor="middle">
+                                ${isClosed ? '⚡ Το ρεύμα διαρρέει το Aολ και το A₂ (Βραχυκύκλωμα) — Στους R₁ & R₂: I = 0 A' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
+                            </text>
+                        </g>
+                    ` : ''}
+                    ${isFaultVoltmeter ? `
+                        <g class="sim-bypass-alert-badge">
+                            <rect x="220" y="295" width="540" height="34" rx="8" class="sim-bypass-warning-banner" style="stroke: rgba(168, 85, 247, 0.5); fill: rgba(168, 85, 247, 0.12);" />
+                            <text x="490" y="317" class="sim-bypass-warning-text" style="fill: #d8b4fe;" text-anchor="middle">
+                                ${isClosed ? '⚠️ Το βολτόμετρο συνδέθηκε σε σειρά στον κύριο αγωγό (Rv → ∞) — Iολ = 0 A, Vπαρ = 0 V' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
+                            </text>
+                        </g>
                     ` : ''}
 
                     <!-- 1. VOLTMETER Vπηγ across DC Source (Left side: x=42, y=215) -->
@@ -1427,8 +1617,52 @@ window.CircuitSimulation = (function() {
                         <text x="175" y="40" class="comp-title-tag">Διακόπτης K</text>
                     </g>
 
-                    <!-- 4. MAIN RAIL METERS (Voltmeter in series + Ammeter Aολ) -->
-                    ${isFaultVoltmeter ? `
+                    <!-- 4. MAIN RAIL METERS & FAULTY METERS -->
+                    ${isFaultAmmeter1 ? `
+                        <!-- KNOT K (x=260, y=80) -->
+                        <g class="circuit-node-group node-knot-group" onmouseenter="CircuitSimulation.hoverProbe('nodeK')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeK')">
+                            <circle cx="260" cy="80" r="14" class="comp-hitbox" fill="transparent" />
+                            <circle cx="260" cy="80" r="5" class="circuit-node-dot knot-k-dot" />
+                            <text x="260" y="65" class="node-letter knot-k-letter">K</text>
+                        </g>
+
+                        <!-- AMMETER A1 (Perpendicular in the middle of cable joining K and F: x=260, y=215) -->
+                        <g class="comp-interactive comp-meter faulty-ammeter" data-probe="ammeter1"
+                           onmouseenter="CircuitSimulation.hoverProbe('ammeter1')" 
+                           onmouseleave="CircuitSimulation.hoverProbe(null)"
+                           onclick="CircuitSimulation.selectProbe('ammeter1')">
+                            <rect x="225" y="175" width="70" height="80" class="comp-hitbox" />
+                            <circle cx="260" cy="215" r="20" class="meter-circle meter-faulty ${isClosed ? 'short-alarm' : ''}" />
+                            <text x="260" y="215" class="meter-text faulty-text">A₁</text>
+                            <text x="260" y="248" class="meter-reading-tag danger-reading">
+                                ${!isClosed ? '0.00 A' : 'I → ∞ (Βραχυκύκλωμα!)'}
+                            </text>
+                        </g>
+
+                        <!-- MAIN AMMETER Aολ shifted slightly to fit nicely (x=320, y=80) -->
+                        <g class="comp-interactive comp-meter" data-probe="ammeter_main"
+                           onmouseenter="CircuitSimulation.hoverProbe('ammeter_main')" 
+                           onmouseleave="CircuitSimulation.hoverProbe(null)"
+                           onclick="CircuitSimulation.selectProbe('ammeter_main')">
+                            <rect x="298" y="55" width="45" height="65" class="comp-hitbox" />
+                            <circle cx="320" cy="80" r="17" class="meter-circle" />
+                            <text x="320" y="80" class="meter-text">A<tspan font-size="0.65em" dy="2">ολ</tspan></text>
+                            <text x="320" y="112" class="meter-reading-tag">${phys.I_total.toFixed(2)} A</text>
+                        </g>
+                    ` : isFaultAmmeter2 ? `
+                        <!-- MAIN AMMETER Aολ shifted slightly to fit nicely (x=320, y=80) - Carrying short-circuit surge -->
+                        <g class="comp-interactive comp-meter faulty-ammeter" data-probe="ammeter_main"
+                           onmouseenter="CircuitSimulation.hoverProbe('ammeter_main')" 
+                           onmouseleave="CircuitSimulation.hoverProbe(null)"
+                           onclick="CircuitSimulation.selectProbe('ammeter_main')">
+                            <rect x="298" y="55" width="45" height="65" class="comp-hitbox" />
+                            <circle cx="320" cy="80" r="17" class="meter-circle meter-faulty-orange ${isClosed ? 'short-alarm' : ''}" />
+                            <text x="320" y="80" class="meter-text faulty-text-orange">A<tspan font-size="0.65em" dy="2">ολ</tspan></text>
+                            <text x="320" y="112" class="meter-reading-tag danger-reading">
+                                ${!isClosed ? '0.00 A' : 'I → ∞ (Βραχυκύκλωμα!)'}
+                            </text>
+                        </g>
+                    ` : isFaultVoltmeter ? `
                         <!-- Voltmeter in series just before Aολ (x=250, y=80) -->
                         <g class="comp-interactive comp-voltmeter faulty-voltmeter" data-probe="voltmeter_series"
                            onmouseenter="CircuitSimulation.hoverProbe('voltmeter_series')" 
@@ -1470,16 +1704,18 @@ window.CircuitSimulation = (function() {
                         <text x="380" y="65" class="node-letter">A</text>
                     </g>
 
-                    <!-- 5. BRANCH 1 AMMETER A1 (Vertical at x=380, y=125) -->
-                    <g class="comp-interactive comp-meter" data-probe="ammeter1"
-                       onmouseenter="CircuitSimulation.hoverProbe('ammeter1')" 
-                       onmouseleave="CircuitSimulation.hoverProbe(null)"
-                       onclick="CircuitSimulation.selectProbe('ammeter1')">
-                        <rect x="360" y="105" width="40" height="40" class="comp-hitbox" />
-                        <circle cx="380" cy="125" r="16" class="meter-circle" />
-                        <text x="380" y="125" class="meter-text">A₁</text>
-                        <text x="342" y="129" class="meter-reading-tag" text-anchor="end">${phys.I1.toFixed(2)} A</text>
-                    </g>
+                    <!-- 5. BRANCH 1 AMMETER A1 (Vertical at x=380, y=125) - Rendered only when not moved to vertical cable -->
+                    ${!isFaultAmmeter1 ? `
+                        <g class="comp-interactive comp-meter" data-probe="ammeter1"
+                           onmouseenter="CircuitSimulation.hoverProbe('ammeter1')" 
+                           onmouseleave="CircuitSimulation.hoverProbe(null)"
+                           onclick="CircuitSimulation.selectProbe('ammeter1')">
+                            <rect x="360" y="105" width="40" height="40" class="comp-hitbox" />
+                            <circle cx="380" cy="125" r="16" class="meter-circle" />
+                            <text x="380" y="125" class="meter-text">A₁</text>
+                            <text x="342" y="129" class="meter-reading-tag" text-anchor="end">${phys.I1.toFixed(2)} A</text>
+                        </g>
+                    ` : ''}
 
                     <!-- 6. RESISTOR R1 (Vertical Branch 1: x=380) -->
                     <g class="comp-interactive comp-resistor ${state.shortR1 ? 'is-shorted' : ''} ${state.brokenR1 ? 'is-broken' : ''}" data-probe="R1"
@@ -1516,6 +1752,36 @@ window.CircuitSimulation = (function() {
                         ` : ''}
                     </g>
 
+                    <!-- 7. AMMETER A2 / KNOT K & M SETUP BETWEEN R1 AND R2 (Midpoint x=510) -->
+                    ${isFaultAmmeter2 ? `
+                        <!-- KNOT K (x=510, y=80) - Between R1 and R2 -->
+                        <g class="circuit-node-group node-knot-group" onmouseenter="CircuitSimulation.hoverProbe('nodeK')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeK')">
+                            <circle cx="510" cy="80" r="14" class="comp-hitbox" fill="transparent" />
+                            <circle cx="510" cy="80" r="5" class="circuit-node-dot knot-k-dot" />
+                            <text x="510" y="65" class="node-letter knot-k-letter">K</text>
+                        </g>
+
+                        <!-- AMMETER A2 (Perpendicular in the middle of cable joining K and M: x=510, y=215) -->
+                        <g class="comp-interactive comp-meter faulty-ammeter" data-probe="ammeter2"
+                           onmouseenter="CircuitSimulation.hoverProbe('ammeter2')" 
+                           onmouseleave="CircuitSimulation.hoverProbe(null)"
+                           onclick="CircuitSimulation.selectProbe('ammeter2')">
+                            <rect x="475" y="175" width="70" height="80" class="comp-hitbox" />
+                            <circle cx="510" cy="215" r="20" class="meter-circle meter-faulty-orange ${isClosed ? 'short-alarm' : ''}" />
+                            <text x="510" y="215" class="meter-text faulty-text-orange">A₂</text>
+                            <text x="510" y="248" class="meter-reading-tag danger-reading">
+                                ${!isClosed ? '0.00 A' : 'I → ∞ (Βραχυκύκλωμα!)'}
+                            </text>
+                        </g>
+
+                        <!-- KNOT M (x=510, y=350) - Landing of Vertical Cable from A2 -->
+                        <g class="circuit-node-group node-knot-group" onmouseenter="CircuitSimulation.hoverProbe('nodeM')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeM')">
+                            <circle cx="510" cy="350" r="14" class="comp-hitbox" fill="transparent" />
+                            <circle cx="510" cy="350" r="5" class="circuit-node-dot knot-m-dot" />
+                            <text x="527" y="342" class="node-letter knot-m-letter">M</text>
+                        </g>
+                    ` : ''}
+
                     <!-- NODE C (x=640, y=80) - Branch 2 Top -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeC')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeC')">
                         <circle cx="640" cy="80" r="14" class="comp-hitbox" fill="transparent" />
@@ -1523,18 +1789,20 @@ window.CircuitSimulation = (function() {
                         <text x="640" y="65" class="node-letter">C</text>
                     </g>
 
-                    <!-- 7. BRANCH 2 AMMETER A2 (Vertical at x=640, y=125) -->
-                    <g class="comp-interactive comp-meter" data-probe="ammeter2"
-                       onmouseenter="CircuitSimulation.hoverProbe('ammeter2')" 
-                       onmouseleave="CircuitSimulation.hoverProbe(null)"
-                       onclick="CircuitSimulation.selectProbe('ammeter2')">
-                        <rect x="620" y="105" width="40" height="40" class="comp-hitbox" />
-                        <circle cx="640" cy="125" r="16" class="meter-circle" />
-                        <text x="640" y="125" class="meter-text">A₂</text>
-                        <text x="602" y="129" class="meter-reading-tag" text-anchor="end">${phys.I2.toFixed(2)} A</text>
-                    </g>
+                    <!-- 8. BRANCH 2 AMMETER A2 (Vertical at x=640, y=125) - Rendered only when not moved between resistors -->
+                    ${!isFaultAmmeter2 ? `
+                        <g class="comp-interactive comp-meter" data-probe="ammeter2"
+                           onmouseenter="CircuitSimulation.hoverProbe('ammeter2')" 
+                           onmouseleave="CircuitSimulation.hoverProbe(null)"
+                           onclick="CircuitSimulation.selectProbe('ammeter2')">
+                            <rect x="620" y="105" width="40" height="40" class="comp-hitbox" />
+                            <circle cx="640" cy="125" r="16" class="meter-circle" />
+                            <text x="640" y="125" class="meter-text">A₂</text>
+                            <text x="602" y="129" class="meter-reading-tag" text-anchor="end">${phys.I2.toFixed(2)} A</text>
+                        </g>
+                    ` : ''}
 
-                    <!-- 8. RESISTOR R2 (Vertical Branch 2: x=640) -->
+                    <!-- 9. RESISTOR R2 (Vertical Branch 2: x=640) -->
                     <g class="comp-interactive comp-resistor ${state.shortR2 ? 'is-shorted' : ''} ${state.brokenR2 ? 'is-broken' : ''}" data-probe="R2"
                        onmouseenter="CircuitSimulation.hoverProbe('R2')" 
                        onmouseleave="CircuitSimulation.hoverProbe(null)"
@@ -1566,7 +1834,7 @@ window.CircuitSimulation = (function() {
                         ` : ''}
                     </g>
 
-                    <!-- 9. VOLTMETER Vπαρ across Parallel Resistors (Right side: x=780, y=215) -->
+                    <!-- 10. VOLTMETER Vπαρ across Parallel Resistors (Right side: x=780, y=215) -->
                     <g class="comp-interactive comp-voltmeter" data-probe="voltmeter_par"
                        onmouseenter="CircuitSimulation.hoverProbe('voltmeter_par')" 
                        onmouseleave="CircuitSimulation.hoverProbe(null)"
@@ -1582,20 +1850,11 @@ window.CircuitSimulation = (function() {
                         <text x="780" y="246" class="voltmeter-reading-tag">${(!state.switchClosed || phys.status === 'total_short' || isFaultVoltmeter) ? '0.0 V' : `${phys.V_src.toFixed(1)} V`}</text>
                     </g>
 
-                    <!-- Informative warning badge when series voltmeter is active in parallel -->
-                    ${isFaultVoltmeter ? `
-                        <g class="sim-bypass-alert-badge">
-                            <rect x="220" y="295" width="540" height="34" rx="8" class="sim-bypass-warning-banner" style="stroke: rgba(168, 85, 247, 0.5); fill: rgba(168, 85, 247, 0.12);" />
-                            <text x="490" y="317" class="sim-bypass-warning-text" style="fill: #d8b4fe;" text-anchor="middle">
-                                ${isClosed ? '⚠️ Το βολτόμετρο συνδέθηκε σε σειρά στον κύριο αγωγό (Rv → ∞) — Iολ = 0 A, Vπαρ = 0 V' : '⚪ Ανοικτός διακόπτης — Το ρεύμα είναι μηδέν (I = 0 A)'}
-                            </text>
-                        </g>
-                    ` : ''}
-
                     <!-- Wire Probe Zones -->
                     <g class="wire-probe-zone">
                         <g onmouseenter="CircuitSimulation.hoverProbe('wireMain')" onmouseleave="CircuitSimulation.hoverProbe(null)">
-                            <rect x="220" y="65" width="60" height="30" class="probe-wire-hitbox" />
+                            <rect x="205" y="65" width="55" height="30" class="probe-wire-hitbox" />
+                            <rect x="345" y="65" width="30" height="30" class="probe-wire-hitbox" />
                             <rect x="85" y="100" width="30" height="80" class="probe-wire-hitbox" />
                             <rect x="85" y="270" width="30" height="70" class="probe-wire-hitbox" />
                             <rect x="140" y="335" width="200" height="30" class="probe-wire-hitbox" />
@@ -1605,19 +1864,29 @@ window.CircuitSimulation = (function() {
                             <rect x="365" y="270" width="30" height="65" class="probe-wire-hitbox" />
                         </g>
                         <g onmouseenter="CircuitSimulation.hoverProbe('branch2')" onmouseleave="CircuitSimulation.hoverProbe(null)">
-                            <rect x="410" y="65" width="210" height="30" class="probe-wire-hitbox" />
+                            <rect x="410" y="65" width="90" height="30" class="probe-wire-hitbox" />
+                            <rect x="525" y="65" width="105" height="30" class="probe-wire-hitbox" />
                             <rect x="625" y="95" width="30" height="30" class="probe-wire-hitbox" />
                             <rect x="625" y="270" width="30" height="65" class="probe-wire-hitbox" />
-                            <rect x="410" y="335" width="210" height="30" class="probe-wire-hitbox" />
+                            <rect x="525" y="335" width="105" height="30" class="probe-wire-hitbox" />
                         </g>
                     </g>
 
-                    <!-- NODE F (x=100, y=350) - Under Source -->
-                    <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeF')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeF')">
-                        <circle cx="100" cy="350" r="14" class="comp-hitbox" fill="transparent" />
-                        <circle cx="100" cy="350" r="4" class="circuit-node-dot" />
-                        <text x="100" y="375" class="node-letter">F</text>
-                    </g>
+                    <!-- NODE F (Landing of Vertical Cable when isFaultAmmeter1, or under source at x=100, y=350) -->
+                    ${isFaultAmmeter1 ? `
+                        <!-- KNOT F (x=260, y=350) - Landing of Vertical Cable from A1 -->
+                        <g class="circuit-node-group node-knot-group" onmouseenter="CircuitSimulation.hoverProbe('nodeF')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeF')">
+                            <circle cx="260" cy="350" r="14" class="comp-hitbox" fill="transparent" />
+                            <circle cx="260" cy="350" r="5" class="circuit-node-dot knot-f-dot" />
+                            <text x="260" y="335" class="node-letter knot-f-letter">F</text>
+                        </g>
+                    ` : `
+                        <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeF')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeF')">
+                            <circle cx="100" cy="350" r="14" class="comp-hitbox" fill="transparent" />
+                            <circle cx="100" cy="350" r="4" class="circuit-node-dot" />
+                            <text x="100" y="375" class="node-letter">F</text>
+                        </g>
+                    `}
 
                     <!-- NODE B (x=380, y=350) - Bottom of Branch 1 -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeB')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeB')">
@@ -1626,16 +1895,16 @@ window.CircuitSimulation = (function() {
                         <text x="380" y="375" class="node-letter">B</text>
                     </g>
 
-                    <!-- NODE D (GROUND: x=510, y=350) -->
+                    <!-- NODE D (GROUND: x=440, y=350) - Cleanly between Branch 1 and Knot M / Branch 2 -->
                     <g class="circuit-node-group" onmouseenter="CircuitSimulation.hoverProbe('nodeD')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeD')">
-                        <circle cx="510" cy="350" r="14" class="comp-hitbox" fill="transparent" />
-                        <circle cx="510" cy="350" r="4" class="circuit-node-dot" />
+                        <circle cx="440" cy="350" r="14" class="comp-hitbox" fill="transparent" />
+                        <circle cx="440" cy="350" r="4" class="circuit-node-dot" />
                         <!-- Ground symbol lines -->
-                        <line x1="510" y1="350" x2="510" y2="385" class="ground-stem" />
-                        <line x1="495" y1="385" x2="525" y2="385" class="ground-line" />
-                        <line x1="500" y1="390" x2="520" y2="390" class="ground-line" />
-                        <line x1="505" y1="395" x2="515" y2="395" class="ground-line" />
-                        <text x="532" y="380" class="node-letter ground-label" text-anchor="start">D (0 V)</text>
+                        <line x1="440" y1="350" x2="440" y2="385" class="ground-stem" />
+                        <line x1="425" y1="385" x2="455" y2="385" class="ground-line" />
+                        <line x1="430" y1="390" x2="450" y2="390" class="ground-line" />
+                        <line x1="435" y1="395" x2="445" y2="395" class="ground-line" />
+                        <text x="462" y="380" class="node-letter ground-label" text-anchor="start">D (0 V)</text>
                     </g>
 
                     <!-- NODE E (x=640, y=350) - Bottom of Branch 2 -->
@@ -1814,6 +2083,50 @@ window.CircuitSimulation = (function() {
             `;
         } else {
             // Parallel circuit
+            if (state.faultInstrument === 'ammeter_parallel') {
+                return `
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">1. Ολική Αντίσταση υπό Βραχυκύκλωμα $A_1$:</div>
+                        <div class="step-calc-formula">$$R_{\\text{ολ}} = R_{A1} = 0.00\\ \\Omega \\quad (\\text{Το } A_1 \\text{ συνδέθηκε κάθετα πριν τους κλάδους})$$</div>
+                    </div>
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">2. Παράκαμψη Παράλληλων Κλάδων $R_1, R_2$:</div>
+                        <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                            Επειδή όλο το ρεύμα εκτρέπεται μέσω του αμπερομέτρου $A_1$ μηδενικής αντίστασης, η διαφορά δυναμικού στους παράλληλους κλάδους μηδενίζεται ($V_{\\text{παρ}} = 0.00\\text{ V}$). Συνεπώς, δεν φτάνει καθόλου ρεύμα στους αντιστάτες:
+                        </p>
+                        <div class="step-calc-formula">$$V_1 = V_2 = 0.00\\text{ V}, \\quad I_1 = I_2 = 0.00\\text{ A}$$</div>
+                    </div>
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">3. Ισχύς Κατανάλωσης & Θερμότητα:</div>
+                        <div class="step-calc-formula">$$P_1 = P_2 = 0.00\\text{ W}, \\quad E_1 = E_2 = 0.0\\text{ J}$$</div>
+                    </div>
+                `;
+            }
+
+            if (state.faultInstrument === 'ammeter2_parallel') {
+                return `
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">1. Ολική Αντίσταση υπό Βραχυκύκλωμα $A_2$:</div>
+                        <div class="step-calc-formula">$$R_{\\text{ολ}} = R_{A2} = 0.00\\ \\Omega \\quad (\\text{Το } A_2 \\text{ συνδέθηκε κάθετα ανάμεσα στους } R_1, R_2)$$</div>
+                    </div>
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">2. Βραχυκύκλωση Παράλληλης Συστοιχίας:</div>
+                        <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                            Επειδή και οι δύο παράλληλοι κλάδοι μοιράζονται τις ίδιες γραμμές τροφοδοσίας, η κάθετη σύνδεση του $A_2$ ($R_{A2} \\approx 0\\ \\Omega$) μεταξύ των γραμμών βραχυκυκλώνει πλήρως όλη τη συστοιχία ($V_{\\text{παρ}} = 0.00\\text{ V}$):
+                        </p>
+                        <div class="step-calc-formula">$$V_1 = V_2 = 0.00\\text{ V}, \\quad I_1 = I_2 = 0.00\\text{ A}$$</div>
+                        <p style="font-size: 0.88rem; line-height: 1.5; margin: 2px 0;">
+                            Το κύριο αμπερόμετρο $A_{\\text{ολ}}$ και το $A_2$ διαρρέονται από το πλήρες ρεύμα βραχυκυκλώματος:
+                        </p>
+                        <div class="step-calc-formula">$$I_{\\text{ολ}} = I_{A_{\\text{ολ}}} = I_{A2} \\to \\infty\\text{ A}$$</div>
+                    </div>
+                    <div class="step-calc-line">
+                        <div class="step-calc-header">3. Ισχύς Κατανάλωσης & Θερμότητα Αντιστατών:</div>
+                        <div class="step-calc-formula">$$P_1 = P_2 = 0.00\\text{ W}, \\quad E_1 = E_2 = 0.0\\text{ J}$$</div>
+                    </div>
+                `;
+            }
+
             if (state.faultInstrument === 'voltmeter_series') {
                 return `
                     <div class="step-calc-line">
@@ -2417,20 +2730,34 @@ window.CircuitSimulation = (function() {
                 }
             } else {
                 // Main Ammeter
-                if (state.faultInstrument === 'voltmeter_series' && state.topology === 'parallel') {
-                    amTitle = 'Κύριο Αμπερόμετρο Aολ (Κύριος Αγωγός)';
-                    amReading = 0;
-                    amBadgeClass = 'warn';
-                    amBadgeText = 'Μηδενικό Ρεύμα (I = 0 A)';
-                    amExplanation = `Το αμπερόμετρο $A_{\\text{ολ}}$ βρίσκεται στον κύριο αγωγό αμέσως μετά το βολτόμετρο $V_\\sigma$. Επειδή το βολτόμετρο έχει άπειρη αντίσταση ($R_V \\to \\infty$), εμποδίζει τη διέλευση του ρεύματος. Έτσι, το $A_{\\text{ολ}}$ μετράει <strong>$I_{\\text{ολ}} = 0.00\\text{ A}$</strong>.`;
+                if (state.topology === 'parallel') {
+                    if (state.faultInstrument === 'ammeter_parallel') {
+                        amTitle = 'Κύριο Αμπερόμετρο Aολ (Κύριος Αγωγός)';
+                        amReading = 0;
+                        amBadgeClass = 'warn';
+                        amBadgeText = 'Παράκαμψη (I = 0 A)';
+                        amExplanation = `Το αμπερόμετρο $A_{\\text{ολ}}$ βρίσκεται στον κύριο αγωγό μετά το λανθασμένα τοποθετημένο $A_1$. Επειδή όλο το ρεύμα βραχυκυκλώνεται μέσω του $A_1$, κανένα ρεύμα δεν φτάνει στο $A_{\\text{ολ}}$ ($I_{\\text{ολ}} = 0.00\\text{ A}$).`;
+                    } else if (state.faultInstrument === 'ammeter2_parallel') {
+                        amTitle = 'Κύριο Αμπερόμετρο Aολ (⚠️ ΥΠΕΡΕΝΤΑΣΗ ΒΡΑΧΥΚΥΚΛΩΜΑΤΟΣ)';
+                        amReading = state.switchClosed ? Infinity : 0;
+                        amBadgeClass = 'bad';
+                        amBadgeText = '💥 Υπερένταση Βραχυκύκλωσης';
+                        amExplanation = `Το αμπερόμετρο $A_{\\text{ολ}}$ βρίσκεται στον κύριο αγωγό πριν από το κάθετο αμπερόμετρο $A_2$. Επειδή το $A_2$ βραχυκυκλώνει τους αγωγούς τροφοδοσίας, το τεράστιο ρεύμα βραχυκυκλώματος ($I \\to \\infty$) διέρχεται απευθείας μέσα από το $A_{\\text{ολ}}$!`;
+                    } else if (state.faultInstrument === 'voltmeter_series') {
+                        amTitle = 'Κύριο Αμπερόμετρο Aολ (Κύριος Αγωγός)';
+                        amReading = 0;
+                        amBadgeClass = 'warn';
+                        amBadgeText = 'Μηδενικό Ρεύμα (I = 0 A)';
+                        amExplanation = `Το αμπερόμετρο $A_{\\text{ολ}}$ βρίσκεται στον κύριο αγωγό αμέσως μετά το βολτόμετρο $V_\\sigma$. Επειδή το βολτόμετρο έχει άπειρη αντίσταση ($R_V \\to \\infty$), εμποδίζει τη διέλευση του ρεύματος. Έτσι, το $A_{\\text{ολ}}$ μετράει <strong>$I_{\\text{ολ}} = 0.00\\text{ A}$</strong>.`;
+                    } else {
+                        amTitle = 'Κύριο Αμπερόμετρο Aολ (Κύριος Αγωγός)';
+                        amReading = phys.I_total;
+                        amExplanation = `Μετράει το συνολικό ρεύμα $I_{\\text{ολ}}$ που εξέρχεται από την ηλεκτρική πηγή. Σύμφωνα με τον 1ο Κανόνα του Kirchhoff, διακλαδίζεται στους δύο κλάδους: $I_{\\text{ολ}} = I_1 + I_2 = ${phys.I1.toFixed(2)}\\text{ A} + ${phys.I2.toFixed(2)}\\text{ A} = ${phys.I_total.toFixed(2)}\\text{ A}$.`;
+                    }
                 } else {
-                    amTitle = state.topology === 'parallel' ? 'Κύριο Αμπερόμετρο Aολ (Κύριος Αγωγός)' : 'Ιδανικό Αμπερόμετρο A (Σειρά)';
+                    amTitle = 'Ιδανικό Αμπερόμετρο A (Σειρά)';
                     amReading = phys.I_total;
-                    amExplanation = state.topology === 'parallel' ? `
-                        Μετράει το συνολικό ρεύμα $I_{\\text{ολ}}$ που εξέρχεται από την ηλεκτρική πηγή. Σύμφωνα με τον 1ο Κανόνα του Kirchhoff, διακλαδίζεται στους δύο κλάδους: $I_{\\text{ολ}} = I_1 + I_2 = ${phys.I1.toFixed(2)}\\text{ A} + ${phys.I2.toFixed(2)}\\text{ A} = ${phys.I_total.toFixed(2)}\\text{ A}$.
-                    ` : `
-                        Το αμπερόμετρο συνδέεται πάντοτε <strong>στη σειρά</strong> και διαθέτει μηδενική εσωτερική αντίσταση ($R_A = 0\\ \\Omega$) ώστε να μετράει το ρεύμα χωρίς να προκαλεί καμία πτώση τάσης.
-                    `;
+                    amExplanation = `Το αμπερόμετρο συνδέεται πάντοτε <strong>στη σειρά</strong> και διαθέτει μηδενική εσωτερική αντίσταση ($R_A = 0\\ \\Omega$) ώστε να μετράει το ρεύμα χωρίς να προκαλεί καμία πτώση τάσης.`;
                 }
             }
 
@@ -2475,10 +2802,18 @@ window.CircuitSimulation = (function() {
                         nodeCurrent = 0;
                     }
                 } else if (state.faultInstrument === 'ammeter2_parallel') {
-                    if (nodeKey === 'G' || nodeKey === 'A' || nodeKey === 'K' || nodeKey === 'M' || nodeKey === 'D') {
-                        nodeCurrent = phys.I1;
+                    if (state.topology === 'series') {
+                        if (nodeKey === 'G' || nodeKey === 'A' || nodeKey === 'K' || nodeKey === 'M' || nodeKey === 'D') {
+                            nodeCurrent = phys.I1;
+                        } else {
+                            nodeCurrent = 0;
+                        }
                     } else {
-                        nodeCurrent = 0;
+                        if (nodeKey === 'G' || nodeKey === 'K' || nodeKey === 'M' || nodeKey === 'D' || nodeKey === 'F') {
+                            nodeCurrent = Infinity;
+                        } else {
+                            nodeCurrent = 0;
+                        }
                     }
                 } else if (state.faultInstrument === 'voltmeter_series') {
                     nodeCurrent = 0;
@@ -2517,11 +2852,25 @@ window.CircuitSimulation = (function() {
                         <div class="hud-steps-title">💡 Ανάλυση Ρεύματος & Ηλεκτρικού Δυναμικού (Κόμβος ${nodeKey}):</div>
                         <p style="font-size: 0.88rem; line-height: 1.5; margin: 0;">
                             ${nodeKey === 'K' ? `
-                                <strong>1. Ένταση Ρεύματος:</strong> Στον άνω κόμβο K ${state.faultInstrument === 'ammeter_parallel' ? 'φτάνει το ρεύμα από την πηγή και <strong>εκτρέπεται εξ ολοκλήρου προς το κάθετο αμπερόμετρο $A_1$</strong> ($I_{A1} \\to \\infty$), παρακάμπτοντας πλήρως τον αντιστάτη $R_1$ ($I_{R1} = 0.00\\text{ A}$).' : (state.faultInstrument === 'ammeter2_parallel' ? 'φτάνει το ρεύμα από τον $R_1$ ($I_1 = ' + phys.I1.toFixed(2) + '\\text{ A}$) και <strong>εκτρέπεται εξ ολοκλήρου προς το κάθετο αμπερόμετρο $A_2$</strong>, παρακάμπτοντας πλήρως τον $R_2$ ($I_2 = 0.00\\text{ A}$).' : 'βρίσκεται το σημείο σύνδεσης με ρεύμα $I = ' + nodeCurrent.toFixed(2) + '\\text{ A}$.')}<br>
+                                <strong>1. Ένταση Ρεύματος:</strong> Στον άνω κόμβο K ${
+                                    state.faultInstrument === 'ammeter_parallel' ? 
+                                        'φτάνει το ρεύμα από την πηγή και <strong>εκτρέπεται εξ ολοκλήρου προς το κάθετο αμπερόμετρο $A_1$</strong> ($I_{A1} \\to \\infty$), παρακάμπτοντας πλήρως τον αντιστάτη $R_1$ ($I_{R1} = 0.00\\text{ A}$).' : 
+                                    (state.faultInstrument === 'ammeter2_parallel' ? 
+                                        (state.topology === 'series' ? 
+                                            'φτάνει το ρεύμα από τον $R_1$ ($I_1 = ' + phys.I1.toFixed(2) + '\\text{ A}$) και <strong>εκτρέπεται εξ ολοκλήρου προς το κάθετο αμπερόμετρο $A_2$</strong>, παρακάμπτοντας πλήρως τον $R_2$ ($I_2 = 0.00\\text{ A}$).' : 
+                                            'φτάνει το ολικό ρεύμα βραχυκυκλώματος μέσω του $A_{\\text{ολ}}$ και <strong>εκτρέπεται εξ ολοκλήρου προς το κάθετο αμπερόμετρο $A_2$</strong> ($I_{A2} \\to \\infty$), παρακάμπτοντας πλήρως τους αντιστάτες $R_1$ και $R_2$ ($I_1 = I_2 = 0.00\\text{ A}$).') : 
+                                        'βρίσκεται το σημείο σύνδεσης με ρεύμα $I = ' + nodeCurrent.toFixed(2) + '\\text{ A}$.')
+                                }<br>
                                 <strong>2. Ηλεκτρικό Δυναμικό:</strong> ${state.faultInstrument === 'ammeter2_parallel' ? 'Συνδέεται μέσω του ιδανικού $A_2$ απευθείας με τον κόμβο M στη γραμμή γείωσης, άρα $V_K = 0.00\\text{ V}$.' : 'Συνδέεται με τον θετικό πόλο της πηγής μέσω του διακόπτη K.'}
                             ` : ''}
                             ${nodeKey === 'M' ? `
-                                <strong>1. Ένταση Ρεύματος:</strong> Στον κάτω κόμβο M επιστροφής ${state.faultInstrument === 'ammeter2_parallel' ? 'καταλήγει το ρεύμα $I_1 = ' + phys.I1.toFixed(2) + '\\text{ A}$ από το κάθετο αμπερόμετρο $A_2$ και συνεχίζει αριστερά προς τη γείωση D και τον αρνητικό πόλο (−) της πηγής.' : 'διέρχεται το ρεύμα επιστροφής.'}<br>
+                                <strong>1. Ένταση Ρεύματος:</strong> Στον κάτω κόμβο M επιστροφής ${
+                                    state.faultInstrument === 'ammeter2_parallel' ? 
+                                        (state.topology === 'series' ? 
+                                            'καταλήγει το ρεύμα $I_1 = ' + phys.I1.toFixed(2) + '\\text{ A}$ από το κάθετο αμπερόμετρο $A_2$ και συνεχίζει αριστερά προς τη γείωση D και τον αρνητικό πόλο (−) της πηγής.' : 
+                                            'καταλήγει το ρεύμα βραχυκυκλώματος ($I \\to \\infty$) από το κάθετο αμπερόμετρο $A_2$ και επιστρέφει αριστερά προς τον αρνητικό πόλο (−) της πηγής.') : 
+                                        'διέρχεται το ρεύμα επιστροφής.'
+                                }<br>
                                 <strong>2. Ηλεκτρικό Δυναμικό:</strong> Βρίσκεται πάνω στον ιδανικό αγωγό επιστροφής που συνδέεται με τη γείωση D ($R = 0\\ \\Omega$), συνεπώς $V_M = V_D = 0.00\\text{ V}$.
                             ` : ''}
                             ${nodeKey === 'G' ? (state.topology === 'series' ? `
@@ -2673,9 +3022,8 @@ window.CircuitSimulation = (function() {
 
         setTopology: function(topo) {
             state.topology = topo;
-            if (state.faultInstrument !== 'voltmeter_series') {
-                state.faultInstrument = 'none';
-            }
+            state.faultInstrument = 'none'; // Opens by default in ΟΡΘΗ ΣΥΝΔΕΣΗ mode
+            state.activeProbe = 'R1';
             // Uncheck parallel short if switching to parallel to avoid immediate total short
             if (topo === 'parallel') {
                 state.shortR1 = false;
@@ -2688,10 +3036,18 @@ window.CircuitSimulation = (function() {
             state.faultInstrument = faultKey || 'none';
             if (faultKey === 'ammeter_parallel') {
                 state.activeProbe = 'ammeter1';
-                showToast('⚠️ Λανθασμένη Τοποθέτηση Αμπερομέτρου I: Συνδέθηκε παράλληλα στην πηγή (Κόμβοι K − F)! Προκαλείται ολικό βραχυκύκλωμα (I → ∞).');
+                if (state.topology === 'series') {
+                    showToast('⚠️ Λανθασμένη Τοποθέτηση Αμπερομέτρου I: Συνδέθηκε παράλληλα στην πηγή (Κόμβοι K − F)! Προκαλείται ολικό βραχυκύκλωμα (I → ∞).');
+                } else {
+                    showToast('⚠️ Λανθασμένη Τοποθέτηση Αμπερομέτρου I: Συνδέθηκε κάθετα πριν τους κλάδους (Κόμβοι K − F)! Ολικό βραχυκύκλωμα πηγής (I → ∞).');
+                }
             } else if (faultKey === 'ammeter2_parallel') {
                 state.activeProbe = 'ammeter2';
-                showToast('⚠️ Λανθασμένη Τοποθέτηση Αμπερομέτρου II: Συνδέθηκε μεταξύ K − M! Βραχυκυκλώνει τον R₂ (I₂ = 0 A), ενώ ο R₁ λειτουργεί κανονικά.');
+                if (state.topology === 'series') {
+                    showToast('⚠️ Λανθασμένη Τοποθέτηση Αμπερομέτρου II: Συνδέθηκε μεταξύ K − M! Βραχυκυκλώνει τον R₂ (I₂ = 0 A), ενώ ο R₁ λειτουργεί κανονικά.');
+                } else {
+                    showToast('⚠️ Λανθασμένη Τοποθέτηση Αμπερομέτρου II: Συνδέθηκε κάθετα ανάμεσα στους R₁ & R₂ (Κόμβοι K − M)! Βραχυκυκλώνει όλη τη διάταξη (I → ∞).');
+                }
             } else if (faultKey === 'voltmeter_series') {
                 state.activeProbe = 'voltmeter_series';
                 if (state.topology === 'series') {
