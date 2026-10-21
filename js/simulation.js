@@ -1421,8 +1421,7 @@ window.CircuitSimulation = (function() {
                                 <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
                                 <div class="step-calc-formula">$$E_2 = P_2 \\cdot t = ${p2.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e2.toFixed(1)}\\text{ J}$$</div>
                             </div>
-                        `)
-                        ` : `
+                        `) : `
                             <div class="step-calc-line">
                                 <div class="step-calc-header">1. Τάσεις Παράλληλων Κλάδων:</div>
                                 ${!state.switchClosed ? `
@@ -1581,8 +1580,7 @@ window.CircuitSimulation = (function() {
                                 <div class="step-calc-formula">$$E_1 = P_1 \\cdot t = ${p1.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e1.toFixed(1)}\\text{ J}$$</div>
                                 <div class="step-calc-formula">$$E_2 = P_2 \\cdot t = ${p2.toFixed(2)}\\text{ W} \\cdot 10\\text{ s} = ${e2.toFixed(1)}\\text{ J}$$</div>
                             </div>
-                        `)
-                        ` : `
+                        `) : `
                             <div class="step-calc-line">
                                 <div class="step-calc-header">1. Τάσεις Παράλληλων Κλάδων:</div>
                                 ${!state.switchClosed ? `
