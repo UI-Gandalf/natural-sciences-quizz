@@ -3022,9 +3022,12 @@ function closeDiagramLightbox(e) {
    ========================================================================== */
 function setupGlobalKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
-        // Lightbox Escape
+        // Lightbox & Fullscreen Modal Escape
         if (e.key === 'Escape') {
             closeDiagramLightbox();
+            if (window.CircuitSimulation && typeof window.CircuitSimulation.closeFullscreenModal === 'function') {
+                window.CircuitSimulation.closeFullscreenModal();
+            }
             return;
         }
 

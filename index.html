@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     
     <!-- Application Stylesheet -->
-    <link rel="stylesheet" href="css/styles.css?v=68">
+    <link rel="stylesheet" href="css/styles.css?v=69">
     
     <!-- MathJax 3 Engine (Mathematical & Physics Formulas) -->
     <script>
@@ -111,13 +111,27 @@
         </div>
     </div>
 
+    <!-- Circuit Simulation Fullscreen Lightbox Modal -->
+    <div id="sim-fullscreen-modal" class="sim-fullscreen-modal" onclick="CircuitSimulation.closeFullscreenModal(event)">
+        <div class="sim-fullscreen-content" onclick="event.stopPropagation()">
+            <div class="sim-fullscreen-topbar">
+                <div class="sim-fullscreen-title">
+                    <span class="sim-fs-icon">🔬</span>
+                    <span>Εικονικό Εργαστήριο Ηλεκτρισμού — Πλήρης Οθόνη</span>
+                </div>
+                <button class="sim-fullscreen-close-btn" onclick="CircuitSimulation.closeFullscreenModal()" title="Κλείσιμο (Esc)">✕</button>
+            </div>
+            <div id="sim-fullscreen-mount" class="sim-fullscreen-mount"></div>
+        </div>
+    </div>
+
     <!-- Floating Toast Notification (Global) -->
     <div class="toast-notification" id="toast-msg"></div>
 
     <!-- Application Scripts -->
-    <script src="js/quiz-data.js?v=68"></script>
-    <script src="js/simulation.js?v=68"></script>
-    <script src="js/theory.js?v=68"></script>
-    <script src="js/app.js?v=68"></script>
+    <script src="js/quiz-data.js?v=69"></script>
+    <script src="js/simulation.js?v=69"></script>
+    <script src="js/theory.js?v=69"></script>
+    <script src="js/app.js?v=69"></script>
 </body>
 </html>

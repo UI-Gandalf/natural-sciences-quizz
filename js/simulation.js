@@ -24,6 +24,7 @@ window.CircuitSimulation = (function() {
         showSteps: true,         // Boolean: Show detailed calculation steps
         activeProbe: 'R1',       // Currently inspected component
         hoverProbe: null,        // Hovered element
+        isFullscreen: false,     // Boolean: Fullscreen lightbox modal active
         containerEl: null
     };
 
@@ -705,16 +706,35 @@ window.CircuitSimulation = (function() {
                             </p>
                         </div>
                         
-                        <!-- Topology Segmented Switch -->
-                        <div class="sim-topology-switch">
-                            <button class="sim-topo-btn ${state.topology === 'series' ? 'active' : ''}" id="topo-series-btn" onclick="CircuitSimulation.setTopology('series')">
-                                <span class="topo-icon">⛓️</span>
-                                <span>Σύνδεση σε Σειρά (Σχήμα 1)</span>
-                            </button>
-                            <button class="sim-topo-btn ${state.topology === 'parallel' ? 'active' : ''}" id="topo-parallel-btn" onclick="CircuitSimulation.setTopology('parallel')">
-                                <span class="topo-icon">🔀</span>
-                                <span>Παράλληλη Σύνδεση (Σχήμα 2)</span>
-                            </button>
+                        <!-- Topology Switch & Fullscreen Toolbar Actions -->
+                        <div class="sim-header-actions">
+                            <div class="sim-topology-switch">
+                                <button class="sim-topo-btn ${state.topology === 'series' ? 'active' : ''}" id="topo-series-btn" onclick="CircuitSimulation.setTopology('series')">
+                                    <span class="topo-icon">⛓️</span>
+                                    <span>Σύνδεση σε Σειρά (Σχήμα 1)</span>
+                                </button>
+                                <button class="sim-topo-btn ${state.topology === 'parallel' ? 'active' : ''}" id="topo-parallel-btn" onclick="CircuitSimulation.setTopology('parallel')">
+                                    <span class="topo-icon">🔀</span>
+                                    <span>Παράλληλη Σύνδεση (Σχήμα 2)</span>
+                                </button>
+                            </div>
+
+                            <!-- Minimalist Discrete Fullscreen Popup Button -->
+                            ${state.isFullscreen ? `
+                                <button class="sim-fullscreen-btn sim-exit-fs-btn" onclick="CircuitSimulation.closeFullscreenModal()" title="Έξοδος από πλήρη οθόνη (Esc)">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 14h6m0 0v6m0-6L3 21m17-11h-6m0 0V4m0 6l7-7"/>
+                                    </svg>
+                                    <span>Έξοδος</span>
+                                </button>
+                            ` : `
+                                <button class="sim-fullscreen-btn" onclick="CircuitSimulation.openFullscreenModal()" title="Προβολή σε πλήρη οθόνη (Fullscreen Popup)">
+                                    <svg class="sim-fullscreen-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                                    </svg>
+                                    <span>Πλήρης Οθόνη</span>
+                                </button>
+                            `}
                         </div>
                     </div>
 
@@ -965,8 +985,21 @@ window.CircuitSimulation = (function() {
                                     <span class="chip-dot"></span>
                                     <span id="sim-status-text">${phys.statusText}</span>
                                 </div>
-                                <div class="sim-instructions-badge">
-                                    🔍 <em>Περάστε το ποντίκι πάνω από στοιχεία ή κόμβους για πληροφορίες</em>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="sim-instructions-badge">
+                                        🔍 <em>Περάστε το ποντίκι πάνω από στοιχεία ή κόμβους για πληροφορίες</em>
+                                    </div>
+                                    <button class="sim-schematic-fs-btn" onclick="${state.isFullscreen ? 'CircuitSimulation.closeFullscreenModal()' : 'CircuitSimulation.openFullscreenModal()'}" title="${state.isFullscreen ? 'Έξοδος από πλήρη οθόνη (Esc)' : 'Πλήρης Οθόνη (Popup)'}">
+                                        ${state.isFullscreen ? `
+                                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M4 14h6m0 0v6m0-6L3 21m17-11h-6m0 0V4m0 6l7-7"/>
+                                            </svg>
+                                        ` : `
+                                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M15 3h6v6m0-6L14 10M9 21H3v-6m0 6l7-7"/>
+                                            </svg>
+                                        `}
+                                    </button>
                                 </div>
                             </div>
 
@@ -3202,6 +3235,44 @@ window.CircuitSimulation = (function() {
 
             if (state.containerEl) render(state.containerEl);
             showToast(`🎯 Φορτώθηκε: ${p.name}`);
+        },
+
+        openFullscreenModal: function() {
+            const modal = document.getElementById('sim-fullscreen-modal');
+            const fsMount = document.getElementById('sim-fullscreen-mount');
+            const normalMount = document.getElementById('simulation-mount');
+            if (!modal || !fsMount) return;
+
+            state.isFullscreen = true;
+
+            // Clear normal mount so there are no duplicate IDs in the DOM
+            if (normalMount) {
+                normalMount.innerHTML = '';
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            render(fsMount);
+        },
+
+        closeFullscreenModal: function(e) {
+            const modal = document.getElementById('sim-fullscreen-modal');
+            const fsMount = document.getElementById('sim-fullscreen-mount');
+            const normalMount = document.getElementById('simulation-mount');
+            if (!modal || !modal.classList.contains('active')) return;
+
+            state.isFullscreen = false;
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+
+            if (fsMount) {
+                fsMount.innerHTML = '';
+            }
+
+            if (normalMount && document.body.contains(normalMount)) {
+                render(normalMount);
+            }
         }
     };
 })();

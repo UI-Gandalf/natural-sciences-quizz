@@ -160,6 +160,8 @@ body[data-subject="biology"] {
 
 html {
     background-color: var(--bg-base);
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
 }
 
 body {
@@ -2024,6 +2026,135 @@ body[data-subject] .bg-overlay {
     transform: scale(1.08);
 }
 
+/* Circuit Simulation Fullscreen Lightbox Modal */
+.sim-fullscreen-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    box-sizing: border-box;
+}
+
+.sim-fullscreen-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.sim-fullscreen-content {
+    background: var(--bg-surface, #0f172a);
+    border: 1px solid var(--card-border, rgba(255, 255, 255, 0.14));
+    border-radius: 20px;
+    width: 97vw;
+    max-width: 1500px;
+    height: 94vh;
+    max-height: 96vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-sizing: border-box;
+}
+
+[data-theme="light"] .sim-fullscreen-content {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+}
+
+.sim-fullscreen-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 22px;
+    border-bottom: 1px solid var(--card-border, rgba(255, 255, 255, 0.1));
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(10px);
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+[data-theme="light"] .sim-fullscreen-topbar {
+    background: #ffffff;
+    border-bottom-color: #e2e8f0;
+}
+
+.sim-fullscreen-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+}
+
+.sim-fs-icon {
+    font-size: 1.25rem;
+}
+
+.sim-fullscreen-close-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--card-border, rgba(255, 255, 255, 0.15));
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 1.15rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.sim-fullscreen-close-btn:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: #ef4444;
+    color: #ef4444;
+    transform: scale(1.08);
+}
+
+[data-theme="light"] .sim-fullscreen-close-btn {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+[data-theme="light"] .sim-fullscreen-close-btn:hover {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #b91c1c;
+}
+
+.sim-fullscreen-mount {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 14px 20px 24px 20px;
+    box-sizing: border-box;
+    scrollbar-gutter: stable;
+}
+
+.sim-fullscreen-mount .sim-container {
+    max-width: 100%;
+    padding: 4px 0 20px 0;
+}
+
 @media (max-width: 640px) {
     .question-diagram-img {
         max-height: 200px;
@@ -2853,11 +2984,13 @@ mjx-container[display="true"], .katex-display {
    ========================================================================== */
 .sim-container {
     max-width: 1240px;
+    width: 100%;
     margin: 0 auto;
     padding: 10px 0 30px 0;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    box-sizing: border-box;
 }
 
 /* Header & Presets Bar */
@@ -2869,6 +3002,8 @@ mjx-container[display="true"], .katex-display {
     box-shadow: var(--shadow-card);
     backdrop-filter: blur(14px);
     transition: all 0.3s ease;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .sim-header-top {
@@ -2877,6 +3012,97 @@ mjx-container[display="true"], .katex-display {
     align-items: center;
     gap: 20px;
     flex-wrap: wrap;
+}
+
+.sim-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Discrete Minimalist Fullscreen Button for Circuit Simulation */
+.sim-fullscreen-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 15px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+}
+
+.sim-fullscreen-btn:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+}
+
+[data-theme="light"] .sim-fullscreen-btn {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+}
+
+[data-theme="light"] .sim-fullscreen-btn:hover {
+    background: #e0f2fe;
+    border-color: #0284c7;
+    color: #0284c7;
+}
+
+.sim-fullscreen-btn.sim-exit-fs-btn {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #f87171;
+}
+
+.sim-fullscreen-btn.sim-exit-fs-btn:hover {
+    background: rgba(239, 68, 68, 0.22);
+    border-color: #ef4444;
+    color: #ffffff;
+}
+
+.sim-schematic-fs-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.sim-schematic-fs-btn:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    transform: scale(1.08);
+}
+
+[data-theme="light"] .sim-schematic-fs-btn {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #64748b;
+}
+
+[data-theme="light"] .sim-schematic-fs-btn:hover {
+    background: #e0f2fe;
+    border-color: #0284c7;
+    color: #0284c7;
 }
 
 .sim-title-wrap {
@@ -3003,9 +3229,11 @@ mjx-container[display="true"], .katex-display {
 /* Main Workspace Grid (Controls + Display) */
 .sim-workspace-grid {
     display: grid;
-    grid-template-columns: 340px 1fr;
+    grid-template-columns: 340px minmax(0, 1fr);
     gap: 20px;
     align-items: start;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Controls Panel */
@@ -3262,6 +3490,9 @@ mjx-container[display="true"], .katex-display {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .sim-schematic-card {
@@ -3272,6 +3503,9 @@ mjx-container[display="true"], .katex-display {
     box-shadow: var(--shadow-card);
     backdrop-filter: blur(14px);
     position: relative;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .sim-schematic-header {
@@ -3743,6 +3977,7 @@ mjx-container[display="true"], .katex-display {
 }
 
 /* Multimeter & Probe HUD Card */
+/* Multimeter & Probe HUD Card */
 .sim-hud-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -3753,17 +3988,24 @@ mjx-container[display="true"], .katex-display {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    transition: all 0.2s ease;
+    min-width: 0;
+    width: 100%;
+    min-height: 220px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .hud-item-header {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
+    width: 100%;
 }
 
 .hud-probe-icon {
     font-size: 1.8rem;
+    flex-shrink: 0;
 }
 
 .hud-item-title-wrap {
@@ -3771,6 +4013,8 @@ mjx-container[display="true"], .katex-display {
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
+    min-width: 0;
+    flex: 1;
 }
 
 .hud-item-title {
@@ -3801,27 +4045,29 @@ mjx-container[display="true"], .katex-display {
 
 .hud-readouts-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .hud-readouts-grid.cols-3 {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .hud-readouts-grid.cols-4 {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .hud-readouts-grid.cols-2 {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 @media (max-width: 820px) {
     .hud-readouts-grid,
     .hud-readouts-grid.cols-3,
     .hud-readouts-grid.cols-4 {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -3830,7 +4076,7 @@ mjx-container[display="true"], .katex-display {
     .hud-readouts-grid.cols-3,
     .hud-readouts-grid.cols-4,
     .hud-readouts-grid.cols-2 {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
@@ -3845,6 +4091,8 @@ mjx-container[display="true"], .katex-display {
     gap: 6px;
     transition: border-color 0.2s ease;
     min-width: 0;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .hud-meter-box:hover {
@@ -3900,6 +4148,10 @@ mjx-container[display="true"], .katex-display {
     flex-direction: column;
     gap: 14px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .hud-steps-title {
@@ -3948,6 +4200,17 @@ mjx-container[display="true"], .katex-display {
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
     overflow-x: auto;
     line-height: 1.5;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.sim-hud-card mjx-container,
+.hud-steps-box mjx-container,
+.step-calc-formula mjx-container {
+    max-width: 100% !important;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 [data-theme="light"] .step-calc-formula {
@@ -4330,7 +4593,7 @@ mjx-container[display="true"], .katex-display {
 /* Responsive Rules for Simulation */
 @media (max-width: 960px) {
     .sim-workspace-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
     .sim-header-top {
         flex-direction: column;
