@@ -912,7 +912,7 @@ window.CircuitSimulation = (function() {
                                         ${getHarmlessTogglePopup(state.harmlessConnection === 'series_GA')}
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
-                                            <span class="radio-card-title"><strong>(1) Σύνδεση G με A (Άνω γραμμή)</strong></span>
+                                            <span class="radio-card-title"><strong>(1) Σύνδεση G με A</strong></span>
                                             <span class="radio-card-desc">Ενώνει 2 σημεία στο ίδιο δυναμικό (<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">G</sub> = <i class="math-var">V</i><sub class="math-sub">A</sub> = <i class="math-var">V</i><sub class="math-sub">πηγ</sub></span>) ➔ Κανένα βραχυκύκλωμα!</span>
                                         </div>
                                     </div>
@@ -923,7 +923,7 @@ window.CircuitSimulation = (function() {
                                         ${getHarmlessTogglePopup(state.harmlessConnection === 'series_FC')}
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
-                                            <span class="radio-card-title"><strong>(2) Σύνδεση F με C (Αγωγός επιστροφής)</strong></span>
+                                            <span class="radio-card-title"><strong>(2) Σύνδεση F με C</strong></span>
                                             <span class="radio-card-desc">Ενώνει 2 σημεία μηδενικού δυναμικού (<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">F</sub> = <i class="math-var">V</i><sub class="math-sub">C</sub> = 0 V</span>) ➔ Κανένα βραχυκύκλωμα!</span>
                                         </div>
                                     </div>
@@ -934,7 +934,7 @@ window.CircuitSimulation = (function() {
                                         ${getHarmlessTogglePopup(state.harmlessConnection === 'parallel_AC')}
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
-                                            <span class="radio-card-title"><strong>(1) Σύνδεση A με C (Άνω γραμμή)</strong></span>
+                                            <span class="radio-card-title"><strong>(1) Σύνδεση A με C</strong></span>
                                             <span class="radio-card-desc">Ενώνει 2 σημεία της ίδιας άνω γραμμής (<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">A</sub> = <i class="math-var">V</i><sub class="math-sub">C</sub> = <i class="math-var">V</i><sub class="math-sub">πηγ</sub></span>) ➔ Κανένα βραχυκύκλωμα!</span>
                                         </div>
                                     </div>
@@ -945,7 +945,7 @@ window.CircuitSimulation = (function() {
                                         ${getHarmlessTogglePopup(state.harmlessConnection === 'parallel_FE')}
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
-                                            <span class="radio-card-title"><strong>(2) Σύνδεση F με E (Κάτω γραμμή)</strong></span>
+                                            <span class="radio-card-title"><strong>(2) Σύνδεση F με E</strong></span>
                                             <span class="radio-card-desc">Ενώνει 2 σημεία της κοινής επιστροφής (<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">F</sub> = <i class="math-var">V</i><sub class="math-sub">E</sub> = 0 V</span>) ➔ Κανένα βραχυκύκλωμα!</span>
                                         </div>
                                     </div>
@@ -1046,7 +1046,7 @@ window.CircuitSimulation = (function() {
 
         if (state.topology === 'series') {
             svgHtml = `
-                <svg viewBox="-20 -45 960 495" class="sim-svg-circuit" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="-20 -45 960 550" class="sim-svg-circuit" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <!-- Glow filter for active wires -->
                         <filter id="wire-glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -1079,7 +1079,7 @@ window.CircuitSimulation = (function() {
                         <g class="sim-top-danger-banner">
                             <rect x="330" y="-36" width="360" height="40" rx="10" class="sim-top-danger-rect" />
                             <text x="510" y="-11" class="sim-top-danger-text" text-anchor="middle">
-                                ⚡ I → ∞ (Βραχυκύκλωμα!)
+                                ⚡ <tspan class="sim-math-sym">I</tspan> → ∞ (Βραχυκύκλωμα!)
                             </text>
                         </g>
                     ` : ''}
@@ -1140,31 +1140,31 @@ window.CircuitSimulation = (function() {
                         ` : ''}
                     `}
 
-                    <!-- Informative warning badge when faulty ammeter/voltmeter is active -->
+                    <!-- Informative warning badge when faulty ammeter/voltmeter is active (Relocated cleanly to bottom: y=415 to 477) -->
                     ${isFaultAmmeter1 ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="345" y="248" width="480" height="66" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(239, 68, 68, 0.7); fill: rgba(15, 23, 42, 0.94);" />
-                            <text x="585" y="272" class="sim-bypass-warning-text" text-anchor="middle">
-                                <tspan x="585" dy="0">${isClosed ? '⚡ Όλο το ρεύμα διαρρέει το Α₁ (Βραχυκύκλωμα)' : '⚪ Ανοικτός διακόπτης'}</tspan>
-                                <tspan x="585" dy="25">${isClosed ? 'Στους αντιστάτες R₁ &amp; R₂: I = 0 A (Πλήρης παράκαμψη)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
+                            <rect x="120" y="415" width="680" height="62" rx="14" class="sim-bypass-warning-banner" style="stroke: rgba(239, 68, 68, 0.75); fill: rgba(15, 23, 42, 0.96);" />
+                            <text x="460" y="439" class="sim-bypass-warning-text" text-anchor="middle">
+                                <tspan x="460" dy="0">${isClosed ? '⚡ Όλο το ρεύμα διαρρέει το <tspan class="sim-math-sym">A</tspan><tspan class="sim-math-sub" dy="3">1</tspan><tspan dy="-3"> (Βραχυκύκλωμα)</tspan>' : '⚪ Ανοικτός διακόπτης'}</tspan>
+                                <tspan x="460" dy="24">${isClosed ? 'Στους αντιστάτες <tspan class="sim-math-sym">R</tspan><tspan class="sim-math-sub" dy="3">1</tspan><tspan dy="-3"> &amp; </tspan><tspan class="sim-math-sym">R</tspan><tspan class="sim-math-sub" dy="3">2</tspan><tspan dy="-3">: </tspan><tspan class="sim-math-sym">I</tspan> = 0 A (Πλήρης παράκαμψη)' : 'Το ρεύμα είναι μηδέν (<tspan class="sim-math-sym">I</tspan> = 0 A)'}</tspan>
                             </text>
                         </g>
                     ` : ''}
                     ${isFaultAmmeter2 ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="180" y="260" width="640" height="66" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(245, 158, 11, 0.7); fill: rgba(15, 23, 42, 0.95);" />
-                            <text x="500" y="284" class="sim-bypass-warning-text" style="fill: #fcd34d;" text-anchor="middle">
-                                <tspan x="500" dy="0">${isClosed ? '⚡ Το ρεύμα διαρρέει μόνο το R₁ και το A₂' : '⚪ Ανοικτός διακόπτης'}</tspan>
-                                <tspan x="500" dy="25">${isClosed ? 'Στον R₂ και A₃: I = 0 A (Βραχυκύκλωση R₂)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
+                            <rect x="120" y="415" width="680" height="62" rx="14" class="sim-bypass-warning-banner" style="stroke: rgba(245, 158, 11, 0.75); fill: rgba(15, 23, 42, 0.96);" />
+                            <text x="460" y="439" class="sim-bypass-warning-text" style="fill: #fcd34d;" text-anchor="middle">
+                                <tspan x="460" dy="0">${isClosed ? '⚡ Το ρεύμα διαρρέει μόνο το <tspan class="sim-math-sym">R</tspan><tspan class="sim-math-sub" dy="3">1</tspan><tspan dy="-3"> και το </tspan><tspan class="sim-math-sym">A</tspan><tspan class="sim-math-sub" dy="3">2</tspan>' : '⚪ Ανοικτός διακόπτης'}</tspan>
+                                <tspan x="460" dy="24">${isClosed ? 'Στους <tspan class="sim-math-sym">R</tspan><tspan class="sim-math-sub" dy="3">2</tspan><tspan dy="-3"> και </tspan><tspan class="sim-math-sym">A</tspan><tspan class="sim-math-sub" dy="3">3</tspan><tspan dy="-3">: </tspan><tspan class="sim-math-sym">I</tspan> = 0 A (Βραχυκύκλωση <tspan class="sim-math-sym">R</tspan><tspan class="sim-math-sub" dy="3">2</tspan><tspan dy="-3">)</tspan>' : 'Το ρεύμα είναι μηδέν (<tspan class="sim-math-sym">I</tspan> = 0 A)'}</tspan>
                             </text>
                         </g>
                     ` : ''}
                     ${isFaultVoltmeter ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="170" y="248" width="660" height="66" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(168, 85, 247, 0.7); fill: rgba(15, 23, 42, 0.94);" />
-                            <text x="500" y="272" class="sim-bypass-warning-text" style="fill: #d8b4fe;" text-anchor="middle">
-                                <tspan x="500" dy="0">${isClosed ? '⚠️ Το βολτόμετρο συνδέθηκε σε σειρά (Rv → ∞)' : '⚪ Ανοικτός διακόπτης'}</tspan>
-                                <tspan x="500" dy="25">${isClosed ? 'Μηδενίζει το ρεύμα (I = 0 A) &amp; τις τάσεις (V₁ = V₂ = 0 V)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
+                            <rect x="120" y="415" width="680" height="62" rx="14" class="sim-bypass-warning-banner" style="stroke: rgba(168, 85, 247, 0.75); fill: rgba(15, 23, 42, 0.96);" />
+                            <text x="460" y="439" class="sim-bypass-warning-text" style="fill: #d8b4fe;" text-anchor="middle">
+                                <tspan x="460" dy="0">${isClosed ? '⚠️ Το βολτόμετρο συνδέθηκε σε σειρά (<tspan class="sim-math-sym">R</tspan><tspan class="sim-math-sub" dy="3">v</tspan><tspan dy="-3"> → ∞)</tspan>' : '⚪ Ανοικτός διακόπτης'}</tspan>
+                                <tspan x="460" dy="24">${isClosed ? 'Μηδενίζει το ρεύμα (<tspan class="sim-math-sym">I</tspan> = 0 A) &amp; τις τάσεις (<tspan class="sim-math-sym">V</tspan><tspan class="sim-math-sub" dy="3">1</tspan><tspan dy="-3"> = </tspan><tspan class="sim-math-sym">V</tspan><tspan class="sim-math-sub" dy="3">2</tspan><tspan dy="-3"> = 0 V)</tspan>' : 'Το ρεύμα είναι μηδέν (<tspan class="sim-math-sym">I</tspan> = 0 A)'}</tspan>
                             </text>
                         </g>
                     ` : ''}
@@ -1499,7 +1499,7 @@ window.CircuitSimulation = (function() {
                             <!-- Prominent Explanatory Banner in Central Open Space (Double Font Size) -->
                             <rect x="190" y="240" width="560" height="74" rx="14" class="harmless-center-banner" />
                             <text x="470" y="268" class="harmless-banner-title" text-anchor="middle">✅ Ακίνδυνη Σύνδεση: G ↔ A</text>
-                            <text x="470" y="295" class="harmless-banner-sub" text-anchor="middle">Ισοδυναμικά σημεία (VG = VA = Vπηγ) — Χωρίς Βραχυκύκλωμα</text>
+                            <text x="470" y="295" class="harmless-banner-sub" text-anchor="middle">Ισοδυναμικά σημεία: <tspan class="sim-math-sym">V</tspan><tspan class="sim-math-sub" dy="2">G</tspan><tspan dy="-2"> = </tspan><tspan class="sim-math-sym">V</tspan><tspan class="sim-math-sub" dy="2">A</tspan><tspan dy="-2"> = </tspan><tspan class="sim-math-sym">V</tspan><tspan class="sim-math-sub" dy="2">πηγ</tspan><tspan dy="-2"> — Χωρίς Βραχυκύκλωμα</tspan></text>
                         </g>
                     ` : ''}
 
@@ -1516,7 +1516,7 @@ window.CircuitSimulation = (function() {
                             <!-- Prominent Explanatory Banner in Central Open Space (Double Font Size) -->
                             <rect x="190" y="240" width="560" height="74" rx="14" class="harmless-center-banner" />
                             <text x="470" y="268" class="harmless-banner-title" text-anchor="middle">✅ Ακίνδυνη Σύνδεση: F ↔ C</text>
-                            <text x="470" y="295" class="harmless-banner-sub" text-anchor="middle">Κοινός αγωγός επιστροφής (VF = VC = 0 V) — Χωρίς Βραχυκύκλωμα</text>
+                            <text x="470" y="295" class="harmless-banner-sub" text-anchor="middle">Κοινός αγωγός επιστροφής: <tspan class="sim-math-sym">V</tspan><tspan class="sim-math-sub" dy="2">F</tspan><tspan dy="-2"> = </tspan><tspan class="sim-math-sym">V</tspan><tspan class="sim-math-sub" dy="2">C</tspan><tspan dy="-2"> = 0 V — Χωρίς Βραχυκύκλωμα</tspan></text>
                         </g>
                     ` : ''}
                 </svg>
@@ -1529,7 +1529,7 @@ window.CircuitSimulation = (function() {
             const animSpeed2 = hasCurrent2 ? (3 / Math.max(0.2, phys.I2)).toFixed(2) : 0;
 
             svgHtml = `
-                <svg viewBox="-20 -45 960 495" class="sim-svg-circuit" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="-20 -45 960 550" class="sim-svg-circuit" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <!-- Glow filter for active wires -->
                         <filter id="wire-glow-par" x="-20%" y="-20%" width="140%" height="140%">
@@ -1562,7 +1562,7 @@ window.CircuitSimulation = (function() {
                         <g class="sim-top-danger-banner">
                             <rect x="330" y="-36" width="360" height="40" rx="10" class="sim-top-danger-rect" />
                             <text x="510" y="-11" class="sim-top-danger-text" text-anchor="middle">
-                                ⚡ I → ∞ (Βραχυκύκλωμα!)
+                                ⚡ <tspan class="sim-math-sym">I</tspan> → ∞ (Βραχυκύκλωμα!)
                             </text>
                         </g>
                     ` : ''}
@@ -1647,31 +1647,31 @@ window.CircuitSimulation = (function() {
                         ` : ''}
                     `}
 
-                    <!-- Informative warning badge when faulty instrument is active in parallel -->
+                    <!-- Informative warning badge when faulty instrument is active in parallel (Relocated cleanly to bottom: y=415 to 477) -->
                     ${isFaultAmmeter1 ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="345" y="272" width="480" height="66" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(239, 68, 68, 0.7); fill: rgba(15, 23, 42, 0.94);" />
-                            <text x="585" y="296" class="sim-bypass-warning-text" text-anchor="middle">
-                                <tspan x="585" dy="0">${isClosed ? '⚡ Όλο το ρεύμα διαρρέει το Α₁ (Βραχυκύκλωμα)' : '⚪ Ανοικτός διακόπτης'}</tspan>
-                                <tspan x="585" dy="25">${isClosed ? 'Στα Aολ, R₁ &amp; R₂: I = 0 A (Πλήρης παράκαμψη)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
+                            <rect x="120" y="415" width="680" height="62" rx="14" class="sim-bypass-warning-banner" style="stroke: rgba(239, 68, 68, 0.75); fill: rgba(15, 23, 42, 0.96);" />
+                            <text x="460" y="439" class="sim-bypass-warning-text" text-anchor="middle">
+                                <tspan x="460" dy="0">${isClosed ? '⚡ Όλο το ρεύμα διαρρέει το <tspan class="sim-math-sym">A</tspan><tspan class="sim-math-sub" dy="3">1</tspan><tspan dy="-3"> (Βραχυκύκλωμα)</tspan>' : '⚪ Ανοικτός διακόπτης'}</tspan>
+                                <tspan x="460" dy="24">${isClosed ? 'Στα <tspan class="sim-math-sym">A</tspan><tspan class="sim-math-sub" dy="3">ολ</tspan><tspan dy="-3">, </tspan><tspan class="sim-math-sym">R</tspan><tspan class="sim-math-sub" dy="3">1</tspan><tspan dy="-3"> &amp; </tspan><tspan class="sim-math-sym">R</tspan><tspan class="sim-math-sub" dy="3">2</tspan><tspan dy="-3">: </tspan><tspan class="sim-math-sym">I</tspan> = 0 A (Πλήρης παράκαμψη)' : 'Το ρεύμα είναι μηδέν (<tspan class="sim-math-sym">I</tspan> = 0 A)'}</tspan>
                             </text>
                         </g>
                     ` : ''}
                     ${isFaultAmmeter2 ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="180" y="264" width="640" height="64" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(245, 158, 11, 0.7); fill: rgba(15, 23, 42, 0.95);" />
-                            <text x="500" y="288" class="sim-bypass-warning-text" style="fill: #fcd34d;" text-anchor="middle">
-                                <tspan x="500" dy="0">${isClosed ? '⚡ Το ρεύμα διαρρέει το Aολ και το A₂ (Βραχυκύκλωμα)' : '⚪ Ανοικτός διακόπτης'}</tspan>
-                                <tspan x="500" dy="25">${isClosed ? 'Στους αντιστάτες R₁ &amp; R₂: I = 0 A (Πλήρης παράκαμψη)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
+                            <rect x="120" y="415" width="680" height="62" rx="14" class="sim-bypass-warning-banner" style="stroke: rgba(245, 158, 11, 0.75); fill: rgba(15, 23, 42, 0.96);" />
+                            <text x="460" y="439" class="sim-bypass-warning-text" style="fill: #fcd34d;" text-anchor="middle">
+                                <tspan x="460" dy="0">${isClosed ? '⚡ Το ρεύμα διαρρέει το <tspan class="sim-math-sym">A</tspan><tspan class="sim-math-sub" dy="3">ολ</tspan><tspan dy="-3"> και το </tspan><tspan class="sim-math-sym">A</tspan><tspan class="sim-math-sub" dy="3">2</tspan><tspan dy="-3"> (Βραχυκύκλωμα)</tspan>' : '⚪ Ανοικτός διακόπτης'}</tspan>
+                                <tspan x="460" dy="24">${isClosed ? 'Στους αντιστάτες <tspan class="sim-math-sym">R</tspan><tspan class="sim-math-sub" dy="3">1</tspan><tspan dy="-3"> &amp; </tspan><tspan class="sim-math-sym">R</tspan><tspan class="sim-math-sub" dy="3">2</tspan><tspan dy="-3">: </tspan><tspan class="sim-math-sym">I</tspan> = 0 A (Πλήρης παράκαμψη)' : 'Το ρεύμα είναι μηδέν (<tspan class="sim-math-sym">I</tspan> = 0 A)'}</tspan>
                             </text>
                         </g>
                     ` : ''}
                     ${isFaultVoltmeter ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="170" y="272" width="660" height="66" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(168, 85, 247, 0.7); fill: rgba(15, 23, 42, 0.94);" />
-                            <text x="500" y="296" class="sim-bypass-warning-text" style="fill: #d8b4fe;" text-anchor="middle">
-                                <tspan x="500" dy="0">${isClosed ? '⚠️ Το βολτόμετρο συνδέθηκε σε σειρά (Rv → ∞)' : '⚪ Ανοικτός διακόπτης'}</tspan>
-                                <tspan x="500" dy="25">${isClosed ? 'Στον κύριο αγωγό: Iολ = 0 A &amp; Vπαρ = 0 V (Μηδενισμός)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
+                            <rect x="120" y="415" width="680" height="62" rx="14" class="sim-bypass-warning-banner" style="stroke: rgba(168, 85, 247, 0.75); fill: rgba(15, 23, 42, 0.96);" />
+                            <text x="460" y="439" class="sim-bypass-warning-text" style="fill: #d8b4fe;" text-anchor="middle">
+                                <tspan x="460" dy="0">${isClosed ? '⚠️ Το βολτόμετρο συνδέθηκε σε σειρά (<tspan class="sim-math-sym">R</tspan><tspan class="sim-math-sub" dy="3">v</tspan><tspan dy="-3"> → ∞)</tspan>' : '⚪ Ανοικτός διακόπτης'}</tspan>
+                                <tspan x="460" dy="24">${isClosed ? 'Στον κύριο αγωγό: <tspan class="sim-math-sym">I</tspan><tspan class="sim-math-sub" dy="3">ολ</tspan><tspan dy="-3"> = 0 A &amp; </tspan><tspan class="sim-math-sym">V</tspan><tspan class="sim-math-sub" dy="3">παρ</tspan><tspan dy="-3"> = 0 V (Μηδενισμός)</tspan>' : 'Το ρεύμα είναι μηδέν (<tspan class="sim-math-sym">I</tspan> = 0 A)'}</tspan>
                             </text>
                         </g>
                     ` : ''}
@@ -2056,7 +2056,7 @@ window.CircuitSimulation = (function() {
                             <rect x="152" y="169" width="206" height="92" rx="12" class="harmless-center-banner" />
                             <text x="255" y="195" class="harmless-banner-title" text-anchor="middle" font-size="13.5">✅ Ακίνδυνη Σύνδεση</text>
                             <text x="255" y="223" class="harmless-banner-title" text-anchor="middle" font-size="18" fill="#38bdf8">A ↔ C</text>
-                            <text x="255" y="246" class="harmless-banner-sub" text-anchor="middle" font-size="11.5">Κοινό δυναμικό (Vπηγ)</text>
+                            <text x="255" y="246" class="harmless-banner-sub" text-anchor="middle" font-size="11.5">Κοινό δυναμικό: <tspan class="sim-math-sym">V</tspan><tspan class="sim-math-sub" dy="2">πηγ</tspan></text>
                         </g>
                     ` : ''}
 
@@ -2074,7 +2074,7 @@ window.CircuitSimulation = (function() {
                             <rect x="152" y="169" width="206" height="92" rx="12" class="harmless-center-banner" />
                             <text x="255" y="195" class="harmless-banner-title" text-anchor="middle" font-size="13.5">✅ Ακίνδυνη Σύνδεση</text>
                             <text x="255" y="223" class="harmless-banner-title" text-anchor="middle" font-size="18" fill="#38bdf8">F ↔ E</text>
-                            <text x="255" y="246" class="harmless-banner-sub" text-anchor="middle" font-size="11.5">Κοινή επιστροφή (0 V)</text>
+                            <text x="255" y="246" class="harmless-banner-sub" text-anchor="middle" font-size="11.5">Κοινή επιστροφή: 0 V</text>
                         </g>
                     ` : ''}
                 </svg>
