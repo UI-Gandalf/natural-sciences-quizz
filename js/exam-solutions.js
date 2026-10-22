@@ -1515,53 +1515,194 @@ window.ExamSolutionsGuide = (function() {
                     </div>
 
                     <!-- COMPARISON TABLE -->
-                    <div class="summary-table-wrapper" style="overflow-x: auto; margin-bottom: 24px;">
-                        <table class="summary-table" style="width: 100%; border-collapse: collapse; min-width: 650px;">
-                            <thead>
-                                <tr>
-                                    <th style="width: 25%;">Φυσικό Μέγεθος / Ιδιότητα</th>
-                                    <th style="width: 37.5%; color: #a78bfa;">Συνδεσμολογία σε Σειρά</th>
-                                    <th style="width: 37.5%; color: #38bdf8;">Παράλληλη Συνδεσμολογία</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>Διαδρομές Ρεύματος</strong></td>
-                                    <td>Μία και μοναδική διαδρομή (βρόγχος)</td>
-                                    <td>Πολλαπλές ανεξάρτητες διαδρομές (κλάδοι)</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Ένταση Ρεύματος ($I$)</strong></td>
-                                    <td>Κοινή παντού: $I = I_1 = I_2$</td>
-                                    <td>Επιμερίζεται: $I_{\\text{ολ}} = I_1 + I_2$</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Διαφορά Δυναμικού ($V$)</strong></td>
-                                    <td>Επιμερίζεται: $V = V_1 + V_2$</td>
-                                    <td>Κοινή παντού: $V = V_1 = V_2$</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Ισοδύναμη Αντίσταση ($R_{\\text{ολ}}$)</strong></td>
-                                    <td>$R_{\\text{ολ}} = R_1 + R_2$ ($R_{\\text{ολ}} > R_{\\text{max}}$)</td>
-                                    <td>$\\frac{1}{R_{\\text{ολ}}} = \\frac{1}{R_1} + \\frac{1}{R_2}$ ($R_{\\text{ολ}} < R_{\\text{min}}$)</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Συνέπεια Διακοπής ενός Κλάδου</strong></td>
-                                    <td>Διακόπτεται ολόκληρο το κύκλωμα ($I = 0$)</td>
-                                    <td>Οι υπόλοιποι κλάδοι λειτουργούν ανεπηρέαστοι</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Βραχυκύκλωμα ενός Αντιστάτη</strong></td>
-                                    <td>Μερικό: ο άλλος αντιστάτης υπερφορτώνεται</td>
-                                    <td>Ολικό: βραχυκυκλώνεται αμέσως ολόκληρο το κύκλωμα</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Ολική Ισχύς ($P_{\\text{ολ}}$)</strong></td>
-                                    <td>$P_{\\text{ολ}} = P_1 + P_2 = V \\cdot I$</td>
-                                    <td>$P_{\\text{ολ}} = P_1 + P_2 = V \\cdot I_{\\text{ολ}}$</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="comp-table-card summary-table-wrapper">
+                        <div class="comp-table-scroll">
+                            <table class="comp-table summary-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-prop">
+                                            <span class="th-badge-neutral">
+                                                <span>📐</span>
+                                                <span>Φυσικό Μέγεθος / Ιδιότητα</span>
+                                            </span>
+                                        </th>
+                                        <th class="col-series">
+                                            <span class="th-badge-series">
+                                                <span>⚡</span>
+                                                <span>Συνδεσμολογία σε Σειρά</span>
+                                            </span>
+                                        </th>
+                                        <th class="col-parallel">
+                                            <span class="th-badge-parallel">
+                                                <span>🔀</span>
+                                                <span>Παράλληλη Συνδεσμολογία</span>
+                                            </span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- ROW 1: Current Paths -->
+                                    <tr>
+                                        <td class="col-prop">
+                                            <div class="comp-prop-name">
+                                                <span class="comp-prop-icon">🔄</span>
+                                                <span class="comp-prop-label">Διαδρομές Ρεύματος</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill purple">Μία και μοναδική διαδρομή</span>
+                                                <span class="comp-note">Όλα τα στοιχεία συνδέονται διαδοχικά στον ίδιο κλειστό βρόγχο</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill cyan">Πολλαπλές ανεξάρτητες διαδρομές</span>
+                                                <span class="comp-note">Το ρεύμα διακλαδίζεται σε ξεχωριστούς παράλληλους κλάδους</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- ROW 2: Current I -->
+                                    <tr>
+                                        <td class="col-prop">
+                                            <div class="comp-prop-name">
+                                                <span class="comp-prop-icon">⚡</span>
+                                                <span class="comp-prop-label">Ένταση Ρεύματος <span class="math-nowrap">($I$)</span></span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill emerald">✅ Κοινή παντού</span>
+                                                <div class="comp-formula-box">$I = I_1 = I_2$</div>
+                                                <span class="comp-note">Ίδια ακριβώς ποσότητα φορτίου περνά από κάθε αντιστάτη</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill amber">⚡ Επιμερίζεται στους κλάδους</span>
+                                                <div class="comp-formula-box">$I_{\\text{ολ}} = I_1 + I_2$</div>
+                                                <span class="comp-note">1ος Κανόνας Kirchhoff (άθροισμα ρευμάτων των κλάδων)</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- ROW 3: Voltage V -->
+                                    <tr>
+                                        <td class="col-prop">
+                                            <div class="comp-prop-name">
+                                                <span class="comp-prop-icon">🔋</span>
+                                                <span class="comp-prop-label">Διαφορά Δυναμικού <span class="math-nowrap">($V$)</span></span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill amber">⚡ Επιμερίζεται στα στοιχεία</span>
+                                                <div class="comp-formula-box">$V_{\\text{πηγ}} = V_1 + V_2$</div>
+                                                <span class="comp-note">Η τάση πηγής ισούται με το άθροισμα πτώσεων τάσης</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill emerald">✅ Κοινή παντού</span>
+                                                <div class="comp-formula-box">$V_{\\text{πηγ}} = V_1 = V_2$</div>
+                                                <span class="comp-note">Κάθε κλάδος συνδέεται απευθείας στους πόλους της πηγής</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- ROW 4: Equivalent Resistance -->
+                                    <tr>
+                                        <td class="col-prop">
+                                            <div class="comp-prop-name">
+                                                <span class="comp-prop-icon">📦</span>
+                                                <span class="comp-prop-label">Ισοδύναμη Αντίσταση <span class="math-nowrap">($R_{\\text{ολ}}$)</span></span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill purple">📈 Αυξάνεται ($R_{\\text{ολ}} > R_{\\text{max}}$)</span>
+                                                <div class="comp-formula-box">$R_{\\text{ολ}} = R_1 + R_2$</div>
+                                                <span class="comp-note">Πάντοτε μεγαλύτερη από τη μεγαλύτερη επιμέρους αντίσταση</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill cyan">📉 Μειώνεται ($R_{\\text{ολ}} < R_{\\text{min}}$)</span>
+                                                <div class="comp-formula-box">$\\frac{1}{R_{\\text{ολ}}} = \\frac{1}{R_1} + \\frac{1}{R_2} \\quad \\left(R_{\\text{ολ}} = \\frac{R_1 \\cdot R_2}{R_1 + R_2}\\right)$</div>
+                                                <span class="comp-note">Πάντοτε μικρότερη και από τη μικρότερη επιμέρους αντίσταση!</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- ROW 5: Disconnection -->
+                                    <tr>
+                                        <td class="col-prop">
+                                            <div class="comp-prop-name">
+                                                <span class="comp-prop-icon">💡</span>
+                                                <span class="comp-prop-label">Διακοπή / Βλάβη ενός Στοιχείου</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill rose">💥 Ολική Διακοπή ($I = 0$)</span>
+                                                <span class="comp-note">Ανοικτό κύκλωμα: σβήνουν όλες οι υπόλοιπες συσκευές ακαριαία</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill emerald">✅ Ανεξάρτητη Λειτουργία</span>
+                                                <span class="comp-note">Οι υπόλοιποι κλάδοι συνεχίζουν να λειτουργούν απολύτως κανονικά</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- ROW 6: Short Circuit -->
+                                    <tr>
+                                        <td class="col-prop">
+                                            <div class="comp-prop-name">
+                                                <span class="comp-prop-icon">⚠️</span>
+                                                <span class="comp-prop-label">Βραχυκύκλωμα ενός Αντιστάτη</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill amber">⚠️ Μερικό Βραχυκύκλωμα</span>
+                                                <span class="comp-note">Ο άλλος αντιστάτης παραμένει ενεργός αλλά υπερφορτώνεται ($V_{\\text{άλλο}} = V_{\\text{πηγ}}$)</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill rose">💥 Ολικό Βραχυκύκλωμα</span>
+                                                <span class="comp-note">Η πηγή βραχυκυκλώνεται αμέσως ($R_{\\text{ολ}} \\to 0$, $I_{\\text{ολ}} \\to \\infty$)</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- ROW 7: Total Power -->
+                                    <tr>
+                                        <td class="col-prop">
+                                            <div class="comp-prop-name">
+                                                <span class="comp-prop-icon">🔥</span>
+                                                <span class="comp-prop-label">Ολική Ισχύς <span class="math-nowrap">($P_{\\text{ολ}}$)</span></span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <div class="comp-formula-box">$P_{\\text{ολ}} = P_1 + P_2 = V_{\\text{πηγ}} \\cdot I$</div>
+                                                <span class="comp-note">Κατανάλωση: $P_{\\text{ολ}} = I^2 \\cdot R_{\\text{ολ}}$</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <div class="comp-formula-box">$P_{\\text{ολ}} = P_1 + P_2 = V_{\\text{πηγ}} \\cdot I_{\\text{ολ}}$</div>
+                                                <span class="comp-note">Κατανάλωση: $P_{\\text{ολ}} = \\frac{V^2}{R_{\\text{ολ}}}$</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <!-- 5 GOLDEN RULES -->
