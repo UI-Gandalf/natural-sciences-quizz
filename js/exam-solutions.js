@@ -1516,32 +1516,132 @@ window.ExamSolutionsGuide = (function() {
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px;">
-                        <div class="theory-card" style="border-left: 4px solid #f59e0b;">
-                            <h4 style="color: #fbbf24; font-size: 1.1rem; margin-bottom: 8px;">⚠️ Μερικό Βραχυκύκλωμα (Παράκαμψη ενός Αντιστάτη)</h4>
-                            <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6;">
-                                Όταν συνδέεται ένα καλώδιο μηδενικής αντίστασης στα άκρα του ενός αντιστάτη (π.χ. του $R_2$):
-                            </p>
-                            <ul style="font-size: 0.90rem; color: var(--text-secondary); line-height: 1.6; padding-left: 20px; margin-top: 8px;">
-                                <li>Ο $R_2$ τίθεται <strong>εκτός λειτουργίας</strong> ($I_2 = 0, V_2 = 0$).</li>
-                                <li>Η ολική αντίσταση <strong>μειώνεται δραστικά</strong> ($R_{\\text{ολ}}' = R_1 = 5\\ \\Omega$ αντί $20\\ \\Omega$).</li>
-                                <li>Το ρεύμα του κυκλώματος <strong>αυξάνεται κατακόρυφα</strong> (από $3\\text{ A} \\to 12\\text{ A}$).</li>
-                                <li>Ο αντιστάτης $R_1$ δέχεται πλέον <strong>ολόκληρη την τάση της πηγής ($60\\text{ V}$)</strong>!</li>
-                                <li>Η ισχύς του $R_1$ εκτοξεύεται από $45\\text{ W} \\to 720\\text{ W}$ (αύξηση $1600\\%$), οδηγώντας συχνά σε κάψιμο!</li>
-                            </ul>
+                    <div class="exam-pro-grid">
+                        <!-- CARD 1: PARTIAL SHORT CIRCUIT -->
+                        <div class="exam-pro-card theme-warning">
+                            <div class="exam-pro-header">
+                                <div class="exam-pro-icon-box warning">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    </svg>
+                                </div>
+                                <div class="exam-pro-title-wrap">
+                                    <span class="exam-pro-tag warning">Παράκαμψη Μεμονωμένου Αντιστάτη</span>
+                                    <h3 class="exam-pro-title">Μερικό Βραχυκύκλωμα (στα άκρα του $R_2$)</h3>
+                                </div>
+                            </div>
+
+                            <div class="exam-pro-callout warning">
+                                Σύνδεση καλωδίου μηδενικής αντίστασης στα άκρα του $R_2$ εκτρέπει <strong>όλο το ρεύμα μέσω του καλωδίου</strong>, θέτοντας τον $R_2$ εκτός λειτουργίας.
+                            </div>
+
+                            <div class="exam-pro-items">
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>⚡</span> Κατακόρυφη Πτώση Αντίστασης
+                                        </div>
+                                        <span class="exam-pro-item-badge warning">R_ολ' = 5 Ω (από 20 Ω)</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Η ολική αντίσταση περιορίζεται πλέον μόνο στον $R_1$, προκαλώντας τετραπλασιασμό του ρεύματος του κυκλώματος από $3\\text{ A} \\to 12\\text{ A}$.
+                                    </p>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>🎯</span> Συγκέντρωση Ολόκληρης της Τάσης
+                                        </div>
+                                        <span class="exam-pro-item-badge warning">V_1' = V_πηγ = 60 V</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Ο $R_2$ έχει πλέον $V_2 = 0\\text{ V}$, επομένως ο επιζών αντιστάτης $R_1$ δέχεται μόνος του ολόκληρη την τάση της πηγής ($60\\text{ V}$ αντί $15\\text{ V}$).
+                                    </p>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>💥</span> Υπερφόρτωση Ισχύος +1600%
+                                        </div>
+                                        <span class="exam-pro-item-badge warning">P_1: 45 W → 720 W</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Η θερμική ισχύς εκτοξεύεται κατά 16 φορές ($P_1' = V_{\\text{πηγ}}^2 / R_1 = 720\\text{ W}$), οδηγώντας άμεσα σε υπερθέρμανση και κάψιμο του $R_1$!
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="theory-card" style="border-left: 4px solid #ef4444;">
-                            <h4 style="color: #f87171; font-size: 1.1rem; margin-bottom: 8px;">🔥 Ολικό Βραχυκύκλωμα (Σύνδεση Πόλων Πηγής)</h4>
-                            <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6;">
-                                Όταν δημιουργηθεί αγώγιμος δρόμος μηδενικής αντίστασης απευθείας μεταξύ των δύο πόλων της πηγής:
-                            </p>
-                            <ul style="font-size: 0.90rem; color: var(--text-secondary); line-height: 1.6; padding-left: 20px; margin-top: 8px;">
-                                <li>Η εξωτερική αντίσταση μηδενίζεται ($R_{\\text{εξ}} \\approx 0$).</li>
-                                <li>Όλοι οι αντιστάτες τίθενται εκτός λειτουργίας ($V_{\\text{αντ}} = 0$).</li>
-                                <li>Η ένταση του ρεύματος εκτοξεύεται σε επικίνδυνα υψηλές τιμές ($I \\to \\infty$).</li>
-                                <li>Τα καλώδια και η πηγή αναπτύσσουν τεράστια θερμότητα (φαινόμενο Joule) και προκαλείται φωτιά ή τήξη.</li>
-                            </ul>
+                        <!-- CARD 2: TOTAL SHORT CIRCUIT -->
+                        <div class="exam-pro-card theme-danger">
+                            <div class="exam-pro-header">
+                                <div class="exam-pro-icon-box danger">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                                    </svg>
+                                </div>
+                                <div class="exam-pro-title-wrap">
+                                    <span class="exam-pro-tag danger">Καθολική Γεφύρωση Πόλων</span>
+                                    <h3 class="exam-pro-title">Ολικό Βραχυκύκλωμα (Απευθείας Πόλοι)</h3>
+                                </div>
+                            </div>
+
+                            <div class="exam-pro-callout danger">
+                                Αγώγιμος δρόμος μηδενικής αντίστασης ενώνει <strong>απευθείας τον θετικό (+) και τον αρνητικό (-) πόλο</strong> της ηλεκτρικής πηγής.
+                            </div>
+
+                            <div class="exam-pro-items">
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>🛑</span> Μηδενισμός Εξωτερικής Αντίστασης
+                                        </div>
+                                        <span class="exam-pro-item-badge danger">R_εξ ≈ 0 Ω</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Όλοι οι συνδεδεμένοι αντιστάτες τίθενται εκτός λειτουργίας ($V_{\\text{αντ}} = 0\\text{ V}$) καθώς παρακάμπτονται πλήρως από τον βραχυκυκλωτήρα.
+                                    </p>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>⚡</span> Απειρισμός Έντασης Ρεύματος
+                                        </div>
+                                        <span class="exam-pro-item-badge danger">I_βραχ → ∞</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Η ένταση του ρεύματος περιορίζεται μόνο από την ελάχιστη εσωτερική αντίσταση $r$ της πηγής ($I = V / r$), λαμβάνοντας τεράστιες τιμές.
+                                    </p>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>🔥</span> Θερμική Τήξη &amp; Κίνδυνος Πυρκαγιάς
+                                        </div>
+                                        <span class="exam-pro-item-badge danger">Q = I² · R · t</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Η ραγδαία έκλυση θερμότητας κατά Joule καταστρέφει ακαριαία την πηγή, λιώνει τη μόνωση των καλωδίων και μπορεί να προκαλέσει φωτιά.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KEY TAKEAWAY STRIP -->
+                    <div class="exam-pro-takeaway">
+                        <div class="exam-pro-takeaway-text">
+                            <span style="font-size: 1.25rem;">💡</span>
+                            <span><strong>Κρίσιμη Διάκριση:</strong> Στο μερικό βραχυκύκλωμα στη σειρά ο ένας αντιστάτης σβήνει αλλά ο άλλος κινδυνεύει άμεσα με καταστροφή λόγω υπερέντασης ($720\\text{ W}$). Στο ολικό, όλα τα φορτία σβήνουν και καταστρέφεται η πηγή!</span>
+                        </div>
+                        <div class="exam-pro-takeaway-formula">
+                            $R_{\\text{μερ}}' = R_1 \\implies I \\uparrow\\uparrow \\quad\\mid\\quad R_{\\text{ολ}}' = 0 \\implies I \\to \\infty$
                         </div>
                     </div>
                 </section>
@@ -2590,29 +2690,133 @@ window.ExamSolutionsGuide = (function() {
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px;">
-                        <div class="theory-card" style="border-left: 4px solid #0ea5e9;">
-                            <h4 style="color: #38bdf8; font-size: 1.1rem; margin-bottom: 8px;">🏠 Το Πλεονέκτημα του Οικιακού Δικτύου</h4>
-                            <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6;">
-                                Στο παράλληλο κύκλωμα, κάθε συσκευή (κλάδος) συνδέεται απευθείας στους κύριους αγωγούς της πηγής:
-                            </p>
-                            <ul style="font-size: 0.90rem; color: var(--text-secondary); line-height: 1.6; padding-left: 20px; margin-top: 8px;">
-                                <li>Όλες οι συσκευές λειτουργούν στην <strong>ίδια ονομαστική τάση ($230\\text{ V}$)</strong>.</li>
-                                <li>Κάθε κλάδος διαθέτει δικό του διακόπτη και λειτουργεί <strong>πλήρως ανεξάρτητα</strong>.</li>
-                                <li>Αν καεί μια λάμπα ή ανοίξει ένας διακόπτης, οι υπόλοιπες συσκευές συνεχίζουν κανονικά.</li>
-                            </ul>
+                    <div class="exam-pro-grid">
+                        <!-- CARD 1: HOME NETWORK ADVANTAGE -->
+                        <div class="exam-pro-card theme-cyan">
+                            <div class="exam-pro-header">
+                                <div class="exam-pro-icon-box cyan">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                    </svg>
+                                </div>
+                                <div class="exam-pro-title-wrap">
+                                    <span class="exam-pro-tag cyan">Οικιακή Εγκατάσταση &amp; Αυτονομία</span>
+                                    <h3 class="exam-pro-title">Το Πλεονέκτημα του Οικιακού Δικτύου</h3>
+                                </div>
+                            </div>
+
+                            <div class="exam-pro-callout cyan">
+                                Στο παράλληλο κύκλωμα, κάθε συσκευή (κλάδος) συνδέεται <strong>απευθείας στους κύριους αγωγούς</strong> της πηγής (φάση &amp; ουδέτερος).
+                            </div>
+
+                            <div class="exam-pro-items">
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>⚡</span> Κοινή Ονομαστική Τάση
+                                        </div>
+                                        <span class="exam-pro-item-badge cyan">V = 230 V</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Όλες οι συσκευές λειτουργούν υπό την ίδια ονομαστική τάση δικτύου ($230\\text{ V}$), ανεξάρτητα από το πλήθος των άλλων ενεργών συσκευών.
+                                    </p>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>🔌</span> Πλήρης Λειτουργική Αυτονομία
+                                        </div>
+                                        <span class="exam-pro-item-badge cyan">Ανεξάρτητοι Κλάδοι</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Κάθε κλάδος διαθέτει δικό του διακόπτη και δικό του ρεύμα ($I_i = V / R_i$), λειτουργώντας εντελώς ανεξάρτητα από τους υπόλοιπους.
+                                    </p>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>🛡️</span> Αδιάλειπτη Παροχή σε Βλάβη
+                                        </div>
+                                        <span class="exam-pro-item-badge cyan">Ανοιχτοκύκλωμα</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Εάν καεί μία λάμπα ή ανοίξει ένας κλάδος, οι υπόλοιποι κλάδοι συνεχίζουν κανονικά χωρίς καμία μεταβολή στο ρεύμα τους.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="theory-card" style="border-left: 4px solid #ef4444;">
-                            <h4 style="color: #f87171; font-size: 1.1rem; margin-bottom: 8px;">⚠️ Ο Κίνδυνος Βραχυκυκλώματος στα Παράλληλα</h4>
-                            <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6;">
-                                Στην παράλληλη συνδεσμολογία <strong>ΔΕΝ υπάρχει "μερικό" βραχυκύκλωμα</strong>:
-                            </p>
-                            <ul style="font-size: 0.90rem; color: var(--text-secondary); line-height: 1.6; padding-left: 20px; margin-top: 8px;">
-                                <li>Αν συνδεθεί ένα σύρμα μηδενικής αντίστασης σε <em>οποιονδήποτε</em> παράλληλο κλάδο, αυτόματα ενώνει τους δύο κύριους πόλους της πηγής!</li>
-                                <li>Συνεπώς προκαλείται <strong>ΑΚΑΡΙΑΙΟ ΟΛΙΚΟ ΒΡΑΧΥΚΥΚΛΩΜΑ</strong> ολόκληρου του δικτύου!</li>
-                                <li>Η τάση μηδενίζεται σε όλους τους κλάδους ($V \\to 0$), όλα τα φώτα σβήνουν και το ρεύμα από την πηγή απειρίζεται, προκαλώντας πτώση της ασφάλειας ή πυρκαγιά.</li>
-                            </ul>
+                        <!-- CARD 2: SHORT CIRCUIT HAZARD -->
+                        <div class="exam-pro-card theme-danger">
+                            <div class="exam-pro-header">
+                                <div class="exam-pro-icon-box danger">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    </svg>
+                                </div>
+                                <div class="exam-pro-title-wrap">
+                                    <span class="exam-pro-tag danger">Κρίσιμος Κίνδυνος Ασφάλειας</span>
+                                    <h3 class="exam-pro-title">Ο Κίνδυνος Βραχυκυκλώματος στα Παράλληλα</h3>
+                                </div>
+                            </div>
+
+                            <div class="exam-pro-callout danger">
+                                Στην παράλληλη συνδεσμολογία <strong>ΔΕΝ υπάρχει ποτέ «μερικό» βραχυκύκλωμα</strong> — οποιαδήποτε βραχυκύκλωση είναι καθολική!
+                            </div>
+
+                            <div class="exam-pro-items">
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>💥</span> Άμεση Ένωση Πόλων Πηγής
+                                        </div>
+                                        <span class="exam-pro-item-badge danger">R_ολ ≈ 0 Ω</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Σύνδεση σύρματος μηδενικής αντίστασης σε <em>οποιονδήποτε</em> κλάδο γεφυρώνει αυτόματα τους δύο κύριους πόλους της πηγής (φάση - ουδέτερος).
+                                    </p>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>⚠️</span> Καθολική Κατάρρευση Τάσης
+                                        </div>
+                                        <span class="exam-pro-item-badge danger">V_κλάδων → 0 V</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Η τάση μηδενίζεται σε ολόκληρο το δίκτυο ταυτόχρονα. Όλα τα φώτα και οι συσκευές σβήνουν ακαριαία λόγω πλήρους παράκαμψης.
+                                    </p>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>🔥</span> Υπερένταση Ρεύματος &amp; Πυρκαγιά
+                                        </div>
+                                        <span class="exam-pro-item-badge danger">I_πηγ → ∞</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Το ρεύμα της πηγής εκτοξεύεται σε ακραίες τιμές, προκαλώντας έντονη θερμική καταπόνηση (Joule), πτώση της ασφάλειας ή πυρκαγιά.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KEY TAKEAWAY STRIP -->
+                    <div class="exam-pro-takeaway">
+                        <div class="exam-pro-takeaway-text">
+                            <span style="font-size: 1.25rem;">💡</span>
+                            <span><strong>Θεμελιώδης Κανόνας:</strong> Στα παράλληλα τα φορτία λειτουργούν ανεξάρτητα, αλλά το βραχυκύκλωμα έστω και ενός κλάδου καταρρέει ακαριαία ολόκληρο το δίκτυο!</span>
+                        </div>
+                        <div class="exam-pro-takeaway-formula">
+                            $V_{\\text{κλάδων}} = V_{\\text{πηγ}} \\quad\\mid\\quad R_{\\text{βραχ}} = 0 \\implies I_{\\text{ολ}} \\to \\infty$
                         </div>
                     </div>
                 </section>
