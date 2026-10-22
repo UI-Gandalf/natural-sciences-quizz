@@ -7174,7 +7174,7 @@ mjx-container[display="true"], .katex-display {
     bottom: calc(100% + 11px);
     left: 50%;
     transform: translateX(-50%) translateY(4px);
-    width: 275px;
+    width: 290px;
     max-width: 90vw;
     background: rgba(15, 23, 42, 0.97);
     border: 1px solid rgba(16, 185, 129, 0.45);
