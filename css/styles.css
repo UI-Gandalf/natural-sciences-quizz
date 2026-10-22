@@ -4004,6 +4004,84 @@ mjx-container[display="true"], .katex-display {
     fill: #065f46;
 }
 
+/* Short Circuit Mode Sub-line with (1) Άμεση & (2) Έμμεση */
+.sim-short-mode-subline {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    padding-left: 26px;
+    margin: 1px 0 4px 0;
+    box-sizing: border-box;
+    transition: opacity 0.2s ease;
+}
+
+.sim-short-mode-subline.is-dimmed {
+    opacity: 0.52;
+}
+
+.sim-subline-pill {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 5px 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    font-family: inherit;
+    border-radius: 8px;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    background: rgba(15, 23, 42, 0.6);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: center;
+    user-select: none;
+}
+
+.sim-subline-pill .pill-num {
+    font-size: 0.74rem;
+    opacity: 0.75;
+}
+
+.sim-subline-pill:hover:not(:disabled) {
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.6);
+    transform: translateY(-1px);
+}
+
+.sim-subline-pill.active {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.35));
+    border-color: #f59e0b;
+    color: #fef3c7;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+}
+
+.sim-subline-pill.active .pill-num {
+    opacity: 1;
+    color: #fde68a;
+}
+
+[data-theme="light"] .sim-subline-pill {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
+}
+
+[data-theme="light"] .sim-subline-pill:hover:not(:disabled) {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #92400e;
+}
+
+[data-theme="light"] .sim-subline-pill.active {
+    background: #fef3c7;
+    border-color: #d97706;
+    color: #92400e;
+    box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+}
+
 /* Short Circuit Mode Segmented Switcher under Checkboxes */
 .sim-short-mode-wrap {
     margin-top: 6px;
@@ -7303,4 +7381,107 @@ mjx-container[display="true"], .katex-display {
     border-color: #cbd5e1;
     color: #64748b;
 }
+
+/* ==========================================================================
+   Interactive Simulation Bypass Mode Selector Pills
+   ========================================================================== */
+.sim-short-mode-subline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 3px 6px;
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.sim-short-mode-subline.is-dimmed {
+    opacity: 0.55;
+}
+
+.sim-short-mode-subline:not(.is-dimmed) {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.sim-short-subline-lbl {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.sim-short-mode-pills {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.sim-short-mode-pill {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    transition: all 0.15s ease;
+    user-select: none;
+    line-height: 1.3;
+}
+
+.sim-short-mode-pill:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.sim-short-mode-pill.active {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.28), rgba(220, 38, 38, 0.42));
+    border-color: rgba(248, 113, 113, 0.75);
+    color: #fee2e2;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.35);
+    font-weight: 700;
+}
+
+[data-theme="light"] .sim-short-mode-subline {
+    background: rgba(241, 245, 249, 0.9);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .sim-short-mode-subline:not(.is-dimmed) {
+    background: rgba(254, 242, 242, 0.85);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="light"] .sim-short-subline-lbl {
+    color: #64748b;
+}
+
+[data-theme="light"] .sim-short-mode-pill {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #334155;
+}
+
+[data-theme="light"] .sim-short-mode-pill:hover {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.25);
+    color: #0f172a;
+}
+
+[data-theme="light"] .sim-short-mode-pill.active {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.25);
+}
+
 

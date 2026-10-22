@@ -682,23 +682,22 @@ window.CircuitSimulation = (function() {
                                     <input type="checkbox" id="sim-short-r1" ${state.shortR1 ? 'checked' : ''} ${isFaultActive ? 'disabled' : ''}
                                            onchange="CircuitSimulation.toggleShort('shortR1', this.checked)">
                                     <span class="checkbox-custom"></span>
-                                    <span class="checkbox-label">Βραχυκύκλωση <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> (Bypass)</span>
+                                    <span class="checkbox-label">Βραχυκύκλωση <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> (Παράκαμψη)</span>
                                 </label>
-                                ${state.shortR1 && !isFaultActive ? `
-                                    <div class="sim-short-mode-wrap">
-                                        <span class="sim-sub-label">Τρόπος Σύνδεσης:</span>
-                                        <div class="sim-mode-toggle">
-                                            <button type="button" class="sim-mode-btn ${state.shortModeR1 === 'classic' ? 'active' : ''}" 
-                                                    onclick="CircuitSimulation.setShortMode('R1', 'classic')" title="Κλασική σύνδεση στα άκρα του R1">
-                                                Κλασική (${state.topology === 'series' ? 'A ↔ B' : 'A ↔ B'})
-                                            </button>
-                                            <button type="button" class="sim-mode-btn ${state.shortModeR1 === 'alternative' ? 'active' : ''}" 
-                                                    onclick="CircuitSimulation.setShortMode('R1', 'alternative')" title="${state.topology === 'series' ? 'Εναλλακτική σύνδεση ισοδύναμων κόμβων: G ↔ B' : 'Εναλλακτική σύνδεση ισοδύναμων κόμβων: A ↔ E'}">
-                                                Εναλλακτική (${state.topology === 'series' ? 'G ↔ B' : 'A ↔ E'})
-                                            </button>
-                                        </div>
-                                    </div>
-                                ` : ''}
+                                <div class="sim-short-mode-subline ${!state.shortR1 ? 'is-dimmed' : ''}">
+                                    <button type="button" class="sim-subline-pill ${state.shortR1 && state.shortModeR1 === 'classic' ? 'active' : ''}" 
+                                            ${isFaultActive ? 'disabled' : ''}
+                                            onclick="CircuitSimulation.setShortMode('R1', 'classic')" 
+                                            title="Άμεση παράκαμψη στα άκρα του R1 (${state.topology === 'series' ? 'A ↔ B' : 'A ↔ B'})">
+                                        <span class="pill-num">(1)</span> Άμεση
+                                    </button>
+                                    <button type="button" class="sim-subline-pill ${state.shortR1 && state.shortModeR1 === 'alternative' ? 'active' : ''}" 
+                                            ${isFaultActive ? 'disabled' : ''}
+                                            onclick="CircuitSimulation.setShortMode('R1', 'alternative')" 
+                                            title="${state.topology === 'series' ? 'Έμμεση παράκαμψη: καλώδιο G ↔ B κάτω από τον R1' : 'Έμμεση παράκαμψη: καλώδιο A ↔ E'}">
+                                        <span class="pill-num">(2)</span> Έμμεση
+                                    </button>
+                                </div>
                                 <label class="sim-toggle-checkbox broken-toggle ${isFaultActive ? 'is-disabled' : ''}" title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
                                     <input type="checkbox" id="sim-broken-r1" ${state.brokenR1 ? 'checked' : ''} ${isFaultActive ? 'disabled' : ''}
                                            onchange="CircuitSimulation.toggleBroken('brokenR1', this.checked)">
@@ -727,23 +726,22 @@ window.CircuitSimulation = (function() {
                                     <input type="checkbox" id="sim-short-r2" ${state.shortR2 ? 'checked' : ''} ${isFaultActive ? 'disabled' : ''}
                                            onchange="CircuitSimulation.toggleShort('shortR2', this.checked)">
                                     <span class="checkbox-custom"></span>
-                                    <span class="checkbox-label">Βραχυκύκλωση <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Bypass)</span>
+                                    <span class="checkbox-label">Βραχυκύκλωση <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Παράκαμψη)</span>
                                 </label>
-                                ${state.shortR2 && !isFaultActive ? `
-                                    <div class="sim-short-mode-wrap">
-                                        <span class="sim-sub-label">Τρόπος Σύνδεσης:</span>
-                                        <div class="sim-mode-toggle">
-                                            <button type="button" class="sim-mode-btn ${state.shortModeR2 === 'classic' ? 'active' : ''}" 
-                                                    onclick="CircuitSimulation.setShortMode('R2', 'classic')" title="Κλασική σύνδεση στα άκρα του R2">
-                                                Κλασική (${state.topology === 'series' ? 'B ↔ C' : 'C ↔ E'})
-                                            </button>
-                                            <button type="button" class="sim-mode-btn ${state.shortModeR2 === 'alternative' ? 'active' : ''}" 
-                                                    onclick="CircuitSimulation.setShortMode('R2', 'alternative')" title="${state.topology === 'series' ? 'Εναλλακτική σύνδεση ισοδύναμων κόμβων: B ↔ E' : 'Εναλλακτική σύνδεση ισοδύναμων κόμβων: B ↔ C'}">
-                                                Εναλλακτική (${state.topology === 'series' ? 'B ↔ E' : 'B ↔ C'})
-                                            </button>
-                                        </div>
-                                    </div>
-                                ` : ''}
+                                <div class="sim-short-mode-subline ${!state.shortR2 ? 'is-dimmed' : ''}">
+                                    <button type="button" class="sim-subline-pill ${state.shortR2 && state.shortModeR2 === 'classic' ? 'active' : ''}" 
+                                            ${isFaultActive ? 'disabled' : ''}
+                                            onclick="CircuitSimulation.setShortMode('R2', 'classic')" 
+                                            title="Άμεση παράκαμψη στα άκρα του R2 (${state.topology === 'series' ? 'B ↔ C' : 'C ↔ E'})">
+                                        <span class="pill-num">(1)</span> Άμεση
+                                    </button>
+                                    <button type="button" class="sim-subline-pill ${state.shortR2 && state.shortModeR2 === 'alternative' ? 'active' : ''}" 
+                                            ${isFaultActive ? 'disabled' : ''}
+                                            onclick="CircuitSimulation.setShortMode('R2', 'alternative')" 
+                                            title="${state.topology === 'series' ? 'Έμμεση παράκαμψη: καλώδιο B ↔ E' : 'Έμμεση παράκαμψη: καλώδιο B ↔ C'}">
+                                        <span class="pill-num">(2)</span> Έμμεση
+                                    </button>
+                                </div>
                                 <label class="sim-toggle-checkbox broken-toggle ${isFaultActive ? 'is-disabled' : ''}" title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
                                     <input type="checkbox" id="sim-broken-r2" ${state.brokenR2 ? 'checked' : ''} ${isFaultActive ? 'disabled' : ''}
                                            onchange="CircuitSimulation.toggleBroken('brokenR2', this.checked)">
@@ -1298,14 +1296,14 @@ window.CircuitSimulation = (function() {
 
                         <!-- Bypass Wire if shorted -->
                         ${state.shortR1 ? (state.shortModeR1 === 'alternative' ? `
-                            <!-- Alternative Equipotential Bypass: G(100, 80) to B(545, 80) across top at y=-10 with generous clearance -->
-                            <path d="M 100 80 L 100 2 Q 100 -10, 112 -10 L 533 -10 Q 545 -10, 545 2 L 545 80" class="short-circuit-bypass-wire" />
+                            <!-- Alternative Equipotential Bypass: G(100, 80) to B(545, 80) wiggly shaped underneath R1 -->
+                            <path d="M 100 80 C 130 140, 160 235, 210 235 C 255 235, 280 252, 320 252 C 360 252, 390 232, 430 232 C 475 232, 510 248, 532 238 C 545 225, 545 130, 545 80" class="short-circuit-bypass-wire" />
                             ${hasCurrent ? `
-                                <path d="M 100 80 L 100 2 Q 100 -10, 112 -10 L 533 -10 Q 545 -10, 545 2 L 545 80" class="circuit-wire-current wire-current-active bypass-current" style="animation-duration: ${animSpeed}s;" />
+                                <path d="M 100 80 C 130 140, 160 235, 210 235 C 255 235, 280 252, 320 252 C 360 252, 390 232, 430 232 C 475 232, 510 248, 532 238 C 545 225, 545 130, 545 80" class="circuit-wire-current wire-current-active bypass-current" style="animation-duration: ${animSpeed}s;" />
                             ` : ''}
-                            <circle cx="100" cy="80" r="5" class="short-contact-dot" />
-                            <circle cx="545" cy="80" r="5" class="short-contact-dot" />
-                            <text x="325" y="-18" class="short-wire-label">⚠️ Εναλλακτικό Βραχυκύκλωμα R₁ (G ↔ B)</text>
+                            <circle cx="100" cy="80" r="5.5" class="short-contact-dot" />
+                            <circle cx="545" cy="80" r="5.5" class="short-contact-dot" />
+                            <text x="345" y="274" class="short-wire-label" text-anchor="middle">⚠️ Έμμεση Παράκαμψη R₁ (G ↔ B)</text>
                         ` : `
                             <!-- Classic Bypass: A(310, 80) to post-R1(470, 80) -->
                             <path d="M 310 80 C 335 22, 445 22, 470 80" class="short-circuit-bypass-wire" />
@@ -1314,7 +1312,7 @@ window.CircuitSimulation = (function() {
                             ` : ''}
                             <circle cx="310" cy="80" r="4.5" class="short-contact-dot" />
                             <circle cx="470" cy="80" r="4.5" class="short-contact-dot" />
-                            <text x="390" y="20" class="short-wire-label">⚠️ Κλασικό Βραχυκύκλωμα R₁ (A ↔ B)</text>
+                            <text x="390" y="20" class="short-wire-label">⚠️ Άμεση Παράκαμψη R₁ (A ↔ B)</text>
                         `) : ''}
                     </g>
 
@@ -1400,7 +1398,7 @@ window.CircuitSimulation = (function() {
                             ` : ''}
                             <circle cx="545" cy="80" r="5" class="short-contact-dot" />
                             <circle cx="620" cy="350" r="5" class="short-contact-dot" />
-                            <text x="540" y="225" class="short-wire-label" text-anchor="middle">⚠️ Εναλλακτικό Βραχυκύκλωμα R₂ (B ↔ E)</text>
+                            <text x="540" y="225" class="short-wire-label" text-anchor="middle">⚠️ Έμμεση Παράκαμψη R₂ (B ↔ E)</text>
                         ` : `
                             <!-- Classic Bypass: B(545, 80) to C(700, 80) -->
                             <path d="M 545 80 C 570 22, 675 22, 700 80" class="short-circuit-bypass-wire" />
@@ -1409,7 +1407,7 @@ window.CircuitSimulation = (function() {
                             ` : ''}
                             <circle cx="545" cy="80" r="4.5" class="short-contact-dot" />
                             <circle cx="700" cy="80" r="4.5" class="short-contact-dot" />
-                            <text x="620" y="20" class="short-wire-label">⚠️ Κλασικό Βραχυκύκλωμα R₂ (B ↔ C)</text>
+                            <text x="620" y="20" class="short-wire-label">⚠️ Άμεση Παράκαμψη R₂ (B ↔ C)</text>
                         `) : ''}
                     </g>
 
@@ -2433,13 +2431,13 @@ window.CircuitSimulation = (function() {
 
                 ${isShorted ? `
                     <div class="hud-steps-box" style="margin-top: 10px; border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.06);">
-                        <div class="hud-steps-title" style="color: #f87171;">ℹ️ Τρόπος Βραχυκύκλωσης: ${state.shortModeR1 === 'alternative' ? 'Εναλλακτική Σύνδεση Ισοδύναμων Κόμβων' : 'Κλασική Σύνδεση'}</div>
+                        <div class="hud-steps-title" style="color: #f87171;">ℹ️ Τρόπος Παράκαμψης: ${state.shortModeR1 === 'alternative' ? 'Έμμεση Παράκαμψη (G ↔ B)' : 'Άμεση Παράκαμψη (A ↔ B)'}</div>
                         <p style="font-size: 0.88rem; line-height: 1.5; margin: 4px 0;">
                             ${state.shortModeR1 === 'alternative' ? (state.topology === 'series' ? 
-                                'Το καλώδιο συνδέει τους κόμβους <strong>G ↔ B</strong>. Επειδή το ιδανικό αμπερόμετρο $A_1$ και ο διακόπτης έχουν μηδενική αντίσταση, ο κόμβος G έχει ακριβώς το ίδιο δυναμικό με τον A ($V_G = V_A = V_{\\text{πηγ}}$). Άρα η σύνδεση G ↔ B είναι <strong>100% ηλεκτρικά ισοδύναμη</strong> με την κλασική σύνδεση A ↔ B στα άκρα του $R_1$!' : 
+                                'Το καλώδιο συνδέει τους κόμβους <strong>G ↔ B</strong> περνώντας με καμπύλη κάτω από τον $R_1$. Επειδή το ιδανικό αμπερόμετρο $A_1$ και ο διακόπτης έχουν μηδενική αντίσταση, ο κόμβος G έχει ακριβώς το ίδιο δυναμικό με τον A ($V_G = V_A = V_{\\text{πηγ}}$). Επομένως, ο κόμβος B τίθεται στο δυναμικό $V_{\\text{πηγ}}$, μηδενίζοντας την τάση στα άκρα του $R_1$ ($V_1 = V_A - V_B = 0\\text{ V}$). Ο αντιστάτης $R_1$ παρακάμπτεται πλήρως!' : 
                                 'Το καλώδιο συνδέει τους κόμβους <strong>A ↔ E</strong>. Ο κόμβος A βρίσκεται στο δυναμικό του άνω πόλου ($V_{\\text{πηγ}}$) και ο κόμβος E στο δυναμικό του κάτω πόλου ($0\\text{ V}$). Η σύνδεση παρακάμπτει πλήρως τον $R_1$ και συνδέει απευθείας τους πόλους της πηγής (Ολικό Βραχυκύκλωμα)!') : 
                                 (state.topology === 'series' ? 
-                                'Το καλώδιο συνδέεται απευθείας στα άκρα του αντιστάτη $R_1$ (κόμβοι A και B), μηδενίζοντας την τάση $V_1 = 0\\text{ V}$.' : 
+                                'Το καλώδιο συνδέεται απευθείας στα άκρα του αντιστάτη $R_1$ (κόμβοι A και B), μηδενίζοντας άμεσα την τάση $V_1 = 0\\text{ V}$.' : 
                                 'Το καλώδιο συνδέεται απευθείας στα άκρα του κλάδου 1 (κόμβοι A και B), προκαλώντας παράκαμψη του $R_1$ και ολικό βραχυκύκλωμα της πηγής.')}
                         </p>
                     </div>
@@ -2509,13 +2507,13 @@ window.CircuitSimulation = (function() {
 
                 ${isShorted ? `
                     <div class="hud-steps-box" style="margin-top: 10px; border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.06);">
-                        <div class="hud-steps-title" style="color: #f87171;">ℹ️ Τρόπος Βραχυκύκλωσης: ${state.shortModeR2 === 'alternative' ? 'Εναλλακτική Σύνδεση Ισοδύναμων Κόμβων' : 'Κλασική Σύνδεση'}</div>
+                        <div class="hud-steps-title" style="color: #f87171;">ℹ️ Τρόπος Παράκαμψης: ${state.shortModeR2 === 'alternative' ? 'Έμμεση Παράκαμψη (B ↔ E)' : 'Άμεση Παράκαμψη (B ↔ C)'}</div>
                         <p style="font-size: 0.88rem; line-height: 1.5; margin: 4px 0;">
                             ${state.shortModeR2 === 'alternative' ? (state.topology === 'series' ? 
-                                'Το καλώδιο συνδέει τους κόμβους <strong>B ↔ E</strong>. Επειδή ο κάτω αγωγός επιστροφής και το $A_3$ έχουν μηδενική αντίσταση, ο κόμβος E έχει ακριβώς το ίδιο δυναμικό με τον C ($V_E = V_C = 0\\text{ V}$). Άρα η σύνδεση B ↔ E είναι <strong>100% ηλεκτρικά ισοδύναμη</strong> με την κλασική σύνδεση B ↔ C στα άκρα του $R_2$!' : 
+                                'Το καλώδιο συνδέει τους κόμβους <strong>B ↔ E</strong>. Επειδή ο κάτω αγωγός επιστροφής και το $A_3$ έχουν μηδενική αντίσταση, ο κόμβος E έχει ακριβώς το ίδιο δυναμικό με τον C ($V_E = V_C = 0\\text{ V}$). Επομένως, ο κόμβος B τίθεται στο μηδενικό δυναμικό ($0\\text{ V}$), μηδενίζοντας την τάση στα άκρα του $R_2$ ($V_2 = V_B - V_C = 0\\text{ V}$). Ο αντιστάτης $R_2$ παρακάμπτεται πλήρως!' : 
                                 'Το καλώδιο συνδέει τους κόμβους <strong>B ↔ C</strong>. Ο κόμβος B είναι στο $0\\text{ V}$ και ο C στο $V_{\\text{πηγ}}$. Η σύνδεση παρακάμπτει πλήρως τον $R_2$ και συνδέει απευθείας τους πόλους της πηγής (Ολικό Βραχυκύκλωμα)!') : 
                                 (state.topology === 'series' ? 
-                                'Το καλώδιο συνδέεται απευθείας στα άκρα του αντιστάτη $R_2$ (κόμβοι B και C), μηδενίζοντας την τάση $V_2 = 0\\text{ V}$.' : 
+                                'Το καλώδιο συνδέεται απευθείας στα άκρα του αντιστάτη $R_2$ (κόμβοι B και C), μηδενίζοντας άμεσα την τάση $V_2 = 0\\text{ V}$.' : 
                                 'Το καλώδιο συνδέεται απευθείας στα άκρα του κλάδου 2 (κόμβοι C και E), προκαλώντας παράκαμψη του $R_2$ και ολικό βραχυκύκλωμα της πηγής.')}
                         </p>
                     </div>
@@ -3391,8 +3389,12 @@ window.CircuitSimulation = (function() {
         setShortMode: function(resistorKey, mode) {
             if (state.faultInstrument && state.faultInstrument !== 'none') return;
             if (resistorKey === 'R1') {
+                state.shortR1 = true;
+                state.brokenR1 = false;
                 state.shortModeR1 = mode;
             } else if (resistorKey === 'R2') {
+                state.shortR2 = true;
+                state.brokenR2 = false;
                 state.shortModeR2 = mode;
             }
             if (state.containerEl) {
@@ -3405,15 +3407,15 @@ window.CircuitSimulation = (function() {
             if (mode === 'alternative') {
                 if (state.topology === 'series') {
                     showToast(resistorKey === 'R1' ? 
-                        '⚡ Εναλλακτική σύνδεση G ↔ B: Ο κόμβος G έχει το ίδιο δυναμικό με τον A (VG = VA). Η σύνδεση στα άκρα του R1 είναι 100% ισοδύναμη με το κλασικό βραχυκύκλωμα!' : 
-                        '⚡ Εναλλακτική σύνδεση B ↔ E: Ο κόμβος E έχει δυναμικό 0 V (ίδιο με τον C). Η σύνδεση στα άκρα του R2 είναι 100% ισοδύναμη με το κλασικό βραχυκύκλωμα!');
+                        '⚡ Έμμεση παράκαμψη R₁ (G ↔ B): Καλώδιο κάτω από τον R₁. Ο κόμβος G έχει ίδιο δυναμικό με τον A (VG = VA = Vπηγ), μηδενίζοντας την τάση V1 = 0 V!' : 
+                        '⚡ Έμμεση παράκαμψη R₂ (B ↔ E): Καλώδιο B ↔ E. Ο κόμβος E έχει ίδιο δυναμικό με τον C (VE = VC = 0 V), μηδενίζοντας την τάση V2 = 0 V!');
                 } else {
                     showToast(resistorKey === 'R1' ? 
-                        '⚡ Εναλλακτική σύνδεση A ↔ E: Ενώνει την άνω γραμμή (A) με την κάτω (E), παρακάμπτοντας τον R1 (και όλο το παράλληλο σύστημα)!' : 
-                        '⚡ Εναλλακτική σύνδεση B ↔ C: Ενώνει την κάτω γραμμή (B) με την άνω (C), παρακάμπτοντας τον R2 (και όλο το παράλληλο σύστημα)!');
+                        '⚡ Έμμεση παράκαμψη A ↔ E: Ενώνει την άνω γραμμή (A) με την κάτω (E), παρακάμπτοντας τον R₁!' : 
+                        '⚡ Έμμεση παράκαμψη B ↔ C: Ενώνει την κάτω γραμμή (B) με την άνω (C), παρακάμπτοντας τον R₂!');
                 }
             } else {
-                showToast(`ℹ️ Κλασική σύνδεση βραχυκύκλωσης στα άκρα του ${resistorKey}.`);
+                showToast(`⚡ Άμεση παράκαμψη στα άκρα του ${resistorKey} (${resistorKey === 'R1' ? 'A ↔ B' : (state.topology === 'series' ? 'B ↔ C' : 'C ↔ E')}).`);
             }
         },
 
@@ -3525,9 +3527,13 @@ window.CircuitSimulation = (function() {
                     if (b2) b2.checked = false;
                 }
             }
-            updateSvg();
-            updateHud();
-            updateMetrics();
+            if (state.containerEl) {
+                render(state.containerEl);
+            } else {
+                updateSvg();
+                updateHud();
+                updateMetrics();
+            }
             if (checked) {
                 if (state.topology === 'parallel') {
                     showToast('⚠️ Προσοχή: Βραχυκύκλωση κλάδου σε παράλληλη σύνδεση προκαλεί ολικό βραχυκύκλωμα της πηγής!');
