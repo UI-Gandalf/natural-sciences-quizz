@@ -58,100 +58,10 @@ window.ExamSolutionsGuide = (function() {
 
 
     // ==============================================================================
-    // DIAGRAM TOGGLE & HOVER QUICK-PEEK (THEMA A1 & THEMA A2)
+    // INLINE DIAGRAM TOGGLE (THEMA A1 & THEMA A2)
+    // Opens directly above the question prompt, centered in the middle of the card
     // ==============================================================================
-    let hoverPopoverEl = null;
-    let hoverHideTimeout = null;
-
-    function ensureHoverPopover() {
-        if (!hoverPopoverEl) {
-            hoverPopoverEl = document.createElement('div');
-            hoverPopoverEl.id = 'exam-hover-diagram-popover';
-            hoverPopoverEl.className = 'exam-hover-diagram-popover';
-            document.body.appendChild(hoverPopoverEl);
-
-            hoverPopoverEl.addEventListener('mouseenter', () => {
-                if (hoverHideTimeout) clearTimeout(hoverHideTimeout);
-            });
-            hoverPopoverEl.addEventListener('mouseleave', () => {
-                hideHoverDiagram(150);
-            });
-        }
-        return hoverPopoverEl;
-    }
-
-    function showHoverDiagram(e, topicKey) {
-        if (hoverHideTimeout) clearTimeout(hoverHideTimeout);
-        
-        // Skip hover popup on touch devices
-        if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
-
-        const btn = e.currentTarget;
-        if (!btn) return;
-
-        // If the inline drawer for this question is already open, skip hover popup
-        const qCard = btn.closest('.exam-question-card');
-        if (qCard) {
-            const drawer = qCard.querySelector('.exam-inline-diagram-drawer');
-            if (drawer && drawer.style.display !== 'none') {
-                return;
-            }
-        }
-
-        const popover = ensureHoverPopover();
-        const isA1 = topicKey === 'a1';
-        const imgSrc = isA1 ? 'assets/images/exam_solutions/circuit_series_a1.png' : 'assets/images/exam_solutions/circuit_parallel_a2.png';
-        const title = isA1 ? 'Διάγραμμα Σειράς (Θέμα Α1)' : 'Διάγραμμα Παράλληλης (Θέμα Α2)';
-        const color = isA1 ? '#a78bfa' : '#67e8f9';
-        const borderColor = isA1 ? 'rgba(139, 92, 246, 0.5)' : 'rgba(6, 182, 212, 0.5)';
-        const dataBrief = isA1 ? 'V = 60 V | R₁ = 5 Ω | R₂ = 15 Ω' : 'V = 75 V | R₁ = 30 Ω | R₂ = 10 Ω';
-
-        popover.style.borderColor = borderColor;
-        popover.innerHTML = `
-            <div class="hover-diag-header">
-                <span style="color: ${color}; font-weight: 700; font-size: 0.85rem;">🗺️ ${title}</span>
-                <span style="font-size: 0.72rem; color: var(--text-muted);">(Κλικ για μόνιμο άνοιγμα)</span>
-            </div>
-            <div class="hover-diag-img-wrap">
-                <img src="${imgSrc}" alt="${title}" style="width: 100%; border-radius: 8px; display: block;" />
-            </div>
-            <div class="hover-diag-footer" style="font-size: 0.76rem; color: ${color}; text-align: center; margin-top: 6px; font-weight: 600;">
-                ${dataBrief}
-            </div>
-        `;
-
-        // Position popover relative to button
-        const rect = btn.getBoundingClientRect();
-        const popWidth = 360;
-        const popHeight = 240;
-        
-        let left = rect.left;
-        if (left + popWidth > window.innerWidth - 20) {
-            left = window.innerWidth - popWidth - 20;
-        }
-        if (left < 10) left = 10;
-
-        let top = rect.bottom + 8;
-        if (top + popHeight > window.innerHeight - 20 && rect.top > popHeight + 20) {
-            top = rect.top - popHeight - 8;
-        }
-
-        popover.style.left = `${left}px`;
-        popover.style.top = `${top}px`;
-        popover.classList.add('is-visible');
-    }
-
-    function hideHoverDiagram(delay = 100) {
-        if (hoverHideTimeout) clearTimeout(hoverHideTimeout);
-        hoverHideTimeout = setTimeout(() => {
-            if (hoverPopoverEl) {
-                hoverPopoverEl.classList.remove('is-visible');
-            }
-        }, delay);
-    }
-
     function toggleDiagram(questionId, topicKey) {
-        hideHoverDiagram(0);
         const drawer = document.getElementById('diag-drawer-' + questionId);
         const btn = document.getElementById('btn-diag-' + questionId);
         if (!drawer || !btn) return;
@@ -500,9 +410,7 @@ window.ExamSolutionsGuide = (function() {
 
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-1" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-1', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -567,9 +475,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-2" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-2', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -636,9 +542,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-3" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-3', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -708,9 +612,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-4" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-4', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -777,9 +679,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-5" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-5', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -848,9 +748,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-6" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-6', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -919,9 +817,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-7" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-7', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -987,9 +883,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-8" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-8', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -1056,9 +950,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-9" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-9', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -1126,9 +1018,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-10" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-10', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -1195,9 +1085,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-11" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-11', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -1267,9 +1155,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-12" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-12', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -1337,9 +1223,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-13" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-13', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -1406,9 +1290,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-14" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-14', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -1475,9 +1357,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-15" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a1-15', 'a1')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -1728,9 +1608,7 @@ window.ExamSolutionsGuide = (function() {
 
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-1" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-1', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -1798,9 +1676,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-2" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-2', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -1865,9 +1741,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-3" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-3', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -1932,9 +1806,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-4" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-4', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -2002,9 +1874,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-5" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-5', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -2070,9 +1940,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-6" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-6', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -2137,9 +2005,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-7" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-7', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -2206,9 +2072,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-8" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-8', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -2275,9 +2139,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-9" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-9', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -2344,9 +2206,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-10" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-10', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -2413,9 +2273,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-11" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-11', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -2480,9 +2338,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-12" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-12', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -2549,9 +2405,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-13" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-13', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -2617,9 +2471,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-14" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-14', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -2685,9 +2537,7 @@ window.ExamSolutionsGuide = (function() {
                             
                                 <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-15" 
                                         onclick="ExamSolutionsGuide.toggleDiagram('a2-15', 'a2')"
-                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
-                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
-                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                         title="Κλικ για άνοιγμα/κλείσιμο του διαγράμματος επάνω από το ερώτημα">
                                     <span class="diag-btn-icon">🗺️</span>
                                     <span class="diag-btn-label">Διάγραμμα</span>
                                     <span class="diag-btn-arrow">▾</span>
@@ -3151,8 +3001,6 @@ window.ExamSolutionsGuide = (function() {
         setFilter: setFilter,
         toggleSolution: toggleSolution,
         toggleAllSolutions: toggleAllSolutions,
-        toggleDiagram: toggleDiagram,
-        showHoverDiagram: showHoverDiagram,
-        hideHoverDiagram: hideHoverDiagram
+        toggleDiagram: toggleDiagram
     };
 })();

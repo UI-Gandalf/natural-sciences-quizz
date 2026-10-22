@@ -6543,42 +6543,7 @@ mjx-container[display="true"], .katex-display {
     transition: transform 0.2s ease;
 }
 
-/* Floating Hover Popover */
-.exam-hover-diagram-popover {
-    position: fixed;
-    z-index: 10000;
-    pointer-events: none;
-    opacity: 0;
-    transform: translateY(-8px) scale(0.96);
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    max-width: 380px;
-    width: 90vw;
-    background: rgba(15, 23, 42, 0.96);
-    backdrop-filter: blur(16px);
-    border-radius: 14px;
-    border: 1.5px solid rgba(255, 255, 255, 0.2);
-    padding: 12px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.75);
-}
-
-.exam-hover-diagram-popover.is-visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-}
-
-.hover-diag-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-}
-
-.hover-diag-img-wrap {
-    overflow: hidden;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: #000;
-}
+/* Floating Hover Popover removed - diagrams toggle cleanly inline above question */
 
 /* ==============================================================================
    EXECUTIVE COMPARISON & HAZARD CARDS (SECTION 05 & 07)
