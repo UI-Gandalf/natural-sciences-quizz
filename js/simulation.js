@@ -1578,7 +1578,7 @@ window.CircuitSimulation = (function() {
                         <line x1="260" y1="80" x2="260" y2="350" class="circuit-wire-base wire-short-vertical" />
                     ` : ''}
                     ${isFaultAmmeter2 ? `
-                        <line x1="510" y1="80" x2="510" y2="350" class="circuit-wire-base wire-short-vertical" />
+                        <line x1="545" y1="80" x2="545" y2="350" class="circuit-wire-base wire-short-vertical" />
                     ` : ''}
 
                     <!-- Active Animated Current Overlay Paths -->
@@ -1597,15 +1597,15 @@ window.CircuitSimulation = (function() {
                     ` : isFaultAmmeter2 ? `
                         ${isClosed ? `
                             <!-- Closed Short-Circuit Loop: Battery(+) -> Switch -> Aολ -> Knot K -> A2 -> Knot M -> Battery(-) -->
-                            <path d="M 100 200 L 100 80 L 510 80 L 510 350 L 100 350 L 100 230" 
+                            <path d="M 100 200 L 100 80 L 545 80 L 545 350 L 100 350 L 100 230" 
                                   class="circuit-wire-current wire-short-furious" />
                             <!-- Directional arrows in short-circuit loop -->
                             <path d="M 100 200 L 100 135" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
                             <path d="M 205 80 L 255 80" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
-                            <path d="M 345 80 L 485 80" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
-                            <path d="M 510 105 L 510 165" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
-                            <path d="M 510 260 L 510 320" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
-                            <path d="M 485 350 L 390 350" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 345 80 L 520 80" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 545 105 L 545 165" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 545 260 L 545 320" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
+                            <path d="M 520 350 L 390 350" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
                             <path d="M 350 350 L 200 350" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
                             <path d="M 180 350 L 110 350" marker-end="url(#current-arrow-short-par)" class="flow-arrow-path short-arrow" />
                         ` : ''}
@@ -1659,8 +1659,8 @@ window.CircuitSimulation = (function() {
                     ` : ''}
                     ${isFaultAmmeter2 ? `
                         <g class="sim-bypass-alert-badge">
-                            <rect x="180" y="272" width="640" height="66" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(245, 158, 11, 0.7); fill: rgba(15, 23, 42, 0.95);" />
-                            <text x="500" y="296" class="sim-bypass-warning-text" style="fill: #fcd34d;" text-anchor="middle">
+                            <rect x="180" y="264" width="640" height="64" rx="12" class="sim-bypass-warning-banner" style="stroke: rgba(245, 158, 11, 0.7); fill: rgba(15, 23, 42, 0.95);" />
+                            <text x="500" y="288" class="sim-bypass-warning-text" style="fill: #fcd34d;" text-anchor="middle">
                                 <tspan x="500" dy="0">${isClosed ? '⚡ Το ρεύμα διαρρέει το Aολ και το A₂ (Βραχυκύκλωμα)' : '⚪ Ανοικτός διακόπτης'}</tspan>
                                 <tspan x="500" dy="25">${isClosed ? 'Στους αντιστάτες R₁ &amp; R₂: I = 0 A (Πλήρης παράκαμψη)' : 'Το ρεύμα είναι μηδέν (I = 0 A)'}</tspan>
                             </text>
@@ -1869,33 +1869,33 @@ window.CircuitSimulation = (function() {
                         `) : ''}
                     </g>
 
-                    <!-- 7. AMMETER A2 / KNOT K & M SETUP BETWEEN R1 AND R2 (Midpoint x=510) -->
+                    <!-- 7. AMMETER A2 / KNOT K & M SETUP BETWEEN R1 AND R2 (Shifted cleanly to x=545) -->
                     ${isFaultAmmeter2 ? `
-                        <!-- KNOT K (x=510, y=80) - Between R1 and R2 -->
+                        <!-- KNOT K (x=545, y=80) - Between R1 and R2 -->
                         <g class="circuit-node-group node-knot-group" onmouseenter="CircuitSimulation.hoverProbe('nodeK')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeK')">
-                            <circle cx="510" cy="80" r="14" class="comp-hitbox" fill="transparent" />
-                            <circle cx="510" cy="80" r="5" class="circuit-node-dot knot-k-dot" />
-                            <text x="510" y="65" class="node-letter knot-k-letter">K</text>
+                            <circle cx="545" cy="80" r="14" class="comp-hitbox" fill="transparent" />
+                            <circle cx="545" cy="80" r="5" class="circuit-node-dot knot-k-dot" />
+                            <text x="545" y="65" class="node-letter knot-k-letter">K</text>
                         </g>
 
-                        <!-- AMMETER A2 (Perpendicular in the middle of cable joining K and M: x=510, y=215) -->
+                        <!-- AMMETER A2 (Perpendicular in the middle of cable joining K and M: x=545, y=215) -->
                         <g class="comp-interactive comp-meter faulty-ammeter" data-probe="ammeter2"
                            onmouseenter="CircuitSimulation.hoverProbe('ammeter2')" 
                            onmouseleave="CircuitSimulation.hoverProbe(null)"
                            onclick="CircuitSimulation.selectProbe('ammeter2')">
-                            <rect x="475" y="175" width="70" height="80" class="comp-hitbox" />
-                            <circle cx="510" cy="215" r="21" class="meter-circle meter-faulty-orange ${isClosed ? 'short-alarm' : ''}" />
-                            <text x="510" y="215" class="meter-text faulty-text-orange">A₂</text>
-                            <text x="540" y="220" class="meter-reading-tag danger-reading" text-anchor="start">
+                            <rect x="510" y="175" width="70" height="80" class="comp-hitbox" />
+                            <circle cx="545" cy="215" r="21" class="meter-circle meter-faulty-orange ${isClosed ? 'short-alarm' : ''}" />
+                            <text x="545" y="215" class="meter-text faulty-text-orange">A₂</text>
+                            <text x="574" y="220" class="meter-reading-tag danger-reading" text-anchor="start">
                                 ${!isClosed ? '0.00 A' : '∞ A'}
                             </text>
                         </g>
 
-                        <!-- KNOT M (x=510, y=350) - Landing of Vertical Cable from A2 -->
+                        <!-- KNOT M (x=545, y=350) - Landing of Vertical Cable from A2 -->
                         <g class="circuit-node-group node-knot-group" onmouseenter="CircuitSimulation.hoverProbe('nodeM')" onmouseleave="CircuitSimulation.hoverProbe(null)" onclick="CircuitSimulation.selectProbe('nodeM')">
-                            <circle cx="510" cy="350" r="14" class="comp-hitbox" fill="transparent" />
-                            <circle cx="510" cy="350" r="5" class="circuit-node-dot knot-m-dot" />
-                            <text x="527" y="342" class="node-letter knot-m-letter">M</text>
+                            <circle cx="545" cy="350" r="14" class="comp-hitbox" fill="transparent" />
+                            <circle cx="545" cy="350" r="5" class="circuit-node-dot knot-m-dot" />
+                            <text x="562" y="342" class="node-letter knot-m-letter">M</text>
                         </g>
                     ` : ''}
 
