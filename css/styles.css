@@ -6236,7 +6236,33 @@ mjx-container[display="true"], .katex-display {
     gap: 6px;
     box-sizing: border-box;
     min-height: 48px;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
+    margin: 0;
+    user-select: none;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+}
+
+button.exam-opt-pill:hover:not(:disabled):not(.is-correct):not(.is-wrong) {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.45);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.18);
+}
+
+button.exam-opt-pill:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.exam-opt-pill:disabled:not(.is-correct):not(.is-wrong) {
+    opacity: 0.55;
+    cursor: default;
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .exam-opt-pill .opt-label {
@@ -6256,11 +6282,12 @@ mjx-container[display="true"], .katex-display {
 }
 
 .exam-opt-pill.is-correct {
-    background: rgba(16, 185, 129, 0.16);
-    border-color: rgba(16, 185, 129, 0.45);
-    color: #34d399;
-    font-weight: 700;
-    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.15);
+    background: rgba(16, 185, 129, 0.2) !important;
+    border-color: rgba(16, 185, 129, 0.6) !important;
+    color: #34d399 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 14px rgba(16, 185, 129, 0.25) !important;
+    cursor: default;
 }
 
 .exam-opt-pill.is-correct .opt-check {
@@ -6271,10 +6298,107 @@ mjx-container[display="true"], .katex-display {
     font-size: 0.74rem;
     background: #10b981;
     color: #ffffff;
-    padding: 2px 7px;
+    padding: 2px 8px;
     border-radius: 999px;
     font-weight: 800;
     line-height: 1.2;
+    margin-left: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.exam-opt-pill.is-wrong {
+    background: rgba(239, 68, 68, 0.16) !important;
+    border-color: rgba(239, 68, 68, 0.5) !important;
+    color: #fca5a5 !important;
+    box-shadow: 0 2px 10px rgba(239, 68, 68, 0.15) !important;
+    cursor: not-allowed;
+    opacity: 0.85;
+}
+
+.exam-opt-pill.is-wrong .opt-wrong-badge {
+    flex-shrink: 0;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.74rem;
+    background: #ef4444;
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-left: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Question Interactive Feedback & Attempts Notice */
+.exam-q-feedback {
+    margin-top: 12px;
+    margin-bottom: 6px;
+    animation: fadeInExamFeedback 0.25s ease-out;
+}
+
+@keyframes fadeInExamFeedback {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.exam-feedback-alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.exam-feedback-alert.warning {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.38);
+    color: #fbbf24;
+}
+
+.exam-feedback-alert.danger {
+    background: rgba(239, 68, 68, 0.14);
+    border: 1px solid rgba(239, 68, 68, 0.45);
+    color: #fca5a5;
+}
+
+.exam-feedback-alert.success {
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    color: #6ee7b7;
+}
+
+.exam-feedback-alert-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.exam-reset-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.exam-reset-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .exam-sol-wrap {

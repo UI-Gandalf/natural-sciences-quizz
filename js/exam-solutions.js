@@ -122,6 +122,203 @@ window.ExamSolutionsGuide = (function() {
         }
     }
 
+    // ==============================================================================
+    // INTERACTIVE QUIZ MODE FOR EXAM QUESTIONS (ALLOW 2 ATTEMPTS)
+    // ==============================================================================
+    const CORRECT_ANSWERS = {
+        'a1-1': 1,
+        'a1-2': 3,
+        'a1-3': 0,
+        'a1-4': 3,
+        'a1-5': 4,
+        'a1-6': 2,
+        'a1-7': 6,
+        'a1-8': 7,
+        'a1-9': 5,
+        'a1-10': 1,
+        'a1-11': 6,
+        'a1-12': 4,
+        'a1-13': 1,
+        'a1-14': 2,
+        'a1-15': 3,
+        'a2-1': 6,
+        'a2-2': 5,
+        'a2-3': 2,
+        'a2-4': 1,
+        'a2-5': 5,
+        'a2-6': 5,
+        'a2-7': 0,
+        'a2-8': 3,
+        'a2-9': 1,
+        'a2-10': 3,
+        'a2-11': 0,
+        'a2-12': 4,
+        'a2-13': 7,
+        'a2-14': 5,
+        'a2-15': 1
+    };
+
+    const questionStates = {};
+
+    function openSolution(id) {
+        const solEl = document.getElementById('sol-' + id);
+        const btnEl = document.getElementById('btn-sol-' + id);
+        if (solEl && btnEl) {
+            solEl.style.display = 'block';
+            btnEl.classList.add('is-open');
+            btnEl.innerHTML = '<span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▴</span>';
+            if (window.renderMath) {
+                window.renderMath(solEl);
+            } else if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([solEl]).catch(function(err) { console.warn(err); });
+            }
+        }
+    }
+
+    function checkAnswer(qid, optIndex) {
+        const correctIdx = CORRECT_ANSWERS[qid];
+        if (correctIdx === undefined) return;
+
+        if (!questionStates[qid]) {
+            questionStates[qid] = { attempts: 0, finished: false };
+        }
+        const state = questionStates[qid];
+        if (state.finished) return;
+
+        const optGrid = document.getElementById('opts-grid-' + qid);
+        if (!optGrid) return;
+        const btns = optGrid.querySelectorAll('.exam-opt-pill');
+        const clickedBtn = btns[optIndex];
+        if (!clickedBtn || clickedBtn.disabled) return;
+
+        const feedbackEl = document.getElementById('feedback-' + qid);
+
+        state.attempts++;
+
+        if (optIndex === correctIdx) {
+            // Correct answer on 1st or 2nd attempt!
+            state.finished = true;
+            clickedBtn.classList.add('is-correct');
+            if (!clickedBtn.querySelector('.opt-check')) {
+                const check = document.createElement('span');
+                check.className = 'opt-check';
+                check.innerHTML = '✓ Σωστή';
+                clickedBtn.appendChild(check);
+            }
+
+            // Disable all options in this grid
+            btns.forEach(function(btn) { btn.disabled = true; });
+
+            if (feedbackEl) {
+                feedbackEl.style.display = 'block';
+                const attemptText = state.attempts === 1 ? 'στην 1η προσπάθεια' : 'στη 2η προσπάθεια';
+                feedbackEl.innerHTML = `
+                    <div class="exam-feedback-alert success">
+                        <div class="exam-feedback-alert-text">
+                            <span style="font-size: 1.15rem;">✓</span>
+                            <span><strong>Μπράβο! Σωστή επιλογή ${attemptText}!</strong> Η αναλυτική επίλυση αποκαλύφθηκε αυτόματα παρακάτω.</span>
+                        </div>
+                        <button type="button" class="exam-reset-btn" onclick="ExamSolutionsGuide.resetQuestion('${qid}')">
+                            <span>🔄</span><span>Δοκιμή ξανά</span>
+                        </button>
+                    </div>
+                `;
+            }
+
+            // Automatically reveal the explanation!
+            openSolution(qid);
+
+        } else {
+            // Incorrect answer
+            clickedBtn.classList.add('is-wrong');
+            clickedBtn.disabled = true;
+            if (!clickedBtn.querySelector('.opt-wrong-badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'opt-wrong-badge';
+                badge.innerHTML = state.attempts === 1 ? '✗ 1η προσπάθεια' : '✗ Λάθος';
+                clickedBtn.appendChild(badge);
+            }
+
+            if (state.attempts < 2) {
+                // First failed attempt: DO NOT reveal answer or explanation yet!
+                if (feedbackEl) {
+                    feedbackEl.style.display = 'block';
+                    feedbackEl.innerHTML = `
+                        <div class="exam-feedback-alert warning">
+                            <div class="exam-feedback-alert-text">
+                                <span style="font-size: 1.15rem;">⚠️</span>
+                                <span><strong>1η προσπάθεια μη σωστή.</strong> Έχετε <strong>άλλη 1 προσπάθεια</strong> πριν αποκαλυφθεί η σωστή απάντηση και η επίλυση. Δοκιμάστε ξανά!</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                // Second failed attempt: 2 failed attempts exhausted!
+                state.finished = true;
+                btns.forEach(function(btn) { btn.disabled = true; });
+
+                // Reveal the correct answer!
+                const correctBtn = btns[correctIdx];
+                if (correctBtn) {
+                    correctBtn.classList.add('is-correct');
+                    if (!correctBtn.querySelector('.opt-check')) {
+                        const check = document.createElement('span');
+                        check.className = 'opt-check';
+                        check.innerHTML = '✓ Σωστή Απάντηση';
+                        correctBtn.appendChild(check);
+                    }
+                }
+
+                if (feedbackEl) {
+                    feedbackEl.style.display = 'block';
+                    feedbackEl.innerHTML = `
+                        <div class="exam-feedback-alert danger">
+                            <div class="exam-feedback-alert-text">
+                                <span style="font-size: 1.15rem;">✗</span>
+                                <span><strong>Εξαντλήθηκαν οι 2 προσπάθειες.</strong> Αποκαλύφθηκε η σωστή απάντηση παραπάνω και η αναλυτική επίλυση παρακάτω.</span>
+                            </div>
+                            <button type="button" class="exam-reset-btn" onclick="ExamSolutionsGuide.resetQuestion('${qid}')">
+                                <span>🔄</span><span>Δοκιμή ξανά</span>
+                            </button>
+                        </div>
+                    `;
+                }
+
+                // Automatically reveal the explanation!
+                openSolution(qid);
+            }
+        }
+    }
+
+    function resetQuestion(qid) {
+        questionStates[qid] = { attempts: 0, finished: false };
+        const optGrid = document.getElementById('opts-grid-' + qid);
+        if (optGrid) {
+            const btns = optGrid.querySelectorAll('.exam-opt-pill');
+            btns.forEach(function(btn) {
+                btn.disabled = false;
+                btn.classList.remove('is-correct', 'is-wrong');
+                const check = btn.querySelector('.opt-check');
+                if (check) check.remove();
+                const wrong = btn.querySelector('.opt-wrong-badge');
+                if (wrong) wrong.remove();
+            });
+        }
+        const feedbackEl = document.getElementById('feedback-' + qid);
+        if (feedbackEl) {
+            feedbackEl.style.display = 'none';
+            feedbackEl.innerHTML = '';
+        }
+        const solEl = document.getElementById('sol-' + qid);
+        const btnEl = document.getElementById('btn-sol-' + qid);
+        if (solEl && btnEl) {
+            solEl.style.display = 'none';
+            btnEl.classList.remove('is-open');
+            btnEl.innerHTML = '<span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>';
+        }
+    }
+    }
+
     function render(container) {
         if (!container) return;
 
@@ -564,16 +761,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Με κλειστό μόνο τον κεντρικό διακόπτη [Γ, Δ], να υπολογίσετε τη συνολική αντίσταση $R_{\\text{ολ}}$ του κυκλώματος.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $5\\ \\Omega$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(β) $20\\ \\Omega$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $15\\ \\Omega$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $60\\ \\Omega$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $90\\ \\Omega$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $3,75\\ \\Omega$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $10\\ \\Omega$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $3\\ \\Omega$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-1">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-1', 0)"><span class="opt-label">(α) $5\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-1', 1)"><span class="opt-label">(β) $20\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-1', 2)"><span class="opt-label">(γ) $15\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-1', 3)"><span class="opt-label">(δ) $60\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-1', 4)"><span class="opt-label">(ε) $90\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-1', 5)"><span class="opt-label">(στ) $3,75\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-1', 6)"><span class="opt-label">(ζ) $10\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-1', 7)"><span class="opt-label">(η) $3\\ \\Omega$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-1" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-1" onclick="ExamSolutionsGuide.toggleSolution('a1-1')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -630,16 +828,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ένταση του ρεύματος $I$ που εξέρχεται από την πηγή.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $5\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $6\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $2\\text{ A}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(δ) $3\\text{ A}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $15\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $20\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) άπειρη</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $4\\text{ A}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-2">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-2', 0)"><span class="opt-label">(α) $5\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-2', 1)"><span class="opt-label">(β) $6\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-2', 2)"><span class="opt-label">(γ) $2\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-2', 3)"><span class="opt-label">(δ) $3\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-2', 4)"><span class="opt-label">(ε) $15\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-2', 5)"><span class="opt-label">(στ) $20\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-2', 6)"><span class="opt-label">(ζ) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-2', 7)"><span class="opt-label">(η) $4\\text{ A}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-2" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-2" onclick="ExamSolutionsGuide.toggleSolution('a1-2')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -697,16 +896,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την τάση $V_1$ στα άκρα του αντιστάτη $R_1$.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(α) $15\\text{ V}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $5\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $60\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $3\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $15\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $0\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $20\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $30\\text{ V}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-3">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-3', 0)"><span class="opt-label">(α) $15\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-3', 1)"><span class="opt-label">(β) $5\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-3', 2)"><span class="opt-label">(γ) $60\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-3', 3)"><span class="opt-label">(δ) $3\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-3', 4)"><span class="opt-label">(ε) $15\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-3', 5)"><span class="opt-label">(στ) $0\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-3', 6)"><span class="opt-label">(ζ) $20\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-3', 7)"><span class="opt-label">(η) $30\\text{ V}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-3" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-3" onclick="ExamSolutionsGuide.toggleSolution('a1-3')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -767,16 +967,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την τάση $V_2$ στα άκρα του αντιστάτη $R_2$.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $15\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $5\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $60\\text{ V}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(δ) $45\\text{ V}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $75\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $30\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $20\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) μηδέν</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-4">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-4', 0)"><span class="opt-label">(α) $15\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-4', 1)"><span class="opt-label">(β) $5\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-4', 2)"><span class="opt-label">(γ) $60\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-4', 3)"><span class="opt-label">(δ) $45\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-4', 4)"><span class="opt-label">(ε) $75\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-4', 5)"><span class="opt-label">(στ) $30\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-4', 6)"><span class="opt-label">(ζ) $20\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-4', 7)"><span class="opt-label">(η) μηδέν</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-4" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-4" onclick="ExamSolutionsGuide.toggleSolution('a1-4')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -834,16 +1035,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την τιμή της ισχύος $P_{\\text{πηγ}}$ που προσφέρει η πηγή στο κύκλωμα.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $150\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) άπειρη</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $45\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $60\\text{ W}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(ε) $180\\text{ W}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $120\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $200\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) μηδέν</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-5">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-5', 0)"><span class="opt-label">(α) $150\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-5', 1)"><span class="opt-label">(β) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-5', 2)"><span class="opt-label">(γ) $45\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-5', 3)"><span class="opt-label">(δ) $60\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-5', 4)"><span class="opt-label">(ε) $180\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-5', 5)"><span class="opt-label">(στ) $120\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-5', 6)"><span class="opt-label">(ζ) $200\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-5', 7)"><span class="opt-label">(η) μηδέν</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-5" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-5" onclick="ExamSolutionsGuide.toggleSolution('a1-5')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -903,16 +1105,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη διαφορά δυναμικού στα άκρα του κεντρικού διακόπτη [Γ, Δ] όταν το κύκλωμα είναι ανοιχτό.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $15\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $5\\text{ V}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(γ) $60\\text{ V}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $3\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $15\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $12\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $0\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $4\\text{ V}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-6">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-6', 0)"><span class="opt-label">(α) $15\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-6', 1)"><span class="opt-label">(β) $5\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-6', 2)"><span class="opt-label">(γ) $60\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-6', 3)"><span class="opt-label">(δ) $3\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-6', 4)"><span class="opt-label">(ε) $15\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-6', 5)"><span class="opt-label">(στ) $12\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-6', 6)"><span class="opt-label">(ζ) $0\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-6', 7)"><span class="opt-label">(η) $4\\text{ V}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-6" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-6" onclick="ExamSolutionsGuide.toggleSolution('a1-6')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -972,16 +1175,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη διαφορά δυναμικού στα άκρα του ανοιχτού διακόπτη [Θ, Κ] (με ανοιχτό τον [Γ, Δ]).
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $15\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $5\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $60\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $3\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $15\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $12\\text{ V}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(ζ) μηδέν <span class="opt-sub">($0\\text{ V}$)</span></span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $4\\text{ V}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-7">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-7', 0)"><span class="opt-label">(α) $15\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-7', 1)"><span class="opt-label">(β) $5\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-7', 2)"><span class="opt-label">(γ) $60\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-7', 3)"><span class="opt-label">(δ) $3\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-7', 4)"><span class="opt-label">(ε) $15\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-7', 5)"><span class="opt-label">(στ) $12\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-7', 6)"><span class="opt-label">(ζ) μηδέν <span class="opt-sub">($0\\text{ V}$)</span></span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-7', 7)"><span class="opt-label">(η) $4\\text{ V}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-7" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-7" onclick="ExamSolutionsGuide.toggleSolution('a1-7')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -1038,16 +1242,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Με κλειστό τον διακόπτη [Γ, Δ], να υπολογίσετε την ενέργεια που καταναλώνει σε χρόνο $t = 10\\text{ s}$ ο αντιστάτης $R_1$, εάν κλείσει προσωρινά ο διακόπτης [Ζ, Η].
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) άπειρη</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $3000\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $4500\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $600\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $1800\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $1350\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $2400\\text{ J}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(η) μηδέν <span class="opt-sub">($0\\text{ J}$)</span></span> <span class="opt-check">✓ Σωστή</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-8">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-8', 0)"><span class="opt-label">(α) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-8', 1)"><span class="opt-label">(β) $3000\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-8', 2)"><span class="opt-label">(γ) $4500\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-8', 3)"><span class="opt-label">(δ) $600\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-8', 4)"><span class="opt-label">(ε) $1800\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-8', 5)"><span class="opt-label">(στ) $1350\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-8', 6)"><span class="opt-label">(ζ) $2400\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-8', 7)"><span class="opt-label">(η) μηδέν <span class="opt-sub">($0\\text{ J}$)</span></span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-8" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-8" onclick="ExamSolutionsGuide.toggleSolution('a1-8')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -1105,16 +1310,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τον ρυθμό διέλευσης φορτίου ($I$) μέσα από τον κεντρικό διακόπτη [Γ, Δ], εάν κλείσει προσωρινά ο διακόπτης [Θ, Κ].
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $10\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) άπειρος</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $45\\text{ C/s}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) μηδέν</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $14\\text{ C/s}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(στ) $12\\text{ A}$ <span class="opt-sub">($12\\text{ C/s}$)</span></span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $120\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $8\\text{ C/s}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-9">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-9', 0)"><span class="opt-label">(α) $10\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-9', 1)"><span class="opt-label">(β) άπειρος</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-9', 2)"><span class="opt-label">(γ) $45\\text{ C/s}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-9', 3)"><span class="opt-label">(δ) μηδέν</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-9', 4)"><span class="opt-label">(ε) $14\\text{ C/s}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-9', 5)"><span class="opt-label">(στ) $12\\text{ A}$ <span class="opt-sub">($12\\text{ C/s}$)</span></span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-9', 6)"><span class="opt-label">(ζ) $120\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-9', 7)"><span class="opt-label">(η) $8\\text{ C/s}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-9" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-9" onclick="ExamSolutionsGuide.toggleSolution('a1-9')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -1173,16 +1379,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε το φορτίο $q$ που διέρχεται από το σημείο Α σε χρόνο $t = 10\\text{ s}$, εάν κλείσει προσωρινά ο διακόπτης [Μ, Λ].
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $100\\text{ C}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(β) $30\\text{ C}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $45\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $60\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $180\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $135\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $120\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $200\\text{ C}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-10">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-10', 0)"><span class="opt-label">(α) $100\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-10', 1)"><span class="opt-label">(β) $30\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-10', 2)"><span class="opt-label">(γ) $45\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-10', 3)"><span class="opt-label">(δ) $60\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-10', 4)"><span class="opt-label">(ε) $180\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-10', 5)"><span class="opt-label">(στ) $135\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-10', 6)"><span class="opt-label">(ζ) $120\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-10', 7)"><span class="opt-label">(η) $200\\text{ C}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-10" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-10" onclick="ExamSolutionsGuide.toggleSolution('a1-10')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -1240,16 +1447,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ενέργεια $E_1$ που καταναλώνει σε $t = 10\\text{ s}$ ο $R_1$, εάν κλείσει προσωρινά ο διακόπτης [Θ, Κ].
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) μηδέν</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $3000\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $4500\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $600\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) άπειρη</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $1350\\text{ J}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(ζ) $7200\\text{ J}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $2000\\text{ J}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-11">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-11', 0)"><span class="opt-label">(α) μηδέν</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-11', 1)"><span class="opt-label">(β) $3000\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-11', 2)"><span class="opt-label">(γ) $4500\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-11', 3)"><span class="opt-label">(δ) $600\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-11', 4)"><span class="opt-label">(ε) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-11', 5)"><span class="opt-label">(στ) $1350\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-11', 6)"><span class="opt-label">(ζ) $7200\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-11', 7)"><span class="opt-label">(η) $2000\\text{ J}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-11" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-11" onclick="ExamSolutionsGuide.toggleSolution('a1-11')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -1310,16 +1518,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ισχύ που παράγει η πηγή, εάν κλείσουν προσωρινά οι διακόπτες [Μ, Λ] και [Ξ, Ν].
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $2400\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $300\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $450\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $60\\text{ W}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(ε) άπειρη <span class="opt-sub">(ολικό βραχυκύκλωμα)</span></span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) μηδέν</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $1200\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $2000\\text{ W}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-12">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-12', 0)"><span class="opt-label">(α) $2400\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-12', 1)"><span class="opt-label">(β) $300\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-12', 2)"><span class="opt-label">(γ) $450\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-12', 3)"><span class="opt-label">(δ) $60\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-12', 4)"><span class="opt-label">(ε) άπειρη <span class="opt-sub">(ολικό βραχυκύκλωμα)</span></span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-12', 5)"><span class="opt-label">(στ) μηδέν</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-12', 6)"><span class="opt-label">(ζ) $1200\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-12', 7)"><span class="opt-label">(η) $2000\\text{ W}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-12" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-12" onclick="ExamSolutionsGuide.toggleSolution('a1-12')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -1378,16 +1587,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τον ρυθμό κατανάλωσης ενέργειας του $R_1$, εάν ενώσουμε προσωρινά με ιδανικό καλώδιο τα σημεία Ε και Γ.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $1000\\text{ J/s}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(β) μηδέν <span class="opt-sub">($0\\text{ W}$)</span></span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $450\\text{ J/s}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $60\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $1800\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $1350\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) άπειρος</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $2000\\text{ J/s}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-13">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-13', 0)"><span class="opt-label">(α) $1000\\text{ J/s}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-13', 1)"><span class="opt-label">(β) μηδέν <span class="opt-sub">($0\\text{ W}$)</span></span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-13', 2)"><span class="opt-label">(γ) $450\\text{ J/s}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-13', 3)"><span class="opt-label">(δ) $60\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-13', 4)"><span class="opt-label">(ε) $1800\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-13', 5)"><span class="opt-label">(στ) $1350\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-13', 6)"><span class="opt-label">(ζ) άπειρος</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-13', 7)"><span class="opt-label">(η) $2000\\text{ J/s}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-13" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-13" onclick="ExamSolutionsGuide.toggleSolution('a1-13')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -1445,16 +1655,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη διαφορά δυναμικού στα άκρα του αντιστάτη $R_2$, εάν ενώσουμε προσωρινά με ένα ιδανικό καλώδιο τα σημεία Δ και Μ.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $45\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $15\\text{ V}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(γ) μηδέν <span class="opt-sub">($0\\text{ V}$)</span></span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $12\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $4\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $120\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) άπειρη</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $60\\text{ V}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-14">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-14', 0)"><span class="opt-label">(α) $45\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-14', 1)"><span class="opt-label">(β) $15\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-14', 2)"><span class="opt-label">(γ) μηδέν <span class="opt-sub">($0\\text{ V}$)</span></span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-14', 3)"><span class="opt-label">(δ) $12\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-14', 4)"><span class="opt-label">(ε) $4\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-14', 5)"><span class="opt-label">(στ) $120\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-14', 6)"><span class="opt-label">(ζ) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-14', 7)"><span class="opt-label">(η) $60\\text{ V}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-14" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-14" onclick="ExamSolutionsGuide.toggleSolution('a1-14')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -1512,16 +1723,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ενέργεια που προσφέρει η πηγή στο κύκλωμα σε χρόνο $t = 20\\text{ s}$, εάν ενώσουμε προσωρινά με ιδανικό καλώδιο τα σημεία Η και Ν.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $10000\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) άπειρη</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) μηδέν</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(δ) $14400\\text{ J}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $18000\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $1450\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $12000\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $20000\\text{ J}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a1-15">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-15', 0)"><span class="opt-label">(α) $10000\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-15', 1)"><span class="opt-label">(β) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-15', 2)"><span class="opt-label">(γ) μηδέν</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-15', 3)"><span class="opt-label">(δ) $14400\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-15', 4)"><span class="opt-label">(ε) $18000\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-15', 5)"><span class="opt-label">(στ) $1450\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-15', 6)"><span class="opt-label">(ζ) $12000\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a1-15', 7)"><span class="opt-label">(η) $20000\\text{ J}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a1-15" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-15" onclick="ExamSolutionsGuide.toggleSolution('a1-15')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -1762,16 +1974,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη συνολική αντίσταση $R_{\\text{ολ}}$ της παράλληλης συνδεσμολογίας των αντιστατών $R_1 = 30\\ \\Omega$ και $R_2 = 10\\ \\Omega$.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $40\\ \\Omega$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $20\\ \\Omega$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $15\\ \\Omega$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $60\\ \\Omega$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $90\\ \\Omega$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $3,75\\ \\Omega$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(ζ) $7,5\\ \\Omega$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $3\\ \\Omega$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-1">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-1', 0)"><span class="opt-label">(α) $40\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-1', 1)"><span class="opt-label">(β) $20\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-1', 2)"><span class="opt-label">(γ) $15\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-1', 3)"><span class="opt-label">(δ) $60\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-1', 4)"><span class="opt-label">(ε) $90\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-1', 5)"><span class="opt-label">(στ) $3,75\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-1', 6)"><span class="opt-label">(ζ) $7,5\\ \\Omega$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-1', 7)"><span class="opt-label">(η) $3\\ \\Omega$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-1" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-1" onclick="ExamSolutionsGuide.toggleSolution('a2-1')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -1830,16 +2043,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ένταση του ολικού ρεύματος $I_{\\text{ολ}}$ που εξέρχεται από την πηγή.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $75\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $7,5\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $2,5\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $3\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $3,75\\text{ A}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(στ) $10\\text{ A}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $20\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $4\\text{ A}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-2">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-2', 0)"><span class="opt-label">(α) $75\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-2', 1)"><span class="opt-label">(β) $7,5\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-2', 2)"><span class="opt-label">(γ) $2,5\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-2', 3)"><span class="opt-label">(δ) $3\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-2', 4)"><span class="opt-label">(ε) $3,75\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-2', 5)"><span class="opt-label">(στ) $10\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-2', 6)"><span class="opt-label">(ζ) $20\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-2', 7)"><span class="opt-label">(η) $4\\text{ A}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-2" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-2" onclick="ExamSolutionsGuide.toggleSolution('a2-2')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -1895,16 +2109,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ένταση του ρεύματος $I_1$ στον κλάδο του αντιστάτη $R_1 = 30\\ \\Omega$.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) άπειρη</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $7,5\\text{ A}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(γ) $2,5\\text{ A}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $3\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $3,75\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $10\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $20\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) μηδέν</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-3">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-3', 0)"><span class="opt-label">(α) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-3', 1)"><span class="opt-label">(β) $7,5\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-3', 2)"><span class="opt-label">(γ) $2,5\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-3', 3)"><span class="opt-label">(δ) $3\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-3', 4)"><span class="opt-label">(ε) $3,75\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-3', 5)"><span class="opt-label">(στ) $10\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-3', 6)"><span class="opt-label">(ζ) $20\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-3', 7)"><span class="opt-label">(η) μηδέν</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-3" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-3" onclick="ExamSolutionsGuide.toggleSolution('a2-3')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -1960,16 +2175,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ένταση του ρεύματος $I_2$ στον κλάδο του αντιστάτη $R_2 = 10\\ \\Omega$.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $75\\text{ A}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(β) $7,5\\text{ A}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $2,5\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $3\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) άπειρη</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $10\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $20\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) μηδέν</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-4">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-4', 0)"><span class="opt-label">(α) $75\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-4', 1)"><span class="opt-label">(β) $7,5\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-4', 2)"><span class="opt-label">(γ) $2,5\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-4', 3)"><span class="opt-label">(δ) $3\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-4', 4)"><span class="opt-label">(ε) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-4', 5)"><span class="opt-label">(στ) $10\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-4', 6)"><span class="opt-label">(ζ) $20\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-4', 7)"><span class="opt-label">(η) μηδέν</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-4" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-4" onclick="ExamSolutionsGuide.toggleSolution('a2-4')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -2028,16 +2244,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη διαφορά δυναμικού στα άκρα του κλειστού κεντρικού διακόπτη [Α, Β].
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $75\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $30\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $10\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $7,5\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) άπειρη</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(στ) μηδέν <span class="opt-sub">($0\\text{ V}$)</span></span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $150\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $37,5\\text{ V}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-5">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-5', 0)"><span class="opt-label">(α) $75\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-5', 1)"><span class="opt-label">(β) $30\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-5', 2)"><span class="opt-label">(γ) $10\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-5', 3)"><span class="opt-label">(δ) $7,5\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-5', 4)"><span class="opt-label">(ε) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-5', 5)"><span class="opt-label">(στ) μηδέν <span class="opt-sub">($0\\text{ V}$)</span></span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-5', 6)"><span class="opt-label">(ζ) $150\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-5', 7)"><span class="opt-label">(η) $37,5\\text{ V}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-5" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-5" onclick="ExamSolutionsGuide.toggleSolution('a2-5')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -2094,16 +2311,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη διαφορά δυναμικού στα άκρα του κλειστού διακόπτη κλάδου [Ε, Ζ].
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $75\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $30\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $10\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $7,5\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) άπειρη</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(στ) μηδέν <span class="opt-sub">($0\\text{ V}$)</span></span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $150\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $37,5\\text{ V}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-6">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-6', 0)"><span class="opt-label">(α) $75\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-6', 1)"><span class="opt-label">(β) $30\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-6', 2)"><span class="opt-label">(γ) $10\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-6', 3)"><span class="opt-label">(δ) $7,5\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-6', 4)"><span class="opt-label">(ε) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-6', 5)"><span class="opt-label">(στ) μηδέν <span class="opt-sub">($0\\text{ V}$)</span></span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-6', 6)"><span class="opt-label">(ζ) $150\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-6', 7)"><span class="opt-label">(η) $37,5\\text{ V}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-6" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-6" onclick="ExamSolutionsGuide.toggleSolution('a2-6')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -2159,16 +2377,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ισχύ $P_1$ που καταναλώνει ο αντιστάτης $R_1 = 30\\ \\Omega$.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(α) $187,5\\text{ W}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) άπειρη</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $750\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $60,5\\text{ J/s}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $185,5\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $120\\text{ J/s}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) μηδέν</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $562,5\\text{ J/s}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-7">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-7', 0)"><span class="opt-label">(α) $187,5\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-7', 1)"><span class="opt-label">(β) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-7', 2)"><span class="opt-label">(γ) $750\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-7', 3)"><span class="opt-label">(δ) $60,5\\text{ J/s}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-7', 4)"><span class="opt-label">(ε) $185,5\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-7', 5)"><span class="opt-label">(στ) $120\\text{ J/s}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-7', 6)"><span class="opt-label">(ζ) μηδέν</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-7', 7)"><span class="opt-label">(η) $562,5\\text{ J/s}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-7" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-7" onclick="ExamSolutionsGuide.toggleSolution('a2-7')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -2226,16 +2445,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ενέργεια $E_2$ που καταναλώνει ο αντιστάτης $R_2 = 10\\ \\Omega$ σε χρονικό διάστημα $t = 10\\text{ s}$.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) άπειρη</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $1875\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $4500\\text{ J}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(δ) $5625\\text{ J}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $2050\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $5750\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $2400\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) μηδέν</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-8">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-8', 0)"><span class="opt-label">(α) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-8', 1)"><span class="opt-label">(β) $1875\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-8', 2)"><span class="opt-label">(γ) $4500\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-8', 3)"><span class="opt-label">(δ) $5625\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-8', 4)"><span class="opt-label">(ε) $2050\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-8', 5)"><span class="opt-label">(στ) $5750\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-8', 6)"><span class="opt-label">(ζ) $2400\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-8', 7)"><span class="opt-label">(η) μηδέν</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-8" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-8" onclick="ExamSolutionsGuide.toggleSolution('a2-8')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -2293,16 +2513,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ένταση του ρεύματος $I_2'$ που διαρρέει τον $R_2$, εάν ανοίξει προσωρινά ο διακόπτης [Γ, Δ] (του άλλου κλάδου).
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $75\\text{ A}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(β) $7,5\\text{ A}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $2,5\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $3\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $3,75\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $10\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $20\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $4\\text{ A}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-9">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-9', 0)"><span class="opt-label">(α) $75\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-9', 1)"><span class="opt-label">(β) $7,5\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-9', 2)"><span class="opt-label">(γ) $2,5\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-9', 3)"><span class="opt-label">(δ) $3\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-9', 4)"><span class="opt-label">(ε) $3,75\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-9', 5)"><span class="opt-label">(στ) $10\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-9', 6)"><span class="opt-label">(ζ) $20\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-9', 7)"><span class="opt-label">(η) $4\\text{ A}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-9" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-9" onclick="ExamSolutionsGuide.toggleSolution('a2-9')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -2360,16 +2581,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε το φορτίο $q_{\\text{πηγ}}$ που εξέρχεται από την πηγή σε χρόνο $t = 20\\text{ s}$, εάν ανοίξει προσωρινά ο διακόπτης [Γ, Δ].
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $750\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $75\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $25\\text{ C}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(δ) $150\\text{ C}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $3,75\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $500\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $250\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $50\\text{ C}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-10">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-10', 0)"><span class="opt-label">(α) $750\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-10', 1)"><span class="opt-label">(β) $75\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-10', 2)"><span class="opt-label">(γ) $25\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-10', 3)"><span class="opt-label">(δ) $150\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-10', 4)"><span class="opt-label">(ε) $3,75\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-10', 5)"><span class="opt-label">(στ) $500\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-10', 6)"><span class="opt-label">(ζ) $250\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-10', 7)"><span class="opt-label">(η) $50\\text{ C}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-10" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-10" onclick="ExamSolutionsGuide.toggleSolution('a2-10')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -2427,16 +2649,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη διαφορά δυναμικού στα άκρα του $R_1$, εάν συνδέσουμε τα σημεία Δ και Η με ένα ιδανικό καλώδιο.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(α) $75\\text{ V}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $30\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $10\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $7,5\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) άπειρη</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) μηδέν</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $150\\text{ V}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $37,5\\text{ V}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-11">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-11', 0)"><span class="opt-label">(α) $75\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-11', 1)"><span class="opt-label">(β) $30\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-11', 2)"><span class="opt-label">(γ) $10\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-11', 3)"><span class="opt-label">(δ) $7,5\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-11', 4)"><span class="opt-label">(ε) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-11', 5)"><span class="opt-label">(στ) μηδέν</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-11', 6)"><span class="opt-label">(ζ) $150\\text{ V}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-11', 7)"><span class="opt-label">(η) $37,5\\text{ V}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-11" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-11" onclick="ExamSolutionsGuide.toggleSolution('a2-11')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -2492,16 +2715,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε το ρεύμα που διαρρέει τον διακόπτη [Γ, Δ], εάν συνδέσουμε προσωρινά τα σημεία Ζ και Η με ιδανικό καλώδιο.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $750\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $7,5\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $75\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $2,5\\text{ A}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(ε) μηδέν <span class="opt-sub">($0\\text{ A}$)</span></span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $10\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $20\\text{ A}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) άπειρη</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-12">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-12', 0)"><span class="opt-label">(α) $750\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-12', 1)"><span class="opt-label">(β) $7,5\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-12', 2)"><span class="opt-label">(γ) $75\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-12', 3)"><span class="opt-label">(δ) $2,5\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-12', 4)"><span class="opt-label">(ε) μηδέν <span class="opt-sub">($0\\text{ A}$)</span></span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-12', 5)"><span class="opt-label">(στ) $10\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-12', 6)"><span class="opt-label">(ζ) $20\\text{ A}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-12', 7)"><span class="opt-label">(η) άπειρη</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-12" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-12" onclick="ExamSolutionsGuide.toggleSolution('a2-12')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -2559,16 +2783,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τον ρυθμό κατανάλωσης ενέργειας (ισχύ) του $R_1$, εάν συνδέσουμε προσωρινά τα σημεία Γ και Ε με ιδανικό καλώδιο.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) άπειρος</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $1500\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $45,5\\text{ J/s}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $600\\text{ J/s}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $1800\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $120\\text{ W}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $200\\text{ J/s}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(η) μηδέν <span class="opt-sub">($0\\text{ W}$)</span></span> <span class="opt-check">✓ Σωστή</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-13">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-13', 0)"><span class="opt-label">(α) άπειρος</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-13', 1)"><span class="opt-label">(β) $1500\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-13', 2)"><span class="opt-label">(γ) $45,5\\text{ J/s}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-13', 3)"><span class="opt-label">(δ) $600\\text{ J/s}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-13', 4)"><span class="opt-label">(ε) $1800\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-13', 5)"><span class="opt-label">(στ) $120\\text{ W}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-13', 6)"><span class="opt-label">(ζ) $200\\text{ J/s}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-13', 7)"><span class="opt-label">(η) μηδέν <span class="opt-sub">($0\\text{ W}$)</span></span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-13" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-13" onclick="ExamSolutionsGuide.toggleSolution('a2-13')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -2625,16 +2850,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε το φορτίο $q_{\\text{Η}}$ που διέρχεται από το σημείο Η σε χρόνο $t = 30\\text{ s}$, εάν ανοίξει προσωρινά ο διακόπτης [Γ, Δ].
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) $75\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(β) $7,5\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) άπειρη</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $3\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $3,75\\text{ C}$</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(στ) $225\\text{ C}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $20\\text{ C}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) $4\\text{ C}$</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-14">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-14', 0)"><span class="opt-label">(α) $75\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-14', 1)"><span class="opt-label">(β) $7,5\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-14', 2)"><span class="opt-label">(γ) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-14', 3)"><span class="opt-label">(δ) $3\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-14', 4)"><span class="opt-label">(ε) $3,75\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-14', 5)"><span class="opt-label">(στ) $225\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-14', 6)"><span class="opt-label">(ζ) $20\\text{ C}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-14', 7)"><span class="opt-label">(η) $4\\text{ C}$</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-14" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-14" onclick="ExamSolutionsGuide.toggleSolution('a2-14')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -2691,16 +2917,17 @@ window.ExamSolutionsGuide = (function() {
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ενέργεια $E_{\\text{πηγ}}$ που παράγει η πηγή σε χρόνο $t = 40\\text{ s}$, εάν συνδέσουμε προσωρινά τα σημεία Β και Δ με ιδανικό καλώδιο.
                             </p>
-                            <div class="exam-options-grid">
-                                <div class="exam-opt-pill"><span class="opt-label">(α) άπειρη</span></div>
-                                <div class="exam-opt-pill is-correct"><span class="opt-label">(β) $30000\\text{ J}$</span> <span class="opt-check">✓ Σωστή</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(γ) $45000\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(δ) $6000\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ε) $18000\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(στ) $13500\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(ζ) $24000\\text{ J}$</span></div>
-                                <div class="exam-opt-pill"><span class="opt-label">(η) μηδέν</span></div>
+                            <div class="exam-options-grid" id="opts-grid-a2-15">
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-15', 0)"><span class="opt-label">(α) άπειρη</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-15', 1)"><span class="opt-label">(β) $30000\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-15', 2)"><span class="opt-label">(γ) $45000\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-15', 3)"><span class="opt-label">(δ) $6000\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-15', 4)"><span class="opt-label">(ε) $18000\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-15', 5)"><span class="opt-label">(στ) $13500\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-15', 6)"><span class="opt-label">(ζ) $24000\\text{ J}$</span></button>
+                                <button type="button" class="exam-opt-pill" onclick="ExamSolutionsGuide.checkAnswer('a2-15', 7)"><span class="opt-label">(η) μηδέν</span></button>
                             </div>
+                            <div class="exam-q-feedback" id="feedback-a2-15" style="display: none;"></div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-15" onclick="ExamSolutionsGuide.toggleSolution('a2-15')">
                                     <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
@@ -3176,6 +3403,8 @@ window.ExamSolutionsGuide = (function() {
         setFilter: setFilter,
         toggleSolution: toggleSolution,
         toggleAllSolutions: toggleAllSolutions,
-        toggleDiagram: toggleDiagram
+        toggleDiagram: toggleDiagram,
+        checkAnswer: checkAnswer,
+        resetQuestion: resetQuestion
     };
 })();
