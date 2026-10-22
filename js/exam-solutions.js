@@ -317,7 +317,6 @@ window.ExamSolutionsGuide = (function() {
             btnEl.innerHTML = '<span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>';
         }
     }
-    }
 
     function render(container) {
         if (!container) return;
@@ -1795,8 +1794,11 @@ window.ExamSolutionsGuide = (function() {
                                         <span class="exam-pro-item-badge warning">$R_{\\text{ολ}}' = 5\\ \\Omega\\ (\\text{από } 20\\ \\Omega)$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
-                                        Η ολική αντίσταση περιορίζεται πλέον μόνο στον $R_1$, προκαλώντας τετραπλασιασμό του ρεύματος του κυκλώματος από $I = 3\\text{ A}$ σε $I' = 12\\text{ A}$.
+                                        Η ολική αντίσταση περιορίζεται πλέον μόνο στον $R_1$, προκαλώντας τετραπλασιασμό του ρεύματος:
                                     </p>
+                                    <div class="exam-pro-item-formula warning">
+                                        $R_{\\text{ολ}}' = R_1 + 0 = 5\\ \\Omega \\implies I' = \\dfrac{V}{R_1} = \\dfrac{60\\text{ V}}{5\\ \\Omega} = 12\\text{ A}$
+                                    </div>
                                 </div>
 
                                 <div class="exam-pro-item">
@@ -1807,8 +1809,11 @@ window.ExamSolutionsGuide = (function() {
                                         <span class="exam-pro-item-badge warning">$V_1' = V_{\\text{πηγ}} = 60\\text{ V}$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
-                                        Ο $R_2$ τίθεται εκτός τάσης ($V_2' = 0\\text{ V}$), επομένως ο επιζών αντιστάτης $R_1$ δέχεται μόνος του ολόκληρη την τάση της πηγής ($V_1' = 60\\text{ V}$ έναντι των αρχικών $15\\text{ V}$).
+                                        Ο $R_2$ τίθεται εκτός τάσης ($V_2' = 0\\text{ V}$), επομένως ο επιζών αντιστάτης $R_1$ δέχεται μόνος του όλη την τάση:
                                     </p>
+                                    <div class="exam-pro-item-formula warning">
+                                        $V_2' = 0\\text{ V} \\implies V_1' = V_{\\text{πηγ}} = 60\\text{ V} \\quad (\\text{από αρχικά } 15\\text{ V})$
+                                    </div>
                                 </div>
 
                                 <div class="exam-pro-item">
@@ -1819,8 +1824,11 @@ window.ExamSolutionsGuide = (function() {
                                         <span class="exam-pro-item-badge warning">$P_1': 45\\text{ W} \\to 720\\text{ W}$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
-                                        Η θερμική ισχύς εκτοξεύεται κατά 16 φορές $\\left(P_1' = \\dfrac{V_{\\text{πηγ}}^2}{R_1} = 720\\text{ W}\\right)$, οδηγώντας άμεσα σε υπερθέρμανση και καταστροφή του $R_1$!
+                                        Η θερμική ισχύς εκτοξεύεται κατά 16 φορές, οδηγώντας άμεσα σε υπερθέρμανση και καταστροφή του $R_1$:
                                     </p>
+                                    <div class="exam-pro-item-formula warning">
+                                        $P_1' = I'^2 \\cdot R_1 = 12^2 \\cdot 5 = 720\\text{ W} \\quad (\\times 16 \\text{ υπέρβαση ορίου})$
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1852,8 +1860,11 @@ window.ExamSolutionsGuide = (function() {
                                         <span class="exam-pro-item-badge danger">$R_{\\text{εξ}} \\approx 0\\ \\Omega$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
-                                        Όλοι οι συνδεδεμένοι αντιστάτες τίθενται εκτός λειτουργίας με μηδενική τάση ($V_{\\text{αντ}} = 0\\text{ V}$), καθώς παρακάμπτονται πλήρως από τον βραχυκυκλωτήρα.
+                                        Όλοι οι συνδεδεμένοι αντιστάτες τίθενται εκτός λειτουργίας με μηδενική τάση, καθώς παρακάμπτονται πλήρως:
                                     </p>
+                                    <div class="exam-pro-item-formula danger">
+                                        $R_{\\text{εξ}} \\to 0\\ \\Omega \\implies V_{\\text{πόλων}} = 0\\text{ V} \\quad (V_1 = V_2 = 0\\text{ V})$
+                                    </div>
                                 </div>
 
                                 <div class="exam-pro-item">
@@ -1864,8 +1875,11 @@ window.ExamSolutionsGuide = (function() {
                                         <span class="exam-pro-item-badge danger">$I_{\\text{βραχ}} \\to \\infty$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
-                                        Η ένταση του ρεύματος περιορίζεται μόνο από την ελάχιστη εσωτερική αντίσταση $r$ της πηγής $\\left(I_{\\text{βραχ}} = \\dfrac{V_{\\text{πηγ}}}{r} \\to \\infty\\right)$, λαμβάνοντας καταστροφικές τιμές.
+                                        Η ένταση του ρεύματος περιορίζεται μόνο από την ελάχιστη εσωτερική αντίσταση $r_{\\text{εσ}}$ της πηγής:
                                     </p>
+                                    <div class="exam-pro-item-formula danger">
+                                        $I_{\\text{βραχ}} = \\dfrac{\\mathcal{E}}{r_{\\text{εσ}}} \\to \\infty \\quad (\\text{μέγιστο καταστροφικό ρεύμα})$
+                                    </div>
                                 </div>
 
                                 <div class="exam-pro-item">
@@ -1876,8 +1890,11 @@ window.ExamSolutionsGuide = (function() {
                                         <span class="exam-pro-item-badge danger">$Q = I^2 \\cdot R \\cdot t$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
-                                        Η ραγδαία έκλυση θερμότητας κατά Joule ($Q = I^2 \\cdot R \\cdot t$) καταστρέφει ακαριαία την πηγή, λιώνει τη μόνωση των καλωδίων και προκαλεί άμεσο κίνδυνο πυρκαγιάς.
+                                        Η ραγδαία έκλυση θερμότητας κατά Joule λιώνει τη μόνωση των καλωδίων και προκαλεί άμεσο κίνδυνο πυρκαγιάς:
                                     </p>
+                                    <div class="exam-pro-item-formula danger">
+                                        $P_{\\text{θερμ}} = I_{\\text{βραχ}}^2 \\cdot r_{\\text{εσ}} \\to \\infty \\implies \\text{τήξη καλωδίων και πυρκαγιά}$
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1890,7 +1907,7 @@ window.ExamSolutionsGuide = (function() {
                             <span><strong>Κρίσιμη Διάκριση:</strong> Στο μερικό βραχυκύκλωμα στη σειρά ο ένας αντιστάτης σβήνει αλλά ο άλλος υπερφορτώνεται επικίνδυνα ($P_1' = 720\\text{ W}$). Στο ολικό, όλα τα φορτία σβήνουν ($V = 0\\text{ V}$) και καταστρέφεται η πηγή!</span>
                         </div>
                         <div class="exam-pro-takeaway-formula">
-                            $R_{\\text{μερ}}' = R_1 \\implies I \\uparrow\\uparrow \\quad\\mid\\quad R_{\\text{ολ}}' = 0 \\implies I \\to \\infty$
+                            $R_{\\text{μερ}}' = R_1 \\implies P_1' = 720\\text{ W} \\quad\\longleftrightarrow\\quad R_{\\text{ολ}}' \\to 0 \\implies I_{\\text{βραχ}} = \\dfrac{\\mathcal{E}}{r} \\to \\infty$
                         </div>
                     </div>
                 </section>
@@ -2985,11 +3002,14 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-pro-item-title">
                                             <span>⚡</span> Κοινή Ονομαστική Τάση
                                         </div>
-                                        <span class="exam-pro-item-badge cyan">$V_{\\text{κλ}} = V_{\\text{πηγ}} = 230\\text{ V}$</span>
+                                        <span class="exam-pro-item-badge cyan">$V_i = V_{\\text{πηγ}} = 230\\text{ V}$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
-                                        Όλες οι συσκευές λειτουργούν υπό την ίδια ονομαστική τάση δικτύου ($230\\text{ V}$), ανεξάρτητα από το πλήθος των άλλων ενεργών συσκευών.
+                                        Όλες οι συσκευές τροφοδοτούνται με την πλήρη ονομαστική τάση δικτύου, ανεξάρτητα από το πλήθος των άλλων ενεργών συσκευών:
                                     </p>
+                                    <div class="exam-pro-item-formula cyan">
+                                        $V_1 = V_2 = \\dots = V_{\\text{πηγ}} = 230\\text{ V}$
+                                    </div>
                                 </div>
 
                                 <div class="exam-pro-item">
@@ -2997,11 +3017,14 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-pro-item-title">
                                             <span>🔌</span> Πλήρης Λειτουργική Αυτονομία
                                         </div>
-                                        <span class="exam-pro-item-badge cyan">$I_i = \\dfrac{V}{R_i}\\ (\\text{Αυτόνομο})$</span>
+                                        <span class="exam-pro-item-badge cyan">$I_i = \\dfrac{V_{\\text{πηγ}}}{R_i}$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
-                                        Κάθε κλάδος διαθέτει δικό του διακόπτη και δικό του ρεύμα $\\left(I_i = \\dfrac{V}{R_i}\\right)$, λειτουργώντας εντελώς ανεξάρτητα από τους υπόλοιπους.
+                                        Κάθε κλάδος διαθέτει δικό του διακόπτη και απορροφά ρεύμα καθοριζόμενο αποκλειστικά από τη δική του αντίσταση:
                                     </p>
+                                    <div class="exam-pro-item-formula cyan">
+                                        $I_i = \\dfrac{V_{\\text{πηγ}}}{R_i} \\quad (\\text{πλήρης ανεξαρτησία κλάδων})$
+                                    </div>
                                 </div>
 
                                 <div class="exam-pro-item">
@@ -3009,11 +3032,14 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-pro-item-title">
                                             <span>🛡️</span> Αδιάλειπτη Παροχή σε Βλάβη
                                         </div>
-                                        <span class="exam-pro-item-badge cyan">$I_{\\text{λοιπών}} = \\text{σταθερό}$</span>
+                                        <span class="exam-pro-item-badge cyan">$I_{\\text{λοιπ}} = \\text{σταθερό}$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
-                                        Εάν καεί μία λάμπα ή ανοίξει ένας κλάδος, οι υπόλοιποι κλάδοι συνεχίζουν κανονικά χωρίς καμία μεταβολή στο ρεύμα τους.
+                                        Εάν καεί μία λάμπα ή ανοίξει ένας κλάδος ($I_1 = 0$), οι υπόλοιποι κλάδοι συνεχίζουν απρόσκοπτα χωρίς καμία μεταβολή:
                                     </p>
+                                    <div class="exam-pro-item-formula cyan">
+                                        $I_1 = 0 \\implies I_k = \\dfrac{V_{\\text{πηγ}}}{R_k} = \\text{αμετάβλητο} \\quad (\\forall k \\neq 1)$
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3044,11 +3070,14 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-pro-item-title">
                                             <span>💥</span> Άμεση Ένωση Πόλων Πηγής
                                         </div>
-                                        <span class="exam-pro-item-badge danger">$R_{\\text{ολ}} \\approx 0\\ \\Omega$</span>
+                                        <span class="exam-pro-item-badge danger">$R_{\\text{ολ}} \\to 0\\ \\Omega$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
-                                        Σύνδεση σύρματος μηδενικής αντίστασης σε <em>οποιονδήποτε</em> κλάδο γεφυρώνει αυτόματα τους δύο κύριους πόλους της πηγής (φάση - ουδέτερος).
+                                        Σύνδεση σύρματος μηδενικής αντίστασης ($R_{\\text{βραχ}} = 0$) σε <em>οποιονδήποτε</em> κλάδο γεφυρώνει αυτόματα τους πόλους της πηγής:
                                     </p>
+                                    <div class="exam-pro-item-formula danger">
+                                        $\\dfrac{1}{R_{\\text{ολ}}} = \\dfrac{1}{0} + \\sum \\dfrac{1}{R_i} \\implies R_{\\text{ολ}} \\to 0\\ \\Omega$
+                                    </div>
                                 </div>
 
                                 <div class="exam-pro-item">
@@ -3056,11 +3085,14 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-pro-item-title">
                                             <span>⚠️</span> Καθολική Κατάρρευση Τάσης
                                         </div>
-                                        <span class="exam-pro-item-badge danger">$V_{\\text{κλάδων}} \\to 0\\text{ V}$</span>
+                                        <span class="exam-pro-item-badge danger">$V_{\\text{κλάδων}} = 0\\text{ V}$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
-                                        Η τάση μηδενίζεται σε ολόκληρο το δίκτυο ταυτόχρονα. Όλα τα φώτα και οι συσκευές σβήνουν ακαριαία λόγω πλήρους παράκαμψης.
+                                        Η τάση μηδενίζεται ακαριαία σε όλους τους κλάδους. Όλα τα φώτα και οι συσκευές σβήνουν λόγω πλήρους παράκαμψης:
                                     </p>
+                                    <div class="exam-pro-item-formula danger">
+                                        $V_{\\text{κλάδων}} = 0\\text{ V} \\implies I_{\\text{συσκ}} = \\dfrac{0\\text{ V}}{R_i} = 0\\text{ A}$
+                                    </div>
                                 </div>
 
                                 <div class="exam-pro-item">
@@ -3071,8 +3103,11 @@ window.ExamSolutionsGuide = (function() {
                                         <span class="exam-pro-item-badge danger">$I_{\\text{πηγ}} \\to \\infty$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
-                                        Το ρεύμα της πηγής εκτοξεύεται σε ακραίες τιμές, προκαλώντας έντονη θερμική καταπόνηση Joule ($Q \\propto I^2$), πτώση της ασφάλειας ή πυρκαγιά.
+                                        Το συνολικό ρεύμα εκτοξεύεται σε ακραίες τιμές, προκαλώντας τεράστια θερμική καταπόνηση Joule ($P = I^2 \\cdot R$):
                                     </p>
+                                    <div class="exam-pro-item-formula danger">
+                                        $I_{\\text{πηγ}} = \\dfrac{V}{R_{\\text{ολ}}} \\to \\infty \\implies P_{\\text{Joule}} = I_{\\text{πηγ}}^2 \\cdot R_{\\text{καλωδ}} \\to \\infty$
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3085,7 +3120,7 @@ window.ExamSolutionsGuide = (function() {
                             <span><strong>Θεμελιώδης Κανόνας:</strong> Στα παράλληλα τα φορτία λειτουργούν ανεξάρτητα, αλλά το βραχυκύκλωμα έστω και ενός κλάδου καταρρέει ακαριαία ολόκληρο το δίκτυο!</span>
                         </div>
                         <div class="exam-pro-takeaway-formula">
-                            $V_{\\text{κλάδων}} = V_{\\text{πηγ}} \\quad\\mid\\quad R_{\\text{βραχ}} = 0 \\implies I_{\\text{ολ}} \\to \\infty$
+                            $V_{\\text{κλάδων}} = V_{\\text{πηγ}} = 230\\text{ V} \\quad\\longleftrightarrow\\quad R_{\\text{βραχ}} = 0 \\implies I_{\\text{πηγ}} \\to \\infty \\quad (V_{\\text{κλ}} = 0\\text{ V})$
                         </div>
                     </div>
                 </section>
