@@ -6932,15 +6932,69 @@ mjx-container[display="true"], .katex-display {
 .comp-formula-box {
     display: inline-flex;
     align-items: center;
-    padding: 6px 14px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 9px;
-    margin: 2px 0;
+    padding: 8px 18px;
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 10px;
+    margin: 4px 0;
     color: #f8fafc;
-    font-size: 1.02rem;
+    font-size: 1.15rem;
     max-width: 100%;
     box-sizing: border-box;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.comp-formula-box:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+.comp-formula-box mjx-container {
+    font-size: 122% !important;
+    margin: 3px 0 !important;
+}
+
+.comp-subformula {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1.5px solid rgba(148, 163, 184, 0.22);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #e2e8f0;
+    margin-top: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.comp-subformula .comp-subformula-label {
+    font-weight: 700;
+    color: #94a3b8;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.comp-subformula mjx-container {
+    font-size: 122% !important;
+    color: #f8fafc !important;
+    margin: 0 !important;
+}
+
+.comp-note mjx-container {
+    font-size: 118% !important;
+    color: #f1f5f9;
+}
+
+.comp-pill mjx-container {
+    font-size: 112% !important;
+}
+
+.comp-pill {
+    font-size: 0.92rem;
+    padding: 6px 14px;
 }
 
 /* Light Mode Overrides */
@@ -7004,6 +7058,18 @@ mjx-container[display="true"], .katex-display {
     background: #f8fafc;
     border-color: #cbd5e1;
     color: #0f172a;
+}
+[data-theme="light"] .comp-subformula {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #334155;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+[data-theme="light"] .comp-subformula .comp-subformula-label {
+    color: #64748b;
+}
+[data-theme="light"] .comp-subformula mjx-container {
+    color: #0f172a !important;
 }
 [data-theme="light"] .comp-pill.purple {
     background: #f3e8ff;

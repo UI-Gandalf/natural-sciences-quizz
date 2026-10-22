@@ -2893,14 +2893,14 @@ window.ExamSolutionsGuide = (function() {
                                         <td>
                                             <div class="comp-cell-stack">
                                                 <span class="comp-pill emerald">✅ Κοινή παντού</span>
-                                                <div class="comp-formula-box">$I = I_1 = I_2$</div>
+                                                <div class="comp-formula-box">$$I = I_1 = I_2$$</div>
                                                 <span class="comp-note">Ίδια ακριβώς ποσότητα φορτίου περνά από κάθε αντιστάτη</span>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="comp-cell-stack">
                                                 <span class="comp-pill amber">⚡ Επιμερίζεται στους κλάδους</span>
-                                                <div class="comp-formula-box">$I_{\\text{ολ}} = I_1 + I_2$</div>
+                                                <div class="comp-formula-box">$$I_{\\text{ολ}} = I_1 + I_2$$</div>
                                                 <span class="comp-note">1ος Κανόνας Kirchhoff (άθροισμα ρευμάτων των κλάδων)</span>
                                             </div>
                                         </td>
@@ -2917,14 +2917,14 @@ window.ExamSolutionsGuide = (function() {
                                         <td>
                                             <div class="comp-cell-stack">
                                                 <span class="comp-pill amber">⚡ Επιμερίζεται στα στοιχεία</span>
-                                                <div class="comp-formula-box">$V_{\\text{πηγ}} = V_1 + V_2$</div>
+                                                <div class="comp-formula-box">$$V_{\\text{πηγ}} = V_1 + V_2$$</div>
                                                 <span class="comp-note">Η τάση πηγής ισούται με το άθροισμα πτώσεων τάσης</span>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="comp-cell-stack">
                                                 <span class="comp-pill emerald">✅ Κοινή παντού</span>
-                                                <div class="comp-formula-box">$V_{\\text{πηγ}} = V_1 = V_2$</div>
+                                                <div class="comp-formula-box">$$V_{\\text{πηγ}} = V_1 = V_2$$</div>
                                                 <span class="comp-note">Κάθε κλάδος συνδέεται απευθείας στους πόλους της πηγής</span>
                                             </div>
                                         </td>
@@ -2941,14 +2941,14 @@ window.ExamSolutionsGuide = (function() {
                                         <td>
                                             <div class="comp-cell-stack">
                                                 <span class="comp-pill purple">📈 Αυξάνεται ($R_{\\text{ολ}} > R_{\\text{max}}$)</span>
-                                                <div class="comp-formula-box">$R_{\\text{ολ}} = R_1 + R_2$</div>
+                                                <div class="comp-formula-box">$$R_{\\text{ολ}} = R_1 + R_2$$</div>
                                                 <span class="comp-note">Πάντοτε μεγαλύτερη από τη μεγαλύτερη επιμέρους αντίσταση</span>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="comp-cell-stack">
                                                 <span class="comp-pill cyan">📉 Μειώνεται ($R_{\\text{ολ}} < R_{\\text{min}}$)</span>
-                                                <div class="comp-formula-box">$\\frac{1}{R_{\\text{ολ}}} = \\frac{1}{R_1} + \\frac{1}{R_2} \\quad \\left(R_{\\text{ολ}} = \\frac{R_1 \\cdot R_2}{R_1 + R_2}\\right)$</div>
+                                                <div class="comp-formula-box">$$\\dfrac{1}{R_{\\text{ολ}}} = \\dfrac{1}{R_1} + \\dfrac{1}{R_2} \\quad \\left(R_{\\text{ολ}} = \\dfrac{R_1 \\cdot R_2}{R_1 + R_2}\\right)$$</div>
                                                 <span class="comp-note">Πάντοτε μικρότερη και από τη μικρότερη επιμέρους αντίσταση!</span>
                                             </div>
                                         </td>
@@ -2987,13 +2987,15 @@ window.ExamSolutionsGuide = (function() {
                                         <td>
                                             <div class="comp-cell-stack">
                                                 <span class="comp-pill amber">⚠️ Μερικό Βραχυκύκλωμα</span>
-                                                <span class="comp-note">Ο άλλος αντιστάτης παραμένει ενεργός αλλά υπερφορτώνεται ($V_{\\text{άλλο}} = V_{\\text{πηγ}}$)</span>
+                                                <div class="comp-formula-box">$$V_{\\text{άλλο}} = V_{\\text{πηγ}} \\quad (V_{\\text{βραχ}} = 0)$$</div>
+                                                <span class="comp-note">Ο επιζών αντιστάτης παραμένει ενεργός αλλά υπερφορτώνεται ($1600\\%$)</span>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="comp-cell-stack">
                                                 <span class="comp-pill rose">💥 Ολικό Βραχυκύκλωμα</span>
-                                                <span class="comp-note">Η πηγή βραχυκυκλώνεται αμέσως ($R_{\\text{ολ}} \\to 0$, $I_{\\text{ολ}} \\to \\infty$)</span>
+                                                <div class="comp-formula-box">$$R_{\\text{ολ}} \\to 0 \\implies I_{\\text{ολ}} \\to \\infty$$</div>
+                                                <span class="comp-note">Η πηγή βραχυκυκλώνεται αμέσως και καταρρέει όλο το δίκτυο ($V \\to 0$)</span>
                                             </div>
                                         </td>
                                     </tr>
@@ -3008,14 +3010,20 @@ window.ExamSolutionsGuide = (function() {
                                         </td>
                                         <td>
                                             <div class="comp-cell-stack">
-                                                <div class="comp-formula-box">$P_{\\text{ολ}} = P_1 + P_2 = V_{\\text{πηγ}} \\cdot I$</div>
-                                                <span class="comp-note">Κατανάλωση: $P_{\\text{ολ}} = I^2 \\cdot R_{\\text{ολ}}$</span>
+                                                <div class="comp-formula-box">$$P_{\\text{ολ}} = P_1 + P_2 = V_{\\text{πηγ}} \\cdot I$$</div>
+                                                <div class="comp-subformula">
+                                                    <span class="comp-subformula-label">Κατανάλωση:</span>
+                                                    $$P_{\\text{ολ}} = I^2 \\cdot R_{\\text{ολ}}$$
+                                                </div>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="comp-cell-stack">
-                                                <div class="comp-formula-box">$P_{\\text{ολ}} = P_1 + P_2 = V_{\\text{πηγ}} \\cdot I_{\\text{ολ}}$</div>
-                                                <span class="comp-note">Κατανάλωση: $P_{\\text{ολ}} = \\frac{V^2}{R_{\\text{ολ}}}$</span>
+                                                <div class="comp-formula-box">$$P_{\\text{ολ}} = P_1 + P_2 = V_{\\text{πηγ}} \\cdot I_{\\text{ολ}}$$</div>
+                                                <div class="comp-subformula">
+                                                    <span class="comp-subformula-label">Κατανάλωση:</span>
+                                                    $$\\dfrac{V^2}{R_{\\text{ολ}}}$$
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
