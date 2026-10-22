@@ -3540,6 +3540,28 @@ mjx-container[display="true"], .katex-display {
     min-width: 0;
     width: 100%;
     box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    scroll-margin-top: 86px;
+}
+
+.sim-schematic-card.sim-schematic-focused {
+    outline: none;
+    animation: simSchematicFocusGlow 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes simSchematicFocusGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7), 0 8px 32px rgba(0, 0, 0, 0.4);
+        border-color: rgba(56, 189, 248, 0.9);
+    }
+    40% {
+        box-shadow: 0 0 0 6px rgba(56, 189, 248, 0.28), 0 12px 36px rgba(56, 189, 248, 0.25);
+        border-color: rgba(56, 189, 248, 0.8);
+    }
+    100% {
+        box-shadow: var(--shadow-card);
+        border-color: var(--card-border);
+    }
 }
 
 .sim-schematic-header {

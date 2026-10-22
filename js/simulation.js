@@ -3141,11 +3141,11 @@ window.CircuitSimulation = (function() {
                 <div class="hud-readouts-grid cols-2" style="margin-bottom: 10px;">
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Διαφορά Δυναμικού</span><span>(ΔV):</span></span>
-                        <span class="meter-val ${isParFC ? 'text-voltage danger-reading' : 'text-voltage'}">${isParFC ? phys.V_src.toFixed(1) + ' V' : '0.00 V'}</span>
+                        <span class="meter-val text-voltage">0.00 V</span>
                     </div>
                     <div class="hud-meter-box">
                         <span class="meter-lbl"><span>Επίδραση στο Κύκλωμα:</span></span>
-                        <span class="meter-val" style="font-size: 1rem; color: ${isParFC ? '#ef4444' : '#10b981'};">${isParFC ? '💥 Βραχυκύκλωμα' : '✅ Καμία Αλλοίωση'}</span>
+                        <span class="meter-val" style="font-size: 1rem; color: #10b981;">✅ Καμία Αλλοίωση</span>
                     </div>
                 </div>
                 <div class="hud-steps-box" style="margin-top: 10px;">
@@ -3241,10 +3241,48 @@ window.CircuitSimulation = (function() {
     }
 
     /**
+     * Smoothly scrolls and focuses the circuit diagram view
+     */
+    function focusDiagram() {
+        setTimeout(function() {
+            const card = document.getElementById('sim-schematic-card') || document.getElementById('sim-svg-viewport');
+            if (!card) return;
+
+            // In fullscreen modal, center the card in the modal viewport
+            if (state.isFullscreen) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // Normal viewport: smoothly scroll so the schematic card is neatly visible beneath the sticky navbar
+            const navbar = document.querySelector('.navbar');
+            const navHeight = navbar ? navbar.offsetHeight : 70;
+            const cardRect = card.getBoundingClientRect();
+            const yOffset = -navHeight - 16;
+            const targetY = cardRect.top + window.pageYOffset + yOffset;
+
+            window.scrollTo({
+                top: Math.max(0, targetY),
+                behavior: 'smooth'
+            });
+
+            // Focus accessibility
+            card.setAttribute('tabindex', '-1');
+            try { card.focus({ preventScroll: true }); } catch (e) {}
+
+            // Pulse glow highlight on the diagram card
+            card.classList.remove('sim-schematic-focused');
+            void card.offsetWidth;
+            card.classList.add('sim-schematic-focused');
+        }, 60);
+    }
+
+    /**
      * Public API methods
      */
     return {
         render: render,
+        focusDiagram: focusDiagram,
 
         setTopology: function(topo) {
             state.topology = topo;
@@ -3300,6 +3338,10 @@ window.CircuitSimulation = (function() {
                 updateSvg();
                 updateHud();
                 updateMetrics();
+            }
+
+            if (faultKey && faultKey !== 'none') {
+                focusDiagram();
             }
         },
 
@@ -3367,6 +3409,10 @@ window.CircuitSimulation = (function() {
                 updateSvg();
                 updateHud();
                 updateMetrics();
+            }
+
+            if (state.harmlessConnection && state.harmlessConnection !== 'none') {
+                focusDiagram();
             }
         },
 
