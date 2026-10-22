@@ -1076,6 +1076,16 @@ window.CircuitSimulation = (function() {
                         </marker>
                     </defs>
 
+                    <!-- TOP SHORT-CIRCUIT ALERT BANNER -->
+                    ${(isClosed && (isFaultAmmeter1 || phys.I_total === Infinity)) ? `
+                        <g class="sim-top-danger-banner">
+                            <rect x="330" y="-36" width="360" height="40" rx="10" class="sim-top-danger-rect" />
+                            <text x="510" y="-11" class="sim-top-danger-text" text-anchor="middle">
+                                ⚡ I → ∞ (Βραχυκύκλωμα!)
+                            </text>
+                        </g>
+                    ` : ''}
+
                     <!-- Background Base Wire Path (Gray) -->
                     <rect x="100" y="80" width="680" height="270" rx="16" ry="16" class="circuit-wire-base" />
 
@@ -1230,7 +1240,7 @@ window.CircuitSimulation = (function() {
                             <circle cx="260" cy="215" r="21" class="meter-circle meter-faulty ${isClosed ? 'short-alarm' : ''}" />
                             <text x="260" y="215" class="meter-text faulty-text">A₁</text>
                             <text x="260" y="250" class="meter-reading-tag danger-reading">
-                                ${!isClosed ? '0.00 A' : 'I → ∞ (Βραχυκύκλωμα!)'}
+                                ${!isClosed ? '0.00 A' : '∞ A'}
                             </text>
                         </g>
                     ` : isFaultVoltmeter ? `
@@ -1549,6 +1559,16 @@ window.CircuitSimulation = (function() {
                         </marker>
                     </defs>
 
+                    <!-- TOP SHORT-CIRCUIT ALERT BANNER -->
+                    ${(isClosed && (isFaultAmmeter1 || isFaultAmmeter2 || phys.I_total === Infinity)) ? `
+                        <g class="sim-top-danger-banner">
+                            <rect x="330" y="-36" width="360" height="40" rx="10" class="sim-top-danger-rect" />
+                            <text x="510" y="-11" class="sim-top-danger-text" text-anchor="middle">
+                                ⚡ I → ∞ (Βραχυκύκλωμα!)
+                            </text>
+                        </g>
+                    ` : ''}
+
                     <!-- Base Wire Framework (Gray) -->
                     <!-- Outer loop: G(100,80) -> C(640,80) -> E(640,350) -> F(100,350) -> battery -->
                     <path d="M 100 200 L 100 80 L 640 80 L 640 350 L 100 350 L 100 230" class="circuit-wire-base" />
@@ -1725,7 +1745,7 @@ window.CircuitSimulation = (function() {
                             <circle cx="260" cy="215" r="21" class="meter-circle meter-faulty ${isClosed ? 'short-alarm' : ''}" />
                             <text x="260" y="215" class="meter-text faulty-text">A₁</text>
                             <text x="260" y="250" class="meter-reading-tag danger-reading">
-                                ${!isClosed ? '0.00 A' : 'I → ∞ (Βραχυκύκλωμα!)'}
+                                ${!isClosed ? '0.00 A' : '∞ A'}
                             </text>
                         </g>
 
@@ -1749,7 +1769,7 @@ window.CircuitSimulation = (function() {
                             <circle cx="320" cy="80" r="18.5" class="meter-circle meter-faulty-orange ${isClosed ? 'short-alarm' : ''}" />
                             <text x="320" y="80" class="meter-text faulty-text-orange">A<tspan font-size="0.65em" dy="2">ολ</tspan></text>
                             <text x="320" y="115" class="meter-reading-tag danger-reading">
-                                ${!isClosed ? '0.00 A' : 'I → ∞ (Βραχυκύκλωμα!)'}
+                                ${!isClosed ? '0.00 A' : '∞ A'}
                             </text>
                         </g>
                     ` : isFaultVoltmeter ? `
@@ -1868,8 +1888,8 @@ window.CircuitSimulation = (function() {
                             <rect x="475" y="175" width="70" height="80" class="comp-hitbox" />
                             <circle cx="510" cy="215" r="21" class="meter-circle meter-faulty-orange ${isClosed ? 'short-alarm' : ''}" />
                             <text x="510" y="215" class="meter-text faulty-text-orange">A₂</text>
-                            <text x="510" y="250" class="meter-reading-tag danger-reading">
-                                ${!isClosed ? '0.00 A' : 'I → ∞ (Βραχυκύκλωμα!)'}
+                            <text x="540" y="220" class="meter-reading-tag danger-reading" text-anchor="start">
+                                ${!isClosed ? '0.00 A' : '∞ A'}
                             </text>
                         </g>
 
