@@ -1048,7 +1048,7 @@ window.CircuitSimulation = (function() {
 
         if (state.topology === 'series') {
             svgHtml = `
-                <svg viewBox="0 -45 880 495" class="sim-svg-circuit" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="-20 -45 960 495" class="sim-svg-circuit" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <!-- Glow filter for active wires -->
                         <filter id="wire-glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -1521,7 +1521,7 @@ window.CircuitSimulation = (function() {
             const animSpeed2 = hasCurrent2 ? (3 / Math.max(0.2, phys.I2)).toFixed(2) : 0;
 
             svgHtml = `
-                <svg viewBox="0 -45 880 495" class="sim-svg-circuit" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="-20 -45 960 495" class="sim-svg-circuit" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <!-- Glow filter for active wires -->
                         <filter id="wire-glow-par" x="-20%" y="-20%" width="140%" height="140%">
@@ -1942,20 +1942,21 @@ window.CircuitSimulation = (function() {
                         `) : ''}
                     </g>
 
-                    <!-- 10. VOLTMETER Vπαρ across Parallel Resistors (Right side: x=780, y=215) -->
+                    <!-- 10. VOLTMETER Vπαρ across Parallel Resistors (Right side: x=860, y=215) -->
                     <g class="comp-interactive comp-voltmeter" data-probe="voltmeter_par"
                        onmouseenter="CircuitSimulation.hoverProbe('voltmeter_par')" 
                        onmouseleave="CircuitSimulation.hoverProbe(null)"
                        onclick="CircuitSimulation.selectProbe('voltmeter_par')">
-                        <!-- Probe leads to Node C (640,80) and Node E (640,350) -->
-                        <path d="M 780 197 L 780 80 L 640 80" class="voltmeter-lead" />
-                        <path d="M 780 233 L 780 350 L 640 350" class="voltmeter-lead" />
+                        <rect x="830" y="180" width="60" height="75" class="comp-hitbox" fill="transparent" />
+                        <!-- Probe leads to Node C (640,80) and Node E (640,350) with ample clearance -->
+                        <path d="M 860 197 L 860 80 L 640 80" class="voltmeter-lead" />
+                        <path d="M 860 233 L 860 350 L 640 350" class="voltmeter-lead" />
                         <circle cx="640" cy="80" r="3.5" class="voltmeter-contact-dot" />
                         <circle cx="640" cy="350" r="3.5" class="voltmeter-contact-dot" />
                         <!-- Voltmeter Instrument Body -->
-                        <circle cx="780" cy="215" r="18.5" class="voltmeter-circle" />
-                        <text x="780" y="215" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.7em" dy="2">παρ</tspan></text>
-                        <text x="780" y="250" class="voltmeter-reading-tag">${(!state.switchClosed || phys.status === 'total_short' || isFaultVoltmeter) ? '0.0 V' : `${phys.V_src.toFixed(1)} V`}</text>
+                        <circle cx="860" cy="215" r="18.5" class="voltmeter-circle" />
+                        <text x="860" y="215" class="voltmeter-text"><tspan font-style="italic">V</tspan><tspan font-size="0.7em" dy="2">παρ</tspan></text>
+                        <text x="860" y="250" class="voltmeter-reading-tag">${(!state.switchClosed || phys.status === 'total_short' || isFaultVoltmeter) ? '0.0 V' : `${phys.V_src.toFixed(1)} V`}</text>
                     </g>
 
                     <!-- Wire Probe Zones -->
