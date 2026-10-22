@@ -220,28 +220,60 @@ window.ExamSolutionsGuide = (function() {
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 18px;">
-                        <div class="theory-card">
-                            <h4 style="color: #60a5fa; margin-bottom: 8px;">🚫 Όχι στη Στείρα Αποστήθιση</h4>
-                            <p style="font-size: 0.93rem; color: var(--text-secondary); line-height: 1.55;">
-                                Στη Φυσική των κυκλωμάτων η επιτυχία δεν εξαρτάται από την απομνημόνευση τυφλών συνταγών, αλλά από την 
-                                <strong>πλήρη κατανόηση της φυσικής πραγματικότητας</strong>: τι είναι το ρεύμα, πώς κινείται σε κλειστό βρόγχο και πώς επιμερίζεται η ενέργεια.
+                    <div class="exam-pro-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                        <div class="exam-pro-card theme-cyan">
+                            <div class="exam-pro-header">
+                                <div class="exam-pro-icon-box cyan">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                        <polyline points="15 3 21 3 21 9"></polyline>
+                                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                                    </svg>
+                                </div>
+                                <div class="exam-pro-title-wrap">
+                                    <span class="exam-pro-tag cyan">Μέθοδος Σκέψης</span>
+                                    <h3 class="exam-pro-title">Όχι στη Στείρα Αποστήθιση</h3>
+                                </div>
+                            </div>
+                            <p class="exam-pro-item-desc" style="font-size: 0.92rem; line-height: 1.6;">
+                                Στη Φυσική των κυκλωμάτων η επιτυχία βασίζεται στην <strong>ουσιαστική κατανόηση της φυσικής πραγματικότητας</strong>: τι αντιπροσωπεύει το ρεύμα, πώς κινείται σε κλειστό βρόγχο και πώς επιμερίζεται η δυναμική ενέργεια.
                             </p>
                         </div>
 
-                        <div class="theory-card">
-                            <h4 style="color: #34d399; margin-bottom: 8px;">🔄 Η Έννοια του Κλειστού Βρόγχου</h4>
-                            <p style="font-size: 0.93rem; color: var(--text-secondary); line-height: 1.55;">
-                                Το ηλεκτρικό ρεύμα απαιτεί <strong>συνεχή αγώγιμο δρόμο</strong>. Εάν υπάρχει οποιαδήποτε διακοπή (ανοιχτός διακόπτης, καμένη λάμπα σε σειρά), 
-                                η ροή φορτίου σταματά ακαριαία σε ολόκληρο τον βρόγχο ($I = 0$).
+                        <div class="exam-pro-card theme-emerald">
+                            <div class="exam-pro-header">
+                                <div class="exam-pro-icon-box emerald">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="23 4 23 10 17 10"></polyline>
+                                        <polyline points="1 20 1 14 7 14"></polyline>
+                                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                                    </svg>
+                                </div>
+                                <div class="exam-pro-title-wrap">
+                                    <span class="exam-pro-tag emerald">Θεμελιώδης Αρχή</span>
+                                    <h3 class="exam-pro-title">Η Έννοια του Κλειστού Βρόγχου</h3>
+                                </div>
+                            </div>
+                            <p class="exam-pro-item-desc" style="font-size: 0.92rem; line-height: 1.6;">
+                                Το ηλεκτρικό ρεύμα απαιτεί <strong>αδιάλειπτο αγώγιμο δρόμο</strong>. Οποιαδήποτε διακοπή (ανοιχτός διακόπτης, καμένη λάμπα σε σειρά) μηδενίζει ακαριαία τη ροή φορτίου σε ολόκληρο τον βρόγχο ($I = 0$).
                             </p>
                         </div>
 
-                        <div class="theory-card">
-                            <h4 style="color: #fbbf24; margin-bottom: 8px;">🎥 4 Υποστηρικτικά Βίντεο YouTube</h4>
-                            <p style="font-size: 0.93rem; color: var(--text-secondary); line-height: 1.55;">
-                                Το διαγώνισμα συνοδεύεται από 4 αναλυτικά εκπαιδευτικά βίντεο διαθέσιμα στο YouTube, που αναλύουν βήμα-βήμα τη λογική 
-                                των κυκλωμάτων και την πειραματική επαλήθευση των μετρήσεων.
+                        <div class="exam-pro-card theme-purple">
+                            <div class="exam-pro-header">
+                                <div class="exam-pro-icon-box purple">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                                    </svg>
+                                </div>
+                                <div class="exam-pro-title-wrap">
+                                    <span class="exam-pro-tag purple">Οπτικοακουστικό Υλικό</span>
+                                    <h3 class="exam-pro-title">4 Υποστηρικτικά Βίντεο YouTube</h3>
+                                </div>
+                            </div>
+                            <p class="exam-pro-item-desc" style="font-size: 0.92rem; line-height: 1.6;">
+                                Το διαγώνισμα συνοδεύεται από 4 αναλυτικά εκπαιδευτικά βίντεο στο YouTube του φυσικού Δημήτρη Μητσάκη, που αναλύουν βήμα-βήμα τη λογική των κυκλωμάτων και την πειραματική επαλήθευση.
                             </p>
                         </div>
                     </div>
@@ -259,32 +291,120 @@ window.ExamSolutionsGuide = (function() {
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px;">
-                        <!-- AMPEREMETER VS VOLTMETER -->
-                        <div class="theory-card" style="border-left: 4px solid #10b981;">
-                            <h4 style="color: #34d399; font-size: 1.1rem; margin-bottom: 10px;">⚡ Αμπερόμετρο (Σύνδεση σε ΣΕΙΡΑ)</h4>
-                            <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.55;">
-                                Μετράει την <strong>ένταση του ρεύματος</strong> ($I = \\frac{q}{t}$) που διέρχεται από έναν κλάδο.
-                            </p>
-                            <ul style="font-size: 0.90rem; color: var(--text-secondary); margin-top: 8px; line-height: 1.6; padding-left: 20px;">
-                                <li>Συνδέεται <strong>πάντοτε σε σειρά</strong> με τον καταναλωτή.</li>
-                                <li>Έχει <strong>αμελητέα εσωτερική αντίσταση ($R_A \\approx 0$)</strong>.</li>
-                                <li>Δεν προκαλεί πτώση τάσης και δεν καταναλώνει ενέργεια.</li>
-                                <li><strong style="color: #ef4444;">ΠΡΟΣΟΧΗ:</strong> Αν συνδεθεί παράλληλα, προκαλεί βραχυκύκλωμα και καταστρέφεται!</li>
-                            </ul>
+                    <div class="exam-pro-grid">
+                        <!-- CARD 1: AMPEREMETER (IN SERIES) -->
+                        <div class="exam-pro-card theme-emerald">
+                            <div class="exam-pro-header">
+                                <div class="exam-pro-icon-box emerald">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                </div>
+                                <div class="exam-pro-title-wrap">
+                                    <span class="exam-pro-tag emerald">Όργανο Μέτρησης Έντασης</span>
+                                    <h3 class="exam-pro-title">Αμπερόμετρο (Σύνδεση σε Σειρά)</h3>
+                                </div>
+                            </div>
+
+                            <div class="exam-pro-callout emerald">
+                                Συνδέεται <strong>αποκλειστικά σε σειρά</strong> με το εξεταζόμενο στοιχείο, ώστε ολόκληρο το ρεύμα του κλάδου να διέρχεται υποχρεωτικά από το εσωτερικό του.
+                            </div>
+
+                            <div class="exam-pro-items">
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>⚡</span> Αμελητέα Εσωτερική Αντίσταση
+                                        </div>
+                                        <span class="exam-pro-item-badge emerald">R_A ≈ 0 Ω</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Δεν προκαλεί πτώση τάσης στα άκρα του ($V_A \\approx 0\\text{ V}$), δεν καταναλώνει ηλεκτρική ισχύ και αφήνει το ρεύμα του κυκλώματος αναλλοίωτο.
+                                    </p>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>⏱️</span> Μέτρηση Ρυθμού Ροής Φορτίου
+                                        </div>
+                                        <span class="exam-pro-item-badge emerald">I = q / t</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Καταγράφει την ποσότητα ηλεκτρικού φορτίου που διέρχεται από τη διατομή του αγωγού ανά μονάδα χρόνου, μετρούμενη σε Amperes ($1\\text{ A} = 1\\text{ C/s}$).
+                                    </p>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>⚠️</span> Κίνδυνος Παράλληλης Σύνδεσης
+                                        </div>
+                                        <span class="exam-pro-item-badge danger">Βραχυκύκλωμα</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Αν συνδεθεί εσφαλμένα παράλληλα στα άκρα φορτίου, λειτουργεί ως βραχυκυκλωτής μηδενικής αντίστασης, προκαλώντας υπερένταση και άμεση καταστροφή!
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="theory-card" style="border-left: 4px solid #3b82f6;">
-                            <h4 style="color: #60a5fa; font-size: 1.1rem; margin-bottom: 10px;">🔌 Βολτόμετρο (Σύνδεση ΠΑΡΑΛΛΗΛΑ)</h4>
-                            <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.55;">
-                                Μετράει τη <strong>διαφορά δυναμικού</strong> ($V = \\frac{W}{q}$) ανάμεσα σε δύο επιλεγμένα σημεία.
-                            </p>
-                            <ul style="font-size: 0.90rem; color: var(--text-secondary); margin-top: 8px; line-height: 1.6; padding-left: 20px;">
-                                <li>Συνδέεται <strong>πάντοτε παράλληλα</strong> στα άκρα του στοιχείου.</li>
-                                <li>Έχει <strong>τεράστια εσωτερική αντίσταση ($R_V \\to \\infty$)</strong>.</li>
-                                <li>Δεν επιτρέπει σχεδόν καθόλου ρεύμα να περάσει από μέσα του ($I_V \\approx 0$).</li>
-                                <li>Αφήνει το καθεστώς λειτουργίας του υπόλοιπου κυκλώματος αναλλοίωτο.</li>
-                            </ul>
+                        <!-- CARD 2: VOLTMETER (IN PARALLEL) -->
+                        <div class="exam-pro-card theme-cyan">
+                            <div class="exam-pro-header">
+                                <div class="exam-pro-icon-box cyan">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                                    </svg>
+                                </div>
+                                <div class="exam-pro-title-wrap">
+                                    <span class="exam-pro-tag cyan">Όργανο Μέτρησης Τάσης</span>
+                                    <h3 class="exam-pro-title">Βολτόμετρο (Σύνδεση Παράλληλα)</h3>
+                                </div>
+                            </div>
+
+                            <div class="exam-pro-callout cyan">
+                                Συνδέεται <strong>πάντοτε παράλληλα</strong> στα δύο επιλεγμένα σημεία, μετρώντας τη διαφορά ηλεκτρικού δυναμικού (ηλεκτρική τάση) ανάμεσά τους.
+                            </div>
+
+                            <div class="exam-pro-items">
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>🛡️</span> Τεράστια Εσωτερική Αντίσταση
+                                        </div>
+                                        <span class="exam-pro-item-badge cyan">R_V → ∞</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Δεν επιτρέπει σχεδόν καθόλου ρεύμα να διαρρεύσει το όργανο ($I_V \\approx 0\\text{ A}$), διατηρώντας το καθεστώς λειτουργίας των υπόλοιπων κλάδων ακέραιο.
+                                    </p>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>🔋</span> Μέτρηση Ενέργειας ανά Φορτίο
+                                        </div>
+                                        <span class="exam-pro-item-badge cyan">V = W / q</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Καταγράφει το ποσό ενέργειας που μεταβιβάζεται ανά μονάδα διερχόμενου ηλεκτρικού φορτίου, μετρούμενο σε Volts ($1\\text{ V} = 1\\text{ J/C}$).
+                                    </p>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>⚠️</span> Σφάλμα Σύνδεσης σε Σειρά
+                                        </div>
+                                        <span class="exam-pro-item-badge warning">Διακοπή Ρεύματος</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Αν συνδεθεί εσφαλμένα σε σειρά, λόγω της τεράστιας αντίστασής του λειτουργεί σχεδόν ως ανοιχτοκύκλωμα, μηδενίζοντας το ρεύμα του κυκλώματος ($I \\approx 0$).
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -2955,15 +3075,70 @@ window.ExamSolutionsGuide = (function() {
                     </div>
 
                     <!-- 5 GOLDEN RULES -->
-                    <div class="theory-card" style="border-left: 4px solid #10b981;">
-                        <h3 style="color: #34d399; margin-bottom: 12px;">🌟 Οι 5 Χρυσοί Κανόνες για Άριστη Επίδοση στις Εξετάσεις</h3>
-                        <ol style="line-height: 1.8; font-size: 0.95rem; color: var(--text-secondary); padding-left: 22px;">
-                            <li><strong>Εντοπίστε τη Συνδεσμολογία:</strong> Πριν γράψετε οτιδήποτε, αναρωτηθείτε: <em>«Έχει το ρεύμα μόνο έναν δρόμο (Σειρά) ή διακλαδίζεται (Παράλληλα);»</em></li>
-                            <li><strong>Ελέγξτε τις Συνδέσεις των Οργάνων:</strong> Το αμπερόμετρο πάντα σε σειρά ($R_A = 0$), το βολτόμετρο πάντα παράλληλα ($R_V = \\infty$).</li>
-                            <li><strong>Προσέξτε τους Ανοιχτούς Διακόπτες:</strong> Όταν ένας διακόπτης είναι ανοιχτός, στα άκρα του εμφανίζεται τάση (αν συνδέεται με την πηγή), αλλά το ρεύμα μέσα από αυτόν είναι αυστηρά μηδέν ($I = 0$).</li>
-                            <li><strong>Χρησιμοποιήστε το Δυναμικό Κόμβων:</strong> Στις δύσκολες ερωτήσεις τάσης, σημειώστε τα δυναμικά σε κάθε κόμβο ($V_+, V_-$) και αφαιρέστε: $V_{AB} = V_A - V_B$.</li>
-                            <li><strong>Επαλήθευση Αποτελεσμάτων:</strong> Ελέγξτε πάντα ότι στα παράλληλα $R_{\\text{ολ}} < \\min(R_1, R_2)$ και ότι η ισχύς της πηγής ισούται με το άθροισμα των καταναλώσεων ($P_{\\text{πηγ}} = P_1 + P_2$).</li>
-                        </ol>
+                    <div class="exam-golden-card">
+                        <div class="exam-golden-header">
+                            <div class="exam-golden-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            </div>
+                            <div class="exam-golden-title-wrap">
+                                <h3>Οι 5 Χρυσοί Κανόνες για Άριστη Επίδοση στις Εξετάσεις</h3>
+                                <p>Στρατηγική μεθοδολογία επίλυσης και αποφυγής των συνηθέστερων παγίδων</p>
+                            </div>
+                        </div>
+
+                        <div class="exam-golden-grid">
+                            <div class="exam-golden-item">
+                                <div class="exam-golden-num">01</div>
+                                <div class="exam-golden-content">
+                                    <div class="exam-golden-item-title">Εντοπίστε Άμεσα τη Συνδεσμολογία</div>
+                                    <p class="exam-golden-item-desc">
+                                        Πριν γράψετε οτιδήποτε, ρωτήστε: <em>«Έχει το ρεύμα μόνο μία διαδρομή (Σειρά) ή διακλαδίζεται σε κόμβους (Παράλληλα);»</em> Στη σειρά κοινό $I$, στα παράλληλα κοινή τάση $V$.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="exam-golden-item">
+                                <div class="exam-golden-num">02</div>
+                                <div class="exam-golden-content">
+                                    <div class="exam-golden-item-title">Ελέγξτε τις Συνδέσεις των Οργάνων Μετρήσεων</div>
+                                    <p class="exam-golden-item-desc">
+                                        Το αμπερόμετρο συνδέεται πάντοτε σε σειρά ($R_A \\approx 0\\ \\Omega$), το βολτόμετρο πάντοτε παράλληλα στα άκρα του στοιχείου ($R_V \\to \\infty$).
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="exam-golden-item">
+                                <div class="exam-golden-num">03</div>
+                                <div class="exam-golden-content">
+                                    <div class="exam-golden-item-title">Προσοχή στους Ανοιχτούς Διακόπτες</div>
+                                    <p class="exam-golden-item-desc">
+                                        Σε ανοιχτό διακόπτη το ρεύμα μέσα από αυτόν είναι αυστηρά μηδέν ($I = 0$), αλλά στα άκρα του εμφανίζεται ολόκληρη η τάση της πηγής ($V = V_{\\text{πηγ}}$)!
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="exam-golden-item">
+                                <div class="exam-golden-num">04</div>
+                                <div class="exam-golden-content">
+                                    <div class="exam-golden-item-title">Εφαρμόστε τη Μέθοδο Δυναμικού Κόμβων</div>
+                                    <p class="exam-golden-item-desc">
+                                        Στις σύνθετες ερωτήσεις τάσης, σημειώστε τα δυναμικά σε κάθε κόμβο ($V_+, V_-$). Ιδανικό καλώδιο = σταθερό δυναμικό, αντιστάτης με ρεύμα = πτώση δυναμικού $\\Delta V = I \\cdot R$.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="exam-golden-item">
+                                <div class="exam-golden-num">05</div>
+                                <div class="exam-golden-content">
+                                    <div class="exam-golden-item-title">Διπλή Επαλήθευση Αποτελεσμάτων</div>
+                                    <p class="exam-golden-item-desc">
+                                        Ελέγξτε πάντα ότι στα παράλληλα $R_{\\text{ολ}} < \\min(R_1, R_2)$ και ότι η ισχύς που παρέχει η πηγή ισούται με το άθροισμα των καταναλώσεων ($P_{\\text{πηγ}} = P_1 + P_2$).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- FINAL ACTION BUTTONS -->
