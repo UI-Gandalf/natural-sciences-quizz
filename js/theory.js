@@ -136,7 +136,12 @@ window.TheoryNotes = (function() {
                                 <tr>
                                     <td><strong>Ηλεκτρική Ισχύς</strong></td>
                                     <td><span class="unit-chip">P (Watt, W)</span></td>
-                                    <td class="math-cell">$$P = I \\cdot V = \\frac{E}{t}$$</td>
+                                    <td class="math-cell">
+                                        $$\\begin{aligned}
+                                        P &= \\dfrac{E}{t} \\\\[5pt]
+                                        P &= V \\cdot I = \\dfrac{V^2}{R} = I^2 \\cdot R
+                                        \\end{aligned}$$
+                                    </td>
                                     <td>Ο ρυθμός μεταφοράς ή κατανάλωσης ηλεκτρικής ενέργειας $E$ στη μονάδα του χρόνου $t$.</td>
                                 </tr>
                                 <tr>
