@@ -3207,48 +3207,57 @@ mjx-container[display="true"], .katex-display {
     font-size: 1.15rem;
 }
 
-/* Preset Quick Load Pills */
-.sim-presets-bar {
-    margin-top: 18px;
-    padding-top: 14px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+/* Simulation Locked Controls during Faulty Instrument Placement */
+.sim-control-group.is-locked {
+    position: relative;
+    opacity: 0.65;
+    transition: opacity 0.2s ease;
+}
+
+.sim-control-group.is-locked input[type="range"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.sim-toggle-checkbox.is-disabled {
+    cursor: not-allowed !important;
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.sim-radio-card.is-disabled {
+    cursor: not-allowed !important;
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.sim-locked-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    padding: 2px 7px;
+    border-radius: 6px;
+    margin-left: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    vertical-align: middle;
+}
+
+.sim-fault-lock-notice {
+    font-size: 0.78rem;
+    color: #fbbf24;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px dashed rgba(245, 158, 11, 0.4);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 10px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.sim-presets-label {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text-secondary);
-}
-
-.sim-presets-list {
-    display: flex;
     gap: 8px;
-    flex-wrap: wrap;
-}
-
-.sim-preset-pill {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--card-border);
-    border-radius: 999px;
-    padding: 6px 14px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    font-family: inherit;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.sim-preset-pill:hover {
-    background: rgba(56, 189, 248, 0.16);
-    border-color: #38bdf8;
-    color: #38bdf8;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(56, 189, 248, 0.2);
+    line-height: 1.45;
 }
 
 /* Main Workspace Grid (Controls + Display) */

@@ -31,235 +31,14 @@ window.CircuitSimulation = (function() {
         containerEl: null
     };
 
-    // Preset configurations matching quiz questions
-    const PRESETS = {
-        'q1_series': {
-            name: 'Πρόβλημα 1 (Σειρά: 20V, 4Ω + 6Ω)',
-            topology: 'series',
-            V_src: 20,
-            R1: 4,
-            R2: 6,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'none'
-        },
-        'q_fault_ammeter': {
-            name: '⚠️ Σφάλμα I: Αμπερόμετρο A₁ παράλληλα στην πηγή (Ολικό Βραχυκύκλωμα)',
-            topology: 'series',
-            V_src: 20,
-            R1: 4,
-            R2: 6,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'ammeter_parallel'
-        },
-        'q_fault_ammeter2': {
-            name: '⚠️ Σφάλμα II: Αμπερόμετρο A₂ παράλληλα στον R₂ (Βραχυκύκλωση R₂)',
-            topology: 'series',
-            V_src: 20,
-            R1: 4,
-            R2: 6,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'ammeter2_parallel'
-        },
-        'q_fault_voltmeter_series': {
-            name: '⚠️ Σφάλμα III: Βολτόμετρο σε σειρά (Rv → ∞, I = 0 A)',
-            topology: 'series',
-            V_src: 20,
-            R1: 4,
-            R2: 6,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'voltmeter_series'
-        },
-        'q_fault_ammeter_par': {
-            name: '⚠️ Σφάλμα I: Αμπερόμετρο A₁ παράλληλα στην πηγή (Παράλληλο κύκλωμα)',
-            topology: 'parallel',
-            V_src: 30,
-            R1: 10,
-            R2: 30,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'ammeter_parallel'
-        },
-        'q_fault_ammeter2_par': {
-            name: '⚠️ Σφάλμα II: Αμπερόμετρο A₂ κάθετα ανάμεσα στους R₁ & R₂ (Παράλληλο)',
-            topology: 'parallel',
-            V_src: 30,
-            R1: 10,
-            R2: 30,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'ammeter2_parallel'
-        },
-        'q_fault_voltmeter_par': {
-            name: '⚠️ Σφάλμα III: Βολτόμετρο σε σειρά στον κύριο αγωγό (Rv → ∞)',
-            topology: 'parallel',
-            V_src: 30,
-            R1: 10,
-            R2: 30,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'voltmeter_series'
-        },
-        'q4_parallel': {
-            name: 'Πρόβλημα 4 (Παράλληλα: 30V, 10Ω || 30Ω)',
-            topology: 'parallel',
-            V_src: 30,
-            R1: 10,
-            R2: 30,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'none'
-        },
-        'q24_short': {
-            name: 'Πρόβλημα 24 (Βραχυκύκλωμα R1: 30V, 10Ω + 5Ω)',
-            topology: 'series',
-            V_src: 30,
-            R1: 10,
-            R2: 5,
-            switchClosed: true,
-            shortR1: true,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false
-        },
-        'q_broken_series': {
-            name: 'Βλάβη / Καταστροφή R1 (Σειρά: I = 0 A)',
-            topology: 'series',
-            V_src: 20,
-            R1: 4,
-            R2: 6,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: true,
-            brokenR2: false
-        },
-        'standard_12v': {
-            name: 'Εργαστήριο 12V (10Ω & 20Ω)',
-            topology: 'series',
-            V_src: 12,
-            R1: 10,
-            R2: 20,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false
-        },
-        'q_equiv_short_gb': {
-            name: '⚡ Εναλλακτικό Βραχυκύκλωμα R₁ (Κόμβοι G ↔ B στη σειρά)',
-            topology: 'series',
-            V_src: 20,
-            R1: 4,
-            R2: 6,
-            switchClosed: true,
-            shortR1: true,
-            shortModeR1: 'alternative',
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'none',
-            harmlessConnection: 'none'
-        },
-        'q_equiv_short_eb': {
-            name: '⚡ Εναλλακτικό Βραχυκύκλωμα R₂ (Κόμβοι B ↔ E στη σειρά)',
-            topology: 'series',
-            V_src: 20,
-            R1: 4,
-            R2: 6,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: true,
-            shortModeR2: 'alternative',
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'none',
-            harmlessConnection: 'none'
-        },
-        'q_harmless_series_ga': {
-            name: '✅ Ακίνδυνη Σύνδεση G ↔ A στη σειρά (Χωρίς Βραχυκύκλωμα)',
-            topology: 'series',
-            V_src: 20,
-            R1: 4,
-            R2: 6,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'none',
-            harmlessConnection: 'series_GA'
-        },
-        'q_harmless_series_fc': {
-            name: '✅ Ακίνδυνη Σύνδεση F ↔ C στη σειρά (Αγωγός Επιστροφής 0V)',
-            topology: 'series',
-            V_src: 20,
-            R1: 4,
-            R2: 6,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'none',
-            harmlessConnection: 'series_FC'
-        },
-        'q_harmless_par_ac': {
-            name: '✅ Ακίνδυνη Σύνδεση A ↔ C στα παράλληλα (Άνω Γραμμή Vπηγ)',
-            topology: 'parallel',
-            V_src: 30,
-            R1: 10,
-            R2: 30,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'none',
-            harmlessConnection: 'parallel_AC'
-        },
-        'q_harmless_par_fe': {
-            name: '✅ Ακίνδυνη Σύνδεση F ↔ E στα παράλληλα (Κάτω Γραμμή 0V)',
-            topology: 'parallel',
-            V_src: 30,
-            R1: 10,
-            R2: 30,
-            switchClosed: true,
-            shortR1: false,
-            shortR2: false,
-            brokenR1: false,
-            brokenR2: false,
-            faultInstrument: 'none',
-            harmlessConnection: 'parallel_FE'
+    // Ready-made presets previously at the top of simulation have been permanently removed per user request. Do not re-add.
+    const PRESETS = {};
+
+    function showToast(msg) {
+        if (typeof window.showToast === 'function') {
+            window.showToast(msg);
         }
-    };
+    }
 
     /**
      * Compute all electrical quantities based on physical laws
@@ -789,10 +568,11 @@ window.CircuitSimulation = (function() {
     function render(container) {
         state.containerEl = container;
         const phys = computePhysics();
+        const isFaultActive = state.faultInstrument && state.faultInstrument !== 'none';
 
         container.innerHTML = `
             <div class="sim-container theme-physics">
-                <!-- Header Toolbar: Topology & Presets -->
+                <!-- Header Toolbar: Topology & Fullscreen -->
                 <div class="sim-header-card">
                     <div class="sim-header-top">
                         <div class="sim-title-wrap">
@@ -834,18 +614,6 @@ window.CircuitSimulation = (function() {
                             `}
                         </div>
                     </div>
-
-                    <!-- Preset Quick Load Pills -->
-                    <div class="sim-presets-bar">
-                        <span class="sim-presets-label">🎯 Έτοιμες Ρυθμίσεις (από τα Κουίζ):</span>
-                        <div class="sim-presets-list">
-                            ${Object.entries(PRESETS).map(([key, p]) => `
-                                <button class="sim-preset-pill" onclick="CircuitSimulation.applyPreset('${key}')" title="Φόρτωση τιμών">
-                                    ${p.name}
-                                </button>
-                            `).join('')}
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Main Laboratory Layout: Controls + SVG Circuit + HUD Inspector -->
@@ -878,25 +646,27 @@ window.CircuitSimulation = (function() {
                         </div>
 
                         <!-- 2. Resistor R1 Control -->
-                        <div class="sim-control-group">
+                        <div class="sim-control-group ${isFaultActive ? 'is-locked' : ''}">
                             <div class="sim-control-header">
                                 <label for="sim-slider-r1">
                                     <strong>Αντιστάτης 1</strong> <span class="math-expr">(<i class="math-var">R</i><sub class="math-sub">1</sub>)</span>:
                                 </label>
-                                <span class="sim-val-display" id="disp-r1">${state.R1} Ω</span>
+                                <span class="sim-val-display" id="disp-r1">${state.R1} Ω ${isFaultActive ? '<span class="sim-locked-tag">🔒 Κλειδωμένο</span>' : ''}</span>
                             </div>
                             <div class="sim-slider-row">
                                 <input type="range" id="sim-slider-r1" min="1" max="50" step="1" value="${state.R1}" 
+                                       ${isFaultActive ? 'disabled' : ''}
+                                       title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}"
                                        oninput="CircuitSimulation.setParam('R1', this.value)" />
                             </div>
                             <div class="sim-toggles-row" style="display: flex; flex-direction: column; gap: 6px;">
-                                <label class="sim-toggle-checkbox">
-                                    <input type="checkbox" id="sim-short-r1" ${state.shortR1 ? 'checked' : ''} 
+                                <label class="sim-toggle-checkbox ${isFaultActive ? 'is-disabled' : ''}" title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
+                                    <input type="checkbox" id="sim-short-r1" ${state.shortR1 ? 'checked' : ''} ${isFaultActive ? 'disabled' : ''}
                                            onchange="CircuitSimulation.toggleShort('shortR1', this.checked)">
                                     <span class="checkbox-custom"></span>
                                     <span class="checkbox-label">Βραχυκύκλωση <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> (Bypass)</span>
                                 </label>
-                                ${state.shortR1 ? `
+                                ${state.shortR1 && !isFaultActive ? `
                                     <div class="sim-short-mode-wrap">
                                         <span class="sim-sub-label">Τρόπος Σύνδεσης:</span>
                                         <div class="sim-mode-toggle">
@@ -911,8 +681,8 @@ window.CircuitSimulation = (function() {
                                         </div>
                                     </div>
                                 ` : ''}
-                                <label class="sim-toggle-checkbox broken-toggle">
-                                    <input type="checkbox" id="sim-broken-r1" ${state.brokenR1 ? 'checked' : ''} 
+                                <label class="sim-toggle-checkbox broken-toggle ${isFaultActive ? 'is-disabled' : ''}" title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
+                                    <input type="checkbox" id="sim-broken-r1" ${state.brokenR1 ? 'checked' : ''} ${isFaultActive ? 'disabled' : ''}
                                            onchange="CircuitSimulation.toggleBroken('brokenR1', this.checked)">
                                     <span class="checkbox-custom"></span>
                                     <span class="checkbox-label">💥 Καταστροφή <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> (Διακοπή)</span>
@@ -921,25 +691,27 @@ window.CircuitSimulation = (function() {
                         </div>
 
                         <!-- 3. Resistor R2 Control -->
-                        <div class="sim-control-group">
+                        <div class="sim-control-group ${isFaultActive ? 'is-locked' : ''}">
                             <div class="sim-control-header">
                                 <label for="sim-slider-r2">
                                     <strong>Αντιστάτης 2</strong> <span class="math-expr">(<i class="math-var">R</i><sub class="math-sub">2</sub>)</span>:
                                 </label>
-                                <span class="sim-val-display" id="disp-r2">${state.R2} Ω</span>
+                                <span class="sim-val-display" id="disp-r2">${state.R2} Ω ${isFaultActive ? '<span class="sim-locked-tag">🔒 Κλειδωμένο</span>' : ''}</span>
                             </div>
                             <div class="sim-slider-row">
                                 <input type="range" id="sim-slider-r2" min="1" max="50" step="1" value="${state.R2}" 
+                                       ${isFaultActive ? 'disabled' : ''}
+                                       title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}"
                                        oninput="CircuitSimulation.setParam('R2', this.value)" />
                             </div>
                             <div class="sim-toggles-row" style="display: flex; flex-direction: column; gap: 6px;">
-                                <label class="sim-toggle-checkbox">
-                                    <input type="checkbox" id="sim-short-r2" ${state.shortR2 ? 'checked' : ''} 
+                                <label class="sim-toggle-checkbox ${isFaultActive ? 'is-disabled' : ''}" title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
+                                    <input type="checkbox" id="sim-short-r2" ${state.shortR2 ? 'checked' : ''} ${isFaultActive ? 'disabled' : ''}
                                            onchange="CircuitSimulation.toggleShort('shortR2', this.checked)">
                                     <span class="checkbox-custom"></span>
                                     <span class="checkbox-label">Βραχυκύκλωση <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Bypass)</span>
                                 </label>
-                                ${state.shortR2 ? `
+                                ${state.shortR2 && !isFaultActive ? `
                                     <div class="sim-short-mode-wrap">
                                         <span class="sim-sub-label">Τρόπος Σύνδεσης:</span>
                                         <div class="sim-mode-toggle">
@@ -954,8 +726,8 @@ window.CircuitSimulation = (function() {
                                         </div>
                                     </div>
                                 ` : ''}
-                                <label class="sim-toggle-checkbox broken-toggle">
-                                    <input type="checkbox" id="sim-broken-r2" ${state.brokenR2 ? 'checked' : ''} 
+                                <label class="sim-toggle-checkbox broken-toggle ${isFaultActive ? 'is-disabled' : ''}" title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
+                                    <input type="checkbox" id="sim-broken-r2" ${state.brokenR2 ? 'checked' : ''} ${isFaultActive ? 'disabled' : ''}
                                            onchange="CircuitSimulation.toggleBroken('brokenR2', this.checked)">
                                     <span class="checkbox-custom"></span>
                                     <span class="checkbox-label">💥 Καταστροφή <span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> (Διακοπή)</span>
@@ -1025,6 +797,12 @@ window.CircuitSimulation = (function() {
                                         </div>
                                     </label>
                                 </div>
+                                    ${isFaultActive ? `
+                                        <div class="sim-fault-lock-notice">
+                                            <span>🔒</span>
+                                            <span>Οι ολισθητές αντιστάσεων, οι διακόπτες βραχυκυκλώματος και καταστροφής έχουν κλειδωθεί για αποφυγή σύγχυσης κατά τη μελέτη του σφάλματος.</span>
+                                        </div>
+                                    ` : ''}
                             </div>
                         ` : `
                             <div class="sim-control-group sim-fault-group ${state.faultInstrument === 'ammeter_parallel' ? 'is-faulted' : (state.faultInstrument === 'ammeter2_parallel' ? 'is-partial' : (state.faultInstrument === 'voltmeter_series' ? 'is-series-vm' : ''))}" id="sim-fault-group">
@@ -1087,16 +865,24 @@ window.CircuitSimulation = (function() {
                                         </div>
                                     </label>
                                 </div>
+                                    ${isFaultActive ? `
+                                        <div class="sim-fault-lock-notice">
+                                            <span>🔒</span>
+                                            <span>Οι ολισθητές αντιστάσεων, οι διακόπτες βραχυκυκλώματος και καταστροφής έχουν κλειδωθεί για αποφυγή σύγχυσης κατά τη μελέτη του σφάλματος.</span>
+                                        </div>
+                                    ` : ''}
                             </div>
                         `}
 
                         <!-- Harmless / Equipotential Connections -->
-                        <div class="sim-control-group sim-harmless-group" id="sim-harmless-group">
+                        <div class="sim-control-group sim-harmless-group ${isFaultActive ? 'is-locked' : ''}" id="sim-harmless-group">
                             <div class="sim-control-header">
                                 <span class="sim-group-title">
                                     <strong>🔗 Συνδέσεις που δεν προκαλούν βραχυκύκλωμα</strong>
                                 </span>
-                                ${state.harmlessConnection !== 'none' ? `
+                                ${isFaultActive ? `
+                                    <span class="sim-locked-tag">🔒 Κλειδωμένο</span>
+                                ` : state.harmlessConnection !== 'none' ? `
                                     <span class="ok-badge">Ισοδυναμική Σύνδεση</span>
                                 ` : `
                                     <span class="ok-badge" style="opacity: 0.7;">Καμία Σύνδεση</span>
@@ -1104,8 +890,9 @@ window.CircuitSimulation = (function() {
                             </div>
                             <div class="sim-harmless-options-list">
                                 ${state.topology === 'series' ? `
-                                    <div class="sim-radio-card harmless ${state.harmlessConnection === 'series_GA' ? 'active' : ''}"
-                                         onclick="CircuitSimulation.setHarmlessConnection('series_GA')" role="button" tabindex="0">
+                                    <div class="sim-radio-card harmless ${isFaultActive ? 'is-disabled' : ''} ${state.harmlessConnection === 'series_GA' ? 'active' : ''}"
+                                         onclick="${isFaultActive ? '' : `CircuitSimulation.setHarmlessConnection('series_GA')`}" role="button" tabindex="${isFaultActive ? '-1' : '0'}"
+                                         title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title"><strong>(1) Σύνδεση G με A (Άνω γραμμή)</strong></span>
@@ -1113,8 +900,9 @@ window.CircuitSimulation = (function() {
                                         </div>
                                     </div>
 
-                                    <div class="sim-radio-card harmless ${state.harmlessConnection === 'series_FC' ? 'active' : ''}"
-                                         onclick="CircuitSimulation.setHarmlessConnection('series_FC')" role="button" tabindex="0">
+                                    <div class="sim-radio-card harmless ${isFaultActive ? 'is-disabled' : ''} ${state.harmlessConnection === 'series_FC' ? 'active' : ''}"
+                                         onclick="${isFaultActive ? '' : `CircuitSimulation.setHarmlessConnection('series_FC')`}" role="button" tabindex="${isFaultActive ? '-1' : '0'}"
+                                         title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title"><strong>(2) Σύνδεση F με C (Αγωγός επιστροφής)</strong></span>
@@ -1122,8 +910,9 @@ window.CircuitSimulation = (function() {
                                         </div>
                                     </div>
                                 ` : `
-                                    <div class="sim-radio-card harmless ${state.harmlessConnection === 'parallel_AC' ? 'active' : ''}"
-                                         onclick="CircuitSimulation.setHarmlessConnection('parallel_AC')" role="button" tabindex="0">
+                                    <div class="sim-radio-card harmless ${isFaultActive ? 'is-disabled' : ''} ${state.harmlessConnection === 'parallel_AC' ? 'active' : ''}"
+                                         onclick="${isFaultActive ? '' : `CircuitSimulation.setHarmlessConnection('parallel_AC')`}" role="button" tabindex="${isFaultActive ? '-1' : '0'}"
+                                         title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title"><strong>(1) Σύνδεση A με C (Άνω γραμμή)</strong></span>
@@ -1131,8 +920,9 @@ window.CircuitSimulation = (function() {
                                         </div>
                                     </div>
 
-                                    <div class="sim-radio-card harmless ${state.harmlessConnection === 'parallel_FE' ? 'active' : ''}"
-                                         onclick="CircuitSimulation.setHarmlessConnection('parallel_FE')" role="button" tabindex="0">
+                                    <div class="sim-radio-card harmless ${isFaultActive ? 'is-disabled' : ''} ${state.harmlessConnection === 'parallel_FE' ? 'active' : ''}"
+                                         onclick="${isFaultActive ? '' : `CircuitSimulation.setHarmlessConnection('parallel_FE')`}" role="button" tabindex="${isFaultActive ? '-1' : '0'}"
+                                         title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title"><strong>(2) Σύνδεση F με E (Κάτω γραμμή)</strong></span>
@@ -3471,6 +3261,14 @@ window.CircuitSimulation = (function() {
 
         setFaultInstrument: function(faultKey) {
             state.faultInstrument = faultKey || 'none';
+            if (state.faultInstrument !== 'none') {
+                // Lock and reset all short-circuits, damages, and harmless connections
+                state.shortR1 = false;
+                state.shortR2 = false;
+                state.brokenR1 = false;
+                state.brokenR2 = false;
+                state.harmlessConnection = 'none';
+            }
             if (faultKey === 'ammeter_parallel') {
                 state.activeProbe = 'ammeter1';
                 if (state.topology === 'series') {
@@ -3506,6 +3304,7 @@ window.CircuitSimulation = (function() {
         },
 
         setShortMode: function(resistorKey, mode) {
+            if (state.faultInstrument && state.faultInstrument !== 'none') return;
             if (resistorKey === 'R1') {
                 state.shortModeR1 = mode;
             } else if (resistorKey === 'R2') {
@@ -3534,6 +3333,10 @@ window.CircuitSimulation = (function() {
         },
 
         setHarmlessConnection: function(connKey) {
+            if (state.faultInstrument && state.faultInstrument !== 'none') {
+                showToast('🔒 Οι πρόσθετες συνδέσεις είναι κλειδωμένες κατά τη μελέτη σφάλματος τοποθέτησης οργάνου.');
+                return;
+            }
             // Toggle off if already active
             if (state.harmlessConnection === connKey) {
                 state.harmlessConnection = 'none';
@@ -3568,6 +3371,9 @@ window.CircuitSimulation = (function() {
         },
 
         setParam: function(key, val) {
+            if ((key === 'R1' || key === 'R2') && state.faultInstrument && state.faultInstrument !== 'none') {
+                return;
+            }
             state[key] = parseFloat(val);
             const disp = document.getElementById(key === 'V_src' ? 'disp-vsrc' : (key === 'R1' ? 'disp-r1' : 'disp-r2'));
             if (disp) disp.innerText = `${state[key]} ${key === 'V_src' ? 'V' : 'Ω'}`;
@@ -3577,6 +3383,9 @@ window.CircuitSimulation = (function() {
         },
 
         adjustParam: function(key, delta) {
+            if ((key === 'R1' || key === 'R2') && state.faultInstrument && state.faultInstrument !== 'none') {
+                return;
+            }
             const min = 1;
             const max = key === 'V_src' ? 60 : 50;
             const next = Math.max(min, Math.min(max, state[key] + delta));
@@ -3608,6 +3417,12 @@ window.CircuitSimulation = (function() {
         },
 
         toggleShort: function(key, checked) {
+            if (state.faultInstrument && state.faultInstrument !== 'none') {
+                const el = document.getElementById(key === 'shortR1' ? 'sim-short-r1' : 'sim-short-r2');
+                if (el) el.checked = false;
+                showToast('🔒 Οι διακόπτες βραχυκυκλώματος είναι κλειδωμένοι κατά τη μελέτη σφάλματος τοποθέτησης οργάνου.');
+                return;
+            }
             state[key] = checked;
             // If shorted, clear broken state for this component
             if (checked) {
@@ -3634,6 +3449,12 @@ window.CircuitSimulation = (function() {
         },
 
         toggleBroken: function(key, checked) {
+            if (state.faultInstrument && state.faultInstrument !== 'none') {
+                const el = document.getElementById(key === 'brokenR1' ? 'sim-broken-r1' : 'sim-broken-r2');
+                if (el) el.checked = false;
+                showToast('🔒 Οι διακόπτες καταστροφής/διακοπής είναι κλειδωμένοι κατά τη μελέτη σφάλματος τοποθέτησης οργάνου.');
+                return;
+            }
             state[key] = checked;
             // If broken, clear short state for this component
             if (checked) {
@@ -3677,24 +3498,7 @@ window.CircuitSimulation = (function() {
         },
 
         applyPreset: function(presetKey) {
-            const p = PRESETS[presetKey];
-            if (!p) return;
-            state.topology = p.topology;
-            state.V_src = p.V_src;
-            state.R1 = p.R1;
-            state.R2 = p.R2;
-            state.switchClosed = p.switchClosed;
-            state.shortR1 = !!p.shortR1;
-            state.shortR2 = !!p.shortR2;
-            state.brokenR1 = !!p.brokenR1;
-            state.brokenR2 = !!p.brokenR2;
-            state.faultInstrument = p.faultInstrument || 'none';
-            state.activeProbe = (state.faultInstrument === 'ammeter_parallel' ? 'ammeter1' : 
-                                (state.faultInstrument === 'ammeter2_parallel' ? 'ammeter2' : 
-                                (state.faultInstrument === 'voltmeter_series' ? 'voltmeter_series' : 'R1')));
-
-            if (state.containerEl) render(state.containerEl);
-            showToast(`🎯 Φορτώθηκε: ${p.name}`);
+            // Deprecated / removed per user request: ready-made presets at top of simulation are disabled.
         },
 
         openFullscreenModal: function() {
