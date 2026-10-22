@@ -7143,6 +7143,94 @@ button.exam-opt-pill:active:not(:disabled) {
     white-space: nowrap;
 }
 
+.exam-pro-takeaway-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.exam-pro-takeaway-icon.cyan {
+    background: rgba(6, 182, 212, 0.18);
+    border: 1px solid rgba(6, 182, 212, 0.4);
+    color: #67e8f9;
+}
+
+.exam-pro-takeaway-icon.warning {
+    background: rgba(245, 158, 11, 0.18);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #fbbf24;
+}
+
+.exam-pro-takeaway-icon.danger {
+    background: rgba(239, 68, 68, 0.18);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+}
+
+.exam-item-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.exam-item-dot.cyan {
+    background: #06b6d4;
+    box-shadow: 0 0 8px rgba(6, 182, 212, 0.8);
+}
+
+.exam-item-dot.warning {
+    background: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
+}
+
+.exam-item-dot.danger {
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+}
+
+.exam-item-dot.emerald {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+}
+
+.exam-item-dot.purple {
+    background: #a855f7;
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.8);
+}
+
+.concept-alert {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 16px 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
+    margin-bottom: 20px;
+}
+
+.concept-alert .alert-icon {
+    flex-shrink: 0;
+}
+
+.concept-alert .alert-body {
+    flex: 1;
+    font-size: 0.94rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.concept-alert .alert-body strong {
+    color: var(--text-primary);
+}
+
 /* ==========================================================================
    EXAM COMPARISON TABLE (SECTION 08)
    ========================================================================== */

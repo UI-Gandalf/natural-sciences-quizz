@@ -327,10 +327,14 @@ window.ExamSolutionsGuide = (function() {
                 <!-- HERO BANNER -->
                 <div class="theory-hero-banner glass-card" style="border-color: rgba(59, 130, 246, 0.4); background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(15, 23, 42, 0.75));">
                     <div class="theory-hero-meta">
-                        <span class="theory-tag-pill" style="border-color: rgba(59, 130, 246, 0.4); color: #93c5fd;">📑 Υποδειγματική Επίλυση Ενδεικτικού Διαγωνίσματος</span>
+                        <span class="theory-tag-pill" style="border-color: rgba(59, 130, 246, 0.4); color: #93c5fd;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; margin-right: 4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>Υποδειγματική Επίλυση Ενδεικτικού Διαγωνίσματος
+                        </span>
                         <span class="theory-tag-pill theme-tag">Φυσική Γ΄ Γυμνασίου</span>
                         <span class="theory-tag-pill page-tag">70 Σελίδες Επίσημου Οδηγού (5.9 MB)</span>
-                        <span class="theory-tag-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fcd34d;">✍️ Δημήτρης Μητσάκης, Φυσικός</span>
+                        <span class="theory-tag-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fcd34d;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; margin-right: 4px;"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>Δημήτρης Μητσάκης, Φυσικός
+                        </span>
                     </div>
 
                     <h1 class="theory-hero-title" style="font-size: 2.2rem;">
@@ -346,15 +350,15 @@ window.ExamSolutionsGuide = (function() {
                     <!-- QUICK ACTIONS BAR -->
                     <div class="theory-actions-bar">
                         <a href="assets/docs/physics_g_exam_solutions_guide_2026.pdf" target="_blank" download class="theory-btn theory-btn-primary" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border-color: rgba(255,255,255,0.25);" title="Λήψη του επίσημου πολυσέλιδου PDF του Δ. Μητσάκη">
-                            <span>📥</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                             <span>Λήψη Πλήρους Επίσημου PDF (70 Σελίδες - 5.9 MB)</span>
                         </a>
                         <button class="theory-btn theory-btn-secondary" onclick="switchSubjectTab('theory')" title="Μετάβαση στον Συμπυκνωμένο Οδηγό Θεωρίας & Επίλυσης">
-                            <span>📖</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                             <span>Θεωρία & Επίλυση Κυκλωμάτων</span>
                         </button>
                         <button class="theory-btn theory-btn-secondary" onclick="switchSubjectTab('simulation')" title="Άνοιγμα του Εικονικού Εργαστηρίου Κυκλωμάτων">
-                            <span>⚡</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                             <span>Εικονικό Εργαστήριο Προσομοίωσης</span>
                         </button>
                     </div>
@@ -370,14 +374,17 @@ window.ExamSolutionsGuide = (function() {
                         <a href="#exam-sec-series-short" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-series-short')">5. Βραχυκύκλωμα στη Σειρά</a>
                         <a href="#exam-sec-thema-a2" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-thema-a2')">6. Θέμα Α2: Παράλληλα (15 Ερωτήματα)</a>
                         <a href="#exam-sec-parallel-short" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-parallel-short')">7. Βραχυκύκλωμα & Διακοπή</a>
-                        <a href="#exam-sec-summary" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-summary')">8. Συγκριτικός Πίνακας & Κανόνες</a>
+                        <a href="#exam-sec-summary" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-summary')">8. Συγκριτικός Πίνακας</a>
                     </div>
                 </nav>
 
                 <!-- INTERACTIVE TOOLBAR: FILTER & EXPAND/COLLAPSE -->
                 <div class="exam-toolbar glass-card" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; padding: 14px 20px; border-radius: 16px;">
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        <span style="font-weight: 700; font-size: 0.88rem; color: var(--text-muted);">🎯 Γρήγορη Εστίαση:</span>
+                        <span style="font-weight: 700; font-size: 0.88rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                            Γρήγορη Εστίαση:
+                        </span>
                         <button class="exam-filter-pill active" data-filter="all" onclick="ExamSolutionsGuide.setFilter('all')">Όλα (Πλήρης Μελέτη)</button>
                         <button class="exam-filter-pill" data-filter="thema_a1" onclick="ExamSolutionsGuide.setFilter('thema_a1')">Θέμα Α1: Σειρά</button>
                         <button class="exam-filter-pill" data-filter="thema_a2" onclick="ExamSolutionsGuide.setFilter('thema_a2')">Θέμα Α2: Παράλληλα</button>
@@ -386,10 +393,12 @@ window.ExamSolutionsGuide = (function() {
 
                     <div style="display: flex; gap: 8px;">
                         <button class="exam-action-btn" onclick="ExamSolutionsGuide.toggleAllSolutions(true)" title="Άνοιγμα όλων των αναλυτικών απαντήσεων">
-                            <span>📖</span><span>Εμφάνιση Όλων</span>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            <span>Εμφάνιση Όλων</span>
                         </button>
                         <button class="exam-action-btn" onclick="ExamSolutionsGuide.toggleAllSolutions(false)" title="Σύμπτυξη όλων για δοκιμή αυτοαξιολόγησης">
-                            <span>🙈</span><span>Απόκρυψη Όλων (Self-Test)</span>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                            <span>Απόκρυψη Όλων (Self-Test)</span>
                         </button>
                     </div>
                 </div>
@@ -3126,14 +3135,14 @@ window.ExamSolutionsGuide = (function() {
                 </section>
 
                 <!-- ==============================================================
-                     SECTION 8: ΜΕΓΑΛΟΣ ΣΥΓΚΡΙΤΙΚΟΣ ΠΙΝΑΚΑΣ & ΧΡΥΣΟΙ ΚΑΝΟΝΕΣ
+                     SECTION 8: ΜΕΓΑΛΟΣ ΣΥΓΚΡΙΤΙΚΟΣ ΠΙΝΑΚΑΣ (ΣΕΙΡΑ vs ΠΑΡΑΛΛΗΛΗ)
                      ============================================================== -->
                 <section class="theory-section exam-section glass-card" id="exam-sec-summary">
                     <div class="sec-header">
                         <div class="sec-number-badge" style="background: linear-gradient(135deg, #10b981, #059669);">08</div>
                         <div class="sec-header-text">
-                            <h2 class="sec-title">Μεγάλος Συγκριτικός Πίνακας & Χρυσοί Κανόνες Εξετάσεων</h2>
-                            <p class="sec-subtitle">Συγκεντρωτική αντιπαραβολή Σειράς vs Παράλληλης και μεθοδολογία 5 βημάτων για άριστη επίδοση</p>
+                            <h2 class="sec-title">Μεγάλος Συγκριτικός Πίνακας: Σειρά vs Παράλληλη</h2>
+                            <p class="sec-subtitle">Συγκεντρωτική αντιπαραβολή Σειράς vs Παράλληλης σε όλα τα φυσικά μεγέθη και συμπεριφορές κυκλωμάτων</p>
                         </div>
                     </div>
 
@@ -3258,7 +3267,51 @@ window.ExamSolutionsGuide = (function() {
                                         </td>
                                     </tr>
 
-                                    <!-- ROW 5: Disconnection -->
+                                    <!-- ROW 5: Ratio Identities -->
+                                    <tr>
+                                        <td class="col-prop">
+                                            <div class="comp-prop-name">
+                                                <span class="comp-prop-icon">📊</span>
+                                                <span class="comp-prop-label">Αναλογίες Μεγεθών<br><small style="font-size:0.78em;opacity:0.75;">$\dfrac{R_1}{R_2},\;\dfrac{I_1}{I_2},\;\dfrac{V_1}{V_2},\;\dfrac{P_1}{P_2},\;\dfrac{E_1}{E_2}$</small></span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill purple">⚡ Κοινό I → αναλογία μέσω R</span>
+                                                <div class="comp-formula-box">
+                                                    $$\frac{V_1}{V_2} = \frac{R_1}{R_2}$$
+                                                </div>
+                                                <span class="comp-note">Τάση: μεγαλύτερος R παίρνει μεγαλύτερη V (Ohm: $V=IR$)</span>
+                                                <div class="comp-formula-box" style="margin-top:6px;">
+                                                    $$\frac{P_1}{P_2} = \frac{E_1}{E_2} = \frac{R_1}{R_2}$$
+                                                </div>
+                                                <span class="comp-note">Ισχύς &amp; θερμότητα: αναλογικές προς R (${P=I^2R}$)</span>
+                                                <div class="comp-formula-box" style="margin-top:6px;">
+                                                    $$\frac{I_1}{I_2} = 1 \quad (I_1 = I_2)$$
+                                                </div>
+                                                <span class="comp-note">Ρεύμα: κοινό σε όλους τους αντιστάτες — αναλογία = 1</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="comp-cell-stack">
+                                                <span class="comp-pill cyan">🔀 Κοινό V → αναλογία μέσω R</span>
+                                                <div class="comp-formula-box">
+                                                    $$\frac{I_1}{I_2} = \frac{R_2}{R_1}$$
+                                                </div>
+                                                <span class="comp-note">Ρεύμα: μικρότερος R παίρνει μεγαλύτερο I (Ohm: $I=V/R$)</span>
+                                                <div class="comp-formula-box" style="margin-top:6px;">
+                                                    $$\frac{P_1}{P_2} = \frac{E_1}{E_2} = \frac{R_2}{R_1}$$
+                                                </div>
+                                                <span class="comp-note">Ισχύς &amp; θερμότητα: αντιστρόφως ανάλογες προς R ($P=V^2/R$)</span>
+                                                <div class="comp-formula-box" style="margin-top:6px;">
+                                                    $$\frac{V_1}{V_2} = 1 \quad (V_1 = V_2)$$
+                                                </div>
+                                                <span class="comp-note">Τάση: κοινή σε όλους τους κλάδους — αναλογία = 1</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <!-- ROW 6: Disconnection -->
                                     <tr>
                                         <td class="col-prop">
                                             <div class="comp-prop-name">
@@ -3336,85 +3389,21 @@ window.ExamSolutionsGuide = (function() {
                         </div>
                     </div>
 
-                    <!-- 5 GOLDEN RULES -->
-                    <div class="exam-golden-card">
-                        <div class="exam-golden-header">
-                            <div class="exam-golden-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                </svg>
-                            </div>
-                            <div class="exam-golden-title-wrap">
-                                <h3>Οι 5 Χρυσοί Κανόνες για Άριστη Επίδοση στις Εξετάσεις</h3>
-                                <p>Στρατηγική μεθοδολογία επίλυσης και αποφυγής των συνηθέστερων παγίδων</p>
-                            </div>
-                        </div>
-
-                        <div class="exam-golden-grid">
-                            <div class="exam-golden-item">
-                                <div class="exam-golden-num">01</div>
-                                <div class="exam-golden-content">
-                                    <div class="exam-golden-item-title">Εντοπίστε Άμεσα τη Συνδεσμολογία</div>
-                                    <p class="exam-golden-item-desc">
-                                        Πριν γράψετε οτιδήποτε, ρωτήστε: <em>«Έχει το ρεύμα μόνο μία διαδρομή (Σειρά) ή διακλαδίζεται σε κόμβους (Παράλληλα);»</em> Στη σειρά κοινό $I$, στα παράλληλα κοινή τάση $V$.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="exam-golden-item">
-                                <div class="exam-golden-num">02</div>
-                                <div class="exam-golden-content">
-                                    <div class="exam-golden-item-title">Ελέγξτε τις Συνδέσεις των Οργάνων Μετρήσεων</div>
-                                    <p class="exam-golden-item-desc">
-                                        Το αμπερόμετρο συνδέεται πάντοτε σε σειρά ($R_A \\approx 0\\ \\Omega$), το βολτόμετρο πάντοτε παράλληλα στα άκρα του στοιχείου ($R_V \\to \\infty$).
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="exam-golden-item">
-                                <div class="exam-golden-num">03</div>
-                                <div class="exam-golden-content">
-                                    <div class="exam-golden-item-title">Προσοχή στους Ανοιχτούς Διακόπτες</div>
-                                    <p class="exam-golden-item-desc">
-                                        Σε ανοιχτό διακόπτη το ρεύμα μέσα από αυτόν είναι αυστηρά μηδέν ($I = 0$), αλλά στα άκρα του εμφανίζεται ολόκληρη η τάση της πηγής ($V = V_{\\text{πηγ}}$)!
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="exam-golden-item">
-                                <div class="exam-golden-num">04</div>
-                                <div class="exam-golden-content">
-                                    <div class="exam-golden-item-title">Εφαρμόστε τη Μέθοδο Δυναμικού Κόμβων</div>
-                                    <p class="exam-golden-item-desc">
-                                        Στις σύνθετες ερωτήσεις τάσης, σημειώστε τα δυναμικά σε κάθε κόμβο ($V_+, V_-$). Ιδανικό καλώδιο = σταθερό δυναμικό, αντιστάτης με ρεύμα = πτώση δυναμικού $\\Delta V = I \\cdot R$.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="exam-golden-item">
-                                <div class="exam-golden-num">05</div>
-                                <div class="exam-golden-content">
-                                    <div class="exam-golden-item-title">Διπλή Επαλήθευση Αποτελεσμάτων</div>
-                                    <p class="exam-golden-item-desc">
-                                        Ελέγξτε πάντα ότι στα παράλληλα $R_{\\text{ολ}} < \\min(R_1, R_2)$ και ότι η ισχύς που παρέχει η πηγή ισούται με το άθροισμα των καταναλώσεων ($P_{\\text{πηγ}} = P_1 + P_2$).
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- FINAL ACTION BUTTONS -->
-                    <div style="text-align: center; margin-top: 32px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 18px; border: 1px solid var(--border);">
-                        <h4 style="margin-bottom: 12px; color: var(--text-primary);">Έτοιμοι να δοκιμάσετε τις γνώσεις σας;</h4>
+                    <div style="text-align: center; margin-top: 32px; padding: 24px; background: rgba(255,255,255,0.02); border-radius: 18px; border: 1px solid var(--border);">
+                        <h4 style="margin-bottom: 14px; color: var(--text-primary); font-size: 1.05rem; font-weight: 700;">Έτοιμοι να δοκιμάσετε τις γνώσεις σας;</h4>
                         <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
                             <button class="theory-btn theory-btn-primary" onclick="switchSubjectTab('quizzes')">
-                                <span>📝</span><span>Μετάβαση στα Διαδραστικά Κουίζ</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <span>Μετάβαση στα Διαδραστικά Κουίζ</span>
                             </button>
                             <button class="theory-btn theory-btn-secondary" onclick="switchSubjectTab('simulation')">
-                                <span>⚡</span><span>Δοκιμή στο Εικονικό Εργαστήριο</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                <span>Δοκιμή στο Εικονικό Εργαστήριο</span>
                             </button>
                             <a href="assets/docs/physics_g_exam_solutions_guide_2026.pdf" target="_blank" download class="theory-btn theory-btn-secondary">
-                                <span>📥</span><span>Λήψη Επίσημου PDF (70 Σελίδες)</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                <span>Λήψη Επίσημου PDF (70 Σελίδες)</span>
                             </a>
                         </div>
                     </div>
