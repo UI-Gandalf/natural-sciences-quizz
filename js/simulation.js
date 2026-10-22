@@ -570,6 +570,24 @@ window.CircuitSimulation = (function() {
         const phys = computePhysics();
         const isFaultActive = state.faultInstrument && state.faultInstrument !== 'none';
 
+        function getHarmlessTogglePopup(isActive) {
+            return `
+                <div class="harmless-toggle-popup" role="tooltip">
+                    <div class="popup-header">
+                        <span class="popup-icon">🔄</span>
+                        <span>Λειτουργία Διακόπτη (Toggle)</span>
+                    </div>
+                    <div class="popup-body">
+                        Το πάτημα της επιλογής εναλλάσσει το κύκλωμα από την <strong>αρχική κατάσταση</strong> στην κατάσταση με <strong>συνδεδεμένο το μη-αλλοιωτικό καλώδιο</strong> και αντίστροφα.
+                    </div>
+                    <div class="popup-status-badge ${isActive ? 'active-state' : 'inactive-state'}">
+                        <span>${isActive ? '🟢 Τρέχουσα: Συνδεδεμένο (Κλικ για επιστροφή)' : '⚪ Τρέχουσα: Αρχική (Κλικ για ενεργοποίηση)'}</span>
+                    </div>
+                    <span class="popup-arrow"></span>
+                </div>
+            `;
+        }
+
         container.innerHTML = `
             <div class="sim-container theme-physics">
                 <!-- Header Toolbar: Topology & Fullscreen -->
@@ -893,6 +911,7 @@ window.CircuitSimulation = (function() {
                                     <div class="sim-radio-card harmless ${isFaultActive ? 'is-disabled' : ''} ${state.harmlessConnection === 'series_GA' ? 'active' : ''}"
                                          onclick="${isFaultActive ? '' : `CircuitSimulation.setHarmlessConnection('series_GA')`}" role="button" tabindex="${isFaultActive ? '-1' : '0'}"
                                          title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
+                                        ${getHarmlessTogglePopup(state.harmlessConnection === 'series_GA')}
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title"><strong>(1) Σύνδεση G με A (Άνω γραμμή)</strong></span>
@@ -903,6 +922,7 @@ window.CircuitSimulation = (function() {
                                     <div class="sim-radio-card harmless ${isFaultActive ? 'is-disabled' : ''} ${state.harmlessConnection === 'series_FC' ? 'active' : ''}"
                                          onclick="${isFaultActive ? '' : `CircuitSimulation.setHarmlessConnection('series_FC')`}" role="button" tabindex="${isFaultActive ? '-1' : '0'}"
                                          title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
+                                        ${getHarmlessTogglePopup(state.harmlessConnection === 'series_FC')}
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title"><strong>(2) Σύνδεση F με C (Αγωγός επιστροφής)</strong></span>
@@ -913,6 +933,7 @@ window.CircuitSimulation = (function() {
                                     <div class="sim-radio-card harmless ${isFaultActive ? 'is-disabled' : ''} ${state.harmlessConnection === 'parallel_AC' ? 'active' : ''}"
                                          onclick="${isFaultActive ? '' : `CircuitSimulation.setHarmlessConnection('parallel_AC')`}" role="button" tabindex="${isFaultActive ? '-1' : '0'}"
                                          title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
+                                        ${getHarmlessTogglePopup(state.harmlessConnection === 'parallel_AC')}
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title"><strong>(1) Σύνδεση A με C (Άνω γραμμή)</strong></span>
@@ -923,6 +944,7 @@ window.CircuitSimulation = (function() {
                                     <div class="sim-radio-card harmless ${isFaultActive ? 'is-disabled' : ''} ${state.harmlessConnection === 'parallel_FE' ? 'active' : ''}"
                                          onclick="${isFaultActive ? '' : `CircuitSimulation.setHarmlessConnection('parallel_FE')`}" role="button" tabindex="${isFaultActive ? '-1' : '0'}"
                                          title="${isFaultActive ? 'Κλειδωμένο κατά τη μελέτη σφάλματος τοποθέτησης οργάνου' : ''}">
+                                        ${getHarmlessTogglePopup(state.harmlessConnection === 'parallel_FE')}
                                         <span class="radio-card-dot"></span>
                                         <div class="radio-card-content">
                                             <span class="radio-card-title"><strong>(2) Σύνδεση F με E (Κάτω γραμμή)</strong></span>
