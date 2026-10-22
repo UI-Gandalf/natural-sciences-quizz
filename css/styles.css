@@ -6008,13 +6008,25 @@ mjx-container[display="true"], .katex-display {
 
 .exam-options-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     margin-bottom: 18px;
 }
 
+@media (max-width: 860px) {
+    .exam-options-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 580px) {
+    .exam-options-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .exam-opt-pill {
-    padding: 8px 12px;
+    padding: 9px 12px;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border);
@@ -6023,7 +6035,28 @@ mjx-container[display="true"], .katex-display {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
     text-align: center;
+    gap: 6px;
+    box-sizing: border-box;
+    min-height: 48px;
+    transition: all 0.2s ease;
+}
+
+.exam-opt-pill .opt-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    line-height: 1.35;
+}
+
+.exam-opt-pill .opt-sub {
+    white-space: nowrap;
+    opacity: 0.92;
+    display: inline-block;
+    font-size: 0.88em;
 }
 
 .exam-opt-pill.is-correct {
@@ -6035,13 +6068,17 @@ mjx-container[display="true"], .katex-display {
 }
 
 .exam-opt-pill.is-correct .opt-check {
-    margin-left: 6px;
-    font-size: 0.76rem;
+    flex-shrink: 0;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.74rem;
     background: #10b981;
     color: #ffffff;
-    padding: 1px 6px;
+    padding: 2px 7px;
     border-radius: 999px;
     font-weight: 800;
+    line-height: 1.2;
 }
 
 .exam-sol-wrap {
