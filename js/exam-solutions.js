@@ -181,11 +181,12 @@ window.ExamSolutionsGuide = (function() {
         const solEl = document.getElementById('sol-' + id);
         const btnEl = document.getElementById('btn-sol-' + id);
         if (solEl && btnEl) {
-            const isHidden = solEl.style.display === 'none';
+            const isHidden = solEl.style.display === 'none' || !solEl.style.display;
             solEl.style.display = isHidden ? 'block' : 'none';
+            btnEl.classList.toggle('is-open', isHidden);
             btnEl.innerHTML = isHidden 
-                ? '<span>🔼</span><span>Σύμπτυξη Επίλυσης</span>' 
-                : '<span>👁️</span><span>Προβολή Αναλυτικής Επίλυσης</span>';
+                ? '<span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▴</span>' 
+                : '<span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>';
             if (isHidden && window.renderMath) {
                 window.renderMath(solEl);
             } else if (isHidden && window.MathJax && window.MathJax.typesetPromise) {
@@ -199,9 +200,10 @@ window.ExamSolutionsGuide = (function() {
             el.style.display = expand ? 'block' : 'none';
         });
         document.querySelectorAll('.exam-sol-toggle-btn').forEach(function(btn) {
+            btn.classList.toggle('is-open', expand);
             btn.innerHTML = expand 
-                ? '<span>🔼</span><span>Σύμπτυξη Επίλυσης</span>' 
-                : '<span>👁️</span><span>Προβολή Αναλυτικής Επίλυσης</span>';
+                ? '<span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▴</span>' 
+                : '<span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>';
         });
         if (expand && window.renderMath) {
             window.renderMath(document.getElementById('exam-solutions-mount'));
@@ -495,6 +497,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 1</span>
                                 <h4 class="exam-q-title">Τιμή της συνολικής (ισοδύναμης) αντίστασης του κυκλώματος</h4>
+
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-1" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-1', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-1" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-1', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading">Βασικά Δεδομένα Κυκλώματος:</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\text{ V}$</strong></li>
+                                                <li>Αντιστάτες: <strong>$R_1 = 5\ \Omega$</strong>, <strong>$R_2 = 15\ \Omega$</strong> (σε σειρά)</li>
+                                                <li>Κεντρικός διακόπτης: <strong>[Γ, Δ]</strong> (κλειστός)</li>
+                                                <li>Κλαδικοί διακόπτες: <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Σημεία κυκλώματος: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Με κλειστό μόνο τον κεντρικό διακόπτη [Γ, Δ], να υπολογίσετε τη συνολική αντίσταση $R_{\\text{ολ}}$ του κυκλώματος.
@@ -511,9 +548,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-1" onclick="ExamSolutionsGuide.toggleSolution('a1-1')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-1" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-1" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Με κλειστό μόνο τον διακόπτη [Γ, Δ], υπάρχει ένας και μοναδικός διαθέσιμος κλειστός δρόμος (βρόγχος) για να κινηθεί το ρεύμα από τον θετικό προς τον αρνητικό πόλο, διαμέσου και των δύο αντιστατών. Άρα οι αντιστάτες $R_1$ και $R_2$ συνδέονται <strong>σε σειρά</strong>.</p>
                                         <div class="formula-latex">$$R_{\\text{ολ}} = R_1 + R_2 = 5\\ \\Omega + 15\\ \\Omega = 20\\ \\Omega$$</div>
@@ -579,9 +616,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-2" onclick="ExamSolutionsGuide.toggleSolution('a1-2')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-2" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-2" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Εφαρμόζουμε τον νόμο του Ohm για το ισοδύναμο κύκλωμα με την ολική αντίσταση:</p>
                                         <div class="formula-latex">$$I = \\frac{V}{R_{\\text{ολ}}} = \\frac{60\\text{ V}}{20\\ \\Omega} = 3\\text{ A}$$</div>
@@ -648,9 +685,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-3" onclick="ExamSolutionsGuide.toggleSolution('a1-3')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-3" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-3" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>1. Τυπική Μέθοδος (Νόμος Ohm):</strong></p>
                                         <div class="formula-latex">$$V_1 = I \\cdot R_1 = 3\\text{ A} \\cdot 5\\ \\Omega = 15\\text{ V}$$</div>
@@ -720,9 +757,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-4" onclick="ExamSolutionsGuide.toggleSolution('a1-4')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-4" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-4" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Από τον νόμο του Ohm για τον $R_2$:</p>
                                         <div class="formula-latex">$$V_2 = I \\cdot R_2 = 3\\text{ A} \\cdot 15\\ \\Omega = 45\\text{ V}$$</div>
@@ -789,9 +826,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-5" onclick="ExamSolutionsGuide.toggleSolution('a1-5')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-5" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-5" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Από τον ορισμό της ηλεκτρικής ισχύος της πηγής:</p>
                                         <div class="formula-latex">$$P_{\\text{πηγ}} = V \\cdot I = 60\\text{ V} \\cdot 3\\text{ A} = 180\\text{ W}$$</div>
@@ -860,9 +897,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-6" onclick="ExamSolutionsGuide.toggleSolution('a1-6')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-6" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-6" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Το κύκλωμα είναι ανοιχτό, οπότε $I = 0$. Επειδή δεν ρέει ρεύμα, δεν υπάρχει πτώση τάσης σε κανέναν αντιστάτη ($V_1 = 0, V_2 = 0$).</p>
                                         <p>Το άκρο Γ συνδέεται μέσω του $R_1$ με τον θετικό πόλο της πηγής ($V_{\\text{Γ}} = V_+ = 160\\text{ V}$).</p>
@@ -931,9 +968,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-7" onclick="ExamSolutionsGuide.toggleSolution('a1-7')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-7" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-7" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Και τα δύο άκρα Θ και Κ του διακόπτη συνδέονται με τον αρνητικό πόλο της πηγής χωρίς να παρεμβάλλεται καμία πηγή. Επειδή $I = 0$, δεν υπάρχει πουθενά πτώση τάσης και $V_{\\text{Θ}} = V_{\\text{Κ}} = V_-$.</p>
                                         <div class="formula-latex">$$V_{\\text{ΘΚ}} = V_{\\text{Θ}} - V_{\\text{Κ}} = 0\\text{ V}$$</div>
@@ -999,9 +1036,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-8" onclick="ExamSolutionsGuide.toggleSolution('a1-8')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-8" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-8" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Ο διακόπτης [Ζ, Η] συνδέεται παράλληλα στα άκρα του αντιστάτη $R_1$. Κλείνοντάς τον, προσφέρει έναν εναλλακτικό αγώγιμο δρόμο <em>μηδενικής αντίστασης</em>. Επομένως <strong>βραχυκυκλώνει πλήρως τον $R_1$</strong>!</p>
                                         <p>Όλο το ρεύμα ρέει διαμέσου του διακόπτη [Ζ, Η] παρακάμπτοντας τον $R_1$ ($I_1 = 0\\text{ A}$).</p>
@@ -1068,9 +1105,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-9" onclick="ExamSolutionsGuide.toggleSolution('a1-9')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-9" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-9" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Ο ρυθμός διέλευσης φορτίου ορίζεται ως η ένταση του ρεύματος: $I = \\frac{\\Delta q}{\\Delta t}$.</p>
                                         <p>Το κλείσιμο του διακόπτη [Θ, Κ] <strong>βραχυκυκλώνει τον αντιστάτη $R_2$</strong>. Τώρα ο μόνος ενεργός αντιστάτης στο κύκλωμα είναι ο $R_1 = 5\\ \\Omega$:</p>
@@ -1138,9 +1175,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-10" onclick="ExamSolutionsGuide.toggleSolution('a1-10')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-10" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-10" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Ο διακόπτης [Μ, Λ] συνδέει δύο σημεία του ίδιου αγώγιμου καλωδίου που βρίσκονται στο ίδιο δυναμικό ($V_{\\text{Μ}} = V_{\\text{Λ}}$). Δεν παρακάμπτει κανέναν αντιστάτη και δεν ενώνει διαφορετικούς πόλους.</p>
                                         <p>Συνεπώς, το κύκλωμα παραμένει λειτουργικά <strong>αμετάβλητο</strong> ($I = 3\\text{ A}$).</p>
@@ -1207,9 +1244,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-11" onclick="ExamSolutionsGuide.toggleSolution('a1-11')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-11" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-11" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Όπως διαπιστώθηκε στο Ερώτημα 9, με βραχυκυκλωμένο τον $R_2$, το ρεύμα αυξάνεται στα $I' = 12\\text{ A}$.</p>
                                         <p>Η ισχύς που αναπτύσσεται στον $R_1$ γίνεται:</p>
@@ -1279,9 +1316,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-12" onclick="ExamSolutionsGuide.toggleSolution('a1-12')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-12" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-12" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Το ταυτόχρονο κλείσιμο των διακοπτών [Μ, Λ] και [Ξ, Ν] δημιουργεί έναν άμεσο αγώγιμο δρόμο μηδενικής αντίστασης ανάμεσα στον θετικό και τον αρνητικό πόλο της πηγής.</p>
                                         <p>Αυτό συνιστά <strong>Ολικό Βραχυκύκλωμα της Πηγής</strong>:</p>
@@ -1349,9 +1386,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-13" onclick="ExamSolutionsGuide.toggleSolution('a1-13')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-13" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-13" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Ο ρυθμός κατανάλωσης ενέργειας είναι η ηλεκτρική ισχύς ($P_1 = \\frac{\\Delta E}{\\Delta t}$).</p>
                                         <p>Τα σημεία Ε και Γ είναι ακριβώς τα δύο άκρα του αντιστάτη $R_1$. Ενώνοντάς τα με ιδανικό καλώδιο, ο αντιστάτης βραχυκυκλώνεται πλήρως. Το ρεύμα παρακάμπτει τον $R_1$ ($I_1 = 0$), άρα:</p>
@@ -1418,9 +1455,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-14" onclick="ExamSolutionsGuide.toggleSolution('a1-14')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-14" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-14" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Η ένωση των σημείων Δ και Μ με ιδανικό καλώδιο προσφέρει παρακαμπτήριο δρόμο μηδενικής αντίστασης στα άκρα του αντιστάτη $R_2$.</p>
                                         <p>Ο $R_2$ βραχυκυκλώνεται και η διαφορά δυναμικού μεταξύ των άκρων του μηδενίζεται:</p>
@@ -1487,9 +1524,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a1-15" onclick="ExamSolutionsGuide.toggleSolution('a1-15')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a1-15" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a1-15" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Η ένωση των σημείων Η και Ν βραχυκυκλώνει τον αντιστάτη $R_2$. Ενεργός στο κύκλωμα παραμένει μόνο ο $R_1 = 5\\ \\Omega$:</p>
                                         <div class="formula-latex">$$I' = \\frac{V}{R_1} = \\frac{60\\text{ V}}{5\\ \\Omega} = 12\\text{ A}$$</div>
@@ -1688,6 +1725,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 1</span>
                                 <h4 class="exam-q-title">Τιμή της συνολικής (ισοδύναμης) αντίστασης του κυκλώματος</h4>
+
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-1" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-1', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-1" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔀 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-1', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading">Βασικά Δεδομένα Κυκλώματος:</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\text{ V}$</strong></li>
+                                                <li>Αντιστάτες: <strong>$R_1 = 30\ \Omega$</strong>, <strong>$R_2 = 10\ \Omega$</strong> (παράλληλα)</li>
+                                                <li>Κοινή τάση κλάδων: <strong>$V_1 = V_2 = V = 75\text{ V}$</strong></li>
+                                                <li>Κεντρικός διακόπτης: <strong>[Α, Β]</strong></li>
+                                                <li>Κλαδικοί διακόπτες: <strong>[Γ, Δ]</strong> ($R_1$), <strong>[Ε, Ζ]</strong> ($R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη συνολική αντίσταση $R_{\\text{ολ}}$ της παράλληλης συνδεσμολογίας των αντιστατών $R_1 = 30\\ \\Omega$ και $R_2 = 10\\ \\Omega$.
@@ -1704,9 +1776,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-1" onclick="ExamSolutionsGuide.toggleSolution('a2-1')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-1" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-1" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>1. Τύπος Αντιστρόφων:</strong></p>
                                         <div class="formula-latex">$$\\frac{1}{R_{\\text{ολ}}} = \\frac{1}{R_1} + \\frac{1}{R_2} = \\frac{1}{30} + \\frac{1}{10} = \\frac{1 + 3}{30} = \\frac{4}{30} = \\frac{2}{15}\\ \\Omega^{-1} \\implies R_{\\text{ολ}} = \\frac{15}{2} = 7,5\\ \\Omega$$</div>
@@ -1774,9 +1846,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-2" onclick="ExamSolutionsGuide.toggleSolution('a2-2')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-2" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-2" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Από τον νόμο του Ohm για το ισοδύναμο κύκλωμα:</p>
                                         <div class="formula-latex">$$I_{\\text{ολ}} = \\frac{V}{R_{\\text{ολ}}} = \\frac{75\\text{ V}}{7,5\\ \\Omega} = 10\\text{ A}$$</div>
@@ -1841,9 +1913,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-3" onclick="ExamSolutionsGuide.toggleSolution('a2-3')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-3" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-3" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Στην παράλληλη σύνδεση, κάθε κλάδος δέχεται ολόκληρη την τάση της πηγής ($V_1 = V = 75\\text{ V}$):</p>
                                         <div class="formula-latex">$$I_1 = \\frac{V}{R_1} = \\frac{75\\text{ V}}{30\\ \\Omega} = 2,5\\text{ A}$$</div>
@@ -1908,9 +1980,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-4" onclick="ExamSolutionsGuide.toggleSolution('a2-4')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-4" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-4" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>1. Νόμος Ohm στον Κλάδο 2:</strong></p>
                                         <div class="formula-latex">$$I_2 = \\frac{V}{R_2} = \\frac{75\\text{ V}}{10\\ \\Omega} = 7,5\\text{ A}$$</div>
@@ -1978,9 +2050,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-5" onclick="ExamSolutionsGuide.toggleSolution('a2-5')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-5" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-5" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Ο διακόπτης [Α, Β] όταν είναι κλειστός συνιστά ιδανικό αγωγό με μηδενική αντίσταση ($R_{\\text{διακ}} = 0$).</p>
                                         <div class="formula-latex">$$V_{\\text{ΑΒ}} = I \\cdot R_{\\text{διακ}} = I \\cdot 0 = 0\\text{ V}$$</div>
@@ -2046,9 +2118,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-6" onclick="ExamSolutionsGuide.toggleSolution('a2-6')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-6" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-6" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Όπως και στο Ερώτημα 5, κάθε ιδανικός κλειστός διακόπτης έχει μηδενική αντίσταση ($R_{\\text{ΕΖ}} = 0$), συνεπώς δεν προκαλεί καμία πτώση τάσης:</p>
                                         <div class="formula-latex">$$V_{\\text{ΕΖ}} = 0\\text{ V}$$</div>
@@ -2113,9 +2185,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-7" onclick="ExamSolutionsGuide.toggleSolution('a2-7')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-7" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-7" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Υπολογισμός (μέσω $V$ και $I_1$):</strong></p>
                                         <div class="formula-latex">$$P_1 = V \\cdot I_1 = 75\\text{ V} \\cdot 2,5\\text{ A} = 187,5\\text{ W}$$</div>
@@ -2182,9 +2254,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-8" onclick="ExamSolutionsGuide.toggleSolution('a2-8')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-8" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-8" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>1. Υπολογισμός Ισχύος $P_2$:</strong></p>
                                         <div class="formula-latex">$$P_2 = V \\cdot I_2 = 75\\text{ V} \\cdot 7,5\\text{ A} = 562,5\\text{ W}$$</div>
@@ -2251,9 +2323,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-9" onclick="ExamSolutionsGuide.toggleSolution('a2-9')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-9" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-9" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Θεμελιώδης Αρχή Παράλληλης Σύνδεσης:</strong></p>
                                         <p>Το άνοιγμα του διακόπτη [Γ, Δ] καταργεί το ρεύμα στον κλάδο του $R_1$ ($I_1' = 0$). Όμως η τάση στα άκρα του κλάδου του $R_2$ <strong>παραμένει απαράλλακτη και ίση με την τάση της πηγής ($75\\text{ V}$)</strong>!</p>
@@ -2320,9 +2392,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-10" onclick="ExamSolutionsGuide.toggleSolution('a2-10')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-10" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-10" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Με ανοιχτό τον κλάδο του $R_1$, το ολικό ρεύμα της πηγής μειώνεται και ισούται αποκλειστικά με το ρεύμα του μοναδικού ενεργού κλάδου ($R_2$):</p>
                                         <div class="formula-latex">$$I_{\\text{ολ}}' = I_2' = 7,5\\text{ A}$$</div>
@@ -2389,9 +2461,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-11" onclick="ExamSolutionsGuide.toggleSolution('a2-11')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-11" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-11" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Τα σημεία Δ και Η βρίσκονται ήδη στην ίδια αγώγιμη γραμμή (στον ίδιο κόμβο) που συνδέεται απευθείας με τον έναν πόλο της πηγής. Ένα πρόσθετο καλώδιο μεταξύ τους δεν δημιουργεί καμία αλλαγή στο κύκλωμα.</p>
                                         <p>Η τάση στα άκρα του $R_1$ παραμένει $V_1 = 75\\text{ V}$.</p>
@@ -2456,9 +2528,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-12" onclick="ExamSolutionsGuide.toggleSolution('a2-12')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-12" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-12" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Κρίσιμη Ανάλυση Βραχυκυκλώματος στα Παράλληλα:</strong></p>
                                         <p>Τα σημεία Ζ και Η είναι τα δύο άκρα του αντιστάτη $R_2$. Επειδή όμως το κύκλωμα είναι παράλληλο, τα σημεία αυτά συνδέονται ταυτόχρονα και με τους δύο κύριους αγωγούς της πηγής!</p>
@@ -2525,9 +2597,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-13" onclick="ExamSolutionsGuide.toggleSolution('a2-13')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-13" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-13" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Το σημείο Γ συνδέεται με τον έναν πόλο και το σημείο Ε με τον άλλο πόλο της πηγής. Η ένωσή τους με ιδανικό καλώδιο προκαλεί <strong>Ολικό Βραχυκύκλωμα της Πηγής</strong>.</p>
                                         <p>Η τάση στους αντιστάτες μηδενίζεται, άρα ο ρυθμός κατανάλωσης ενέργειας (ισχύς) του $R_1$ μηδενίζεται:</p>
@@ -2593,9 +2665,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-14" onclick="ExamSolutionsGuide.toggleSolution('a2-14')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-14" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-14" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Το σημείο Η βρίσκεται στον κλάδο του $R_2$. Όπως αποδείξαμε στο Ερώτημα 9, το ρεύμα στον κλάδο του $R_2$ παραμένει $I_2 = 7,5\\text{ A}$ ανεξάρτητα από την κατάσταση του άλλου κλάδου.</p>
                                         <p>Συνεπώς σε χρόνο $t = 30\\text{ s}$:</p>
@@ -2661,9 +2733,9 @@ window.ExamSolutionsGuide = (function() {
                             </div>
                             <div class="exam-sol-wrap">
                                 <button class="exam-sol-toggle-btn" id="btn-sol-a2-15" onclick="ExamSolutionsGuide.toggleSolution('a2-15')">
-                                    <span>🔼</span><span>Σύμπτυξη Επίλυσης</span>
+                                    <span>💡</span><span>Επίλυση</span><span class="sol-btn-arrow">▾</span>
                                 </button>
-                                <div class="exam-solution-body" id="sol-a2-15" style="display: block;">
+                                <div class="exam-solution-body" id="sol-a2-15" style="display: none;">
                                     <div class="exam-sol-inner">
                                         <p><strong>Αιτιολόγηση:</strong> Τα σημεία Β και Δ ανήκουν στην ίδια αγώγιμη γραμμή (ισοδυναμικά σημεία). Η σύνδεσή τους δεν επιφέρει καμία απολύτως μεταβολή στη λειτουργία του κυκλώματος.</p>
                                         <p>Η ισχύς της πηγής είναι:</p>
