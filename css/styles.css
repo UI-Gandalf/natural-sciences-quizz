@@ -6910,11 +6910,21 @@ button.exam-opt-pill:active:not(:disabled) {
 }
 
 .exam-pro-item-badge {
-    font-size: 0.74rem;
+    font-size: 0.82rem;
     font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 6px;
-    letter-spacing: 0.03em;
+    padding: 3px 10px;
+    border-radius: 8px;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    line-height: 1.25;
+}
+
+.exam-pro-item-badge .mjx-chtml {
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .exam-pro-item-badge.cyan {
