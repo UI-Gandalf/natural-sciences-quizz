@@ -6210,6 +6210,245 @@ mjx-container[display="true"], .katex-display {
     }
 }
 
+
+/* ==============================================================================
+   INLINE DIAGRAM TOGGLE & HOVER QUICK-PEEK FOR EXAM QUESTIONS (Q2 - Q15)
+   ============================================================================== */
+.exam-diagram-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 13px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-left: auto;
+    user-select: none;
+    outline: none;
+}
+
+.exam-diagram-toggle-btn.theme-a1 {
+    background: rgba(139, 92, 246, 0.12);
+    border: 1px solid rgba(139, 92, 246, 0.38);
+    color: #c4b5fd;
+}
+
+.exam-diagram-toggle-btn.theme-a1:hover {
+    background: rgba(139, 92, 246, 0.26);
+    border-color: #8b5cf6;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(139, 92, 246, 0.4);
+    transform: translateY(-1px);
+}
+
+.exam-diagram-toggle-btn.theme-a1.is-open {
+    background: rgba(139, 92, 246, 0.35);
+    border-color: #a78bfa;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(139, 92, 246, 0.45);
+}
+
+.exam-diagram-toggle-btn.theme-a2 {
+    background: rgba(6, 182, 212, 0.12);
+    border: 1px solid rgba(6, 182, 212, 0.38);
+    color: #67e8f9;
+}
+
+.exam-diagram-toggle-btn.theme-a2:hover {
+    background: rgba(6, 182, 212, 0.26);
+    border-color: #06b6d4;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(6, 182, 212, 0.4);
+    transform: translateY(-1px);
+}
+
+.exam-diagram-toggle-btn.theme-a2.is-open {
+    background: rgba(6, 182, 212, 0.35);
+    border-color: #22d3ee;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(6, 182, 212, 0.45);
+}
+
+.diag-btn-arrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    transition: transform 0.25s ease;
+}
+
+/* Collapsible Inline Diagram Drawer */
+.exam-inline-diagram-drawer {
+    margin: 12px 0 18px 0;
+    animation: examDrawerSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes examDrawerSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.exam-inline-diagram-card {
+    background: rgba(15, 23, 42, 0.82);
+    backdrop-filter: blur(14px);
+    border-radius: 16px;
+    padding: 16px 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.exam-inline-diagram-card.theme-a1 {
+    border: 1.5px solid rgba(139, 92, 246, 0.35);
+}
+
+.exam-inline-diagram-card.theme-a2 {
+    border: 1.5px solid rgba(6, 182, 212, 0.35);
+}
+
+.exam-inline-diagram-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.exam-inline-badge {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.exam-inline-badge.theme-a1 {
+    color: #c4b5fd;
+}
+
+.exam-inline-badge.theme-a2 {
+    color: #67e8f9;
+}
+
+.exam-inline-close-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-muted);
+    border-radius: 8px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.15s ease;
+}
+
+.exam-inline-close-btn:hover {
+    background: rgba(239, 68, 68, 0.22);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.45);
+    transform: scale(1.05);
+}
+
+.exam-inline-diagram-grid {
+    display: grid;
+    grid-template-columns: minmax(260px, 420px) 1fr;
+    gap: 20px;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .exam-inline-diagram-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.exam-inline-diagram-img-wrap {
+    cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    background: #000000;
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.exam-inline-diagram-img-wrap:hover {
+    transform: scale(1.015);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+}
+
+.exam-inline-diagram-img-wrap img {
+    width: 100%;
+    display: block;
+}
+
+.exam-inline-specs-heading {
+    margin: 0 0 10px 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.exam-inline-specs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    line-height: 1.75;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+}
+
+.exam-inline-specs-list li {
+    padding: 3px 0;
+}
+
+.exam-inline-specs-list strong {
+    color: var(--text-primary);
+}
+
+/* Floating Hover Popover */
+.exam-hover-diagram-popover {
+    position: fixed;
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    max-width: 380px;
+    width: 90vw;
+    background: rgba(15, 23, 42, 0.96);
+    backdrop-filter: blur(16px);
+    border-radius: 14px;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    padding: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.75);
+}
+
+.exam-hover-diagram-popover.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.hover-diag-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.hover-diag-img-wrap {
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #000;
+}
+
 /* ==========================================================================
    EXAM COMPARISON TABLE (SECTION 08)
    ========================================================================== */

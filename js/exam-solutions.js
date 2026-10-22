@@ -56,6 +56,127 @@ window.ExamSolutionsGuide = (function() {
         }
     }
 
+
+    // ==============================================================================
+    // DIAGRAM TOGGLE & HOVER QUICK-PEEK (THEMA A1 & THEMA A2)
+    // ==============================================================================
+    let hoverPopoverEl = null;
+    let hoverHideTimeout = null;
+
+    function ensureHoverPopover() {
+        if (!hoverPopoverEl) {
+            hoverPopoverEl = document.createElement('div');
+            hoverPopoverEl.id = 'exam-hover-diagram-popover';
+            hoverPopoverEl.className = 'exam-hover-diagram-popover';
+            document.body.appendChild(hoverPopoverEl);
+
+            hoverPopoverEl.addEventListener('mouseenter', () => {
+                if (hoverHideTimeout) clearTimeout(hoverHideTimeout);
+            });
+            hoverPopoverEl.addEventListener('mouseleave', () => {
+                hideHoverDiagram(150);
+            });
+        }
+        return hoverPopoverEl;
+    }
+
+    function showHoverDiagram(e, topicKey) {
+        if (hoverHideTimeout) clearTimeout(hoverHideTimeout);
+        
+        // Skip hover popup on touch devices
+        if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
+
+        const btn = e.currentTarget;
+        if (!btn) return;
+
+        // If the inline drawer for this question is already open, skip hover popup
+        const qCard = btn.closest('.exam-question-card');
+        if (qCard) {
+            const drawer = qCard.querySelector('.exam-inline-diagram-drawer');
+            if (drawer && drawer.style.display !== 'none') {
+                return;
+            }
+        }
+
+        const popover = ensureHoverPopover();
+        const isA1 = topicKey === 'a1';
+        const imgSrc = isA1 ? 'assets/images/exam_solutions/circuit_series_a1.png' : 'assets/images/exam_solutions/circuit_parallel_a2.png';
+        const title = isA1 ? 'Διάγραμμα Σειράς (Θέμα Α1)' : 'Διάγραμμα Παράλληλης (Θέμα Α2)';
+        const color = isA1 ? '#a78bfa' : '#67e8f9';
+        const borderColor = isA1 ? 'rgba(139, 92, 246, 0.5)' : 'rgba(6, 182, 212, 0.5)';
+        const dataBrief = isA1 ? 'V = 60 V | R₁ = 5 Ω | R₂ = 15 Ω' : 'V = 75 V | R₁ = 30 Ω | R₂ = 10 Ω';
+
+        popover.style.borderColor = borderColor;
+        popover.innerHTML = `
+            <div class="hover-diag-header">
+                <span style="color: ${color}; font-weight: 700; font-size: 0.85rem;">🗺️ ${title}</span>
+                <span style="font-size: 0.72rem; color: var(--text-muted);">(Κλικ για μόνιμο άνοιγμα)</span>
+            </div>
+            <div class="hover-diag-img-wrap">
+                <img src="${imgSrc}" alt="${title}" style="width: 100%; border-radius: 8px; display: block;" />
+            </div>
+            <div class="hover-diag-footer" style="font-size: 0.76rem; color: ${color}; text-align: center; margin-top: 6px; font-weight: 600;">
+                ${dataBrief}
+            </div>
+        `;
+
+        // Position popover relative to button
+        const rect = btn.getBoundingClientRect();
+        const popWidth = 360;
+        const popHeight = 240;
+        
+        let left = rect.left;
+        if (left + popWidth > window.innerWidth - 20) {
+            left = window.innerWidth - popWidth - 20;
+        }
+        if (left < 10) left = 10;
+
+        let top = rect.bottom + 8;
+        if (top + popHeight > window.innerHeight - 20 && rect.top > popHeight + 20) {
+            top = rect.top - popHeight - 8;
+        }
+
+        popover.style.left = `${left}px`;
+        popover.style.top = `${top}px`;
+        popover.classList.add('is-visible');
+    }
+
+    function hideHoverDiagram(delay = 100) {
+        if (hoverHideTimeout) clearTimeout(hoverHideTimeout);
+        hoverHideTimeout = setTimeout(() => {
+            if (hoverPopoverEl) {
+                hoverPopoverEl.classList.remove('is-visible');
+            }
+        }, delay);
+    }
+
+    function toggleDiagram(questionId, topicKey) {
+        hideHoverDiagram(0);
+        const drawer = document.getElementById('diag-drawer-' + questionId);
+        const btn = document.getElementById('btn-diag-' + questionId);
+        if (!drawer || !btn) return;
+
+        const isClosed = drawer.style.display === 'none' || !drawer.style.display;
+        if (isClosed) {
+            drawer.style.display = 'block';
+            btn.classList.add('is-open');
+            const arrow = btn.querySelector('.diag-btn-arrow');
+            if (arrow) arrow.textContent = '▴';
+            
+            // Render MathJax if needed in drawer specs
+            if (window.renderMath) {
+                window.renderMath(drawer);
+            } else if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([drawer]).catch(() => {});
+            }
+        } else {
+            drawer.style.display = 'none';
+            btn.classList.remove('is-open');
+            const arrow = btn.querySelector('.diag-btn-arrow');
+            if (arrow) arrow.textContent = '▾';
+        }
+    }
+
     function toggleSolution(id) {
         const solEl = document.getElementById('sol-' + id);
         const btnEl = document.getElementById('btn-sol-' + id);
@@ -406,6 +527,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 2</span>
                                 <h4 class="exam-q-title">Ένταση του ρεύματος που διαρρέει την πηγή</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-2" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-2', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-2" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-2', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ένταση του ρεύματος $I$ που εξέρχεται από την πηγή.
@@ -439,6 +596,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 3</span>
                                 <h4 class="exam-q-title">Διαφορά δυναμικού στα άκρα του αντιστάτη $R_1$</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-3" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-3', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-3" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-3', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την τάση $V_1$ στα άκρα του αντιστάτη $R_1$.
@@ -475,6 +668,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 4</span>
                                 <h4 class="exam-q-title">Διαφορά δυναμικού στα άκρα του αντιστάτη $R_2$</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-4" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-4', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-4" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-4', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την τάση $V_2$ στα άκρα του αντιστάτη $R_2$.
@@ -508,6 +737,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 5</span>
                                 <h4 class="exam-q-title">Ισχύς που παράγει η πηγή</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-5" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-5', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-5" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-5', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την τιμή της ισχύος $P_{\\text{πηγ}}$ που προσφέρει η πηγή στο κύκλωμα.
@@ -543,6 +808,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 6</span>
                                 <h4 class="exam-q-title">Διαφορά δυναμικού στα άκρα του διακόπτη [Γ, Δ]</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-6" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-6', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-6" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-6', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη διαφορά δυναμικού στα άκρα του κεντρικού διακόπτη [Γ, Δ] όταν το κύκλωμα είναι ανοιχτό.
@@ -578,6 +879,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 7</span>
                                 <h4 class="exam-q-title">Διαφορά δυναμικού στα άκρα του ανοιχτού διακόπτη [Θ, Κ]</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-7" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-7', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-7" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-7', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη διαφορά δυναμικού στα άκρα του ανοιχτού διακόπτη [Θ, Κ] (με ανοιχτό τον [Γ, Δ]).
@@ -610,6 +947,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 8</span>
                                 <h4 class="exam-q-title">Ενέργεια του $R_1$ εάν κλείσει προσωρινά ο διακόπτης [Ζ, Η]</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-8" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-8', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-8" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-8', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Με κλειστό τον διακόπτη [Γ, Δ], να υπολογίσετε την ενέργεια που καταναλώνει σε χρόνο $t = 10\\text{ s}$ ο αντιστάτης $R_1$, εάν κλείσει προσωρινά ο διακόπτης [Ζ, Η].
@@ -643,6 +1016,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 9</span>
                                 <h4 class="exam-q-title">Ρυθμός διέλευσης φορτίου ($\\Delta q/\\Delta t$) μέσα από τον [Γ, Δ] εάν κλείσει ο [Θ, Κ]</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-9" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-9', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-9" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-9', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τον ρυθμό διέλευσης φορτίου ($I$) μέσα από τον κεντρικό διακόπτη [Γ, Δ], εάν κλείσει προσωρινά ο διακόπτης [Θ, Κ].
@@ -677,6 +1086,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 10</span>
                                 <h4 class="exam-q-title">Ποσότητα φορτίου από το σημείο Α σε $t = 10\\text{ s}$ εάν κλείσει ο [Μ, Λ]</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-10" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-10', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-10" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-10', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε το φορτίο $q$ που διέρχεται από το σημείο Α σε χρόνο $t = 10\\text{ s}$, εάν κλείσει προσωρινά ο διακόπτης [Μ, Λ].
@@ -710,6 +1155,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 11</span>
                                 <h4 class="exam-q-title">Ενέργεια που καταναλώνει ο $R_1$ σε $t = 10\\text{ s}$ εάν κλείσει ο [Θ, Κ]</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-11" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-11', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-11" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-11', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ενέργεια $E_1$ που καταναλώνει σε $t = 10\\text{ s}$ ο $R_1$, εάν κλείσει προσωρινά ο διακόπτης [Θ, Κ].
@@ -746,6 +1227,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 12</span>
                                 <h4 class="exam-q-title">Ισχύς πηγής εάν κλείσουν ταυτόχρονα οι διακόπτες [Μ, Λ] και [Ξ, Ν]</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-12" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-12', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-12" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-12', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ισχύ που παράγει η πηγή, εάν κλείσουν προσωρινά οι διακόπτες [Μ, Λ] και [Ξ, Ν].
@@ -780,6 +1297,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 13</span>
                                 <h4 class="exam-q-title">Ρυθμός κατανάλωσης ενέργειας (ισχύς) του $R_1$ αν ενωθούν τα σημεία Ε και Γ</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-13" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-13', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-13" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-13', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τον ρυθμό κατανάλωσης ενέργειας του $R_1$, εάν ενώσουμε προσωρινά με ιδανικό καλώδιο τα σημεία Ε και Γ.
@@ -813,6 +1366,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 14</span>
                                 <h4 class="exam-q-title">Διαφορά δυναμικού στα άκρα του $R_2$ εάν ενωθούν τα σημεία Δ και Μ</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-14" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-14', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-14" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-14', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη διαφορά δυναμικού στα άκρα του αντιστάτη $R_2$, εάν ενώσουμε προσωρινά με ένα ιδανικό καλώδιο τα σημεία Δ και Μ.
@@ -846,6 +1435,42 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge">Ερώτημα 15</span>
                                 <h4 class="exam-q-title">Ενέργεια πηγής σε $t = 20\\text{ s}$ εάν ενωθούν τα σημεία Η και Ν</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a1" id="btn-diag-a1-15" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a1-15', 'a1')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a1')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A1) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a1-15" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a1">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a1">⚡ Θέμα Α1: Συνδεσμολογία σε Σειρά</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a1-15', 'a1')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_series_a1.png', 'Διάγραμμα Κυκλώματος Θέματος Α1 (Συνδεσμολογία Σειράς)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_series_a1.png" alt="Thema A1 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #a78bfa;">Δεδομένα Κυκλώματος Θέματος Α1</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 5\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 15\\ \\Omega$</strong></li>
+                                                <li>Ιδανικοί διακόπτες: <strong>[Γ, Δ]</strong> (κεντρικός), <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Χαρακτηριστικά σημεία: <strong>Τ, Π, Ρ, Σ</strong></li>
+                                                <li><strong>Αρχική Κατάσταση:</strong> Κλείνει <em>μόνο</em> ο κεντρικός διακόπτης [Γ, Δ].</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ενέργεια που προσφέρει η πηγή στο κύκλωμα σε χρόνο $t = 20\\text{ s}$, εάν ενώσουμε προσωρινά με ιδανικό καλώδιο τα σημεία Η και Ν.
@@ -998,6 +1623,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 2</span>
                                 <h4 class="exam-q-title">Ένταση του ρεύματος που διαρρέει την πηγή</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-2" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-2', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-2" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-2', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ένταση του ολικού ρεύματος $I_{\\text{ολ}}$ που εξέρχεται από την πηγή.
@@ -1030,6 +1690,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 3</span>
                                 <h4 class="exam-q-title">Ένταση του ρεύματος που διαρρέει τον αντιστάτη $R_1$</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-3" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-3', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-3" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-3', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ένταση του ρεύματος $I_1$ στον κλάδο του αντιστάτη $R_1 = 30\\ \\Omega$.
@@ -1062,6 +1757,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 4</span>
                                 <h4 class="exam-q-title">Ένταση του ρεύματος που διαρρέει τον αντιστάτη $R_2$</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-4" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-4', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-4" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-4', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ένταση του ρεύματος $I_2$ στον κλάδο του αντιστάτη $R_2 = 10\\ \\Omega$.
@@ -1097,6 +1827,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 5</span>
                                 <h4 class="exam-q-title">Διαφορά δυναμικού μεταξύ των άκρων του διακόπτη [Α, Β]</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-5" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-5', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-5" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-5', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη διαφορά δυναμικού στα άκρα του κλειστού κεντρικού διακόπτη [Α, Β].
@@ -1130,6 +1895,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 6</span>
                                 <h4 class="exam-q-title">Διαφορά δυναμικού μεταξύ των άκρων του διακόπτη [Ε, Ζ]</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-6" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-6', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-6" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-6', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη διαφορά δυναμικού στα άκρα του κλειστού διακόπτη κλάδου [Ε, Ζ].
@@ -1162,6 +1962,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 7</span>
                                 <h4 class="exam-q-title">Τιμή της ισχύος που καταναλίσκει ο αντιστάτης $R_1$</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-7" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-7', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-7" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-7', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ισχύ $P_1$ που καταναλώνει ο αντιστάτης $R_1 = 30\\ \\Omega$.
@@ -1196,6 +2031,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 8</span>
                                 <h4 class="exam-q-title">Ενέργεια που καταναλίσκει ο $R_2$ σε χρόνο $t = 10\\text{ s}$</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-8" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-8', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-8" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-8', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ενέργεια $E_2$ που καταναλώνει ο αντιστάτης $R_2 = 10\\ \\Omega$ σε χρονικό διάστημα $t = 10\\text{ s}$.
@@ -1230,6 +2100,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 9</span>
                                 <h4 class="exam-q-title">Ένταση ρεύματος στον $R_2$ εάν ανοίξει προσωρινά ο διακόπτης [Γ, Δ]</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-9" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-9', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-9" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-9', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ένταση του ρεύματος $I_2'$ που διαρρέει τον $R_2$, εάν ανοίξει προσωρινά ο διακόπτης [Γ, Δ] (του άλλου κλάδου).
@@ -1264,6 +2169,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 10</span>
                                 <h4 class="exam-q-title">Ποσότητα φορτίου που διαρρέει την πηγή σε $t = 20\\text{ s}$ εάν ανοίξει ο [Γ, Δ]</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-10" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-10', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-10" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-10', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε το φορτίο $q_{\\text{πηγ}}$ που εξέρχεται από την πηγή σε χρόνο $t = 20\\text{ s}$, εάν ανοίξει προσωρινά ο διακόπτης [Γ, Δ].
@@ -1298,6 +2238,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 11</span>
                                 <h4 class="exam-q-title">Διαφορά δυναμικού στα άκρα του $R_1$ εάν συνδέσουμε τα σημεία Δ και Η με καλώδιο</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-11" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-11', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-11" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-11', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τη διαφορά δυναμικού στα άκρα του $R_1$, εάν συνδέσουμε τα σημεία Δ και Η με ένα ιδανικό καλώδιο.
@@ -1330,6 +2305,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 12</span>
                                 <h4 class="exam-q-title">Ένταση ρεύματος στον διακόπτη [Γ, Δ] εάν συνδέσουμε τα σημεία Ζ και Η</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-12" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-12', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-12" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-12', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε το ρεύμα που διαρρέει τον διακόπτη [Γ, Δ], εάν συνδέσουμε προσωρινά τα σημεία Ζ και Η με ιδανικό καλώδιο.
@@ -1364,6 +2374,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 13</span>
                                 <h4 class="exam-q-title">Ρυθμός κατανάλωσης ενέργειας του $R_1$ εάν ενωθούν τα σημεία Γ και Ε</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-13" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-13', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-13" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-13', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε τον ρυθμό κατανάλωσης ενέργειας (ισχύ) του $R_1$, εάν συνδέσουμε προσωρινά τα σημεία Γ και Ε με ιδανικό καλώδιο.
@@ -1397,6 +2442,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 14</span>
                                 <h4 class="exam-q-title">Ποσότητα φορτίου που διέρχεται από το σημείο Η σε $t = 30\\text{ s}$ εάν ανοίξει ο [Γ, Δ]</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-14" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-14', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-14" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-14', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε το φορτίο $q_{\\text{Η}}$ που διέρχεται από το σημείο Η σε χρόνο $t = 30\\text{ s}$, εάν ανοίξει προσωρινά ο διακόπτης [Γ, Δ].
@@ -1430,6 +2510,41 @@ window.ExamSolutionsGuide = (function() {
                             <div class="exam-q-header">
                                 <span class="exam-q-badge" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border-color: rgba(6, 182, 212, 0.4);">Ερώτημα 15</span>
                                 <h4 class="exam-q-title">Ενέργεια που παράγει η πηγή σε $t = 40\\text{ s}$ εάν συνδέσουμε τα σημεία Β και Δ με καλώδιο</h4>
+                            
+                                <button class="exam-diagram-toggle-btn theme-a2" id="btn-diag-a2-15" 
+                                        onclick="ExamSolutionsGuide.toggleDiagram('a2-15', 'a2')"
+                                        onmouseenter="ExamSolutionsGuide.showHoverDiagram(event, 'a2')"
+                                        onmouseleave="ExamSolutionsGuide.hideHoverDiagram()"
+                                        title="Κλικ για εμφάνιση/απόκρυψη διαγράμματος ή hover για γρήγορη ματιά">
+                                    <span class="diag-btn-icon">🗺️</span>
+                                    <span class="diag-btn-label">Διάγραμμα</span>
+                                    <span class="diag-btn-arrow">▾</span>
+                                </button>
+                            </div>
+                            <!-- Collapsible Inline Diagram Drawer (Thema A2) -->
+                            <div class="exam-inline-diagram-drawer" id="diag-drawer-a2-15" style="display: none;">
+                                <div class="exam-inline-diagram-card theme-a2">
+                                    <div class="exam-inline-diagram-header">
+                                        <span class="exam-inline-badge theme-a2">🔄 Θέμα Α2: Παράλληλη Συνδεσμολογία</span>
+                                        <button type="button" class="exam-inline-close-btn" onclick="ExamSolutionsGuide.toggleDiagram('a2-15', 'a2')" title="Κλείσιμο διαγράμματος">✕</button>
+                                    </div>
+                                    <div class="exam-inline-diagram-grid">
+                                        <div class="exam-inline-diagram-img-wrap" onclick="openDiagramLightbox('assets/images/exam_solutions/circuit_parallel_a2.png', 'Διάγραμμα Κυκλώματος Θέματος Α2 (Παράλληλη Συνδεσμολογία)')" title="Κλικ για μεγέθυνση σε πλήρη οθόνη">
+                                            <img src="assets/images/exam_solutions/circuit_parallel_a2.png" alt="Thema A2 Circuit Diagram" loading="lazy" />
+                                            <span class="diagram-zoom-hint">🔍 Κλικ για Πλήρη Οθόνη</span>
+                                        </div>
+                                        <div class="exam-inline-diagram-specs">
+                                            <h5 class="exam-inline-specs-heading" style="color: #67e8f9;">Δεδομένα Κυκλώματος Θέματος Α2</h5>
+                                            <ul class="exam-inline-specs-list">
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
+                                                <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
+                                                <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <p class="exam-q-prompt">
                                 Να υπολογίσετε την ενέργεια $E_{\\text{πηγ}}$ που παράγει η πηγή σε χρόνο $t = 40\\text{ s}$, εάν συνδέσουμε προσωρινά τα σημεία Β και Δ με ιδανικό καλώδιο.
@@ -1751,6 +2866,9 @@ window.ExamSolutionsGuide = (function() {
         scrollToSection: scrollToSection,
         setFilter: setFilter,
         toggleSolution: toggleSolution,
-        toggleAllSolutions: toggleAllSolutions
+        toggleAllSolutions: toggleAllSolutions,
+        toggleDiagram: toggleDiagram,
+        showHoverDiagram: showHoverDiagram,
+        hideHoverDiagram: hideHoverDiagram
     };
 })();
