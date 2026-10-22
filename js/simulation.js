@@ -2356,34 +2356,34 @@ window.CircuitSimulation = (function() {
 
                 <div class="hud-readouts-grid cols-3" style="margin-bottom: 10px;">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Πτώση Τάσης</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">1</sub></span>):</span></span>
-                        <span class="meter-val text-voltage">${v.toFixed(2)} V</span>
+                        <span class="meter-lbl"><span>Αντίσταση</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span>):</span></span>
+                        <span class="meter-val text-resistor">${state.R1} Ω</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ένταση Ρεύματος</span><span>(<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">1</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Ένταση Ρεύματος</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">1</sub></span>):</span></span>
                         <span class="meter-val text-current">${i.toFixed(2)} A</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Αντίσταση</span><span>(<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span>):</span></span>
-                        <span class="meter-val text-resistor">${state.R1} Ω</span>
+                        <span class="meter-lbl"><span>Πτώση Τάσης</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">1</sub></span>):</span></span>
+                        <span class="meter-val text-voltage">${v.toFixed(2)} V</span>
                     </div>
                 </div>
 
                 <div class="hud-readouts-grid cols-4">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Θερμική Ισχύς</span><span>(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">1</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Θερμική Ισχύς</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">1</sub></span>):</span></span>
                         <span class="meter-val text-power">${p1.toFixed(2)} W</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Θερμική Ισχύς</span><span>(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">2</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Θερμική Ισχύς</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">2</sub></span>):</span></span>
                         <span class="meter-val text-power">${p2.toFixed(2)} W</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Θερμότητα Joule</span><span>(<span class="math-expr"><i class="math-var">E</i><sub class="math-sub">1</sub></span>, <span class="math-expr"><i class="math-var">t</i> = 10s</span>):</span></span>
+                        <span class="meter-lbl"><span>Θερμότητα Joule</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">E</i><sub class="math-sub">1</sub></span>, <span class="math-expr"><i class="math-var">t</i> = 10s</span>):</span></span>
                         <span class="meter-val text-energy">${e1.toFixed(1)} J</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Θερμότητα Joule</span><span>(<span class="math-expr"><i class="math-var">E</i><sub class="math-sub">2</sub></span>, <span class="math-expr"><i class="math-var">t</i> = 10s</span>):</span></span>
+                        <span class="meter-lbl"><span>Θερμότητα Joule</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">E</i><sub class="math-sub">2</sub></span>, <span class="math-expr"><i class="math-var">t</i> = 10s</span>):</span></span>
                         <span class="meter-val text-energy">${e2.toFixed(1)} J</span>
                     </div>
                 </div>
@@ -2432,34 +2432,34 @@ window.CircuitSimulation = (function() {
 
                 <div class="hud-readouts-grid cols-3" style="margin-bottom: 10px;">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Πτώση Τάσης</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">2</sub></span>):</span></span>
-                        <span class="meter-val text-voltage">${v.toFixed(2)} V</span>
+                        <span class="meter-lbl"><span>Αντίσταση</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span>):</span></span>
+                        <span class="meter-val text-resistor">${state.R2} Ω</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ένταση Ρεύματος</span><span>(<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">2</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Ένταση Ρεύματος</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">2</sub></span>):</span></span>
                         <span class="meter-val text-current">${i.toFixed(2)} A</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Αντίσταση</span><span>(<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span>):</span></span>
-                        <span class="meter-val text-resistor">${state.R2} Ω</span>
+                        <span class="meter-lbl"><span>Πτώση Τάσης</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">2</sub></span>):</span></span>
+                        <span class="meter-val text-voltage">${v.toFixed(2)} V</span>
                     </div>
                 </div>
 
                 <div class="hud-readouts-grid cols-4">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Θερμική Ισχύς</span><span>(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">1</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Θερμική Ισχύς</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">1</sub></span>):</span></span>
                         <span class="meter-val text-power">${p1.toFixed(2)} W</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Θερμική Ισχύς</span><span>(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">2</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Θερμική Ισχύς</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">2</sub></span>):</span></span>
                         <span class="meter-val text-power">${p2.toFixed(2)} W</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Θερμότητα Joule</span><span>(<span class="math-expr"><i class="math-var">E</i><sub class="math-sub">1</sub></span>, <span class="math-expr"><i class="math-var">t</i> = 10s</span>):</span></span>
+                        <span class="meter-lbl"><span>Θερμότητα Joule</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">E</i><sub class="math-sub">1</sub></span>, <span class="math-expr"><i class="math-var">t</i> = 10s</span>):</span></span>
                         <span class="meter-val text-energy">${e1.toFixed(1)} J</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Θερμότητα Joule</span><span>(<span class="math-expr"><i class="math-var">E</i><sub class="math-sub">2</sub></span>, <span class="math-expr"><i class="math-var">t</i> = 10s</span>):</span></span>
+                        <span class="meter-lbl"><span>Θερμότητα Joule</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">E</i><sub class="math-sub">2</sub></span>, <span class="math-expr"><i class="math-var">t</i> = 10s</span>):</span></span>
                         <span class="meter-val text-energy">${e2.toFixed(1)} J</span>
                     </div>
                 </div>
@@ -2505,19 +2505,19 @@ window.CircuitSimulation = (function() {
 
                 <div class="hud-readouts-grid">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Τάση Πηγής</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">πηγ</sub></span>):</span></span>
-                        <span class="meter-val text-voltage">${state.V_src} V</span>
-                    </div>
-                    <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ολικό Ρεύμα</span><span>(<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">ολ</sub></span>):</span></span>
-                        <span class="meter-val text-current ${phys.I_total === Infinity ? 'danger-reading' : ''}">${iTotDisplay}</span>
-                    </div>
-                    <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ισοδύναμη Αντίσταση</span><span>(<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">ολ</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Ισοδύναμη Αντίσταση</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">ολ</sub></span>):</span></span>
                         <span class="meter-val text-resistor">${reqDisplay}</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ολική Ισχύς</span><span>(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">ολ</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Ολικό Ρεύμα</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">ολ</sub></span>):</span></span>
+                        <span class="meter-val text-current ${phys.I_total === Infinity ? 'danger-reading' : ''}">${iTotDisplay}</span>
+                    </div>
+                    <div class="hud-meter-box">
+                        <span class="meter-lbl"><span>Τάση Πηγής</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">πηγ</sub></span>):</span></span>
+                        <span class="meter-val text-voltage">${state.V_src} V</span>
+                    </div>
+                    <div class="hud-meter-box">
+                        <span class="meter-lbl"><span>Ολική Ισχύς</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">ολ</sub></span>):</span></span>
                         <span class="meter-val text-power ${phys.P_total === Infinity ? 'danger-reading' : ''}">${pTotDisplay}</span>
                     </div>
                 </div>
@@ -2651,11 +2651,11 @@ window.CircuitSimulation = (function() {
 
                 <div class="hud-readouts-grid cols-2">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Τάση Διακόπτη</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">διακ</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Τάση Διακόπτη</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">διακ</sub></span>):</span></span>
                         <span class="meter-val text-voltage">${phys.V_switch.toFixed(2)} V</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ρεύμα Διακόπτη</span><span>(<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">διακ</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Ρεύμα Διακόπτη</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">διακ</sub></span>):</span></span>
                         <span class="meter-val text-current ${phys.I_switch === Infinity ? 'danger-reading' : ''}">${swCurrent}</span>
                     </div>
                 </div>
@@ -2764,11 +2764,11 @@ window.CircuitSimulation = (function() {
                 </div>
                 <div class="hud-readouts-grid cols-2">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ένδειξη Τάσης</span><span>(<span class="math-expr"><i class="math-var">V</i></span>):</span></span>
+                        <span class="meter-lbl"><span>Ένδειξη Τάσης</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">V</i></span>):</span></span>
                         <span class="meter-val text-voltage">${vmReading.toFixed(2)} V</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ρεύμα Οργάνου</span><span>(<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">V</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Ρεύμα Οργάνου</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">V</sub></span>):</span></span>
                         <span class="meter-val text-current">0.00 A</span>
                     </div>
                 </div>
@@ -2924,11 +2924,11 @@ window.CircuitSimulation = (function() {
                 </div>
                 <div class="hud-readouts-grid cols-2">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ένδειξη Ρεύματος</span><span>(<span class="math-expr"><i class="math-var">I</i></span>):</span></span>
+                        <span class="meter-lbl"><span>Ένδειξη Ρεύματος</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">I</i></span>):</span></span>
                         <span class="meter-val text-current ${amReading === Infinity ? 'danger-reading' : ''}">${amReadingStr}</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Πτώση Τάσης</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">A</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Πτώση Τάσης</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">A</sub></span>):</span></span>
                         <span class="meter-val text-voltage">0.00 V</span>
                     </div>
                 </div>
@@ -2990,11 +2990,11 @@ window.CircuitSimulation = (function() {
                 </div>
                 <div class="hud-readouts-grid cols-2">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ένταση Ρεύματος</span><span>(<span class="math-expr"><i class="math-var">I</i></span>):</span></span>
+                        <span class="meter-lbl"><span>Ένταση Ρεύματος</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">I</i></span>):</span></span>
                         <span class="meter-val text-current ${nodeCurrent === Infinity ? 'danger-reading' : ''}">${nodeCurrentStr}</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ηλεκτρικό Δυναμικό</span><span>(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">${nodeKey}</sub></span>):</span></span>
+                        <span class="meter-lbl"><span>Ηλεκτρικό Δυναμικό</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">${nodeKey}</sub></span>):</span></span>
                         <span class="meter-val text-voltage">${pot.toFixed(2)} V</span>
                     </div>
                 </div>
@@ -3140,7 +3140,7 @@ window.CircuitSimulation = (function() {
                 </div>
                 <div class="hud-readouts-grid cols-2" style="margin-bottom: 10px;">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Διαφορά Δυναμικού</span><span>(ΔV):</span></span>
+                        <span class="meter-lbl"><span>Διαφορά Δυναμικού</span><span class="meter-symbol">(ΔV):</span></span>
                         <span class="meter-val text-voltage">0.00 V</span>
                     </div>
                     <div class="hud-meter-box">
@@ -3172,11 +3172,11 @@ window.CircuitSimulation = (function() {
                 </div>
                 <div class="hud-readouts-grid cols-2">
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Ένταση Ρεύματος</span><span>(<span class="math-expr"><i class="math-var">I</i></span>):</span></span>
+                        <span class="meter-lbl"><span>Ένταση Ρεύματος</span><span class="meter-symbol">(<span class="math-expr"><i class="math-var">I</i></span>):</span></span>
                         <span class="meter-val text-current ${wireI === Infinity ? 'danger-reading' : ''}">${wireIStr}</span>
                     </div>
                     <div class="hud-meter-box">
-                        <span class="meter-lbl"><span>Πτώση Τάσης Καλωδίου</span><span>(ΔV):</span></span>
+                        <span class="meter-lbl"><span>Πτώση Τάσης Καλωδίου</span><span class="meter-symbol">(ΔV):</span></span>
                         <span class="meter-val text-voltage">0.00 V</span>
                     </div>
                 </div>
@@ -3207,28 +3207,28 @@ window.CircuitSimulation = (function() {
 
         let metricsHtml = `
             <div class="sim-metric-cell">
-                <span class="metric-label">Τάση Πηγής (<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">πηγ</sub></span>)</span>
-                <span class="metric-value text-voltage">${state.V_src} V</span>
-            </div>
-            <div class="sim-metric-cell">
-                <span class="metric-label">Ισοδύναμη (<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">ολ</sub></span>)</span>
+                <span class="metric-label">Ισοδύναμη <span class="meter-symbol">(<span class="math-expr"><i class="math-var">R</i><sub class="math-sub">ολ</sub></span>)</span></span>
                 <span class="metric-value text-resistor">${reqText}</span>
             </div>
             <div class="sim-metric-cell">
-                <span class="metric-label">Ολικό Ρεύμα (<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">ολ</sub></span>)</span>
+                <span class="metric-label">Ολικό Ρεύμα <span class="meter-symbol">(<span class="math-expr"><i class="math-var">I</i><sub class="math-sub">ολ</sub></span>)</span></span>
                 <span class="metric-value text-current ${phys.I_total === Infinity ? 'danger-reading' : ''}">${itotText}</span>
             </div>
             <div class="sim-metric-cell">
-                <span class="metric-label">Ολική Ισχύς (<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">ολ</sub></span>)</span>
+                <span class="metric-label">Τάση Πηγής <span class="meter-symbol">(<span class="math-expr"><i class="math-var">V</i><sub class="math-sub">πηγ</sub></span>)</span></span>
+                <span class="metric-value text-voltage">${state.V_src} V</span>
+            </div>
+            <div class="sim-metric-cell">
+                <span class="metric-label">Ολική Ισχύς <span class="meter-symbol">(<span class="math-expr"><i class="math-var">P</i><sub class="math-sub">ολ</sub></span>)</span></span>
                 <span class="metric-value text-power ${phys.P_total === Infinity ? 'danger-reading' : ''}">${ptotText}</span>
             </div>
             <div class="sim-metric-cell">
-                <span class="metric-label">Τάση <span class="math-expr"><i class="math-var">V</i><sub class="math-sub">1</sub></span> / Ρεύμα <span class="math-expr"><i class="math-var">I</i><sub class="math-sub">1</sub></span></span>
-                <span class="metric-value" style="font-size: 0.95rem;">${phys.V1.toFixed(1)} V / ${phys.I1.toFixed(2)} A</span>
+                <span class="metric-label"><span class="meter-symbol"><span class="math-expr"><i class="math-var">R</i><sub class="math-sub">1</sub></span> / <span class="math-expr"><i class="math-var">I</i><sub class="math-sub">1</sub></span> / <span class="math-expr"><i class="math-var">V</i><sub class="math-sub">1</sub></span></span></span>
+                <span class="metric-value" style="font-size: 0.95rem;">${state.R1} Ω / ${phys.I1.toFixed(2)} A / ${phys.V1.toFixed(1)} V</span>
             </div>
             <div class="sim-metric-cell">
-                <span class="metric-label">Τάση <span class="math-expr"><i class="math-var">V</i><sub class="math-sub">2</sub></span> / Ρεύμα <span class="math-expr"><i class="math-var">I</i><sub class="math-sub">2</sub></span></span>
-                <span class="metric-value" style="font-size: 0.95rem;">${phys.V2.toFixed(1)} V / ${phys.I2.toFixed(2)} A</span>
+                <span class="metric-label"><span class="meter-symbol"><span class="math-expr"><i class="math-var">R</i><sub class="math-sub">2</sub></span> / <span class="math-expr"><i class="math-var">I</i><sub class="math-sub">2</sub></span> / <span class="math-expr"><i class="math-var">V</i><sub class="math-sub">2</sub></span></span></span>
+                <span class="metric-value" style="font-size: 0.95rem;">${state.R2} Ω / ${phys.I2.toFixed(2)} A / ${phys.V2.toFixed(1)} V</span>
             </div>
         `;
         if (typeof formatMathText === 'function') {
