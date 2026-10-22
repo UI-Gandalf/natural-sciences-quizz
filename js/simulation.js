@@ -2034,11 +2034,11 @@ window.CircuitSimulation = (function() {
                             <circle cx="380" cy="80" r="5" class="harmless-contact-dot" />
                             <circle cx="640" cy="80" r="5" class="harmless-contact-dot" />
 
-                            <!-- Centered Explanatory Glass Banner in Open Left Bay -->
-                            <rect x="115" y="165" width="250" height="98" rx="14" class="harmless-center-banner" />
-                            <text x="240" y="196" class="harmless-banner-title" text-anchor="middle" font-size="16">✅ Ακίνδυνη Σύνδεση</text>
-                            <text x="240" y="224" class="harmless-banner-title" text-anchor="middle" font-size="18.5" fill="#38bdf8">A ↔ C</text>
-                            <text x="240" y="249" class="harmless-banner-sub" text-anchor="middle" font-size="12">Άνω γραμμή κοινού δυναμικού (Vπηγ)</text>
+                            <!-- Centered Explanatory Glass Banner in Open Left Bay (Cleanly fitting between Battery and R1) -->
+                            <rect x="152" y="169" width="206" height="92" rx="12" class="harmless-center-banner" />
+                            <text x="255" y="195" class="harmless-banner-title" text-anchor="middle" font-size="13.5">✅ Ακίνδυνη Σύνδεση</text>
+                            <text x="255" y="223" class="harmless-banner-title" text-anchor="middle" font-size="18" fill="#38bdf8">A ↔ C</text>
+                            <text x="255" y="246" class="harmless-banner-sub" text-anchor="middle" font-size="11.5">Κοινό δυναμικό (Vπηγ)</text>
                         </g>
                     ` : ''}
 
@@ -2052,11 +2052,11 @@ window.CircuitSimulation = (function() {
                             <circle cx="100" cy="350" r="5" class="harmless-contact-dot" />
                             <circle cx="640" cy="350" r="5" class="harmless-contact-dot" />
 
-                            <!-- Centered Explanatory Glass Banner in Open Left Bay -->
-                            <rect x="115" y="165" width="250" height="98" rx="14" class="harmless-center-banner" />
-                            <text x="240" y="196" class="harmless-banner-title" text-anchor="middle" font-size="16">✅ Ακίνδυνη Σύνδεση</text>
-                            <text x="240" y="224" class="harmless-banner-title" text-anchor="middle" font-size="18.5" fill="#38bdf8">F ↔ E</text>
-                            <text x="240" y="249" class="harmless-banner-sub" text-anchor="middle" font-size="12">Κοινή κάτω γραμμή επιστροφής (0 V)</text>
+                            <!-- Centered Explanatory Glass Banner in Open Left Bay (Cleanly fitting between Battery and R1) -->
+                            <rect x="152" y="169" width="206" height="92" rx="12" class="harmless-center-banner" />
+                            <text x="255" y="195" class="harmless-banner-title" text-anchor="middle" font-size="13.5">✅ Ακίνδυνη Σύνδεση</text>
+                            <text x="255" y="223" class="harmless-banner-title" text-anchor="middle" font-size="18" fill="#38bdf8">F ↔ E</text>
+                            <text x="255" y="246" class="harmless-banner-sub" text-anchor="middle" font-size="11.5">Κοινή επιστροφή (0 V)</text>
                         </g>
                     ` : ''}
                 </svg>
