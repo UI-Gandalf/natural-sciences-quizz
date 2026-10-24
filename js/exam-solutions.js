@@ -3285,7 +3285,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <div class="comp-formula-box" style="margin-top:6px;">
                                                     $$\frac{P_1}{P_2} = \frac{E_1}{E_2} = \frac{R_1}{R_2}$$
                                                 </div>
-                                                <span class="comp-note">Ισχύς &amp; θερμότητα: αναλογικές προς R (${P=I^2R}$)</span>
+                                                <span class="comp-note">Ισχύς &amp; θερμότητα: αναλογικές προς R ($P=I^2R$)</span>
                                                 <div class="comp-formula-box" style="margin-top:6px;">
                                                     $$\frac{I_1}{I_2} = 1 \quad (I_1 = I_2)$$
                                                 </div>

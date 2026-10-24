@@ -763,10 +763,12 @@ function formatMathText(text) {
         s = s.replace(/\\Omega\b/g, '<span class="math-sym">Ω</span>');
         s = s.replace(/\\cdot\b/g, '<span class="math-op math-bin">·</span>');
         s = s.replace(/\\(?:to|rightarrow)\b/g, '<span class="math-op math-rel">→</span>');
+        s = s.replace(/\\leftrightarrow\b/g, '<span class="math-op math-rel">↔</span>');
         s = s.replace(/\\iff\b/g, '<span class="math-op math-rel">⇔</span>');
         s = s.replace(/\\implies\b/g, '<span class="math-op math-rel">⇒</span>');
         s = s.replace(/\\infty\b/g, '<span class="math-sym">∞</span>');
         s = s.replace(/\\Delta\b/g, '<span class="math-sym">Δ</span>');
+        s = s.replace(/\\sigma\b/g, 'σ');
         s = s.replace(/\\approx\b/g, '<span class="math-op math-rel">≈</span>');
         s = s.replace(/\\(?:le|leq)\b/g, '<span class="math-op math-rel">≤</span>');
         s = s.replace(/\\(?:ge|geq)\b/g, '<span class="math-op math-rel">≥</span>');

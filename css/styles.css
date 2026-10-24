@@ -3105,7 +3105,7 @@ mjx-container[display="true"], .katex-display {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-muted);
+    color: #38bdf8;
     cursor: pointer;
     transition: all 0.2s ease;
     padding: 0;
@@ -3121,7 +3121,11 @@ mjx-container[display="true"], .katex-display {
 [data-theme="light"] .sim-schematic-fs-btn {
     background: #f8fafc;
     border-color: #cbd5e1;
-    color: #64748b;
+    color: #0284c7;
+}
+
+[data-theme="light"] .sim-instructions-badge {
+    color: #047857;
 }
 
 [data-theme="light"] .sim-schematic-fs-btn:hover {
@@ -3635,8 +3639,9 @@ mjx-container[display="true"], .katex-display {
 }
 
 .sim-instructions-badge {
-    font-size: 0.82rem;
-    color: var(--text-muted);
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #34d399;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -3919,6 +3924,11 @@ mjx-container[display="true"], .katex-display {
     text-anchor: middle;
 }
 
+/* Series bypass labels: larger, placed above the top edge so they never cross wires */
+.series-short-label {
+    font-size: 20px;
+}
+
 .short-contact-dot {
     fill: #ef4444;
     stroke: #ffffff;
@@ -4080,6 +4090,47 @@ mjx-container[display="true"], .katex-display {
     border-color: #d97706;
     color: #92400e;
     box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+}
+
+/* Exclusive fault selector: one state per resistor (normal | (1) | (2) | broken) */
+.sim-fault-mode-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sim-subline-pill.is-wide {
+    grid-column: 1 / -1;
+}
+
+.sim-subline-pill.is-normal-pill.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.35));
+    border-color: #3b82f6;
+    color: #dbeafe;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.35);
+}
+
+[data-theme="light"] .sim-subline-pill.is-normal-pill.active {
+    background: #dbeafe;
+    border-color: #2563eb;
+    color: #1e40af;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+.sim-subline-pill.is-broken-pill.active {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(185, 28, 28, 0.35));
+    border-color: #ef4444;
+    color: #fecaca;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.35);
+}
+
+[data-theme="light"] .sim-subline-pill.is-broken-pill.active {
+    background: #fee2e2;
+    border-color: #dc2626;
+    color: #991b1b;
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
 }
 
 /* Short Circuit Mode Segmented Switcher under Checkboxes */
@@ -4339,6 +4390,90 @@ mjx-container[display="true"], .katex-display {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Full step-by-step solution: below the circuit, no internal scrolling */
+.sim-solution-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 16px;
+    min-width: 0;
+}
+
+.sim-solution-panel.is-empty {
+    display: none;
+}
+
+/* Docked panel: readouts and explanation together at the top right while hovering (wide screens only) */
+.hud-dock-toggle {
+    display: none;
+}
+
+@media (min-width: 1870px) {
+    .sim-hud-card {
+        position: fixed;
+        top: 90px;
+        right: 16px;
+        width: 340px;
+        z-index: 60;
+        min-height: 0;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+    }
+
+    .sim-hud-card .hud-readouts-grid,
+    .sim-hud-card .hud-readouts-grid.cols-3,
+    .sim-hud-card .hud-readouts-grid.cols-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sim-hud-card.is-collapsed {
+        width: 200px;
+        max-height: none;
+        overflow: hidden;
+        padding: 10px 14px;
+    }
+
+    .sim-hud-card.is-collapsed > :not(.hud-dock-toggle) {
+        display: none;
+    }
+
+    .hud-dock-toggle {
+        display: inline-flex;
+        align-self: flex-end;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        margin-bottom: -6px;
+        padding: 4px 10px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        font-family: inherit;
+        color: var(--text-secondary);
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .hud-dock-toggle:hover {
+        color: #38bdf8;
+        border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    /* The docked inspector takes the right edge, so the workspace spreads across the rest of the window
+       instead of leaving a dead gutter on the left */
+    .main-wrapper:has(.sim-container) {
+        max-width: none;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .sim-container {
+        max-width: none;
+        width: calc(100% - 372px);
+        margin: 0;
+    }
+}
+
 .hud-item-header {
     display: flex;
     align-items: center;
@@ -4390,7 +4525,7 @@ mjx-container[display="true"], .katex-display {
 .hud-readouts-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
+    gap: 6px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -4427,12 +4562,13 @@ mjx-container[display="true"], .katex-display {
 .hud-meter-box {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 10px 12px;
+    border-radius: 10px;
+    padding: 6px 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 6px;
+    gap: 4px;
+    min-height: 62px;
     transition: border-color 0.2s ease;
     min-width: 0;
     overflow: hidden;
@@ -4457,7 +4593,7 @@ mjx-container[display="true"], .katex-display {
 
 .meter-symbol,
 .meter-lbl > span:nth-child(2) {
-    font-size: 1.08rem;
+    font-size: 0.95rem;
     font-weight: 800;
     line-height: 1.25;
     color: #f87171;
@@ -4483,10 +4619,11 @@ mjx-container[display="true"], .katex-display {
 }
 
 .meter-val {
-    font-size: 1.25rem;
+    font-size: 1.02rem;
     font-weight: 800;
     font-family: 'Outfit', 'Inter', monospace;
-    white-space: nowrap;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
 }
 
 .text-voltage {
@@ -4582,6 +4719,60 @@ mjx-container[display="true"], .katex-display {
     max-width: 100% !important;
     overflow-x: auto;
     overflow-y: hidden;
+}
+
+/* Text and formulas in the inspector and the solution panel wrap inside their card; nothing runs past the edge */
+.sim-hud-card,
+.sim-solution-panel {
+    overflow-wrap: break-word;
+}
+
+.sim-hud-card .math-display,
+.sim-solution-panel .math-display {
+    flex-wrap: wrap;
+    row-gap: 4px;
+    overflow-x: visible;
+}
+
+.sim-hud-card .math-expr,
+.sim-solution-panel .math-expr {
+    white-space: normal;
+    flex-wrap: wrap;
+    row-gap: 2px;
+    max-width: 100%;
+}
+
+/* MathJax display equations are block-level: lay them out as blocks so the aligned rows and fractions line up */
+.step-calc-formula:has(mjx-container) {
+    display: block;
+    text-align: left;
+    overflow-x: auto;
+}
+
+.step-calc-formula mjx-container[display="true"] {
+    margin: 0.2em 0 !important;
+}
+
+/* Note under the schematic: a parallel short makes any further short or damage on the other resistor pointless */
+.sim-short-note {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(239, 68, 68, 0.55);
+    background: rgba(127, 29, 29, 0.35);
+    color: #fee2e2;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.sim-short-note strong {
+    color: #fca5a5;
+}
+
+.sim-short-note-hint {
+    margin-top: 6px;
+    font-style: italic;
+    color: #fde68a;
 }
 
 [data-theme="light"] .step-calc-formula {
@@ -7887,3 +8078,104 @@ button.exam-opt-pill:active:not(:disabled) {
 }
 
 
+
+/* Wiring only: meter leads and bypass cables must not catch the mouse, so the knots and devices under them stay reachable */
+.voltmeter-lead,
+.voltmeter-contact-dot,
+.short-circuit-bypass-wire,
+.short-contact-dot,
+.circuit-wire-base,
+.circuit-wire-current,
+.wire-short-vertical {
+    pointer-events: none;
+}
+
+/* Parallel circuit: the other resistor's short options while one resistor is already shorted */
+.sim-subline-pill.is-blocked {
+    position: relative;
+    color: #fca5a5;
+    border-style: dashed;
+    border-color: rgba(239, 68, 68, 0.55);
+    background: repeating-linear-gradient(45deg, rgba(239, 68, 68, 0.14) 0 6px, rgba(15, 23, 42, 0.6) 6px 12px);
+    cursor: not-allowed;
+}
+
+.sim-subline-pill.is-blocked:hover {
+    transform: none;
+}
+
+/* Why an option is locked: a high-contrast bubble above the option, clearly different from the normal button hints */
+.sim-subline-pill.is-blocked::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 80;
+    width: max-content;
+    max-width: 260px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #a16207;
+    background: #facc15;
+    color: #0f172a;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-align: left;
+    white-space: normal;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.sim-subline-pill.is-blocked:hover::after,
+.sim-subline-pill.is-blocked:focus-visible::after {
+    opacity: 1;
+}
+
+
+/* Dropdown disclosure for the placement faults and the harmless connections: the summary shows the current choice */
+.sim-dropdown {
+    margin-top: 6px;
+}
+
+.sim-dropdown-summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    background: rgba(15, 23, 42, 0.55);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.sim-dropdown-summary::-webkit-details-marker {
+    display: none;
+}
+
+.sim-dropdown-summary::after {
+    content: '▾';
+    color: #38bdf8;
+    transition: transform 0.2s ease;
+}
+
+.sim-dropdown[open] > .sim-dropdown-summary::after {
+    transform: rotate(180deg);
+}
+
+.sim-dropdown[open] > .sim-dropdown-summary {
+    border-color: rgba(56, 189, 248, 0.45);
+}
+
+.sim-dropdown > .sim-fault-options-list,
+.sim-dropdown > .sim-harmless-options-list {
+    margin-top: 8px;
+}
