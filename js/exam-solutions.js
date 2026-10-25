@@ -415,16 +415,6 @@ window.ExamSolutionsGuide = (function() {
                         </div>
                     </div>
 
-                    <div class="concept-alert" style="background: rgba(37, 99, 235, 0.12); border-color: rgba(37, 99, 235, 0.35);">
-                        <div class="alert-icon">💡</div>
-                        <div class="alert-body">
-                            <strong>Το Μήνυμα του Καθηγητή (Δημήτρης Μητσάκης):</strong>
-                            <p style="margin-top: 6px;">
-                                <em>«Σας παρακαλώ να διαβάσετε πολύ προσεκτικά την εισαγωγή και ακολουθήστε ευλαβικά τις οδηγίες, ώστε να μεγιστοποιήσετε το όφελός σας από το χρόνο που θα επενδύσετε στη μελέτη αυτών των σημειώσεων και να κεφαλοποιήσετε το κέρδος από το στέρεο επίπεδο γνώσης που θα αποκτήσετε.»</em>
-                            </p>
-                        </div>
-                    </div>
-
                     <div class="exam-pro-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
                         <div class="exam-pro-card theme-cyan">
                             <div class="exam-pro-header">
@@ -522,7 +512,7 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-pro-item-title">
                                             <span>⚡</span> Αμελητέα Εσωτερική Αντίσταση
                                         </div>
-                                        <span class="exam-pro-item-badge emerald">R_A ≈ 0 Ω</span>
+                                        <span class="exam-pro-item-badge emerald">$R_A \\approx 0\\ \\Omega$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
                                         Δεν προκαλεί πτώση τάσης στα άκρα του ($V_A \\approx 0\\text{ V}$), δεν καταναλώνει ηλεκτρική ισχύ και αφήνει το ρεύμα του κυκλώματος αναλλοίωτο.
@@ -534,7 +524,7 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-pro-item-title">
                                             <span>⏱️</span> Μέτρηση Ρυθμού Ροής Φορτίου
                                         </div>
-                                        <span class="exam-pro-item-badge emerald">I = q / t</span>
+                                        <span class="exam-pro-item-badge emerald">$I = \\frac{q}{t}$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
                                         Καταγράφει την ποσότητα ηλεκτρικού φορτίου που διέρχεται από τη διατομή του αγωγού ανά μονάδα χρόνου, μετρούμενη σε Amperes ($1\\text{ A} = 1\\text{ C/s}$).
@@ -579,7 +569,7 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-pro-item-title">
                                             <span>🛡️</span> Τεράστια Εσωτερική Αντίσταση
                                         </div>
-                                        <span class="exam-pro-item-badge cyan">R_V → ∞</span>
+                                        <span class="exam-pro-item-badge cyan">$R_V \\to \\infty$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
                                         Δεν επιτρέπει σχεδόν καθόλου ρεύμα να διαρρεύσει το όργανο ($I_V \\approx 0\\text{ A}$), διατηρώντας το καθεστώς λειτουργίας των υπόλοιπων κλάδων ακέραιο.
@@ -591,7 +581,7 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-pro-item-title">
                                             <span>🔋</span> Μέτρηση Ενέργειας ανά Φορτίο
                                         </div>
-                                        <span class="exam-pro-item-badge cyan">V = W / q</span>
+                                        <span class="exam-pro-item-badge cyan">$V = \\frac{W}{q}$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
                                         Καταγράφει το ποσό ενέργειας που μεταβιβάζεται ανά μονάδα διερχόμενου ηλεκτρικού φορτίου, μετρούμενο σε Volts ($1\\text{ V} = 1\\text{ J/C}$).

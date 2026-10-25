@@ -365,15 +365,7 @@ function renderQuizSelection(classKey, subjectKey) {
         </button>
 
         <div class="view-header">
-            <div class="view-badge-chip">
-                <!-- EMOJI AS AN ICON (Strictly for non-quiz subpages) -->
-                <span>${sub.emoji}</span>
-                <span>${sub.name} - ${cls.name}</span>
-            </div>
             <h1 class="view-title">${sub.name} (${cls.name})</h1>
-            <p class="view-subtitle">
-                Επιλέξτε ένα διαδραστικό κουίζ αυτοαξιολόγησης ή μελετήστε τη βασική θεωρία του μαθήματος.
-            </p>
 
             <!-- Navigation Tabs: Quizzes vs Theory vs Exam Solutions vs Simulation -->
             <div class="subject-tabs-container">
@@ -400,6 +392,10 @@ function renderQuizSelection(classKey, subjectKey) {
                 <button class="subject-tab-btn ${currentTab === 'simulation' ? 'active' : ''}" id="tab-btn-simulation" onclick="switchSubjectTab('simulation')">
                     <span class="tab-icon">⚡</span>
                     <span>Προσομοίωση</span>
+                </button>
+                <button class="subject-tab-btn ${currentTab === 'syllabus' ? 'active' : ''}" id="tab-btn-syllabus" onclick="switchSubjectTab('syllabus')" title="Υλη διαγωνίσματος (σχολικό βιβλίο)">
+                    <span class="tab-icon">📚</span>
+                    <span>Υλη διαγωνίσματος (σχολικό βιβλίο)</span>
                 </button>
                 ` : ''}
             </div>
@@ -591,6 +587,16 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-simulation" style="display: ${currentTab === 'simulation' ? 'block' : 'none'};">
             <div id="simulation-mount"></div>
         </div>
+        <!-- TAB 5: SYLLABUS (school textbook, PDF) -->
+        <div class="tab-panel" id="tab-panel-syllabus" style="display: ${currentTab === 'syllabus' ? 'block' : 'none'};">
+            <div class="syllabus-card">
+                <div class="syllabus-head">
+                    <strong>Υλη διαγωνίσματος Φυσικής Γ (από το σχολικό βιβλίο)</strong>
+                    <a class="syllabus-open" href="${encodeURI('Φυσική Γ 2026 - 2027/Υλη διαγωνίσματος Φυσικής Γ - από το σχολικό βιβλίο.pdf')}" target="_blank" rel="noopener">Άνοιγμα σε νέα καρτέλα ↗</a>
+                </div>
+                <iframe class="syllabus-frame" src="${encodeURI('Φυσική Γ 2026 - 2027/Υλη διαγωνίσματος Φυσικής Γ - από το σχολικό βιβλίο.pdf')}" title="Υλη διαγωνίσματος Φυσικής Γ (σχολικό βιβλίο)" loading="lazy"></iframe>
+            </div>
+        </div>
         ` : ''}
     `;
 
@@ -617,6 +623,8 @@ function renderQuizSelection(classKey, subjectKey) {
 
     if (currentTab === 'simulation' && subjectKey === 'physics') {
         renderSimulationView();
+    } else {
+        AppState.simulationEntered = false;
     }
 }
 
@@ -626,6 +634,14 @@ function renderQuizSelection(classKey, subjectKey) {
 function renderSimulationView() {
     const mount = document.getElementById('simulation-mount');
     if (!mount) return;
+
+    // Every entry into the simulation starts from the neutral state (no circuit type, nothing left over from last time)
+    if (!AppState.simulationEntered) {
+        if (window.CircuitSimulation && typeof window.CircuitSimulation.resetToNeutral === 'function') {
+            window.CircuitSimulation.resetToNeutral();
+        }
+        AppState.simulationEntered = true;
+    }
 
     if (window.CircuitSimulation && typeof window.CircuitSimulation.render === 'function') {
         try {
@@ -683,6 +699,8 @@ function renderSimulationView() {
 
 function switchSubjectTab(tabKey) {
     AppState.currentSubjectTab = tabKey;
+    // Leaving the simulation (or arriving at it from anywhere else) means the next visit starts neutral
+    if (tabKey !== 'simulation') AppState.simulationEntered = false;
     
     const quizzesBtn = document.getElementById('tab-btn-quizzes');
     const theoryBtn = document.getElementById('tab-btn-theory');
@@ -692,6 +710,10 @@ function switchSubjectTab(tabKey) {
     const theoryPanel = document.getElementById('tab-panel-theory');
     const examPanel = document.getElementById('tab-panel-exam-solutions');
     const simPanel = document.getElementById('tab-panel-simulation');
+    const sylBtn = document.getElementById('tab-btn-syllabus');
+    const sylPanel = document.getElementById('tab-panel-syllabus');
+    if (sylBtn) sylBtn.classList.toggle('active', tabKey === 'syllabus');
+    if (sylPanel) sylPanel.style.display = tabKey === 'syllabus' ? 'block' : 'none';
 
     if (quizzesBtn) quizzesBtn.classList.toggle('active', tabKey === 'quizzes');
     if (theoryBtn) theoryBtn.classList.toggle('active', tabKey === 'theory');
