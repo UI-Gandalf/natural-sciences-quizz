@@ -319,7 +319,7 @@ function renderSubjectSelection(classKey) {
         <div class="subjects-grid">
     `;
 
-    ['physics', 'chemistry', 'geography', 'biology'].forEach(subKey => {
+    (CLASS_SUBJECTS[classKey] || []).forEach(subKey => {
         const sub = SUBJECT_CONFIG[subKey];
         const quizzes = (QUIZ_DATABASE[classKey] && QUIZ_DATABASE[classKey][subKey]) || [];
         const activeQuizzes = quizzes.filter(q => !q.isPlaceholder);
@@ -933,6 +933,41 @@ function triggerMathTypeset(container) {
    VIEW 4: QUIZ RUNNER (Exact Chemistry Quiz.html Template)
    CRITICAL: NO EMOJI AS ICON ON QUIZ SUBPAGE! Clean Academic Header
    ========================================================================== */
+// Options of the "jump to question" dropdown: plain text, numbering removed, long stems shortened
+function quizJumpOptionsHtml(quiz) {
+    const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return quiz.questions.map((qq, i) => {
+        const plain = String(qq.q).replace(/^\s*\d+\.\s*/, '').replace(/<[^>]*>/g, '');
+        const short = plain.length > 80 ? plain.slice(0, 80).trim() + '…' : plain;
+        return `<option value="${i}">${i + 1}. ${esc(short)}</option>`;
+    }).join('');
+}
+
+// Jump to any question of the current quiz: unanswered ones are asked again, answered ones are shown in review
+function jumpToQuestion(value) {
+    const quiz = AppState.currentQuiz;
+    const qr = AppState.quizRunner;
+    const target = parseInt(value, 10);
+    if (!quiz || isNaN(target)) return;
+
+    const pos = qr.activeQueue.indexOf(target);
+    if (pos >= 0) {
+        qr.viewingReviewIndex = null;
+        qr.currentPos = pos;
+        loadCurrentQuestion();
+        return;
+    }
+    const histIdx = qr.userHistory.findIndex(h => h.qIndex === target);
+    if (histIdx >= 0) {
+        qr.viewingReviewIndex = histIdx;
+        renderAnsweredQuestionReview(histIdx);
+        return;
+    }
+    // Not reachable (should not happen): put the dropdown back on the current question
+    const jump = document.getElementById('question-jump');
+    if (jump) jump.value = String(qr.activeQueue[qr.currentPos]);
+}
+
 function renderQuizRunner(quiz) {
     const container = document.getElementById('app-content');
     const sub = SUBJECT_CONFIG[AppState.currentSubject];
@@ -1010,6 +1045,7 @@ function renderQuizRunner(quiz) {
 
                         <div class="question-meta">
                             <div class="meta-badges">
+                                <span class="meta-badge badge-score" id="score-counter">Σκορ: 0</span>
                                 <span class="meta-badge" id="question-count">Ερώτηση 1 / ${quiz.questions.length}</span>
                                 <span class="meta-badge badge-skipped" id="skipped-badge" style="display: none;">
                                     🔄 Από παράλειψη
@@ -1018,7 +1054,12 @@ function renderQuizRunner(quiz) {
                                     📌 Σε εκκρεμότητα: <span id="pending-count">0</span>
                                 </span>
                             </div>
-                            <span class="meta-badge badge-score" id="score-counter">Σκορ: 0</span>
+                        </div>
+                        <div class="question-jump-wrap">
+                            <label class="question-jump-label" for="question-jump">📍 Μετάβαση σε ερώτηση</label>
+                            <select class="question-jump" id="question-jump" onchange="jumpToQuestion(this.value)" title="Μετάβαση σε συγκεκριμένη ερώτηση">
+                                ${quizJumpOptionsHtml(quiz)}
+                            </select>
                         </div>
                     </div>
 
@@ -1141,6 +1182,8 @@ function loadCurrentQuestion() {
 
     // Header updates - Display current question index and completed progress
     document.getElementById('question-count').innerText = `Ερώτηση ${qIndex + 1} / ${quiz.questions.length}`;
+    const jump = document.getElementById('question-jump');
+    if (jump) jump.value = String(qIndex);
     document.getElementById('score-counter').innerText = `Σκορ: ${formatScore(qr.score)}`;
     document.getElementById('progress-bar').style.width = `${(totalAnswered / quiz.questions.length) * 100}%`;
 
@@ -2971,7 +3014,8 @@ function restartCurrentQuiz() {
    Question Circuit Diagram Resolvers & Lightbox Handlers
    ========================================================================== */
 function resolveQuestionDiagrams(q) {
-    if (!q) return [];
+    // Chemistry questions carry no circuit diagrams (their wording mentions "σειρά" without meaning the circuit)
+    if (!q || q.noDiagrams) return [];
     
     // 1. Explicit array
     if (Array.isArray(q.images) && q.images.length > 0) {
