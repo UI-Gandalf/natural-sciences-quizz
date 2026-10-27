@@ -122,7 +122,7 @@ function handleRoute() {
             }
 
             // e.g. #/class/Γ/subject/physics/theory
-            if (parts[4] === 'theory') {
+            if (parts[4] === 'theory' && subjectKey === 'physics') {
                 AppState.currentQuiz = null;
                 AppState.currentSubjectTab = 'theory';
                 renderQuizSelection(classKey, subjectKey);
@@ -373,12 +373,14 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span class="tab-icon">📝</span>
                     <span>Κουίζ Αξιολόγησης</span>
                 </button>
+                ${subjectKey === 'physics' ? `
                 <button class="subject-tab-btn ${currentTab === 'theory' ? 'active' : ''}" id="tab-btn-theory" onclick="switchSubjectTab('theory')">
                     <span class="tab-icon">📖</span>
                     <span class="tab-multiline">
                         <span class="tab-line-main">Θεωρία και Επίλυση κυκλωμάτων</span>
                     </span>
                 </button>
+                ` : ''}
                 ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') ? `
                 <button class="subject-tab-btn ${currentTab === 'exam_solutions' ? 'active' : ''}" id="tab-btn-exam-solutions" onclick="switchSubjectTab('exam_solutions')">
                     <span class="tab-icon">📑</span>
