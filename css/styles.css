@@ -5228,7 +5228,7 @@ mjx-container[display="true"], .katex-display {
    THEORY & STUDY NOTES MODULE STYLES
    ========================================================================== */
 .theory-guide-wrapper {
-    max-width: 1040px;
+    max-width: 1120px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -5882,6 +5882,13 @@ mjx-container[display="true"], .katex-display {
 
 .part-formula {
     margin-bottom: 6px;
+    text-align: left;
+}
+
+/* triangle cards: formula aligned left with the name and the description */
+.tri-part-box .part-formula mjx-container[display="true"] {
+    margin: 4px 0 !important;
+    text-align: left !important;
 }
 
 .part-info p {
@@ -6262,7 +6269,7 @@ mjx-container[display="true"], .katex-display {
    Exam Solutions & Guide Module Styles
    ========================================================================== */
 .exam-guide-wrapper {
-    max-width: 1120px;
+    max-width: 1160px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -7146,7 +7153,7 @@ button.exam-opt-pill:active:not(:disabled) {
     justify-content: center;
     border: 1px solid rgba(255, 255, 255, 0.08);
     text-align: center;
-    overflow-x: auto;
+    overflow: visible;
 }
 
 .exam-pro-item-formula .mjx-chtml {
@@ -8592,10 +8599,10 @@ button.exam-opt-pill:active:not(:disabled) {
 }
 
 
-/* Exam guide navigation: two rows of four instead of a horizontal slider (desktop) */
+/* Exam guide navigation: wraps onto two rows on desktop, every title on one line, no slider */
 #exam-sticky-nav .theory-nav-inner {
-    display: grid;
-    grid-template-columns: repeat(4, auto);
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 8px;
     overflow: visible;
@@ -8605,7 +8612,406 @@ button.exam-opt-pill:active:not(:disabled) {
 @media (max-width: 840px) {
     #exam-sticky-nav .theory-nav-inner {
         display: flex;
-        overflow-x: auto;
-        padding-bottom: 2px;
+        flex-wrap: wrap;
+        justify-content: center;
+        overflow: visible;
+        padding-bottom: 0;
     }
+}
+
+
+/* Exam cards: formulas were smaller than the text (global mjx rule uses !important) */
+.exam-guide-wrapper .exam-pro-item-desc mjx-container:not([display="true"]) {
+    font-size: 1.6em !important;
+}
+
+.exam-guide-wrapper .exam-pro-item-badge mjx-container:not([display="true"]) {
+    font-size: 1.5em !important;
+}
+
+
+/* Theory guide navigation: two rows of four instead of a horizontal slider (desktop) */
+#theory-sticky-nav .theory-nav-inner {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: center;
+    gap: 8px;
+    overflow: visible;
+    padding-bottom: 0;
+}
+
+@media (max-width: 840px) {
+    #theory-sticky-nav .theory-nav-inner {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        overflow: visible;
+        padding-bottom: 0;
+    }
+}
+
+
+/* Theory guide: formulas from section 04 (the 'common current' callout) to the end of the page are 1.5x larger.
+   The global mjx rule is 1.05em !important, so 1.05 x 1.5 = 1.575em. */
+#theory-sec-4 mjx-container,
+#theory-sec-5 mjx-container,
+#theory-sec-6 mjx-container,
+#theory-sec-7 mjx-container {
+    font-size: 1.575em !important;
+}
+
+/* the diagram caption above the callout stays as it was */
+#theory-sec-4 .diagram-caption mjx-container {
+    font-size: 1.05em !important;
+}
+
+/* formula boxes: centred, with room for the bigger formulas, scrolling instead of clipping */
+#theory-sec-4 .theory-callout-box mjx-container[display="true"],
+#theory-sec-5 mjx-container[display="true"],
+#theory-sec-6 mjx-container[display="true"],
+#theory-sec-7 mjx-container[display="true"] {
+    max-width: 100%;
+}
+
+#theory-sec-4 .step-math,
+#theory-sec-5 .step-math,
+#theory-sec-6 .step-math,
+#theory-sec-7 .step-math,
+#theory-sec-4 .math-block,
+#theory-sec-5 .math-block,
+#theory-sec-6 .math-block,
+#theory-sec-7 .math-block,
+#theory-sec-4 .table-formula,
+#theory-sec-5 .table-formula,
+#theory-sec-6 .table-formula,
+#theory-sec-7 .table-formula {
+    text-align: center;
+    padding: 10px 12px;
+}
+
+
+/* Exam calculation lines: same size as the header formulas (1.5x), no scrollbar */
+.exam-guide-wrapper .exam-pro-item-formula mjx-container,
+.exam-guide-wrapper .exam-pro-takeaway-formula mjx-container {
+    font-size: 1.5em !important;
+}
+
+.exam-guide-wrapper .exam-pro-takeaway-formula {
+    overflow: visible;
+}
+
+/* Theory guide: all theory sections (1 to 7 and the triangles) use the same formula size (1.5x of the text) */
+[id^="theory-sec-"] mjx-container {
+    font-size: 1.575em !important;
+}
+
+/* wrong connection highlight: the two 'Λανθασμένη Σύνδεση' items of the meter cards */
+.inst-points li.inst-warning {
+    list-style: none;
+    margin-left: -18px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.45);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .inst-points li.inst-warning {
+    background: rgba(239, 68, 68, 0.07);
+    border-color: rgba(220, 38, 38, 0.5);
+    color: #0f172a;
+}
+
+/* Exam navigation: more prominent pills (larger, bolder, with a visible frame) */
+#exam-sticky-nav .theory-nav-pill {
+    font-size: 0.93rem;
+    font-weight: 700;
+    padding: 7px 13px;
+    color: var(--text-primary);
+    background: rgba(96, 165, 250, 0.1);
+    border: 1px solid rgba(96, 165, 250, 0.4);
+}
+
+#exam-sticky-nav .theory-nav-pill:hover {
+    background: rgba(96, 165, 250, 0.2);
+}
+
+#exam-sticky-nav .theory-nav-pill.active {
+    background: #2563eb;
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+/* Theory navigation: same prominent pills as the exam navigation */
+#theory-sticky-nav .theory-nav-pill {
+    font-size: 0.93rem;
+    font-weight: 700;
+    padding: 7px 13px;
+    color: var(--text-primary);
+    background: rgba(96, 165, 250, 0.1);
+    border: 1px solid rgba(96, 165, 250, 0.4);
+}
+
+#theory-sticky-nav .theory-nav-pill:hover {
+    background: rgba(96, 165, 250, 0.2);
+}
+
+#theory-sticky-nav .theory-nav-pill.active {
+    background: #2563eb;
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+/* Interactive V = f(I) chart */
+.theory-diagram-card {
+    position: relative;
+}
+
+.diagram-interactive-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    padding: 6px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(96, 165, 250, 0.5);
+    background: rgba(37, 99, 235, 0.85);
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.diagram-interactive-btn:hover {
+    background: #2563eb;
+}
+
+.vi-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.82);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 16px;
+}
+
+.vi-overlay.active {
+    display: flex;
+}
+
+.vi-card {
+    width: min(720px, 96vw);
+    background: #0f172a;
+    color: #e2e8f0;
+    border: 1px solid rgba(96, 165, 250, 0.35);
+    border-radius: 18px;
+    padding: 18px 20px 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.vi-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.vi-head h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.vi-close {
+    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.vi-hint {
+    margin: 8px 0 10px;
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.vi-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    touch-action: none;
+    cursor: crosshair;
+}
+
+.vi-grid {
+    stroke: rgba(148, 163, 184, 0.18);
+    stroke-width: 1;
+}
+
+.vi-axis {
+    stroke: #e2e8f0;
+    stroke-width: 1.5;
+}
+
+.vi-tick {
+    fill: #cbd5e1;
+    font-size: 13px;
+}
+
+.vi-axis-label {
+    fill: #e2e8f0;
+    font-size: 15px;
+    font-style: italic;
+}
+
+.vi-line-label {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.vi-guide {
+    stroke: #94a3b8;
+    stroke-width: 1.2;
+    stroke-dasharray: 5 4;
+}
+
+.vi-dot {
+    stroke: #ffffff;
+    stroke-width: 2;
+}
+
+.vi-readout {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.95rem;
+    min-height: 2.6em;
+}
+
+/* Triangle header formula: centred vertically on the title line (no display margins) */
+.triangle-active-card .tri-main-formula {
+    display: flex;
+    align-items: center;
+    transform: translateY(2px); /* optical centre of the glyphs on the centre of the title block */
+}
+
+.triangle-active-card .tri-main-formula mjx-container[display="true"] {
+    margin: 0 !important;
+}
+
+/* Interactive chart: decorative title and a clearer readout */
+.vi-head h3 {
+    font-family: 'STIX Two Text', 'Georgia', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    background: linear-gradient(90deg, #60a5fa, #34d399 60%, #fbbf24);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.vi-title-orn {
+    -webkit-text-fill-color: #fbbf24;
+    font-size: 0.9em;
+    vertical-align: middle;
+}
+
+.vi-readout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 22px;
+}
+
+.vi-readout-line {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.vi-readout-item {
+    font-size: 1rem;
+}
+
+/* keep the typeset formula readable inside the gradient title */
+.vi-head h3 mjx-container {
+    color: #e2e8f0 !important;
+    -webkit-text-fill-color: #e2e8f0 !important;
+    background: none;
+}
+
+/* Triangle layout: header formula next to the title; card formulas at the top right, level with the symbol */
+.triangle-active-card .tri-card-header {
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.triangle-active-card .tri-main-formula {
+    margin-left: 18px;
+    transform: none;
+    margin-top: 6px;
+}
+
+.tri-part-box {
+    position: relative;
+}
+
+.tri-part-box .part-formula {
+    position: absolute;
+    top: 40px; /* level with the centre of the symbol */
+    transform: translateY(-50%);
+    right: 16px;
+    margin: 0;
+    text-align: right;
+}
+
+.tri-part-box .part-formula mjx-container[display="true"] {
+    text-align: right !important;
+    margin: 0 !important;
+}
+
+/* Theory comparison table (section 06): higher contrast on the dark theme only */
+:root:not([data-theme="light"]) #theory-sec-6 .comparative-table td {
+    color: #e2e8f0;
+}
+
+:root:not([data-theme="light"]) #theory-sec-6 .comparative-table mjx-container {
+    color: #f8fafc !important;
+}
+
+:root:not([data-theme="light"]) #theory-sec-6 .comparative-table .table-note {
+    color: #cbd5e1;
+}
+
+/* Theory comparison table (section 06): a real grid, with stronger column dividers and light row banding */
+#theory-sec-6 .comparative-table th,
+#theory-sec-6 .comparative-table td {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+#theory-sec-6 .comparative-table th {
+    border-bottom: 2px solid rgba(148, 163, 184, 0.4);
+}
+
+#theory-sec-6 .comparative-table td:nth-child(2),
+#theory-sec-6 .comparative-table td:nth-child(3),
+#theory-sec-6 .comparative-table th:nth-child(2),
+#theory-sec-6 .comparative-table th:nth-child(3) {
+    border-left: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+#theory-sec-6 .comparative-table tbody tr:nth-child(even) td {
+    background: rgba(148, 163, 184, 0.05);
+}
+
+#theory-sec-6 .comparative-table tr:last-child td {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
 }

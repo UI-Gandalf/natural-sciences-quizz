@@ -341,93 +341,21 @@ window.ExamSolutionsGuide = (function() {
                 <!-- STICKY TABLE OF CONTENTS NAV -->
                 <nav class="theory-sticky-nav" id="exam-sticky-nav" style="background: rgba(15, 23, 42, 0.92); border-color: rgba(59, 130, 246, 0.35);">
                     <div class="theory-nav-inner">
-                        <a href="#exam-sec-intro" class="theory-nav-pill exam-nav-pill active" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-intro')">1. Οδηγίες Μελέτης</a>
-                        <a href="#exam-sec-fundamentals" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-fundamentals')">2. Μεγέθη, Όργανα & Δυναμικό</a>
-                        <a href="#exam-sec-thema-a1" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-thema-a1')">4. Θέμα Α1: Σειρά (15 Ερωτήματα)</a>
-                        <a href="#exam-sec-series-short" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-series-short')">5. Βραχυκύκλωμα στη Σειρά</a>
-                        <a href="#exam-sec-thema-a2" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-thema-a2')">6. Θέμα Α2: Παράλληλα (15 Ερωτήματα)</a>
-                        <a href="#exam-sec-parallel-short" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-parallel-short')">7. Βραχυκύκλωμα & Διακοπή</a>
-                        <a href="#exam-sec-summary" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-summary')">8. Συγκριτικός Πίνακας</a>
+                        <a href="#exam-sec-fundamentals" class="theory-nav-pill exam-nav-pill active" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-fundamentals')">1. Μεγέθη, Όργανα & Δυναμικό</a>
+                        <a href="#exam-sec-thema-a1" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-thema-a1')">2. Θέμα Α1: Σειρά (15 Ερωτήματα)</a>
+                        <a href="#exam-sec-series-short" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-series-short')">3. Βραχυκύκλωμα στη Σειρά</a>
+                        <a href="#exam-sec-thema-a2" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-thema-a2')">4. Θέμα Α2: Παράλληλα (15 Ερωτήματα)</a>
+                        <a href="#exam-sec-summary" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-summary')">5. Μεγάλος Συγκριτικός Πίνακας: Σειρά vs Παράλληλη</a>
+                        <a href="#exam-sec-parallel-short" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-parallel-short')">6. Ανακεφαλαίωση Παράλληλης Σύνδεσης & Βραχυκύκλωμα</a>
                     </div>
                 </nav>
-
-                <!-- ==============================================================
-                     SECTION 1: ΟΔΗΓΙΕΣ ΟΡΘΗΣ ΜΕΛΕΤΗΣ ΚΑΙ ΠΡΟΕΤΟΙΜΑΣΙΑΣ
-                     ============================================================== -->
-                <section class="theory-section exam-section glass-card" id="exam-sec-intro">
-                    <div class="sec-header">
-                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);">01</div>
-                        <div class="sec-header-text">
-                            <h2 class="sec-title">Οδηγίες Ορθής Μελέτης & Προετοιμασίας</h2>
-                            <p class="sec-subtitle">Στρατηγική μελέτης, αποφυγή μηχανικής αποστήθισης και ενεργειακή κατανόηση του κυκλώματος</p>
-                        </div>
-                    </div>
-
-                    <div class="exam-pro-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-                        <div class="exam-pro-card theme-cyan">
-                            <div class="exam-pro-header">
-                                <div class="exam-pro-icon-box cyan">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                        <polyline points="15 3 21 3 21 9"></polyline>
-                                        <line x1="10" y1="14" x2="21" y2="3"></line>
-                                    </svg>
-                                </div>
-                                <div class="exam-pro-title-wrap">
-                                    <span class="exam-pro-tag cyan">Μέθοδος Σκέψης</span>
-                                    <h3 class="exam-pro-title">Όχι στη Στείρα Αποστήθιση</h3>
-                                </div>
-                            </div>
-                            <p class="exam-pro-item-desc" style="font-size: 0.92rem; line-height: 1.6;">
-                                Στη Φυσική των κυκλωμάτων η επιτυχία βασίζεται στην <strong>ουσιαστική κατανόηση της φυσικής πραγματικότητας</strong>: τι αντιπροσωπεύει το ρεύμα, πώς κινείται σε κλειστό βρόγχο και πώς επιμερίζεται η δυναμική ενέργεια.
-                            </p>
-                        </div>
-
-                        <div class="exam-pro-card theme-emerald">
-                            <div class="exam-pro-header">
-                                <div class="exam-pro-icon-box emerald">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="23 4 23 10 17 10"></polyline>
-                                        <polyline points="1 20 1 14 7 14"></polyline>
-                                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-                                    </svg>
-                                </div>
-                                <div class="exam-pro-title-wrap">
-                                    <span class="exam-pro-tag emerald">Θεμελιώδης Αρχή</span>
-                                    <h3 class="exam-pro-title">Η Έννοια του Κλειστού Βρόγχου</h3>
-                                </div>
-                            </div>
-                            <p class="exam-pro-item-desc" style="font-size: 0.92rem; line-height: 1.6;">
-                                Το ηλεκτρικό ρεύμα απαιτεί <strong>αδιάλειπτο αγώγιμο δρόμο</strong>. Οποιαδήποτε διακοπή (ανοιχτός διακόπτης, καμένη λάμπα σε σειρά) μηδενίζει ακαριαία τη ροή φορτίου σε ολόκληρο τον βρόγχο ($I = 0$).
-                            </p>
-                        </div>
-
-                        <div class="exam-pro-card theme-purple">
-                            <div class="exam-pro-header">
-                                <div class="exam-pro-icon-box purple">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
-                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-                                    </svg>
-                                </div>
-                                <div class="exam-pro-title-wrap">
-                                    <span class="exam-pro-tag purple">Οπτικοακουστικό Υλικό</span>
-                                    <h3 class="exam-pro-title">4 Υποστηρικτικά Βίντεο YouTube</h3>
-                                </div>
-                            </div>
-                            <p class="exam-pro-item-desc" style="font-size: 0.92rem; line-height: 1.6;">
-                                Το διαγώνισμα συνοδεύεται από 4 αναλυτικά εκπαιδευτικά βίντεο στο YouTube του φυσικού Δημήτρη Μητσάκη, που αναλύουν βήμα-βήμα τη λογική των κυκλωμάτων και την πειραματική επαλήθευση.
-                            </p>
-                        </div>
-                    </div>
-                </section>
 
                 <!-- ==============================================================
                      SECTION 2: ΘΕΜΕΛΙΩΔΗ ΜΕΓΕΘΗ, ΟΡΓΑΝΑ & ΔΥΝΑΜΙΚΟ ΚΟΜΒΩΝ
                      ============================================================== -->
                 <section class="theory-section exam-section glass-card" id="exam-sec-fundamentals">
                     <div class="sec-header">
-                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #10b981, #059669);">02</div>
+                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #10b981, #059669);">01</div>
                         <div class="sec-header-text">
                             <h2 class="sec-title">Θεμελιώδη Μεγέθη, Όργανα Μετρήσεων & Δυναμικό Κόμβων</h2>
                             <p class="sec-subtitle">Ένταση, τάση, αντίσταση, σωστή συνδεσμολογία οργάνων και η ισχυρή μέθοδος του δυναμικού</p>
@@ -472,7 +400,7 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-pro-item-title">
                                             <span>⏱️</span> Μέτρηση Ρυθμού Ροής Φορτίου
                                         </div>
-                                        <span class="exam-pro-item-badge emerald">$I = \\frac{q}{t}$</span>
+                                        <span class="exam-pro-item-badge emerald">$\\displaystyle I = \\frac{q}{t}$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
                                         Καταγράφει την ποσότητα ηλεκτρικού φορτίου που διέρχεται από τη διατομή του αγωγού ανά μονάδα χρόνου, μετρούμενη σε Amperes ($1\\text{ A} = 1\\text{ C/s}$).
@@ -529,7 +457,7 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-pro-item-title">
                                             <span>🔋</span> Μέτρηση Ενέργειας ανά Φορτίο
                                         </div>
-                                        <span class="exam-pro-item-badge cyan">$V = \\frac{W}{q}$</span>
+                                        <span class="exam-pro-item-badge cyan">$\\displaystyle V = \\frac{W}{q}$</span>
                                     </div>
                                     <p class="exam-pro-item-desc">
                                         Καταγράφει το ποσό ενέργειας που μεταβιβάζεται ανά μονάδα διερχόμενου ηλεκτρικού φορτίου, μετρούμενο σε Volts ($1\\text{ V} = 1\\text{ J/C}$).
@@ -564,7 +492,7 @@ window.ExamSolutionsGuide = (function() {
                                 Εάν η πηγή έχει τάση $V = 60\\text{ V}$, τότε ο θετικός πόλος βρίσκεται στο δυναμικό $V_+ = 100 + 60 = 160\\text{ V}$.</p>
                                 <p style="margin-top: 6px;"><strong>2. Ιδανικά Καλώδια:</strong> Κατά μήκος ενός ιδανικού καλωδίου χωρίς αντίσταση ($R = 0$), δεν δαπανάται ενέργεια. Όλα τα σημεία του διατηρούν <em>ακριβώς το ίδιο δυναμικό</em> ($V_{\\text{καλωδίου}} = \\text{σταθερό}$).</p>
                                 <p style="margin-top: 6px;"><strong>3. Πτώση Τάσης στον Αντιστάτη:</strong> Όταν το ρεύμα $I$ διέρχεται από αντίσταση $R$, δαπανάται ενέργεια ανά μονάδα φορτίου ίση με $\\Delta V = I \\cdot R$. Στο σημείο αμέσως μετά τον αντιστάτη, το δυναμικό πέφτει: $V_{\\text{μετά}} = V_{\\text{πριν}} - I \\cdot R$.</p>
-                                <p style="margin-top: 6px;"><strong>4. Ανοιχτά Κλαδιά ($I = 0$):</strong> Σε ένα κλαδί που καταλήγει σε ανοιχτό διακόπτη, το ρεύμα είναι μηδέν ($I = 0$). Επειδή δεν υπάρχει ροή φορτίου, <em>δεν συμβαίνει καμία πτώση τάσης</em>, και ολόκληρο το ανοιχτό τμήμα διατηρεί το δυναμικό του σημείου στο οποίο εφάπτεται!</p>
+                                <p style="margin-top: 6px;"><strong>4. Ανοιχτοί κλάδοι ($I = 0$):</strong> Σε έναν κλάδο που καταλήγει σε ανοιχτό διακόπτη, το ρεύμα είναι μηδέν ($I = 0$). Επειδή δεν υπάρχει ροή φορτίου, <em>δεν συμβαίνει καμία πτώση τάσης</em>, και ολόκληρο το ανοιχτό τμήμα διατηρεί το δυναμικό του σημείου στο οποίο εφάπτεται!</p>
                             </div>
                         </div>
                     </div>
@@ -575,7 +503,7 @@ window.ExamSolutionsGuide = (function() {
                      ============================================================== -->
                 <section class="theory-section exam-section glass-card" id="exam-sec-wheel">
                     <div class="sec-header">
-                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">03</div>
+                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">02</div>
                         <div class="sec-header-text">
                             <h2 class="sec-title">Μνημονικοί Κανόνες & Υπολογιστική Ρόδα (Calculation Wheel)</h2>
                             <p class="sec-subtitle">Οι 12 θεμελιώδεις μαθηματικοί τύποι υπολογισμού των $P, V, I, R$ σε 4 τεταρτημόρια</p>
@@ -632,7 +560,7 @@ window.ExamSolutionsGuide = (function() {
                      ============================================================== -->
                 <section class="theory-section exam-section glass-card" id="exam-sec-thema-a1">
                     <div class="sec-header">
-                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">04</div>
+                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">03</div>
                         <div class="sec-header-text">
                             <h2 class="sec-title">Θέμα Α1: Συνδεσμολογία σε Σειρά (15 Ερωτήματα)</h2>
                             <p class="sec-subtitle">Υποδειγματική επίλυση όλων των ερωτημάτων με διακόπτες, βραχυκυκλώματα και δυναμικό κόμβων</p>
@@ -697,7 +625,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
                                                 <li>Αντιστάτες: <strong>$R_1 = 5\\ \\Omega$</strong>, <strong>$R_2 = 15\\ \\Omega$</strong> (σε σειρά)</li>
                                                 <li>Κεντρικός διακόπτης: <strong>[Γ, Δ]</strong> (κλειστός)</li>
-                                                <li>Κλαδικοί διακόπτες: <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
+                                                <li>Διακόπτες κλάδων: <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
                                                 <li>Σημεία κυκλώματος: <strong>Τ, Π, Ρ, Σ</strong></li>
                                             </ul>
                                         </div>
@@ -1704,7 +1632,7 @@ window.ExamSolutionsGuide = (function() {
                      ============================================================== -->
                 <section class="theory-section exam-section glass-card" id="exam-sec-series-short">
                     <div class="sec-header">
-                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #ef4444, #b91c1c);">05</div>
+                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #ef4444, #b91c1c);">04</div>
                         <div class="sec-header-text">
                             <h2 class="sec-title">Εμπεριστατωμένη Ανάλυση Βραχυκυκλώματος στη Σειρά</h2>
                             <p class="sec-subtitle">Μερικό vs Ολικό βραχυκύκλωμα, υπερφόρτωση του επιζώντος αντιστάτη και κίνδυνοι</p>
@@ -1744,7 +1672,7 @@ window.ExamSolutionsGuide = (function() {
                                         Η ολική αντίσταση περιορίζεται πλέον μόνο στον $R_1$, προκαλώντας τετραπλασιασμό του ρεύματος:
                                     </p>
                                     <div class="exam-pro-item-formula warning">
-                                        $R_{\\text{ολ}}' = R_1 + 0 = 5\\ \\Omega \\implies I' = \\dfrac{V}{R_1} = \\dfrac{60\\text{ V}}{5\\ \\Omega} = 12\\text{ A}$
+                                        $$\\begin{gathered}R_{\\text{ολ}}' = R_1 + 0 = 5\\ \\Omega \\\\ \\implies I' = \\dfrac{V}{R_1} = \\dfrac{60\\text{ V}}{5\\ \\Omega} = 12\\text{ A}\\end{gathered}$$
                                     </div>
                                 </div>
 
@@ -1759,7 +1687,7 @@ window.ExamSolutionsGuide = (function() {
                                         Ο $R_2$ τίθεται εκτός τάσης ($V_2' = 0\\text{ V}$), επομένως ο επιζών αντιστάτης $R_1$ δέχεται μόνος του όλη την τάση:
                                     </p>
                                     <div class="exam-pro-item-formula warning">
-                                        $V_2' = 0\\text{ V} \\implies V_1' = V_{\\text{πηγ}} = 60\\text{ V} \\quad (\\text{από αρχικά } 15\\text{ V})$
+                                        $$\\begin{gathered}V_2' = 0\\text{ V} \\\\ \\implies V_1' = V_{\\text{πηγ}} = 60\\text{ V} \\quad (\\text{από αρχικά } 15\\text{ V})\\end{gathered}$$
                                     </div>
                                 </div>
 
@@ -1774,7 +1702,7 @@ window.ExamSolutionsGuide = (function() {
                                         Η θερμική ισχύς εκτοξεύεται κατά 16 φορές, οδηγώντας άμεσα σε υπερθέρμανση και καταστροφή του $R_1$:
                                     </p>
                                     <div class="exam-pro-item-formula warning">
-                                        $P_1' = I'^2 \\cdot R_1 = 12^2 \\cdot 5 = 720\\text{ W} \\quad (\\times 16 \\text{ υπέρβαση ορίου})$
+                                        $$\\begin{gathered}P_1' = I'^2 \\cdot R_1 = 12^2 \\cdot 5 = 720\\text{ W} \\\\ \\quad (\\times 16 \\text{ υπέρβαση ορίου})\\end{gathered}$$
                                     </div>
                                 </div>
                             </div>
@@ -1810,7 +1738,7 @@ window.ExamSolutionsGuide = (function() {
                                         Όλοι οι συνδεδεμένοι αντιστάτες τίθενται εκτός λειτουργίας με μηδενική τάση, καθώς παρακάμπτονται πλήρως:
                                     </p>
                                     <div class="exam-pro-item-formula danger">
-                                        $R_{\\text{εξ}} \\to 0\\ \\Omega \\implies V_{\\text{πόλων}} = 0\\text{ V} \\quad (V_1 = V_2 = 0\\text{ V})$
+                                        $$\\begin{gathered}R_{\\text{εξ}} \\to 0\\ \\Omega \\\\ \\implies V_{\\text{πόλων}} = 0\\text{ V} \\quad (V_1 = V_2 = 0\\text{ V})\\end{gathered}$$
                                     </div>
                                 </div>
 
@@ -1825,7 +1753,7 @@ window.ExamSolutionsGuide = (function() {
                                         Η ένταση του ρεύματος περιορίζεται μόνο από την ελάχιστη εσωτερική αντίσταση $r_{\\text{εσ}}$ της πηγής:
                                     </p>
                                     <div class="exam-pro-item-formula danger">
-                                        $I_{\\text{βραχ}} = \\dfrac{\\mathcal{E}}{r_{\\text{εσ}}} \\to \\infty \\quad (\\text{μέγιστο καταστροφικό ρεύμα})$
+                                        $$\\begin{gathered}I_{\\text{βραχ}} = \\dfrac{\\mathcal{E}}{r_{\\text{εσ}}} \\to \\infty \\\\ \\quad (\\text{μέγιστο καταστροφικό ρεύμα})\\end{gathered}$$
                                     </div>
                                 </div>
 
@@ -1840,7 +1768,7 @@ window.ExamSolutionsGuide = (function() {
                                         Η ραγδαία έκλυση θερμότητας κατά Joule λιώνει τη μόνωση των καλωδίων και προκαλεί άμεσο κίνδυνο πυρκαγιάς:
                                     </p>
                                     <div class="exam-pro-item-formula danger">
-                                        $P_{\\text{θερμ}} = I_{\\text{βραχ}}^2 \\cdot r_{\\text{εσ}} \\to \\infty \\implies \\text{τήξη καλωδίων και πυρκαγιά}$
+                                        $$\\begin{gathered}P_{\\text{θερμ}} = I_{\\text{βραχ}}^2 \\cdot r_{\\text{εσ}} \\to \\infty \\\\ \\implies \\text{τήξη καλωδίων και πυρκαγιά}\\end{gathered}$$
                                     </div>
                                 </div>
                             </div>
@@ -1854,7 +1782,7 @@ window.ExamSolutionsGuide = (function() {
                             <span><strong>Κρίσιμη Διάκριση:</strong> Στο μερικό βραχυκύκλωμα στη σειρά ο ένας αντιστάτης σβήνει αλλά ο άλλος υπερφορτώνεται επικίνδυνα ($P_1' = 720\\text{ W}$). Στο ολικό, όλα τα φορτία σβήνουν ($V = 0\\text{ V}$) και καταστρέφεται η πηγή!</span>
                         </div>
                         <div class="exam-pro-takeaway-formula">
-                            $R_{\\text{μερ}}' = R_1 \\implies P_1' = 720\\text{ W} \\quad\\longleftrightarrow\\quad R_{\\text{ολ}}' \\to 0 \\implies I_{\\text{βραχ}} = \\dfrac{\\mathcal{E}}{r} \\to \\infty$
+                            $$\\begin{gathered}R_{\\text{μερ}}' = R_1 \\\\ \\implies P_1' = 720\\text{ W} \\quad\\longleftrightarrow\\quad R_{\\text{ολ}}' \\to 0 \\implies I_{\\text{βραχ}} = \\dfrac{\\mathcal{E}}{r} \\to \\infty\\end{gathered}$$
                         </div>
                     </div>
                 </section>
@@ -1864,7 +1792,7 @@ window.ExamSolutionsGuide = (function() {
                      ============================================================== -->
                 <section class="theory-section exam-section glass-card" id="exam-sec-thema-a2">
                     <div class="sec-header">
-                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">06</div>
+                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">05</div>
                         <div class="sec-header-text">
                             <h2 class="sec-title">Θέμα Α2: Παράλληλη Συνδεσμολογία (15 Ερωτήματα)</h2>
                             <p class="sec-subtitle">Κοινή τάση, ανεξαρτησία κλάδων, 1ος Κανόνας Kirchhoff και κίνδυνοι βραχυκυκλώματος</p>
@@ -1881,7 +1809,7 @@ window.ExamSolutionsGuide = (function() {
                                     <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                     <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                     <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                    <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                    <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                 </ul>
                             </div>
                             <div style="text-align: center;">
@@ -1929,7 +1857,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτες: <strong>$R_1 = 30\\ \\Omega$</strong>, <strong>$R_2 = 10\\ \\Omega$</strong> (παράλληλα)</li>
                                                 <li>Κοινή τάση κλάδων: <strong>$V_1 = V_2 = V = 75\\text{ V}$</strong></li>
                                                 <li>Κεντρικός διακόπτης: <strong>[Α, Β]</strong></li>
-                                                <li>Κλαδικοί διακόπτες: <strong>[Γ, Δ]</strong> ($R_1$), <strong>[Ε, Ζ]</strong> ($R_2$)</li>
+                                                <li>Διακόπτες κλάδων: <strong>[Γ, Δ]</strong> ($R_1$), <strong>[Ε, Ζ]</strong> ($R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -1998,7 +1926,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2064,7 +1992,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2130,7 +2058,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2199,7 +2127,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2266,7 +2194,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2332,7 +2260,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2400,7 +2328,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2468,7 +2396,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2536,7 +2464,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2604,7 +2532,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2670,7 +2598,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2738,7 +2666,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2805,7 +2733,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2872,7 +2800,7 @@ window.ExamSolutionsGuide = (function() {
                                                 <li>Αντιστάτης 1: <strong>$R_1 = 30\\ \\Omega$</strong></li>
                                                 <li>Αντιστάτης 2: <strong>$R_2 = 10\\ \\Omega$</strong></li>
                                                 <li>Συνδεσμολογία: <strong>Παράλληλη</strong> ($V_1 = V_2 = V = 75\\text{ V}$)</li>
-                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, Κλαδικοί <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
+                                                <li>Διακόπτες: Κεντρικός <strong>[Α, Β]</strong>, του κλάδου <strong>[Γ, Δ]</strong> (για $R_1$) και <strong>[Ε, Ζ]</strong> (για $R_2$)</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -2912,172 +2840,11 @@ window.ExamSolutionsGuide = (function() {
                 </section>
 
                 <!-- ==============================================================
-                     SECTION 7: ΑΝΑΚΕΦΑΛΑΙΩΣΗ ΠΑΡΑΛΛΗΛΗΣ & ΒΡΑΧΥΚΥΚΛΩΜΑ
-                     ============================================================== -->
-                <section class="theory-section exam-section glass-card" id="exam-sec-parallel-short">
-                    <div class="sec-header">
-                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);">07</div>
-                        <div class="sec-header-text">
-                            <h2 class="sec-title">Ανακεφαλαίωση Παράλληλης Σύνδεσης & Βραχυκύκλωμα</h2>
-                            <p class="sec-subtitle">Η ουσία της παράλληλης λειτουργίας, οικιακές εφαρμογές και ο καθολικός κίνδυνος βραχυκυκλώματος</p>
-                        </div>
-                    </div>
-
-                    <div class="exam-pro-grid">
-                        <!-- CARD 1: HOME NETWORK ADVANTAGE -->
-                        <div class="exam-pro-card theme-cyan">
-                            <div class="exam-pro-header">
-                                <div class="exam-pro-icon-box cyan">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                                    </svg>
-                                </div>
-                                <div class="exam-pro-title-wrap">
-                                    <span class="exam-pro-tag cyan">Οικιακή Εγκατάσταση &amp; Αυτονομία</span>
-                                    <h3 class="exam-pro-title">Το Πλεονέκτημα του Οικιακού Δικτύου</h3>
-                                </div>
-                            </div>
-
-                            <div class="exam-pro-callout cyan">
-                                Στο παράλληλο κύκλωμα, κάθε συσκευή (κλάδος) συνδέεται <strong>απευθείας στους κύριους αγωγούς</strong> της πηγής (φάση &amp; ουδέτερος).
-                            </div>
-
-                            <div class="exam-pro-items">
-                                <div class="exam-pro-item">
-                                    <div class="exam-pro-item-top">
-                                        <div class="exam-pro-item-title">
-                                            <span>⚡</span> Κοινή Ονομαστική Τάση
-                                        </div>
-                                        <span class="exam-pro-item-badge cyan">$V_i = V_{\\text{πηγ}} = 230\\text{ V}$</span>
-                                    </div>
-                                    <p class="exam-pro-item-desc">
-                                        Όλες οι συσκευές τροφοδοτούνται με την πλήρη ονομαστική τάση δικτύου, ανεξάρτητα από το πλήθος των άλλων ενεργών συσκευών:
-                                    </p>
-                                    <div class="exam-pro-item-formula cyan">
-                                        $V_1 = V_2 = \\dots = V_{\\text{πηγ}} = 230\\text{ V}$
-                                    </div>
-                                </div>
-
-                                <div class="exam-pro-item">
-                                    <div class="exam-pro-item-top">
-                                        <div class="exam-pro-item-title">
-                                            <span>🔌</span> Πλήρης Λειτουργική Αυτονομία
-                                        </div>
-                                        <span class="exam-pro-item-badge cyan">$I_i = \\dfrac{V_{\\text{πηγ}}}{R_i}$</span>
-                                    </div>
-                                    <p class="exam-pro-item-desc">
-                                        Κάθε κλάδος διαθέτει δικό του διακόπτη και απορροφά ρεύμα καθοριζόμενο αποκλειστικά από τη δική του αντίσταση:
-                                    </p>
-                                    <div class="exam-pro-item-formula cyan">
-                                        $I_i = \\dfrac{V_{\\text{πηγ}}}{R_i} \\quad (\\text{πλήρης ανεξαρτησία κλάδων})$
-                                    </div>
-                                </div>
-
-                                <div class="exam-pro-item">
-                                    <div class="exam-pro-item-top">
-                                        <div class="exam-pro-item-title">
-                                            <span>🛡️</span> Αδιάλειπτη Παροχή σε Βλάβη
-                                        </div>
-                                        <span class="exam-pro-item-badge cyan">$I_{\\text{λοιπ}} = \\text{σταθερό}$</span>
-                                    </div>
-                                    <p class="exam-pro-item-desc">
-                                        Εάν καεί μία λάμπα ή ανοίξει ένας κλάδος ($I_1 = 0$), οι υπόλοιποι κλάδοι συνεχίζουν απρόσκοπτα χωρίς καμία μεταβολή:
-                                    </p>
-                                    <div class="exam-pro-item-formula cyan">
-                                        $I_1 = 0 \\implies I_k = \\dfrac{V_{\\text{πηγ}}}{R_k} = \\text{αμετάβλητο} \\quad (\\forall k \\neq 1)$
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- CARD 2: SHORT CIRCUIT HAZARD -->
-                        <div class="exam-pro-card theme-danger">
-                            <div class="exam-pro-header">
-                                <div class="exam-pro-icon-box danger">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                                        <line x1="12" y1="9" x2="12" y2="13"></line>
-                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                                    </svg>
-                                </div>
-                                <div class="exam-pro-title-wrap">
-                                    <span class="exam-pro-tag danger">Κρίσιμος Κίνδυνος Ασφάλειας</span>
-                                    <h3 class="exam-pro-title">Ο Κίνδυνος Βραχυκυκλώματος στα Παράλληλα</h3>
-                                </div>
-                            </div>
-
-                            <div class="exam-pro-callout danger">
-                                Στην παράλληλη συνδεσμολογία <strong>ΔΕΝ υπάρχει ποτέ «μερικό» βραχυκύκλωμα</strong> — οποιαδήποτε βραχυκύκλωση είναι καθολική!
-                            </div>
-
-                            <div class="exam-pro-items">
-                                <div class="exam-pro-item">
-                                    <div class="exam-pro-item-top">
-                                        <div class="exam-pro-item-title">
-                                            <span>💥</span> Άμεση Ένωση Πόλων Πηγής
-                                        </div>
-                                        <span class="exam-pro-item-badge danger">$R_{\\text{ολ}} \\to 0\\ \\Omega$</span>
-                                    </div>
-                                    <p class="exam-pro-item-desc">
-                                        Σύνδεση σύρματος μηδενικής αντίστασης ($R_{\\text{βραχ}} = 0$) σε <em>οποιονδήποτε</em> κλάδο γεφυρώνει αυτόματα τους πόλους της πηγής:
-                                    </p>
-                                    <div class="exam-pro-item-formula danger">
-                                        $\\dfrac{1}{R_{\\text{ολ}}} = \\dfrac{1}{0} + \\sum \\dfrac{1}{R_i} \\implies R_{\\text{ολ}} \\to 0\\ \\Omega$
-                                    </div>
-                                </div>
-
-                                <div class="exam-pro-item">
-                                    <div class="exam-pro-item-top">
-                                        <div class="exam-pro-item-title">
-                                            <span>⚠️</span> Καθολική Κατάρρευση Τάσης
-                                        </div>
-                                        <span class="exam-pro-item-badge danger">$V_{\\text{κλάδων}} = 0\\text{ V}$</span>
-                                    </div>
-                                    <p class="exam-pro-item-desc">
-                                        Η τάση μηδενίζεται ακαριαία σε όλους τους κλάδους. Όλα τα φώτα και οι συσκευές σβήνουν λόγω πλήρους παράκαμψης:
-                                    </p>
-                                    <div class="exam-pro-item-formula danger">
-                                        $V_{\\text{κλάδων}} = 0\\text{ V} \\implies I_{\\text{συσκ}} = \\dfrac{0\\text{ V}}{R_i} = 0\\text{ A}$
-                                    </div>
-                                </div>
-
-                                <div class="exam-pro-item">
-                                    <div class="exam-pro-item-top">
-                                        <div class="exam-pro-item-title">
-                                            <span>🔥</span> Υπερένταση Ρεύματος &amp; Πυρκαγιά
-                                        </div>
-                                        <span class="exam-pro-item-badge danger">$I_{\\text{πηγ}} \\to \\infty$</span>
-                                    </div>
-                                    <p class="exam-pro-item-desc">
-                                        Το συνολικό ρεύμα εκτοξεύεται σε ακραίες τιμές, προκαλώντας τεράστια θερμική καταπόνηση Joule ($P = I^2 \\cdot R$):
-                                    </p>
-                                    <div class="exam-pro-item-formula danger">
-                                        $I_{\\text{πηγ}} = \\dfrac{V}{R_{\\text{ολ}}} \\to \\infty \\implies P_{\\text{Joule}} = I_{\\text{πηγ}}^2 \\cdot R_{\\text{καλωδ}} \\to \\infty$
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- KEY TAKEAWAY STRIP -->
-                    <div class="exam-pro-takeaway">
-                        <div class="exam-pro-takeaway-text">
-                            <span style="font-size: 1.25rem;">💡</span>
-                            <span><strong>Θεμελιώδης Κανόνας:</strong> Στα παράλληλα τα φορτία λειτουργούν ανεξάρτητα, αλλά το βραχυκύκλωμα έστω και ενός κλάδου καταρρέει ακαριαία ολόκληρο το δίκτυο!</span>
-                        </div>
-                        <div class="exam-pro-takeaway-formula">
-                            $V_{\\text{κλάδων}} = V_{\\text{πηγ}} = 230\\text{ V} \\quad\\longleftrightarrow\\quad R_{\\text{βραχ}} = 0 \\implies I_{\\text{πηγ}} \\to \\infty \\quad (V_{\\text{κλ}} = 0\\text{ V})$
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ==============================================================
                      SECTION 8: ΜΕΓΑΛΟΣ ΣΥΓΚΡΙΤΙΚΟΣ ΠΙΝΑΚΑΣ (ΣΕΙΡΑ vs ΠΑΡΑΛΛΗΛΗ)
                      ============================================================== -->
                 <section class="theory-section exam-section glass-card" id="exam-sec-summary">
                     <div class="sec-header">
-                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #10b981, #059669);">08</div>
+                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #10b981, #059669);">06</div>
                         <div class="sec-header-text">
                             <h2 class="sec-title">Μεγάλος Συγκριτικός Πίνακας: Σειρά vs Παράλληλη</h2>
                             <p class="sec-subtitle">Συγκεντρωτική αντιπαραβολή Σειράς vs Παράλληλης σε όλα τα φυσικά μεγέθη και συμπεριφορές κυκλωμάτων</p>
@@ -3328,6 +3095,169 @@ window.ExamSolutionsGuide = (function() {
                     </div>
 
                 </section>
+
+<!-- ==============================================================
+                     SECTION 7: ΑΝΑΚΕΦΑΛΑΙΩΣΗ ΠΑΡΑΛΛΗΛΗΣ & ΒΡΑΧΥΚΥΚΛΩΜΑ
+                     ============================================================== -->
+                <section class="theory-section exam-section glass-card" id="exam-sec-parallel-short">
+                    <div class="sec-header">
+                        <div class="sec-number-badge" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);">07</div>
+                        <div class="sec-header-text">
+                            <h2 class="sec-title">Ανακεφαλαίωση Παράλληλης Σύνδεσης & Βραχυκύκλωμα</h2>
+                            <p class="sec-subtitle">Η ουσία της παράλληλης λειτουργίας, οικιακές εφαρμογές και ο καθολικός κίνδυνος βραχυκυκλώματος</p>
+                        </div>
+                    </div>
+
+                    <div class="exam-pro-grid">
+                        <!-- CARD 1: HOME NETWORK ADVANTAGE -->
+                        <div class="exam-pro-card theme-cyan">
+                            <div class="exam-pro-header">
+                                <div class="exam-pro-icon-box cyan">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                    </svg>
+                                </div>
+                                <div class="exam-pro-title-wrap">
+                                    <span class="exam-pro-tag cyan">Οικιακή Εγκατάσταση &amp; Αυτονομία</span>
+                                    <h3 class="exam-pro-title">Το Πλεονέκτημα του Οικιακού Δικτύου</h3>
+                                </div>
+                            </div>
+
+                            <div class="exam-pro-callout cyan">
+                                Στο παράλληλο κύκλωμα, κάθε συσκευή (κλάδος) συνδέεται <strong>απευθείας στους κύριους αγωγούς</strong> της πηγής (φάση &amp; ουδέτερος).
+                            </div>
+
+                            <div class="exam-pro-items">
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>⚡</span> Κοινή Ονομαστική Τάση
+                                        </div>
+                                        <span class="exam-pro-item-badge cyan">$V_i = V_{\\text{πηγ}} = 230\\text{ V}$</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Όλες οι συσκευές τροφοδοτούνται με την πλήρη ονομαστική τάση δικτύου, ανεξάρτητα από το πλήθος των άλλων ενεργών συσκευών:
+                                    </p>
+                                    <div class="exam-pro-item-formula cyan">
+                                        $V_1 = V_2 = \\dots = V_{\\text{πηγ}} = 230\\text{ V}$
+                                    </div>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>🔌</span> Πλήρης Λειτουργική Αυτονομία
+                                        </div>
+                                        <span class="exam-pro-item-badge cyan">$I_i = \\dfrac{V_{\\text{πηγ}}}{R_i}$</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Κάθε κλάδος διαθέτει δικό του διακόπτη και απορροφά ρεύμα καθοριζόμενο αποκλειστικά από τη δική του αντίσταση:
+                                    </p>
+                                    <div class="exam-pro-item-formula cyan">
+                                        $I_i = \\dfrac{V_{\\text{πηγ}}}{R_i} \\quad (\\text{πλήρης ανεξαρτησία κλάδων})$
+                                    </div>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>🛡️</span> Αδιάλειπτη Παροχή σε Βλάβη
+                                        </div>
+                                        <span class="exam-pro-item-badge cyan">$I_{\\text{λοιπ}} = \\text{σταθερό}$</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Εάν καεί μία λάμπα ή ανοίξει ένας κλάδος ($I_1 = 0$), οι υπόλοιποι κλάδοι συνεχίζουν απρόσκοπτα χωρίς καμία μεταβολή:
+                                    </p>
+                                    <div class="exam-pro-item-formula cyan">
+                                        $$\\begin{gathered}I_1 = 0 \\\\ \\implies I_k = \\dfrac{V_{\\text{πηγ}}}{R_k} = \\text{αμετάβλητο} \\quad (\\forall k \\neq 1)\\end{gathered}$$
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 2: SHORT CIRCUIT HAZARD -->
+                        <div class="exam-pro-card theme-danger">
+                            <div class="exam-pro-header">
+                                <div class="exam-pro-icon-box danger">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    </svg>
+                                </div>
+                                <div class="exam-pro-title-wrap">
+                                    <span class="exam-pro-tag danger">Κρίσιμος Κίνδυνος Ασφάλειας</span>
+                                    <h3 class="exam-pro-title">Ο Κίνδυνος Βραχυκυκλώματος στα Παράλληλα</h3>
+                                </div>
+                            </div>
+
+                            <div class="exam-pro-callout danger">
+                                Στην παράλληλη συνδεσμολογία <strong>ΔΕΝ υπάρχει ποτέ «μερικό» βραχυκύκλωμα</strong> — οποιαδήποτε βραχυκύκλωση είναι καθολική!
+                            </div>
+
+                            <div class="exam-pro-items">
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>💥</span> Άμεση Ένωση Πόλων Πηγής
+                                        </div>
+                                        <span class="exam-pro-item-badge danger">$R_{\\text{ολ}} \\to 0\\ \\Omega$</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Σύνδεση σύρματος μηδενικής αντίστασης ($R_{\\text{βραχ}} = 0$) σε <em>οποιονδήποτε</em> κλάδο γεφυρώνει αυτόματα τους πόλους της πηγής:
+                                    </p>
+                                    <div class="exam-pro-item-formula danger">
+                                        $$\\begin{gathered}\\dfrac{1}{R_{\\text{ολ}}} = \\dfrac{1}{0} + \\sum \\dfrac{1}{R_i} \\\\ \\implies R_{\\text{ολ}} \\to 0\\ \\Omega\\end{gathered}$$
+                                    </div>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>⚠️</span> Καθολική Κατάρρευση Τάσης
+                                        </div>
+                                        <span class="exam-pro-item-badge danger">$V_{\\text{κλάδων}} = 0\\text{ V}$</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Η τάση μηδενίζεται ακαριαία σε όλους τους κλάδους. Όλα τα φώτα και οι συσκευές σβήνουν λόγω πλήρους παράκαμψης:
+                                    </p>
+                                    <div class="exam-pro-item-formula danger">
+                                        $$\\begin{gathered}V_{\\text{κλάδων}} = 0\\text{ V} \\\\ \\implies I_{\\text{συσκ}} = \\dfrac{0\\text{ V}}{R_i} = 0\\text{ A}\\end{gathered}$$
+                                    </div>
+                                </div>
+
+                                <div class="exam-pro-item">
+                                    <div class="exam-pro-item-top">
+                                        <div class="exam-pro-item-title">
+                                            <span>🔥</span> Υπερένταση Ρεύματος &amp; Πυρκαγιά
+                                        </div>
+                                        <span class="exam-pro-item-badge danger">$I_{\\text{πηγ}} \\to \\infty$</span>
+                                    </div>
+                                    <p class="exam-pro-item-desc">
+                                        Το συνολικό ρεύμα εκτοξεύεται σε ακραίες τιμές, προκαλώντας τεράστια θερμική καταπόνηση Joule ($P = I^2 \\cdot R$):
+                                    </p>
+                                    <div class="exam-pro-item-formula danger">
+                                        $$\\begin{gathered}I_{\\text{πηγ}} = \\dfrac{V}{R_{\\text{ολ}}} \\to \\infty \\\\ \\implies P_{\\text{Joule}} = I_{\\text{πηγ}}^2 \\cdot R_{\\text{καλωδ}} \\to \\infty\\end{gathered}$$
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KEY TAKEAWAY STRIP -->
+                    <div class="exam-pro-takeaway">
+                        <div class="exam-pro-takeaway-text">
+                            <span style="font-size: 1.25rem;">💡</span>
+                            <span><strong>Θεμελιώδης Κανόνας:</strong> Στα παράλληλα τα φορτία λειτουργούν ανεξάρτητα, αλλά το βραχυκύκλωμα έστω και ενός κλάδου καταρρέει ακαριαία ολόκληρο το δίκτυο!</span>
+                        </div>
+                        <div class="exam-pro-takeaway-formula">
+                            $$\\begin{gathered}V_{\\text{κλάδων}} = V_{\\text{πηγ}} = 230\\text{ V} \\quad\\longleftrightarrow\\quad R_{\\text{βραχ}} = 0 \\\\ \\implies I_{\\text{πηγ}} \\to \\infty \\quad (V_{\\text{κλ}} = 0\\text{ V})\\end{gathered}$$
+                        </div>
+                    </div>
+                </section>
+
+
 
             </div>
         `;

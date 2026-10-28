@@ -59,25 +59,12 @@ window.TheoryNotes = (function() {
                 
                 <!-- HERO HEADER -->
                 <div class="theory-hero-banner glass-card">
-                    <div class="theory-hero-meta">
-                        <span class="theory-tag-pill">📚 Επίσημος Οδηγός Μελέτης & Επίλυσης</span>
-                        <span class="theory-tag-pill theme-tag">Φυσική Γ΄ Γυμνασίου</span>
-                        <span class="theory-tag-pill page-tag">12 Σελίδες Πλήρους Θεωρίας</span>
-                    </div>
-
                     <h1 class="theory-hero-title">Ηλεκτρικό Κύκλωμα & Συνδεσμολογίες Αντιστατών</h1>
                     <p class="theory-hero-subtitle">
                         Συμπυκνωμένος οδηγός μελέτης, θεμελιώδη μεγέθη, νόμος του Ohm, μνημονικά τρίγωνα, 
                         πρωτόκολλα επιμερισμού μεγεθών σε σειρά & παράλληλα, συγκριτικοί πίνακες και ανάλυση βραχυκυκλώματος.
                     </p>
 
-                    <!-- QUICK ACTIONS BAR -->
-                    <div class="theory-actions-bar">
-                        <a href="assets/docs/physics_g_circuits_theory_2026.pdf" target="_blank" download class="theory-btn theory-btn-primary" title="Λήψη του πρωτότυπου PDF">
-                            <span>📥</span>
-                            <span>Λήψη Επίσημου PDF (12 Σελίδες)</span>
-                        </a>
-                    </div>
                 </div>
 
                 <!-- STICKY TABLE OF CONTENTS NAV -->
@@ -203,6 +190,7 @@ window.TheoryNotes = (function() {
 
                         <div class="theory-grid-2col">
                             <div class="theory-diagram-card" onclick="openDiagramLightbox('assets/images/theory/v_i_curve.png', 'Σχήμα Α: Γραφική παράσταση V = f(I) για τρεις ωμικούς αντιστάτες')" title="Κάντε κλικ για μεγέθυνση">
+                                <button type="button" class="diagram-interactive-btn" onclick="event.stopPropagation(); TheoryNotes.openInteractiveVI()" title="Διαδραστικό: δείξτε μια ευθεία για να δείτε τις τιμές V και I">🎛️ Διαδραστικό</button>
                                 <div class="diagram-img-frame">
                                     <img src="assets/images/theory/v_i_curve.png" alt="Γραφική παράσταση V = f(I)" class="theory-diagram-img" />
                                 </div>
@@ -248,9 +236,9 @@ window.TheoryNotes = (function() {
                             </div>
                         </div>
 
-                        <div class="theory-diagram-card" style="margin-top: 24px;" onclick="openDiagramLightbox('assets/images/theory/r_i_v_curves.png', 'Σχήμα Β: Γραφικές παραστάσεις R = f(I) και R = f(V)')" title="Κάντε κλικ για μεγέθυνση">
+                        <div class="theory-diagram-card" style="margin-top: 24px;" onclick="openDiagramLightbox('assets/images/theory/r_i_v_curves.png?v=2', 'Σχήμα Β: Γραφικές παραστάσεις R = f(I) και R = f(V)')" title="Κάντε κλικ για μεγέθυνση">
                             <div class="diagram-img-frame">
-                                <img src="assets/images/theory/r_i_v_curves.png" alt="Γραφικές παραστάσεις R=f(I) και R=f(V)" class="theory-diagram-img" />
+                                <img src="assets/images/theory/r_i_v_curves.png?v=2" alt="Γραφικές παραστάσεις R=f(I) και R=f(V)" class="theory-diagram-img" />
                             </div>
                             <div class="diagram-caption">
                                 <strong>Σχήμα Β:</strong> Οι γραφικές παραστάσεις $R = f(I)$ και $R = f(V)$ είναι <strong>οριζόντιες ευθείες</strong>. Η τιμή της αντίστασης μένει αμετάβλητη όση τάση ή ένταση κι αν εφαρμόσουμε.
@@ -531,7 +519,7 @@ window.TheoryNotes = (function() {
                             <div class="step-num">3</div>
                             <div class="step-content">
                                 <h5>3. Επιμερισμός Ρεύματος (Διαιρέτης Ρεύματος)</h5>
-                                <p>Το ολικό ρεύμα διακλαδίζεται ($I_{\\text{ολ}} = I_1 + I_2$) <strong>αντίστροφα ανάλογα</strong> των αντιστάσεων:</p>
+                                <p>Το ολικό ρεύμα διακλαδίζεται ($I_{\\text{ολ}} = I_1 + I_2$) <strong>αντιστρόφως ανάλογα</strong> των αντιστάσεων:</p>
                                 <div class="step-math">$$I_1 = \\frac{V_{\\text{πηγ}}}{R_1}, \\quad I_2 = \\frac{V_{\\text{πηγ}}}{R_2} \\implies \\frac{I_1}{I_2} = \\frac{R_2}{R_1}$$</div>
                             </div>
                         </div>
@@ -540,7 +528,7 @@ window.TheoryNotes = (function() {
                             <div class="step-num">4</div>
                             <div class="step-content">
                                 <h5>4. Επιμερισμός Ισχύος & Ενέργειας</h5>
-                                <p>Ο επιμερισμός είναι <strong>αντίστροφα ανάλογος</strong>: Ο μικρότερος αντιστάτης καταναλώνει τη μεγαλύτερη ισχύ!</p>
+                                <p>Ο επιμερισμός είναι <strong>αντιστρόφως ανάλογος</strong>: Ο μικρότερος αντιστάτης καταναλώνει τη μεγαλύτερη ισχύ!</p>
                                 <div class="step-math">$$\\frac{P_1}{P_2} = \\frac{R_2}{R_1} \\quad \\text{και} \\quad \\frac{E_1}{E_2} = \\frac{R_2}{R_1}$$</div>
                             </div>
                         </div>
@@ -592,7 +580,7 @@ window.TheoryNotes = (function() {
                                     </td>
                                     <td>
                                         <div class="table-formula">$$I_{\\text{ολ}} = I_1 + I_2, \\quad \\frac{I_1}{I_2} = \\frac{R_2}{R_1}$$</div>
-                                        <span class="table-note">Αντίστροφα ανάλογα με την αντίσταση</span>
+                                        <span class="table-note">Αντιστρόφως ανάλογα με την αντίσταση</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -625,18 +613,18 @@ window.TheoryNotes = (function() {
                                     </td>
                                     <td>
                                         <div class="table-formula">$$\\frac{P_1}{P_2} = \\frac{R_2}{R_1}$$</div>
-                                        <span class="table-note">Αντίστροφα: Ο μικρότερος καταναλώνει περισσότερο</span>
+                                        <span class="table-note">Αντιστρόφως: Ο μικρότερος καταναλώνει περισσότερο</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><strong>Ηλεκτρική Ενέργεια ($E$)</strong></td>
                                     <td>
                                         <div class="table-formula">$$\\frac{E_1}{E_2} = \\frac{R_1}{R_2}$$</div>
-                                        <span class="table-note">Ανάλογα των αντιστάσεων ($E = P \\cdot t$)</span>
+                                        <span class="table-note">Ανάλογα (όπως η ισχύς)</span>
                                     </td>
                                     <td>
                                         <div class="table-formula">$$\\frac{E_1}{E_2} = \\frac{R_2}{R_1}$$</div>
-                                        <span class="table-note">Αντίστροφα ανάλογα των αντιστάσεων</span>
+                                        <span class="table-note">Αντιστρόφως ανάλογα (όπως η ισχύς)</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -811,7 +799,7 @@ window.TheoryNotes = (function() {
                                 </div>
                                 <ul class="inst-points">
                                     <li><strong>Ιδανικό Αμπερόμετρο:</strong> Έχει <em>μηδενική εσωτερική αντίσταση</em> ($R_A = 0\\,\\Omega$) για να μην προκαλεί πτώση τάσης στο κύκλωμα.</li>
-                                    <li><strong>⚠️ Λανθασμένη Σύνδεση (Παράλληλα):</strong> Επειδή έχει μηδενική αντίσταση, αν συνδεθεί παράλληλα σε ένα στοιχείο θα προκαλέσει <strong>βραχυκύκλωμα</strong> σε αυτό, απενεργοποιώντας το!</li>
+                                    <li class="inst-warning"><strong>⚠️ Λανθασμένη Σύνδεση (Παράλληλα):</strong> Επειδή έχει μηδενική αντίσταση, αν συνδεθεί παράλληλα σε ένα στοιχείο θα προκαλέσει <strong>βραχυκύκλωμα</strong> σε αυτό, απενεργοποιώντας το!</li>
                                 </ul>
                             </div>
 
@@ -825,30 +813,12 @@ window.TheoryNotes = (function() {
                                 </div>
                                 <ul class="inst-points">
                                     <li><strong>Ιδανικό Βολτόμετρο:</strong> Έχει <em>άπειρη εσωτερική αντίσταση</em> ($R_V \\to \\infty$) για να μην απορροφά ρεύμα από το κύκλωμα ($I \\approx 0\\text{ A}$).</li>
-                                    <li><strong>⚠️ Λανθασμένη Σύνδεση (Σε Σειρά):</strong> Επειδή έχει άπειρη αντίσταση, αν συνδεθεί σε σειρά θα <strong>διακόψει πρακτικά τη ροή του ρεύματος</strong> σε ολόκληρο τον βρόχο!</li>
+                                    <li class="inst-warning"><strong>⚠️ Λανθασμένη Σύνδεση (Σε Σειρά):</strong> Επειδή έχει άπειρη αντίσταση, αν συνδεθεί σε σειρά θα <strong>διακόψει πρακτικά τη ροή του ρεύματος</strong> σε ολόκληρο τον βρόχο!</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </section>
-
-                <!-- FOOTER NAVIGATION ACTIONS -->
-                <div class="theory-footer-nav glass-card">
-                    <div>
-                        <h3>Επίσημος Οδηγός Μελέτης Φυσικής Γ΄</h3>
-                        <p>Ηλεκτρικό Κύκλωμα & Συνδεσμολογίες Αντιστατών — Πλήρης ψηφιακός οδηγός βάσει του σχολικού φυλλαδίου.</p>
-                    </div>
-                    <div class="footer-btn-group">
-                        <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="theory-btn theory-btn-secondary" title="Επιστροφή στην κορυφή">
-                            <span>⬆️</span>
-                            <span>Κορυφή Σελίδας</span>
-                        </button>
-                        <a href="assets/docs/physics_g_circuits_theory_2026.pdf" target="_blank" download class="theory-btn theory-btn-primary" title="Λήψη PDF">
-                            <span>📥</span>
-                            <span>Λήψη PDF</span>
-                        </a>
-                    </div>
-                </div>
 
             </div>
         `;
@@ -956,20 +926,25 @@ window.TheoryNotes = (function() {
             'theory-sec-6', 'theory-sec-7'
         ];
 
-        window.addEventListener('scroll', function() {
+        function highlightCurrentSection() {
             const scrollPos = window.scrollY + 120;
-            for (let i = sections.length - 1; i >= 0; i--) {
-                const sec = document.getElementById(sections[i]);
-                if (sec && sec.offsetTop <= scrollPos) {
-                    const pills = document.querySelectorAll('.theory-nav-pill');
-                    pills.forEach(p => {
-                        const href = p.getAttribute('href');
-                        p.classList.toggle('active', href === `#${sections[i]}`);
-                    });
-                    break;
+            // Default is the first section (top of the page); otherwise the nearest section above the viewport
+            let current = sections[0];
+            let bestOffset = -Infinity;
+            sections.forEach(id => {
+                const sec = document.getElementById(id);
+                if (sec && sec.offsetTop <= scrollPos && sec.offsetTop > bestOffset) {
+                    bestOffset = sec.offsetTop;
+                    current = id;
                 }
-            }
-        }, { passive: true });
+            });
+            document.querySelectorAll('.theory-nav-pill').forEach(p => {
+                p.classList.toggle('active', p.getAttribute('href') === `#${current}`);
+            });
+        }
+
+        window.addEventListener('scroll', highlightCurrentSection, { passive: true });
+        highlightCurrentSection();
     }
 
     function ensureMathTypeset(targetElem) {
@@ -1026,6 +1001,138 @@ window.TheoryNotes = (function() {
         }, 120);
     }
 
+    // ==========================================================================
+    // Interactive chart V = f(I): hover (or touch) a line to read the point (I, V) and the constant V/I = R
+    // ==========================================================================
+    const VI_LINES = [
+        { label: 'R₁ = 2 Ω', tex: 'R_1 = 2\\ \\Omega', R: 2, color: '#1d4ed8' },
+        { label: 'R₂ = 5 Ω', tex: 'R_2 = 5\\ \\Omega', R: 5, color: '#15803d' },
+        { label: 'R₃ = 10 Ω', tex: 'R_3 = 10\\ \\Omega', R: 10, color: '#dc2626' }
+    ];
+    const VI_STEP = 0.05; // the point snaps to this grid, so V and V/I are exact
+    const VI_W = 640, VI_H = 420;
+    const VI_PLOT = { left: 72, right: 600, top: 24, bottom: 350 };
+    const VI_MAX_I = 2.5, VI_MAX_V = 25;
+
+    function viX(I) { return VI_PLOT.left + (I / VI_MAX_I) * (VI_PLOT.right - VI_PLOT.left); }
+    function viY(V) { return VI_PLOT.bottom - (V / VI_MAX_V) * (VI_PLOT.bottom - VI_PLOT.top); }
+
+    function buildVISvg() {
+        let s = `<svg class="vi-svg" viewBox="0 0 ${VI_W} ${VI_H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Γραφική παράσταση V = f(I)">`;
+        // grid and ticks
+        for (let V = 0; V <= VI_MAX_V; V += 5) {
+            s += `<line x1="${VI_PLOT.left}" x2="${VI_PLOT.right}" y1="${viY(V)}" y2="${viY(V)}" class="vi-grid"/>`;
+            s += `<text x="${VI_PLOT.left - 10}" y="${viY(V) + 4}" class="vi-tick" text-anchor="end">${V}</text>`;
+        }
+        for (let I = 0; I <= VI_MAX_I + 1e-9; I += 0.5) {
+            s += `<line x1="${viX(I)}" x2="${viX(I)}" y1="${VI_PLOT.top}" y2="${VI_PLOT.bottom}" class="vi-grid"/>`;
+            s += `<text x="${viX(I)}" y="${VI_PLOT.bottom + 18}" class="vi-tick" text-anchor="middle">${I.toFixed(1)}</text>`;
+        }
+        // axes
+        s += `<line x1="${VI_PLOT.left}" x2="${VI_PLOT.left}" y1="${VI_PLOT.bottom}" y2="${VI_PLOT.top - 6}" class="vi-axis"/>`;
+        s += `<line x1="${VI_PLOT.left}" x2="${VI_PLOT.right + 8}" y1="${VI_PLOT.bottom}" y2="${VI_PLOT.bottom}" class="vi-axis"/>`;
+        s += `<text x="${VI_PLOT.right + 4}" y="${VI_PLOT.bottom + 36}" class="vi-axis-label" text-anchor="end">I (A)</text>`;
+        s += `<text x="${VI_PLOT.left + 8}" y="${VI_PLOT.top - 8}" class="vi-axis-label" text-anchor="start">V (V)</text>`;
+        // lines (V = R·I, drawn from the origin to I = 2.5 A)
+        VI_LINES.forEach((ln, k) => {
+            s += `<line x1="${viX(0)}" y1="${viY(0)}" x2="${viX(VI_MAX_I)}" y2="${viY(ln.R * VI_MAX_I)}" stroke="${ln.color}" stroke-width="3" class="vi-line" data-k="${k}"/>`;
+            s += `<text x="${viX(VI_MAX_I) - 4}" y="${viY(ln.R * VI_MAX_I) - 10}" fill="${ln.color}" class="vi-line-label" text-anchor="end">${ln.label}</text>`;
+        });
+        // the active point and its guides
+        s += `<g id="vi-point" style="display:none">
+                <line id="vi-guide-v" class="vi-guide"/>
+                <line id="vi-guide-i" class="vi-guide"/>
+                <circle id="vi-dot" r="6" class="vi-dot"/>
+              </g>`;
+        s += `</svg>`;
+        return s;
+    }
+
+    function openInteractiveVI() {
+        let overlay = document.getElementById('vi-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'vi-overlay';
+            overlay.className = 'vi-overlay';
+            overlay.innerHTML = `
+                <div class="vi-card" role="dialog" aria-modal="true" aria-labelledby="vi-title">
+                    <div class="vi-head">
+                        <h3 id="vi-title"><span class="vi-title-orn">✦</span> Χαρακτηριστική ευθεία $V = f(I)$ <span class="vi-title-orn">✦</span></h3>
+                        <button type="button" class="vi-close" aria-label="Κλείσιμο">✕</button>
+                    </div>
+                    <p class="vi-hint">Περάστε τον δείκτη (ή το δάχτυλο) πάνω από μία ευθεία. Ο λόγος $\\dfrac{V}{I}$ είναι σταθερός για κάθε ευθεία: $V = R \\cdot I$.</p>
+                    <div class="vi-plot">${buildVISvg()}</div>
+                    <div class="vi-readout" id="vi-readout">Δεν έχει επιλεγεί ευθεία.</div>
+                </div>`;
+            document.body.appendChild(overlay);
+            if (window.renderMath) window.renderMath(overlay.querySelector('.vi-card'));
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) closeInteractiveVI(); });
+            overlay.querySelector('.vi-close').addEventListener('click', closeInteractiveVI);
+            const svg = overlay.querySelector('.vi-svg');
+            svg.addEventListener('pointermove', onVIPointer);
+            svg.addEventListener('pointerdown', onVIPointer);
+            svg.addEventListener('pointerleave', hideVIPoint);
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeInteractiveVI(); });
+        }
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeInteractiveVI() {
+        const overlay = document.getElementById('vi-overlay');
+        if (overlay) overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    function onVIPointer(e) {
+        const svg = e.currentTarget;
+        const pt = svg.createSVGPoint();
+        pt.x = e.clientX; pt.y = e.clientY;
+        const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+        const I = Math.min(VI_MAX_I, Math.max(0, ((p.x - VI_PLOT.left) / (VI_PLOT.right - VI_PLOT.left)) * VI_MAX_I));
+        // the nearest line at this current, measured vertically in SVG units
+        let best = null;
+        VI_LINES.forEach(ln => {
+            const dy = Math.abs(p.y - viY(ln.R * I));
+            if (best === null || dy < best.dy) best = { ln, dy };
+        });
+        if (!best || best.dy > 20) { hideVIPoint(); return; }
+        showVIPoint(best.ln, Math.round(I / VI_STEP) * VI_STEP);
+    }
+
+    function showVIPoint(ln, I) {
+        const V = ln.R * I;
+        const svg = document.querySelector('#vi-overlay .vi-svg');
+        if (!svg) return;
+        const x = viX(I), y = viY(V);
+        svg.querySelector('#vi-point').style.display = 'inline';
+        svg.querySelector('#vi-dot').setAttribute('cx', x);
+        svg.querySelector('#vi-dot').setAttribute('cy', y);
+        svg.querySelector('#vi-dot').setAttribute('fill', ln.color);
+        const gv = svg.querySelector('#vi-guide-v'), gi = svg.querySelector('#vi-guide-i');
+        gv.setAttribute('x1', x); gv.setAttribute('x2', x); gv.setAttribute('y1', y); gv.setAttribute('y2', VI_PLOT.bottom);
+        gi.setAttribute('x1', VI_PLOT.left); gi.setAttribute('x2', x); gi.setAttribute('y1', y); gi.setAttribute('y2', y);
+        const readout = document.getElementById('vi-readout');
+        const key = ln.R + '|' + I.toFixed(2);
+        if (readout && readout.dataset.key !== key) {
+            readout.dataset.key = key;
+            const Ir = I.toFixed(2), Vr = V.toFixed(2);
+            readout.innerHTML =
+                `<span class="vi-readout-line" style="color:${ln.color}">$${ln.tex}$</span>` +
+                `<span class="vi-readout-item">$I = ${Ir}\\ \\text{A}$</span>` +
+                `<span class="vi-readout-item">$V = ${Vr}\\ \\text{V}$</span>` +
+                `<span class="vi-readout-item">$\\dfrac{V}{I} = \\dfrac{${Vr}\\ \\text{V}}{${Ir}\\ \\text{A}} = ${ln.R}\\ \\Omega$</span>`;
+            if (window.renderMath) window.renderMath(readout);
+        }
+    }
+
+    function hideVIPoint() {
+        const svg = document.querySelector('#vi-overlay .vi-svg');
+        if (svg) svg.querySelector('#vi-point').style.display = 'none';
+        const readout = document.getElementById('vi-readout');
+        if (readout) { readout.dataset.key = ''; readout.textContent = 'Δεν έχει επιλεγεί ευθεία.'; }
+    }
+
     return {
         renderPhysicsG: renderPhysicsG,
         setTriangle: setTriangle,
@@ -1033,6 +1140,7 @@ window.TheoryNotes = (function() {
         scrollToSection: scrollToSection,
         setupScrollSpy: setupScrollSpy,
         toggleFullGuide: toggleFullGuide,
-        openSection: openSection
+        openSection: openSection,
+        openInteractiveVI: openInteractiveVI
     };
 })();

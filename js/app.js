@@ -478,10 +478,6 @@ function renderQuizSelection(classKey, subjectKey) {
             ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') ? `
                 <div class="glass-card theory-placeholder-card" id="theory-chapter-card">
                     <div class="theory-placeholder-icon">📖</div>
-                    <div class="theory-hero-meta" style="justify-content: center; margin-bottom: 14px;">
-                        <span class="theory-tag-pill theme-tag">Φυσική Γ΄ Γυμνασίου</span>
-                        <span class="theory-tag-pill page-tag">12 Σελίδες Επίσημου PDF</span>
-                    </div>
                     <h2 class="theory-placeholder-title">Ηλεκτρικό Κύκλωμα & Συνδεσμολογίες Αντιστατών</h2>
                     <p class="theory-placeholder-desc" style="max-width: 680px;">
                         Συμπυκνωμένος οδηγός μελέτης και πρωτόκολλο επίλυσης ασκήσεων. Περιλαμβάνει θεμελιώδη μεγέθη, 
@@ -519,16 +515,6 @@ function renderQuizSelection(classKey, subjectKey) {
                         </div>
                     </div>
 
-                    <div class="theory-actions-bar" style="justify-content: center; margin-top: 14px;">
-                        <button class="theory-btn theory-btn-primary" onclick="TheoryNotes.toggleFullGuide()" id="btn-toggle-theory" style="font-size: 1rem; padding: 12px 24px;">
-                            <span id="toggle-theory-icon">🔼</span>
-                            <span id="toggle-theory-text">Σύμπτυξη Οδηγού Μελέτης</span>
-                        </button>
-                        <a href="assets/docs/physics_g_circuits_theory_2026.pdf" target="_blank" download class="theory-btn theory-btn-secondary" style="font-size: 1rem; padding: 12px 24px;">
-                            <span>📥</span>
-                            <span>Άνοιγμα / Λήψη PDF (12 Σελίδες)</span>
-                        </a>
-                    </div>
                 </div>
 
                 <div id="theory-full-guide-container" style="display: block; margin-top: 28px;">
