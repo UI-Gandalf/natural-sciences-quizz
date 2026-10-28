@@ -326,17 +326,6 @@ window.ExamSolutionsGuide = (function() {
 
                 <!-- HERO BANNER -->
                 <div class="theory-hero-banner glass-card" style="border-color: rgba(59, 130, 246, 0.4); background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(15, 23, 42, 0.75));">
-                    <div class="theory-hero-meta">
-                        <span class="theory-tag-pill" style="border-color: rgba(59, 130, 246, 0.4); color: #93c5fd;">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; margin-right: 4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>Υποδειγματική Επίλυση Ενδεικτικού Διαγωνίσματος
-                        </span>
-                        <span class="theory-tag-pill theme-tag">Φυσική Γ΄ Γυμνασίου</span>
-                        <span class="theory-tag-pill page-tag">70 Σελίδες Επίσημου Οδηγού (5.9 MB)</span>
-                        <span class="theory-tag-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fcd34d;">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -1px; margin-right: 4px;"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>Δημήτρης Μητσάκης, Φυσικός
-                        </span>
-                    </div>
-
                     <h1 class="theory-hero-title" style="font-size: 2.2rem;">
                         Υποδειγματική Επίλυση Ενδεικτικού Διαγωνίσματος & Συναφής Θεωρία
                     </h1>
@@ -347,21 +336,6 @@ window.ExamSolutionsGuide = (function() {
                         διακόπτες και ανάλυση βραχυκυκλώματος.
                     </p>
 
-                    <!-- QUICK ACTIONS BAR -->
-                    <div class="theory-actions-bar">
-                        <a href="assets/docs/physics_g_exam_solutions_guide_2026.pdf" target="_blank" download class="theory-btn theory-btn-primary" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); border-color: rgba(255,255,255,0.25);" title="Λήψη του επίσημου πολυσέλιδου PDF του Δ. Μητσάκη">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                            <span>Λήψη Πλήρους Επίσημου PDF (70 Σελίδες - 5.9 MB)</span>
-                        </a>
-                        <button class="theory-btn theory-btn-secondary" onclick="switchSubjectTab('theory')" title="Μετάβαση στον Συμπυκνωμένο Οδηγό Θεωρίας & Επίλυσης">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                            <span>Θεωρία & Επίλυση Κυκλωμάτων</span>
-                        </button>
-                        <button class="theory-btn theory-btn-secondary" onclick="switchSubjectTab('simulation')" title="Άνοιγμα του Εικονικού Εργαστηρίου Κυκλωμάτων">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                            <span>Εικονικό Εργαστήριο Προσομοίωσης</span>
-                        </button>
-                    </div>
                 </div>
 
                 <!-- STICKY TABLE OF CONTENTS NAV -->

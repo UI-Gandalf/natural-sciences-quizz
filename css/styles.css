@@ -8590,3 +8590,22 @@ button.exam-opt-pill:active:not(:disabled) {
     border-color: #0284c7;
     color: #0f172a;
 }
+
+
+/* Exam guide navigation: two rows of four instead of a horizontal slider (desktop) */
+#exam-sticky-nav .theory-nav-inner {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: center;
+    gap: 8px;
+    overflow: visible;
+    padding-bottom: 0;
+}
+
+@media (max-width: 840px) {
+    #exam-sticky-nav .theory-nav-inner {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 2px;
+    }
+}
