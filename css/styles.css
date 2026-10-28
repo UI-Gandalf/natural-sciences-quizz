@@ -9211,3 +9211,126 @@ button.exam-opt-pill:active:not(:disabled) {
         grid-template-columns: 1fr;
     }
 }
+
+/* Neutralisation lab: concentration radio buttons and the comparison curve */
+.neut-conc {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 16px;
+    margin-top: 8px;
+    font-size: 0.93rem;
+    color: var(--text-primary);
+}
+
+.neut-conc-label {
+    font-weight: 700;
+}
+
+.neut-conc label {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.neut-conc input[type="radio"] {
+    accent-color: #2563eb;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.neut-curve-alt {
+    fill: none;
+    stroke: #94a3b8;
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+    opacity: 0.85;
+}
+
+.neut-curve-legend {
+    margin: 6px 0 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.neut-leg-solid,
+.neut-leg-dash {
+    display: inline-block;
+    width: 26px;
+    height: 0;
+    vertical-align: middle;
+    margin-right: 4px;
+    border-top: 2px solid #60a5fa;
+}
+
+.neut-leg-dash {
+    border-top: 2px dashed #94a3b8;
+}
+
+/* Neutralisation lab: magnified inset of the abrupt zone */
+.neut-zoom-rect {
+    fill: rgba(251, 191, 36, 0.08);
+    stroke: #fbbf24;
+    stroke-width: 1.4;
+    stroke-dasharray: 4 3;
+}
+
+.neut-zoom-title {
+    margin: 14px 0 4px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #fbbf24;
+    text-align: center;
+}
+
+.neut-inset-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Neutralisation lab: pH to volume table */
+.neut-table {
+    width: 100%;
+    margin-top: 14px;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    color: var(--text-primary);
+}
+
+.neut-table caption {
+    caption-side: top;
+    text-align: left;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    padding-bottom: 6px;
+}
+
+.neut-table th,
+.neut-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    text-align: right;
+}
+
+.neut-table th {
+    font-weight: 700;
+    border-bottom: 2px solid rgba(148, 163, 184, 0.4);
+}
+
+.neut-table th:first-child,
+.neut-table td:first-child {
+    text-align: left;
+}
+
+/* Neutralisation lab: table title */
+.neut-table-title {
+    display: inline-block;
+    font-size: 1.02rem;
+    font-weight: 800;
+    color: #fbbf24;
+    margin-bottom: 4px;
+}

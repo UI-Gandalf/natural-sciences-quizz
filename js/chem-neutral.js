@@ -1,21 +1,22 @@
 /* Chemistry Γ: simple neutralisation lab, NaOH (base) + HCl (acid), strong acid and strong base.
-   Exposes window.NeutralizationLab.render(mount). Calculations use mmol and mL (1 mmol / 1 mL = 1 mol/L). */
+   Exposes window.NeutralizationLab.render(mount). Calculations use mmol and mL (1 mmol / 1 mL = 1 mol/L).
+   The step radio buttons choose how much acid one press adds (0,10 or 0,05 mL). */
 window.NeutralizationLab = (function () {
+    const CONC = 0.10;        // mol/L, both NaOH and HCl
     const BASE_VOL = 25;      // mL of NaOH in the beaker
-    const BASE_CONC = 0.10;   // mol/L NaOH  -> 2.50 mmol OH⁻ and Na⁺
-    const ACID_CONC = 0.10;   // mol/L HCl   -> added from the burette
     const MAX_ADD = 50;       // mL of acid that can be added
-    const EQ_VOL = (BASE_CONC * BASE_VOL) / ACID_CONC; // 25 mL
+    const EQ_VOL = 25;        // mL, equal amounts of H⁺ and OH⁻
 
     let va = 0;               // mL of HCl added so far
+    let step = 0.10;          // mL added by one press of "+1 βήμα"
 
     function fmt(x, d) {
         return x.toFixed(d).replace('.', ',');
     }
 
     function compute(v) {
-        const nA = ACID_CONC * v;          // mmol H⁺ (and Cl⁻) added
-        const nB = BASE_CONC * BASE_VOL;   // mmol OH⁻ (and Na⁺) at the start
+        const nA = CONC * v;               // mmol H⁺ (and Cl⁻) added
+        const nB = CONC * BASE_VOL;        // mmol OH⁻ (and Na⁺) at the start
         const vTot = BASE_VOL + v;         // mL
         const oh = Math.max(0, nB - nA);   // mmol OH⁻ left over
         const hp = Math.max(0, nA - nB);   // mmol H⁺ left over
@@ -62,6 +63,7 @@ window.NeutralizationLab = (function () {
         </svg>`;
     }
 
+    // full curve, with a dashed rectangle on the magnified zone
     function curveSvg(current) {
         const L = 48, R = 400, T = 12, B = 200;
         const x = (v) => L + (v / MAX_ADD) * (R - L);
@@ -95,15 +97,43 @@ window.NeutralizationLab = (function () {
         </svg>`;
     }
 
+    // Volume of HCl (mL) that gives a chosen pH, from the same model as compute()
+    function volumeFor(p) {
+        const c = CONC, nB = CONC * BASE_VOL;
+        if (p > 7) {
+            const x = Math.pow(10, p - 14);
+            return (nB - BASE_VOL * x) / (c + x);
+        }
+        if (p < 7) {
+            const y = Math.pow(10, -p);
+            return (nB + BASE_VOL * y) / (c - y);
+        }
+        return EQ_VOL;
+    }
+
+    function volumesTableHtml() {
+        const pHs = [11.3, 10, 9, 8, 7, 6, 5, 4, 3, 2.7];
+        const rows = pHs.map((p) => {
+            const va = volumeFor(p);
+            return `<tr><td>${fmt(p, 1)}</td><td>${fmt(va, 5)}</td><td>${fmt(BASE_VOL + va, 5)}</td></tr>`;
+        }).join('');
+        return `
+        <table class="neut-table">
+            <caption><span class="neut-table-title">Λεπτομερής ανάλυση της περιοχής απότομης μείωσης της τιμής του ΠεΧά</span><br>Όγκος HCl 0,10 mol/L που χρειάζεται για να φτάσει το διάλυμα σε συγκεκριμένο pH (25 mL NaOH 0,10 mol/L, ιδανικό μοντέλο)</caption>
+            <thead><tr><th>pH</th><th>HCl που προστέθηκε (mL)</th><th>Συνολικός όγκος (mL)</th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>`;
+    }
+
     function readoutHtml(r) {
         return `
-        <div class="neut-row"><span>$V_{\\text{HCl}}$ προστέθηκε</span><strong>${fmt(r.v, 1)} mL</strong></div>
-        <div class="neut-row"><span>Συνολικός όγκος διαλύματος</span><strong>${fmt(r.vTot, 1)} mL</strong></div>
-        <div class="neut-row"><span>$n(\\text{OH}^-)$ που απομένει</span><strong>${fmt(r.oh, 2)} mmol</strong></div>
-        <div class="neut-row"><span>$n(\\text{H}^+)$ που περισσεύει</span><strong>${fmt(r.hp, 2)} mmol</strong></div>
-        <div class="neut-row"><span>$n(\\text{Na}^+)$ (θεατό ιόν)</span><strong>${fmt(BASE_CONC * BASE_VOL, 2)} mmol</strong></div>
-        <div class="neut-row"><span>$n(\\text{Cl}^-)$ (θεατό ιόν)</span><strong>${fmt(r.nA, 2)} mmol</strong></div>
-        <div class="neut-row neut-ph"><span>pH</span><strong>${fmt(r.pH, 1)}</strong></div>
+        <div class="neut-row"><span>$V_{\\text{HCl}}$ προστέθηκε</span><strong>${fmt(r.v, 2)} mL</strong></div>
+        <div class="neut-row"><span>Συνολικός όγκος διαλύματος</span><strong>${fmt(r.vTot, 2)} mL</strong></div>
+        <div class="neut-row"><span>$n(\\text{OH}^-)$ που απομένει</span><strong>${fmt(r.oh, 3)} mmol</strong></div>
+        <div class="neut-row"><span>$n(\\text{H}^+)$ που περισσεύει</span><strong>${fmt(r.hp, 3)} mmol</strong></div>
+        <div class="neut-row"><span>$n(\\text{Na}^+)$ (θεατό ιόν)</span><strong>${fmt(r.nB, 3)} mmol</strong></div>
+        <div class="neut-row"><span>$n(\\text{Cl}^-)$ (θεατό ιόν)</span><strong>${fmt(r.nA, 3)} mmol</strong></div>
+        <div class="neut-row neut-ph"><span>pH</span><strong>${fmt(r.pH, 2)}</strong></div>
         <p class="neut-state">${stateText(r)}</p>`;
     }
 
@@ -121,15 +151,19 @@ window.NeutralizationLab = (function () {
         <div class="neut-wrap">
             <div class="neut-head">
                 <h3>Εξουδετέρωση οξέος – βάσης</h3>
-                <p>Ποτήρι με 25 mL διαλύματος NaOH 0,10 mol/L. Προσθέστε διάλυμα HCl 0,10 mol/L και παρακολουθήστε το pH, το χρώμα του δείκτη και τα ιόντα.</p>
+                <p>Ποτήρι με 25 mL διαλύματος NaOH 0,10 mol/L. Προσθέστε διάλυμα HCl 0,10 mol/L με βήματα και παρακολουθήστε το pH, το χρώμα του δείκτη και τα ιόντα.</p>
+                <div class="neut-conc" role="radiogroup" aria-label="Βήμα προσθήκης οξέος">
+                    <span class="neut-conc-label">Βήμα προσθήκης:</span>
+                    <label><input type="radio" name="neut-step" value="0.10" checked> 0,10 mL</label>
+                    <label><input type="radio" name="neut-step" value="0.05"> 0,05 mL</label>
+                </div>
             </div>
             <div class="neut-grid">
                 <div class="neut-left">
                     <div id="neut-beaker"></div>
                     <div class="neut-buttons">
-                        <button type="button" data-add="0.5">+0,5 mL</button>
-                        <button type="button" data-add="1">+1 mL</button>
-                        <button type="button" data-add="5">+5 mL</button>
+                        <button type="button" data-add="1">+1 βήμα</button>
+                        <button type="button" data-add="10">+10 βήματα</button>
                         <button type="button" data-eq="1">Ισοδύναμο σημείο</button>
                         <button type="button" data-reset="1">Επαναφορά</button>
                     </div>
@@ -142,6 +176,7 @@ window.NeutralizationLab = (function () {
                 <div class="neut-right">
                     <div id="neut-readout" class="neut-readout"></div>
                     <div id="neut-curve"></div>
+                    <div id="neut-table"></div>
                 </div>
             </div>
             <div class="neut-eq">
@@ -149,15 +184,22 @@ window.NeutralizationLab = (function () {
                 <p>Ουσιαστικά: $\\text{H}^+ + \\text{OH}^- \\rightarrow \\text{H}_2\\text{O}$. Τα $\\text{Na}^+$ και $\\text{Cl}^-$ δεν αντιδρούν (θεατές ιόντα).</p>
             </div>
         </div>`;
+        mount.querySelector('#neut-table').innerHTML = volumesTableHtml();
         if (window.renderMath) window.renderMath(mount);
         mount.addEventListener('click', (e) => {
             const b = e.target.closest('button');
             if (!b) return;
-            if (b.dataset.add) va = Math.min(MAX_ADD, va + parseFloat(b.dataset.add));
+            if (b.dataset.add) va = Math.min(MAX_ADD, va + parseFloat(b.dataset.add) * step);
             else if (b.dataset.eq) va = EQ_VOL;
             else if (b.dataset.reset) va = 0;
             va = Math.round(va * 100) / 100;
             update(mount);
+        });
+        mount.addEventListener('change', (e) => {
+            if (e.target && e.target.name === 'neut-step') {
+                step = parseFloat(e.target.value);
+                update(mount);
+            }
         });
     }
 
