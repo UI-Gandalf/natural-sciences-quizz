@@ -390,6 +390,12 @@ function renderQuizSelection(classKey, subjectKey) {
                     </span>
                 </button>
                 ` : ''}
+                ${subjectKey === 'chemistry' ? `
+                <button class="subject-tab-btn ${currentTab === 'neutral' ? 'active' : ''}" id="tab-btn-neutral" onclick="switchSubjectTab('neutral')">
+                    <span class="tab-icon">🧪</span>
+                    <span>Προσομοίωση εξουδετέρωσης</span>
+                </button>
+                ` : ''}
                 ${subjectKey === 'physics' ? `
                 <button class="subject-tab-btn ${currentTab === 'simulation' ? 'active' : ''}" id="tab-btn-simulation" onclick="switchSubjectTab('simulation')">
                     <span class="tab-icon">⚡</span>
@@ -570,6 +576,12 @@ function renderQuizSelection(classKey, subjectKey) {
         </div>
         ` : ''}
 
+        ${subjectKey === 'chemistry' ? `
+        <!-- CHEMISTRY: NEUTRALISATION LAB -->
+        <div class="tab-panel" id="tab-panel-neutral" style="display: ${currentTab === 'neutral' ? 'block' : 'none'};">
+            <div id="neutral-mount"></div>
+        </div>
+        ` : ''}
         ${subjectKey === 'physics' ? `
         <!-- TAB 4: SIMULATION PANEL -->
         <div class="tab-panel" id="tab-panel-simulation" style="display: ${currentTab === 'simulation' ? 'block' : 'none'};">
@@ -609,11 +621,23 @@ function renderQuizSelection(classKey, subjectKey) {
         }
     }
 
+    if (currentTab === 'neutral' && subjectKey === 'chemistry') {
+        renderNeutralView();
+    }
+
     if (currentTab === 'simulation' && subjectKey === 'physics') {
         renderSimulationView();
     } else {
         AppState.simulationEntered = false;
     }
+}
+
+/**
+ * Chemistry Γ: neutralisation lab (js/chem-neutral.js)
+ */
+function renderNeutralView() {
+    const mount = document.getElementById('neutral-mount');
+    if (mount && window.NeutralizationLab) window.NeutralizationLab.render(mount);
 }
 
 /**
@@ -740,6 +764,17 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'simulation') {
             simPanel.style.animation = 'fadeIn 0.3s ease';
             renderSimulationView();
+        }
+    }
+
+    const neutBtn = document.getElementById('tab-btn-neutral');
+    if (neutBtn) neutBtn.classList.toggle('active', tabKey === 'neutral');
+    const neutPanel = document.getElementById('tab-panel-neutral');
+    if (neutPanel) {
+        neutPanel.style.display = tabKey === 'neutral' ? 'block' : 'none';
+        if (tabKey === 'neutral') {
+            neutPanel.style.animation = 'fadeIn 0.3s ease';
+            renderNeutralView();
         }
     }
 
