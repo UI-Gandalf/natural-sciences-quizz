@@ -2768,7 +2768,9 @@ window.CircuitSimulation = (function() {
         if (!hudCard) return;
 
         const phys = computePhysics();
-        const probeTarget = state.hoverProbe || state.activeProbe || 'R1';
+        let probeTarget = state.hoverProbe || state.activeProbe || 'R1';
+        // The A₃ ammeter exists only in the series layout: a leftover selection must not reach the parallel panel
+        if (probeTarget === 'ammeter3' && state.topology !== 'series') probeTarget = 'R1';
         const isSteps = state.showSteps;
         const bothBrokenSeries = state.topology === 'series' && state.brokenR1 && state.brokenR2;
 
@@ -3611,7 +3613,7 @@ window.CircuitSimulation = (function() {
                                 <strong>2. Ηλεκτρικό Δυναμικό:</strong> Συνδέεται μετά τον διακόπτη με τον θετικό πόλο της πηγής, άρα με κλειστό διακόπτη $V_A = V_{\\text{πηγ}} = ${phys.V_src}\\text{ V}$.
                             `) : ''}
                             ${nodeKey === 'B' ? (state.topology === 'series' ? `
-                                <strong>1. Ένταση Ρεύματος:</strong> ${state.faultInstrument === 'ammeter_parallel' || state.faultInstrument === 'ammeter2_parallel' ? 'Στον ενδιάμεσο κόμβο B το ρεύμα είναι μηδενικό ($I_B = 0.00\\text{ A}$) λόγω της παράκαμψης.' : `Στον ενδιάμεσο κόμβο B συγκλίνουν το ρεύμα του $A_2$ ($I_{A2} = ${formatAmmeterReading(phys.I_A2)}$) και το ρεύμα τυχόν παράκαμψης G ↔ B. Το άθροισμα είναι το ολικό ρεύμα <strong>${formatAmmeterReading(nodeCurrent)}</strong>.`}<br>
+                                <strong>1. Ένταση Ρεύματος:</strong> ${state.faultInstrument === 'ammeter_parallel' || state.faultInstrument === 'ammeter2_parallel' ? 'Στον ενδιάμεσο κόμβο B το ρεύμα είναι μηδενικό ($I_B = 0.00\\text{ A}$) λόγω της παράκαμψης.' : (state.shortR1 && state.shortModeR1 === 'alternative') ? `Στον ενδιάμεσο κόμβο B συγκλίνουν το ρεύμα του $A_2$ ($I_{A2} = ${formatAmmeterReading(phys.I_A2)}$) και το ρεύμα τυχόν παράκαμψης G ↔ B. Το άθροισμα είναι το ολικό ρεύμα <strong>${formatAmmeterReading(nodeCurrent)}</strong>.` : `Στον ενδιάμεσο κόμβο B καταλήγει το ρεύμα του $A_2$ ($I_{A2} = ${formatAmmeterReading(phys.I_A2)}$), το οποίο είναι το ολικό ρεύμα <strong>${formatAmmeterReading(nodeCurrent)}</strong>.`}<br>
                                 <strong>2. Ηλεκτρικό Δυναμικό:</strong> Βρίσκεται μεταξύ $R_1$ και $R_2$. ${state.faultInstrument === 'ammeter_parallel' || state.faultInstrument === 'ammeter2_parallel' ? 'Είναι $V_B = 0.00\\text{ V}$.' : bothBrokenSeries ? 'Και οι δύο αντιστάτες είναι καταστραμμένοι, άρα το δυναμικό του $B$ δεν ορίζεται: δεν υπάρχει ρεύμα και δεν υπάρχει ορισμένο σημείο αναφοράς μεταξύ των δύο αντιστατών.' : 'Η πτώση τάσης στον $R_2$ ως προς τη γείωση δίνει δυναμικό $V_B = V_2 = ' + phys.VB.toFixed(2) + '\\text{ V}$.'}
                             ` : `
                                 <strong>1. Ένταση Ρεύματος:</strong> Στον κάτω κόμβο B καταλήγει το ρεύμα του κλάδου $R_1$: <strong>$I_B = I_1 = ${phys.I1.toFixed(2)}\\text{ A}$</strong>, το οποίο συνεχίζει προς τη γείωση D.<br>
@@ -3935,11 +3937,13 @@ window.CircuitSimulation = (function() {
             state.faultInstrument = 'none'; // Opens by default in ΟΡΘΗ ΣΥΝΔΕΣΗ mode
             state.harmlessConnection = 'none';
             state.activeProbe = 'R1';
+            state.hoverProbe = null; // a pointer left on the old layout must not keep its panel
             // A new setup always starts with the switch open and both resistors normal
             state.switchClosed = false;
             state.shortR1 = false; state.shortR2 = false;
             state.brokenR1 = false; state.brokenR2 = false;
             if (state.containerEl) render(state.containerEl);
+            updateHud();
         },
 
         setFaultInstrument: function(faultKey) {
