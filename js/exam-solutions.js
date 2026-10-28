@@ -343,7 +343,6 @@ window.ExamSolutionsGuide = (function() {
                     <div class="theory-nav-inner">
                         <a href="#exam-sec-intro" class="theory-nav-pill exam-nav-pill active" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-intro')">1. Οδηγίες Μελέτης</a>
                         <a href="#exam-sec-fundamentals" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-fundamentals')">2. Μεγέθη, Όργανα & Δυναμικό</a>
-                        <a href="#exam-sec-wheel" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-wheel')">3. Υπολογιστική Ρόδα (12 Τύποι)</a>
                         <a href="#exam-sec-thema-a1" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-thema-a1')">4. Θέμα Α1: Σειρά (15 Ερωτήματα)</a>
                         <a href="#exam-sec-series-short" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-series-short')">5. Βραχυκύκλωμα στη Σειρά</a>
                         <a href="#exam-sec-thema-a2" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-thema-a2')">6. Θέμα Α2: Παράλληλα (15 Ερωτήματα)</a>
@@ -351,31 +350,6 @@ window.ExamSolutionsGuide = (function() {
                         <a href="#exam-sec-summary" class="theory-nav-pill exam-nav-pill" onclick="ExamSolutionsGuide.scrollToSection(event, 'exam-sec-summary')">8. Συγκριτικός Πίνακας</a>
                     </div>
                 </nav>
-
-                <!-- INTERACTIVE TOOLBAR: FILTER & EXPAND/COLLAPSE -->
-                <div class="exam-toolbar glass-card" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; padding: 14px 20px; border-radius: 16px;">
-                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        <span style="font-weight: 700; font-size: 0.88rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                            Γρήγορη Εστίαση:
-                        </span>
-                        <button class="exam-filter-pill active" data-filter="all" onclick="ExamSolutionsGuide.setFilter('all')">Όλα (Πλήρης Μελέτη)</button>
-                        <button class="exam-filter-pill" data-filter="thema_a1" onclick="ExamSolutionsGuide.setFilter('thema_a1')">Θέμα Α1: Σειρά</button>
-                        <button class="exam-filter-pill" data-filter="thema_a2" onclick="ExamSolutionsGuide.setFilter('thema_a2')">Θέμα Α2: Παράλληλα</button>
-                        <button class="exam-filter-pill" data-filter="short_circuits" onclick="ExamSolutionsGuide.setFilter('short_circuits')">Βραχυκυκλώματα & Διακόπτες</button>
-                    </div>
-
-                    <div style="display: flex; gap: 8px;">
-                        <button class="exam-action-btn" onclick="ExamSolutionsGuide.toggleAllSolutions(true)" title="Άνοιγμα όλων των αναλυτικών απαντήσεων">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                            <span>Εμφάνιση Όλων</span>
-                        </button>
-                        <button class="exam-action-btn" onclick="ExamSolutionsGuide.toggleAllSolutions(false)" title="Σύμπτυξη όλων για δοκιμή αυτοαξιολόγησης">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                            <span>Απόκρυψη Όλων (Self-Test)</span>
-                        </button>
-                    </div>
-                </div>
 
                 <!-- ==============================================================
                      SECTION 1: ΟΔΗΓΙΕΣ ΟΡΘΗΣ ΜΕΛΕΤΗΣ ΚΑΙ ΠΡΟΕΤΟΙΜΑΣΙΑΣ
@@ -3353,24 +3327,6 @@ window.ExamSolutionsGuide = (function() {
                         </div>
                     </div>
 
-                    <!-- FINAL ACTION BUTTONS -->
-                    <div style="text-align: center; margin-top: 32px; padding: 24px; background: rgba(255,255,255,0.02); border-radius: 18px; border: 1px solid var(--border);">
-                        <h4 style="margin-bottom: 14px; color: var(--text-primary); font-size: 1.05rem; font-weight: 700;">Έτοιμοι να δοκιμάσετε τις γνώσεις σας;</h4>
-                        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                            <button class="theory-btn theory-btn-primary" onclick="switchSubjectTab('quizzes')">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                                <span>Μετάβαση στα Διαδραστικά Κουίζ</span>
-                            </button>
-                            <button class="theory-btn theory-btn-secondary" onclick="switchSubjectTab('simulation')">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                                <span>Δοκιμή στο Εικονικό Εργαστήριο</span>
-                            </button>
-                            <a href="assets/docs/physics_g_exam_solutions_guide_2026.pdf" target="_blank" download class="theory-btn theory-btn-secondary">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                                <span>Λήψη Επίσημου PDF (70 Σελίδες)</span>
-                            </a>
-                        </div>
-                    </div>
                 </section>
 
             </div>
