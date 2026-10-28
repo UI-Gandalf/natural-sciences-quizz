@@ -746,8 +746,8 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-inline-diagram-specs">
                                             <h5 class="exam-inline-specs-heading">Βασικά Δεδομένα Κυκλώματος:</h5>
                                             <ul class="exam-inline-specs-list">
-                                                <li>Τάση πηγής: <strong>$V = 60\text{ V}$</strong></li>
-                                                <li>Αντιστάτες: <strong>$R_1 = 5\ \Omega$</strong>, <strong>$R_2 = 15\ \Omega$</strong> (σε σειρά)</li>
+                                                <li>Τάση πηγής: <strong>$V = 60\\text{ V}$</strong></li>
+                                                <li>Αντιστάτες: <strong>$R_1 = 5\\ \\Omega$</strong>, <strong>$R_2 = 15\\ \\Omega$</strong> (σε σειρά)</li>
                                                 <li>Κεντρικός διακόπτης: <strong>[Γ, Δ]</strong> (κλειστός)</li>
                                                 <li>Κλαδικοί διακόπτες: <strong>[Ζ, Η]</strong>, <strong>[Μ, Λ]</strong>, <strong>[Θ, Κ]</strong>, <strong>[Ξ, Ν]</strong></li>
                                                 <li>Σημεία κυκλώματος: <strong>Τ, Π, Ρ, Σ</strong></li>
@@ -1977,9 +1977,9 @@ window.ExamSolutionsGuide = (function() {
                                         <div class="exam-inline-diagram-specs">
                                             <h5 class="exam-inline-specs-heading">Βασικά Δεδομένα Κυκλώματος:</h5>
                                             <ul class="exam-inline-specs-list">
-                                                <li>Τάση πηγής: <strong>$V = 75\text{ V}$</strong></li>
-                                                <li>Αντιστάτες: <strong>$R_1 = 30\ \Omega$</strong>, <strong>$R_2 = 10\ \Omega$</strong> (παράλληλα)</li>
-                                                <li>Κοινή τάση κλάδων: <strong>$V_1 = V_2 = V = 75\text{ V}$</strong></li>
+                                                <li>Τάση πηγής: <strong>$V = 75\\text{ V}$</strong></li>
+                                                <li>Αντιστάτες: <strong>$R_1 = 30\\ \\Omega$</strong>, <strong>$R_2 = 10\\ \\Omega$</strong> (παράλληλα)</li>
+                                                <li>Κοινή τάση κλάδων: <strong>$V_1 = V_2 = V = 75\\text{ V}$</strong></li>
                                                 <li>Κεντρικός διακόπτης: <strong>[Α, Β]</strong></li>
                                                 <li>Κλαδικοί διακόπτες: <strong>[Γ, Δ]</strong> ($R_1$), <strong>[Ε, Ζ]</strong> ($R_2$)</li>
                                             </ul>
@@ -3262,22 +3262,22 @@ window.ExamSolutionsGuide = (function() {
                                         <td class="col-prop">
                                             <div class="comp-prop-name">
                                                 <span class="comp-prop-icon">📊</span>
-                                                <span class="comp-prop-label">Αναλογίες Μεγεθών<br><small style="font-size:0.78em;opacity:0.75;">$\dfrac{R_1}{R_2},\;\dfrac{I_1}{I_2},\;\dfrac{V_1}{V_2},\;\dfrac{P_1}{P_2},\;\dfrac{E_1}{E_2}$</small></span>
+                                                <span class="comp-prop-label">Αναλογίες Μεγεθών<br><small style="font-size:0.78em;opacity:0.75;">$\\dfrac{R_1}{R_2},\\;\\dfrac{I_1}{I_2},\\;\\dfrac{V_1}{V_2},\\;\\dfrac{P_1}{P_2},\\;\\dfrac{E_1}{E_2}$</small></span>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="comp-cell-stack">
                                                 <span class="comp-pill purple">⚡ Κοινό I → αναλογία μέσω R</span>
                                                 <div class="comp-formula-box">
-                                                    $$\frac{V_1}{V_2} = \frac{R_1}{R_2}$$
+                                                    $$\\frac{V_1}{V_2} = \\frac{R_1}{R_2}$$
                                                 </div>
                                                 <span class="comp-note">Τάση: μεγαλύτερος R παίρνει μεγαλύτερη V (Ohm: $V=IR$)</span>
                                                 <div class="comp-formula-box" style="margin-top:6px;">
-                                                    $$\frac{P_1}{P_2} = \frac{E_1}{E_2} = \frac{R_1}{R_2}$$
+                                                    $$\\frac{P_1}{P_2} = \\frac{E_1}{E_2} = \\frac{R_1}{R_2}$$
                                                 </div>
                                                 <span class="comp-note">Ισχύς &amp; θερμότητα: αναλογικές προς R ($P=I^2R$)</span>
                                                 <div class="comp-formula-box" style="margin-top:6px;">
-                                                    $$\frac{I_1}{I_2} = 1 \quad (I_1 = I_2)$$
+                                                    $$\\frac{I_1}{I_2} = 1 \\quad (I_1 = I_2)$$
                                                 </div>
                                                 <span class="comp-note">Ρεύμα: κοινό σε όλους τους αντιστάτες — αναλογία = 1</span>
                                             </div>
@@ -3286,15 +3286,15 @@ window.ExamSolutionsGuide = (function() {
                                             <div class="comp-cell-stack">
                                                 <span class="comp-pill cyan">🔀 Κοινό V → αναλογία μέσω R</span>
                                                 <div class="comp-formula-box">
-                                                    $$\frac{I_1}{I_2} = \frac{R_2}{R_1}$$
+                                                    $$\\frac{I_1}{I_2} = \\frac{R_2}{R_1}$$
                                                 </div>
                                                 <span class="comp-note">Ρεύμα: μικρότερος R παίρνει μεγαλύτερο I (Ohm: $I=V/R$)</span>
                                                 <div class="comp-formula-box" style="margin-top:6px;">
-                                                    $$\frac{P_1}{P_2} = \frac{E_1}{E_2} = \frac{R_2}{R_1}$$
+                                                    $$\\frac{P_1}{P_2} = \\frac{E_1}{E_2} = \\frac{R_2}{R_1}$$
                                                 </div>
                                                 <span class="comp-note">Ισχύς &amp; θερμότητα: αντιστρόφως ανάλογες προς R ($P=V^2/R$)</span>
                                                 <div class="comp-formula-box" style="margin-top:6px;">
-                                                    $$\frac{V_1}{V_2} = 1 \quad (V_1 = V_2)$$
+                                                    $$\\frac{V_1}{V_2} = 1 \\quad (V_1 = V_2)$$
                                                 </div>
                                                 <span class="comp-note">Τάση: κοινή σε όλους τους κλάδους — αναλογία = 1</span>
                                             </div>

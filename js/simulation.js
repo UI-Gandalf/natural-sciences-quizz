@@ -3104,7 +3104,7 @@ window.CircuitSimulation = (function() {
                 } else {
                     currentNote = 'αλλά δεν διαρρέεται από ρεύμα ($I_{\\text{διακ}} = 0\\text{ A}$).';
                 }
-                swExplanation = `Όταν ο διακόπτης είναι <strong>κλειστός</strong>, συμπεριφέρεται ως ιδανικό καλώδιο μηδενικής αντίστασης ($R_K = 0\ \\Omega$). Η πτώση τάσης στα άκρα του είναι <strong>μηδενική ($V_{\\text{διακ}} = 0\\text{ V}$)</strong> ${currentNote}`;
+                swExplanation = `Όταν ο διακόπτης είναι <strong>κλειστός</strong>, συμπεριφέρεται ως ιδανικό καλώδιο μηδενικής αντίστασης ($R_K = 0\\ \\Omega$). Η πτώση τάσης στα άκρα του είναι <strong>μηδενική ($V_{\\text{διακ}} = 0\\text{ V}$)</strong> ${currentNote}`;
             } else if (bypassesSwitch) {
                 let flowNote;
                 if (phys.I_total === Infinity) {
