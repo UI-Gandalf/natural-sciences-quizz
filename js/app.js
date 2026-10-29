@@ -373,6 +373,12 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span class="tab-icon">📝</span>
                     <span>Κουίζ Αξιολόγησης</span>
                 </button>
+                ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') ? `
+                <button class="subject-tab-btn ${currentTab === 'intro3d' ? 'active' : ''}" id="tab-btn-intro3d" onclick="switchSubjectTab('intro3d')">
+                    <span class="tab-icon">💡</span>
+                    <span>3D εισαγωγή στο απλό ιδανικό κύκλωμα</span>
+                </button>
+                ` : ''}
                 ${subjectKey === 'physics' ? `
                 <button class="subject-tab-btn ${currentTab === 'theory' ? 'active' : ''}" id="tab-btn-theory" onclick="switchSubjectTab('theory')">
                     <span class="tab-icon">📖</span>
@@ -576,6 +582,12 @@ function renderQuizSelection(classKey, subjectKey) {
         </div>
         ` : ''}
 
+        ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') ? `
+        <!-- PHYSICS Γ: 3D INTRODUCTION TO CIRCUITS -->
+        <div class="tab-panel" id="tab-panel-intro3d" style="display: ${currentTab === 'intro3d' ? 'block' : 'none'};">
+            <div id="intro3d-mount"></div>
+        </div>
+        ` : ''}
         ${subjectKey === 'chemistry' ? `
         <!-- CHEMISTRY: NEUTRALISATION LAB -->
         <div class="tab-panel" id="tab-panel-neutral" style="display: ${currentTab === 'neutral' ? 'block' : 'none'};">
@@ -624,6 +636,9 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'neutral' && subjectKey === 'chemistry') {
         renderNeutralView();
     }
+    if (currentTab === 'intro3d') {
+        renderIntro3dView();
+    }
 
     if (currentTab === 'simulation' && subjectKey === 'physics') {
         renderSimulationView();
@@ -635,6 +650,11 @@ function renderQuizSelection(classKey, subjectKey) {
 /**
  * Chemistry Γ: neutralisation lab (js/chem-neutral.js)
  */
+function renderIntro3dView() {
+    const mount = document.getElementById('intro3d-mount');
+    if (mount && window.Circuit3D) window.Circuit3D.render(mount);
+}
+
 function renderNeutralView() {
     const mount = document.getElementById('neutral-mount');
     if (mount && window.NeutralizationLab) window.NeutralizationLab.render(mount);
@@ -764,6 +784,17 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'simulation') {
             simPanel.style.animation = 'fadeIn 0.3s ease';
             renderSimulationView();
+        }
+    }
+
+    const i3Btn = document.getElementById('tab-btn-intro3d');
+    if (i3Btn) i3Btn.classList.toggle('active', tabKey === 'intro3d');
+    const i3Panel = document.getElementById('tab-panel-intro3d');
+    if (i3Panel) {
+        i3Panel.style.display = tabKey === 'intro3d' ? 'block' : 'none';
+        if (tabKey === 'intro3d') {
+            i3Panel.style.animation = 'fadeIn 0.3s ease';
+            renderIntro3dView();
         }
     }
 

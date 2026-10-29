@@ -9334,3 +9334,234 @@ button.exam-opt-pill:active:not(:disabled) {
     color: #fbbf24;
     margin-bottom: 4px;
 }
+
+/* Neutralisation lab: liquid wobble and the pH value inside the liquid */
+.neut-cap-in {
+    fill: #ffffff;
+    stroke: rgba(2, 6, 23, 0.6);
+    stroke-width: 3;
+    paint-order: stroke;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.neut-wave {
+    animation: neut-wave 2.6s linear infinite;
+}
+
+@keyframes neut-wave {
+    from { transform: translateX(0); }
+    to { transform: translateX(-30px); }
+}
+
+.neut-beaker-group {
+    transform-box: view-box;
+    transform-origin: 100px 226px;
+}
+
+.neut-beaker-group.neut-jiggle {
+    animation: neut-jiggle 0.7s ease-out;
+}
+
+@keyframes neut-jiggle {
+    0% { transform: rotate(0deg); }
+    20% { transform: rotate(-2.5deg); }
+    40% { transform: rotate(2deg); }
+    60% { transform: rotate(-1.2deg); }
+    80% { transform: rotate(0.6deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .neut-wave,
+    .neut-beaker-group.neut-jiggle {
+        animation: none;
+    }
+}
+
+/* Neutralisation lab: only the liquid wobbles; controls in three rows; wider left column */
+.neut-liquid {
+    transform-box: view-box;
+    transform-origin: 100px 222px;
+}
+
+.neut-liquid.neut-jiggle {
+    animation: neut-jiggle 0.7s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .neut-liquid.neut-jiggle {
+        animation: none;
+    }
+}
+
+.neut-grid {
+    grid-template-columns: minmax(270px, 310px) minmax(0, 1fr);
+}
+
+.neut-left {
+    min-width: 0;
+}
+
+.neut-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.neut-ctl-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.neut-steps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.neut-steps button {
+    width: 100%;
+}
+
+.neut-conc {
+    justify-content: center;
+    margin-top: 0;
+}
+
+@media (max-width: 840px) {
+    .neut-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .neut-left {
+        width: 100%;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+}
+
+/* Neutralisation lab: legend, one line per entry */
+.neut-legend {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.neut-leg-item {
+    white-space: nowrap;
+}
+
+/* Neutralisation lab: indicator name with a popup describing its colour change */
+.neut-indicator {
+    position: relative;
+    margin: 10px 0 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.neut-ind-name {
+    position: relative;
+    color: #60a5fa;
+    font-weight: 700;
+    border-bottom: 1px dotted #60a5fa;
+    cursor: help;
+    outline: none;
+}
+
+.neut-ind-pop {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #0f172a;
+    border: 1px solid rgba(96, 165, 250, 0.45);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    color: var(--text-primary);
+    font-size: 0.84rem;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: left;
+    z-index: 20;
+}
+
+.neut-ind-name:hover + .neut-ind-pop,
+.neut-ind-name:focus + .neut-ind-pop {
+    display: block;
+}
+
+
+/* Physics Γ: 3D introduction to circuits */
+.c3d-wrap { max-width: 1200px; margin: 0 auto; }
+.c3d-head h3 { margin: 0 0 6px; }
+.c3d-head p { margin: 0 0 14px; color: var(--text-secondary); }
+.c3d-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); gap: 16px; align-items: start; }
+.c3d-stage { position: relative; height: 520px; border-radius: 14px; overflow: hidden; background: #0b1220; border: 1px solid rgba(96, 165, 250, 0.25); }
+.c3d-canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.c3d-label { position: absolute; transform: translate(-50%, -50%); padding: 3px 9px; border-radius: 8px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(96, 165, 250, 0.5); color: #e2e8f0; font-weight: 700; font-size: 0.9rem; pointer-events: none; white-space: nowrap; }
+.c3d-label-i { border-color: rgba(251, 191, 36, 0.7); color: #fbbf24; }
+.c3d-error { color: #fca5a5; padding: 24px; text-align: center; }
+.c3d-side { display: flex; flex-direction: column; gap: 12px; }
+.c3d-controls, .c3d-ohm, .c3d-info { padding: 12px 14px; border-radius: 12px; background: var(--bg-card, rgba(255, 255, 255, 0.04)); border: 1px solid rgba(148, 163, 184, 0.25); }
+.c3d-controls { display: flex; flex-direction: column; gap: 10px; }
+.c3d-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.92rem; }
+.c3d-pair { display: inline-flex; gap: 6px; }
+.c3d-controls button { cursor: pointer; border-radius: 8px; border: 1px solid rgba(96, 165, 250, 0.5); background: rgba(59, 130, 246, 0.15); color: inherit; padding: 6px 10px; font: inherit; }
+.c3d-controls button:hover { background: rgba(59, 130, 246, 0.3); }
+.c3d-controls .c3d-main-btn { background: #16a34a; border-color: #22c55e; color: #fff; font-weight: 700; padding: 10px; }
+.c3d-ohm-title { font-weight: 700; margin-bottom: 6px; }
+.c3d-step { opacity: 0; transform: translateY(6px); animation: c3dIn 0.5s ease forwards; animation-delay: calc(var(--d) * 0.7s); font-size: 1.15em; margin: 4px 0; }
+.c3d-step-last { color: #fbbf24; font-weight: 700; }
+.c3d-ohm-note { margin: 6px 0 0; font-size: 0.88rem; color: var(--text-secondary); opacity: 0; animation: c3dIn 0.5s ease forwards; animation-delay: calc(var(--d) * 0.7s); }
+.c3d-info { font-size: 0.92rem; line-height: 1.6; }
+@keyframes c3dIn { to { opacity: 1; transform: none; } }
+@media (max-width: 860px) { .c3d-grid { grid-template-columns: 1fr; } .c3d-stage { height: 380px; } }
+.c3d-label-sel { border-color: rgba(251, 191, 36, 0.8); color: #fde68a; font-size: 1rem; line-height: 1.4; text-align: center; }
+/* 3D intro: use the full viewport width and most of its height */
+.c3d-wrap { max-width: none; width: min(96vw, 1900px); margin-left: 50%; transform: translateX(-50%); }
+.c3d-grid { grid-template-columns: minmax(0, 1fr) 360px; }
+.c3d-stage { height: clamp(520px, calc(100vh - 150px), 900px); }
+@media (max-width: 860px) { .c3d-grid { grid-template-columns: 1fr; } .c3d-stage { height: 70vh; } }
+.c3d-controls button.c3d-fs, .c3d-fs { position: absolute; top: 10px; right: 10px; z-index: 3; cursor: pointer; border-radius: 8px; border: 1px solid rgba(96, 165, 250, 0.5); background: rgba(15, 23, 42, 0.8); color: #e2e8f0; padding: 6px 10px; font: inherit; font-size: 0.85rem; }
+.c3d-fs:hover { background: rgba(59, 130, 246, 0.35); }
+.c3d-wrap:fullscreen { width: 100vw; max-width: none; margin: 0; transform: none; padding: 12px; box-sizing: border-box; background: #0b1220; overflow: auto; }
+.c3d-wrap:fullscreen .c3d-head { display: none; }
+.c3d-wrap:fullscreen .c3d-stage { height: calc(100vh - 24px); }
+.c3d-wrap:fullscreen .c3d-side { max-height: calc(100vh - 24px); overflow: auto; }
+.c3d-label { text-align: center; line-height: 1.35; }
+.c3d-label-active { border-color: rgba(251, 191, 36, 0.9); color: #fde68a; box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+.c3d-exit { position: absolute; top: 10px; left: 10px; z-index: 3; cursor: pointer; border-radius: 8px; border: 1px solid rgba(248, 113, 113, 0.6); background: rgba(15, 23, 42, 0.8); color: #fecaca; padding: 6px 12px; font: inherit; font-size: 0.85rem; }
+.c3d-exit:hover { background: rgba(220, 38, 38, 0.45); }
+/* 3D intro: calm solid backdrop so the page's decorative background does not interfere */
+.c3d-wrap { background: #0b1220; border: 1px solid rgba(96, 165, 250, 0.2); border-radius: 18px; padding: 16px; box-sizing: border-box; color: #e2e8f0; }
+.c3d-wrap .c3d-head p, .c3d-wrap .c3d-ohm-note { color: #94a3b8; }
+.c3d-controls, .c3d-ohm, .c3d-info { background: #111b30; border-color: rgba(148, 163, 184, 0.22); }
+[data-theme="light"] .c3d-wrap { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; }
+[data-theme="light"] .c3d-wrap .c3d-head p, [data-theme="light"] .c3d-wrap .c3d-ohm-note { color: #475569; }
+[data-theme="light"] .c3d-controls, [data-theme="light"] .c3d-ohm, [data-theme="light"] .c3d-info { background: #ffffff; border-color: #cbd5e1; }
+[data-theme="light"] .c3d-step-last { color: #b45309; }
+/* 3D intro: value cards (solid background, high contrast, math-style symbols) */
+.c3d-stage .c3d-label { padding: 8px 12px 9px; border-radius: 12px; background: #f8fafc; border: 2px solid #1e3a8a; color: #0f172a; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55); font-weight: 400; text-align: left; min-width: 118px; }
+.c3d-stage .c3d-label::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 12px; height: 12px; background: #f8fafc; border-right: 2px solid #1e3a8a; border-bottom: 2px solid #1e3a8a; transform: translateX(-50%) rotate(45deg); }
+.c3d-stage .c3d-label-active { border-color: #d97706; box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.55), 0 6px 18px rgba(0, 0, 0, 0.55); color: #0f172a; }
+.c3d-stage .c3d-label-active::after { border-color: #d97706; }
+.c3d-lt { font: 700 0.78rem/1.2 'Segoe UI', Arial, sans-serif; letter-spacing: 0.03em; text-transform: uppercase; color: #334155; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin-bottom: 5px; }
+.c3d-lg { display: grid; grid-template-columns: auto auto 1fr auto; column-gap: 7px; row-gap: 1px; align-items: baseline; font-family: 'Cambria Math', Cambria, 'Times New Roman', serif; font-size: 1.2rem; }
+.c3d-q { font-size: 1.3rem; }
+.c3d-q i { font-style: italic; font-weight: 700; }
+.c3d-q-V i { color: #1d4ed8; }
+.c3d-q-I i { color: #b45309; }
+.c3d-q-R i { color: #15803d; }
+.c3d-n { color: #64748b; }
+.c3d-v { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.c3d-u { font-size: 1rem; color: #334155; }
