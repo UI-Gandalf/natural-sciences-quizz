@@ -9631,3 +9631,14 @@ button.exam-opt-pill:active:not(:disabled) {
 .c3d-stage .c3d-chip { z-index: 1; }
 .c3d-stage .c3d-label { z-index: 3; }
 .c3d-stage .c3d-label-follow { z-index: 6; }
+
+/* Fullscreen simulation lightbox, wide screens: the measurement panel stays docked on the right, but the lightbox
+   is narrowed and shifted left so the panel sits beside it instead of covering its scrollbar and content. */
+@media (min-width: 1870px) {
+    .sim-fullscreen-content {
+        width: min(1500px, calc(100vw - 388px));
+        max-width: none;
+        align-self: flex-start;
+        margin-left: max(0px, calc((100vw - 388px - 1500px) / 2));
+    }
+}

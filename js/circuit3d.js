@@ -22,7 +22,7 @@ window.Circuit3D = (function () {
             pB: total - SEG[5]
         };
     })();
-    const state = { V: 12, R: 10, closed: false, selected: null, follow: false, equi: false, speed: 1, paused: false };
+    const state = { V: 12, R: 10, closed: false, selected: null, follow: false, equi: false, speed: 0.5, paused: false };
     function potAt(s) {
         const V = state.V;
         if (s <= PATH.pE) return V;
@@ -113,8 +113,11 @@ window.Circuit3D = (function () {
         mount.addEventListener('change', (e) => {
             if (e.target && e.target.name === 'c3d-mode') {
                 // the three modes are mutually exclusive; the switch can be open or closed in each of them
+                const wasFollow = state.follow;
                 state.follow = e.target.value === 'follow';
                 state.equi = e.target.value === 'equi';
+                // following the charge always starts at 0,5× (whatever was chosen before) so the explanations can be read
+                if (state.follow && !wasFollow) state.speed = 0.5;
                 refreshUi();
             }
         });
@@ -152,7 +155,7 @@ window.Circuit3D = (function () {
     // full reset: open switch, default V and R, standard mode, normal speed, camera back at its start
     function restartAll(mount) {
         state.V = 12; state.R = 10; state.closed = false; state.selected = null;
-        state.follow = false; state.equi = false; state.speed = 1; state.paused = false;
+        state.follow = false; state.equi = false; state.speed = 0.5; state.paused = false;
         const std = mount.querySelector('input[name="c3d-mode"][value="standard"]');
         if (std) std.checked = true;
         resetView();
@@ -357,7 +360,7 @@ window.Circuit3D = (function () {
         const battery = new THREE.Group();
         const body = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 2.4, 32), new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.4, metalness: 0.2 }));
         body.rotation.z = Math.PI / 2;
-        const band = new THREE.Mesh(new THREE.CylinderGeometry(0.565, 0.565, 0.9, 32), new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.5 }));
+        const band = new THREE.Mesh(new THREE.CylinderGeometry(0.565, 0.565, 0.9, 32), new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.4, metalness: 0.15 }));      // blue negative end, readable on the dark background
         band.rotation.z = Math.PI / 2;
         band.position.x = -0.75;
         const pinMat = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, metalness: 0.7, roughness: 0.3 });
