@@ -8,30 +8,38 @@ window.Circuit3D = (function () {
     const BATTERY_X = 1.4;                  // x of the battery terminals (z = 3)
     const DEFAULT_VIEW = { theta: 0.55, phi: 1.0, radius: 13, target: [0, 0.6, 0] };
 
-    // path of a positive test charge (conventional current): + pole -> switch -> bulb -> wire -> - pole -> through the source
+    // path of a positive test charge (conventional current):
+    // + pole (A) -> switch in (Γ) -> switch out (Δ) -> bulb in (Ε) -> bulb out (Ζ) -> - pole (Β) -> through the source
+    const LET = ['\u0391', '\u0393', '\u0394', '\u0395', '\u0396', '\u0392'];      // Α Γ Δ Ε Ζ Β, in the order the charge meets them
+    const EQ_HI = 0xff6a3d, EQ_LO = 0x38bdf8;
     const SEG = [4 - BATTERY_X, 6, 8, 6, 4 - BATTERY_X, 2 * BATTERY_X];
     const PATH = (() => {
         const total = SEG.reduce((a, b) => a + b, 0);
-        const B = SEG[0] + SEG[1] + (4 - 0.55);
-        const C = SEG[0] + SEG[1] + (4 + 0.55);
-        return { total, A: 0, B, C, D: total - SEG[5] };
+        return {
+            total, pA: 0,
+            pG: SEG[0] + 3 - 0.6, pD: SEG[0] + 3 + 0.6,
+            pE: SEG[0] + SEG[1] + (4 - 0.55), pZ: SEG[0] + SEG[1] + (4 + 0.55),
+            pB: total - SEG[5]
+        };
     })();
-    const state = { V: 12, R: 10, closed: false, selected: null, follow: false, speed: 1, paused: false };
+    const state = { V: 12, R: 10, closed: false, selected: null, follow: false, equi: false, speed: 1, paused: false };
     function potAt(s) {
         const V = state.V;
-        if (s <= PATH.B) return V;
-        if (s < PATH.C) return V * (1 - (s - PATH.B) / (PATH.C - PATH.B));
-        if (s <= PATH.D) return 0;
-        return V * (s - PATH.D) / (PATH.total - PATH.D);
+        if (s <= PATH.pE) return V;
+        if (s < PATH.pZ) return V * (1 - (s - PATH.pE) / (PATH.pZ - PATH.pE));
+        if (s <= PATH.pB) return 0;
+        return V * (s - PATH.pB) / (PATH.total - PATH.pB);
     }
     function fv(v) {
         const r = Math.round(v * 10) / 10;
         return Number.isInteger(r) ? String(r) : fmt(r, 1);
     }
     function regionName(s) {
-        if (s < PATH.B) return 'Στο καλώδιο, πριν τον λαμπτήρα';
-        if (s < PATH.C) return 'Μέσα στον λαμπτήρα';
-        if (s < PATH.D) return 'Στο καλώδιο, μετά τον λαμπτήρα';
+        if (s < PATH.pG) return 'Στο καλώδιο, πριν τον διακόπτη';
+        if (s < PATH.pD) return 'Μέσα στον διακόπτη';
+        if (s < PATH.pE) return 'Στο καλώδιο, πριν τον λαμπτήρα';
+        if (s < PATH.pZ) return 'Μέσα στον λαμπτήρα';
+        if (s < PATH.pB) return 'Στο καλώδιο, μετά τον λαμπτήρα';
         return 'Μέσα στην πηγή';
     }
     let app = null;
@@ -84,21 +92,29 @@ window.Circuit3D = (function () {
                             <span class="c3d-pair"><button type="button" data-act="v-">−1 V</button><button type="button" data-act="v+">+1 V</button></span></div>
                         <div class="c3d-row"><span>Αντίσταση λαμπτήρα <strong id="c3d-rval"></strong></span>
                             <span class="c3d-pair"><button type="button" data-act="r-">−1 Ω</button><button type="button" data-act="r+">+1 Ω</button></span></div>
-                        <div class="c3d-row c3d-follow-row"><span>Παρακολούθηση θετικού φορτίου</span>
-                            <span class="c3d-radios"><label><input type="radio" name="c3d-follow" value="0" checked> Όχι</label><label><input type="radio" name="c3d-follow" value="1"> Ναι</label></span></div>
+                        <fieldset class="c3d-modes">
+                            <legend>Λειτουργία προβολής</legend>
+                            <label><input type="radio" name="c3d-mode" value="standard" checked> Απλή παρατήρηση του κυκλώματος</label>
+                            <label><input type="radio" name="c3d-mode" value="follow"> Παρακολούθηση θετικού φορτίου</label>
+                            <label><input type="radio" name="c3d-mode" value="equi"> Ισοδυναμικά τμήματα</label>
+                        </fieldset>
                         <div class="c3d-row c3d-speed-row"><span>Ταχύτητα κίνησης</span>
                             <span class="c3d-pair" id="c3d-speeds"><button type="button" data-act="speed" data-speed="0.5">0,5×</button><button type="button" data-act="speed" data-speed="1">1×</button><button type="button" data-act="speed" data-speed="2">2×</button></span></div>
                         <button type="button" data-act="pause" id="c3d-pause" class="c3d-sub-btn">⏸ Παύση κίνησης</button>
-                        <button type="button" data-act="view" class="c3d-sub-btn">Επαναφορά προβολής</button>
+                        <button type="button" data-act="view" class="c3d-sub-btn">Επαναφορά κάμερας</button>
+                        <button type="button" data-act="restart" class="c3d-sub-btn">Επανεκκίνηση προσομοίωσης</button>
                     </div>
                     <div class="c3d-follow-panel" id="c3d-follow-panel" hidden></div>
+                    <div class="c3d-follow-panel c3d-equi-panel" id="c3d-equi-panel" hidden></div>
                     <div class="c3d-ohm" id="c3d-ohm"></div>
                 </div>
             </div>
         </div>`;
         mount.addEventListener('change', (e) => {
-            if (e.target && e.target.name === 'c3d-follow') {
-                state.follow = e.target.value === '1';
+            if (e.target && e.target.name === 'c3d-mode') {
+                // the three modes are mutually exclusive; the switch can be open or closed in each of them
+                state.follow = e.target.value === 'follow';
+                state.equi = e.target.value === 'equi';
                 refreshUi();
             }
         });
@@ -112,6 +128,7 @@ window.Circuit3D = (function () {
             else if (act === 'r-') changeR(-1);
             else if (act === 'r+') changeR(1);
             else if (act === 'view') resetView();
+            else if (act === 'restart') restartAll(mount);
             else if (act === 'pause') { state.paused = !state.paused; refreshUi(); }
             else if (act === 'speed') { state.speed = parseFloat(b.dataset.speed); refreshUi(); }
             else if (act === 'fs') toggleFullscreen(mount);
@@ -131,6 +148,16 @@ window.Circuit3D = (function () {
         const b = document.getElementById('c3d-fs');
         if (b) b.textContent = document.fullscreenElement ? '✕ Έξοδος από πλήρη οθόνη' : '⛶ Πλήρης οθόνη';
     });
+
+    // full reset: open switch, default V and R, standard mode, normal speed, camera back at its start
+    function restartAll(mount) {
+        state.V = 12; state.R = 10; state.closed = false; state.selected = null;
+        state.follow = false; state.equi = false; state.speed = 1; state.paused = false;
+        const std = mount.querySelector('input[name="c3d-mode"][value="standard"]');
+        if (std) std.checked = true;
+        resetView();
+        refreshUi();
+    }
 
     function setClosed(on) {
         state.closed = on;
@@ -168,6 +195,7 @@ window.Circuit3D = (function () {
         }
         if (window.renderMath) window.renderMath(root);
         updateFollowPanel();
+        updateEquiPanel();
     }
 
     function graphX(s) { return 34 + (s / PATH.total) * 270; }
@@ -178,10 +206,11 @@ window.Circuit3D = (function () {
         el.hidden = !state.follow;
         if (!state.follow) return;
         const V = state.V, I = currentI();
-        const pts = [[0, V], [PATH.B, V], [PATH.C, 0], [PATH.D, 0], [PATH.total, V]]
+        const pts = [[0, V], [PATH.pE, V], [PATH.pZ, 0], [PATH.pB, 0], [PATH.total, V]]
             .map(([s, v]) => graphX(s).toFixed(1) + ',' + graphY(v).toFixed(1)).join(' ');
-        const dot = (s, v, name) => '<circle cx="' + graphX(s).toFixed(1) + '" cy="' + graphY(v).toFixed(1) + '" r="4.5" class="c3d-g-pt"/>' +
-            '<text x="' + graphX(s).toFixed(1) + '" y="' + (graphY(v) + (v > 0 ? -9 : 17)).toFixed(1) + '" class="c3d-g-txt" text-anchor="middle"><tspan font-weight="700">' + name + '</tspan> ' + fv(v) + ' V</text>';
+        const circle = (s, v) => '<circle cx="' + graphX(s).toFixed(1) + '" cy="' + graphY(v).toFixed(1) + '" r="4.5" class="c3d-g-pt"/>';
+        const label = (s, v, name) => '<text x="' + graphX(s).toFixed(1) + '" y="' + (graphY(v) + (v > 0 ? -9 : 17)).toFixed(1) + '" class="c3d-g-txt" text-anchor="middle"><tspan font-weight="700">' + name + '</tspan> ' + fv(v) + ' V</text>';
+        const mid = (PATH.pG + PATH.pD) / 2;
         el.innerHTML = '<div class="c3d-ohm-title">Δυναμικό κατά μήκος της διαδρομής</div>' +
             '<svg viewBox="0 0 320 168" class="c3d-graph" role="img" aria-label="Γράφημα δυναμικού">' +
             '<line x1="34" y1="' + graphY(0) + '" x2="308" y2="' + graphY(0) + '" class="c3d-g-axis"/>' +
@@ -189,14 +218,34 @@ window.Circuit3D = (function () {
             '<text x="38" y="16" class="c3d-g-cap">δυναμικό V (αρνητικός πόλος = 0 V)</text>' +
             '<text x="308" y="158" class="c3d-g-cap" text-anchor="end">διαδρομή του φορτίου →</text>' +
             '<polyline points="' + pts + '" class="c3d-g-line"/>' +
-            dot(PATH.A, V, 'A') + dot(PATH.B, V, 'B') + dot(PATH.C, 0, 'Γ') + dot(PATH.D, 0, 'Δ') +
+            circle(PATH.pA, V) + circle(PATH.pG, V) + circle(PATH.pD, V) + circle(PATH.pE, V) + circle(PATH.pZ, 0) + circle(PATH.pB, 0) +
+            label(PATH.pA, V, LET[0]) + label(mid, V, LET[1] + '·' + LET[2]) + label(PATH.pE, V, LET[3]) + label(PATH.pZ, 0, LET[4]) + label(PATH.pB, 0, LET[5]) +
             '<circle id="c3d-gdot" cx="' + graphX(0) + '" cy="' + graphY(V) + '" r="6.5" class="c3d-g-dot"/></svg>' +
             '<ul class="c3d-follow-list">' +
-            '<li><b>A</b> θετικός πόλος (+)</li><li><b>B</b> πριν τον λαμπτήρα</li>' +
-            '<li><b>Γ</b> μετά τον λαμπτήρα</li><li><b>Δ</b> αρνητικός πόλος (−)</li></ul>' +
+            '<li><b>' + LET[0] + '</b> θετικός πόλος (+)</li><li><b>' + LET[5] + '</b> αρνητικός πόλος (−)</li>' +
+            '<li><b>' + LET[1] + '</b> είσοδος διακόπτη</li><li><b>' + LET[2] + '</b> έξοδος διακόπτη</li>' +
+            '<li><b>' + LET[3] + '</b> είσοδος λαμπτήρα</li><li><b>' + LET[4] + '</b> έξοδος λαμπτήρα</li></ul>' +
             (state.closed
-                ? '<p class="c3d-ohm-note" style="opacity:1;animation:none">Στον λαμπτήρα το δυναμικό πέφτει κατά ' + fv(I * state.R) + ' V (= I·R). Μέσα στην πηγή το φορτίο «ανεβαίνει» ξανά κατά ' + state.V + ' V.</p>'
+                ? '<p class="c3d-ohm-note" style="opacity:1;animation:none">Στον λαμπτήρα (' + LET[3] + '→' + LET[4] + ') το δυναμικό πέφτει κατά ' + fv(I * state.R) + ' V (= I·R). Μέσα στην πηγή (' + LET[5] + '→' + LET[0] + ') το φορτίο «ανεβαίνει» ξανά κατά ' + state.V + ' V.</p>'
                 : '<p class="c3d-ohm-note" style="opacity:1;animation:none">Κλείστε τον διακόπτη για να ξεκινήσει το φορτίο τη διαδρομή του.</p>');
+    }
+
+    function updateEquiPanel() {
+        const el = document.getElementById('c3d-equi-panel');
+        if (!el) return;
+        el.hidden = !state.equi;
+        if (!state.equi) return;
+        const sw = (c) => '<span class="c3d-sw c3d-sw-' + c + '"></span>';
+        const [A, G, D, E, Z, B] = LET;
+        el.innerHTML = '<div class="c3d-ohm-title">Ισοδυναμικά τμήματα του κυκλώματος</div>' +
+            '<p class="c3d-eq-lead">Ισοδυναμικά είναι τα σημεία που βρίσκονται στο ίδιο δυναμικό: ανάμεσά τους δεν υπάρχει τάση.</p>' +
+            (state.closed
+                ? '<p class="c3d-eq-line">' + sw('h') + '<b>' + state.V + ' V:</b> από τον θετικό πόλο (' + A + ') μέσω του καλωδίου και του κλειστού διακόπτη (' + G + '→' + D + ') έως την είσοδο του λαμπτήρα (' + E + ').</p>' +
+                  '<p class="c3d-eq-line">' + sw('l') + '<b>0 V:</b> από την έξοδο του λαμπτήρα (' + Z + ') μέσω του καλωδίου έως τον αρνητικό πόλο (' + B + ').</p>' +
+                  '<p class="c3d-ohm-note" style="opacity:1;animation:none">Ο λαμπτήρας (' + E + '→' + Z + ') και η πηγή (' + B + '→' + A + ') δεν έχουν ισοδυναμικά σημεία: εκεί το δυναμικό μεταβάλλεται. Η κίνηση των φορτίων αναστέλλεται όσο η επιλογή είναι ενεργή.</p>'
+                : '<p class="c3d-eq-line">' + sw('h') + '<b>' + state.V + ' V:</b> από τον θετικό πόλο (' + A + ') έως την πρώτη επαφή του ανοιχτού διακόπτη (' + G + ').</p>' +
+                  '<p class="c3d-eq-line">' + sw('l') + '<b>0 V:</b> από τη δεύτερη επαφή του διακόπτη (' + D + '), μέσω του λαμπτήρα (χωρίς ρεύμα δεν υπάρχει πτώση τάσης) έως τον αρνητικό πόλο (' + B + ').</p>' +
+                  '<p class="c3d-ohm-note" style="opacity:1;animation:none">Όλη η τάση της πηγής (' + state.V + ' V) εμφανίζεται στα άκρα του ανοιχτού διακόπτη.</p>');
     }
 
     /* -------------------------------------------------------------- scene */
@@ -423,10 +472,8 @@ window.Circuit3D = (function () {
 
         const arrows = new THREE.Group();
         const arrowMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xb91c1c, emissiveIntensity: 0.6 });
-        const nArrows = 6;
-        for (let k = 0; k < nArrows; k++) {
-            const s = 1.6 + (k * (total - closingLen - 3.0)) / (nArrows - 1);
-            const info = posAt(s);
+        {
+            const info = posAt(1.5);                                // a single arrow just after the + pole
             const cone = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.5, 16), arrowMat);
             cone.position.copy(info.p).add(new THREE.Vector3(0, 0.3, 0));
             cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), info.tangent);
@@ -434,7 +481,33 @@ window.Circuit3D = (function () {
         }
         scene.add(arrows);
 
-        // follower: a big glowing positive test charge, plus checkpoint markers A, B, Γ, Δ
+        // equipotential overlays: {mesh, open side, closed side}, side 'H' (high) / 'L' (low) / null (not shown)
+        const equi = [];
+        const eqMat = (op) => new THREE.MeshBasicMaterial({ color: EQ_LO, transparent: true, opacity: op, depthWrite: false });
+        const eqTube = (a, b, open, closed, r) => {
+            const m = cylinderBetween(a, b, r || 0.17, eqMat(0.8));
+            m.visible = false; scene.add(m); equi.push({ m, open, closed });
+        };
+        eqTube(pts(BATTERY_X, 3), pts(4, 3), 'H', 'H');
+        eqTube(pts(4, 3), pts(4, 0.6), 'H', 'H');
+        eqTube(pts(4, 0.6), pts(4, -0.6), null, 'H', 0.12);       // the closed lever bridges the two posts
+        eqTube(pts(4, -0.6), pts(4, -3), 'L', 'H');
+        eqTube(pts(4, -3), pts(0.55, -3), 'L', 'H');
+        eqTube(pts(0.55, -3), pts(0.3, -3), 'L', 'H');
+        eqTube(pts(-0.3, -3), pts(-0.55, -3), 'L', 'L');
+        eqTube(pts(-0.55, -3), pts(-4, -3), 'L', 'L');
+        eqTube(pts(-4, -3), pts(-4, 3), 'L', 'L');
+        eqTube(pts(-4, 3), pts(-BATTERY_X, 3), 'L', 'L');
+        const eqBlob = (x, y, z, r, open, closed, shape) => {
+            const m = new THREE.Mesh(shape === 'cyl' ? new THREE.CylinderGeometry(r, r, 1.0, 20) : new THREE.SphereGeometry(r, 16, 16), eqMat(0.4));
+            m.position.set(x, y, z); m.visible = false; scene.add(m); equi.push({ m, open, closed });
+        };
+        eqBlob(4, H - 0.05, 0.6, 0.3, 'H', 'H');                  // switch post Γ
+        eqBlob(4, H - 0.05, -0.6, 0.3, 'L', 'H');                 // switch post Δ
+        eqBlob(0, H, -3, 0.52, 'L', null, 'cyl');                 // bulb socket, no current -> same potential as the - pole
+        eqBlob(0, H + 1.0, -3, 0.95, 'L', null);                  // bulb glass
+
+        // follower: a big glowing positive test charge
         const follower = new THREE.Group();
         const fMat = new THREE.MeshStandardMaterial({ color: 0xff5a36, emissive: 0xff2d00, emissiveIntensity: 1.2 });
         const fBall = new THREE.Mesh(new THREE.SphereGeometry(0.26, 24, 24), fMat);
@@ -448,20 +521,19 @@ window.Circuit3D = (function () {
         follower.visible = false;
         scene.add(follower);
 
+        // small rings on the six checkpoints; their letters are DOM chips so they never hide behind the components
         const markers = new THREE.Group();
-        [['A', pts(BATTERY_X, 3), 0.9], ['B', pts(0.55, -3), 0], ['Γ', pts(-0.55, -3), 0], ['Δ', pts(-BATTERY_X, 3), 0.9]].forEach(([name, p, dz]) => {
-            const ring = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.035, 8, 32), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
+        [pts(BATTERY_X, 3), pts(4, 0.6), pts(4, -0.6), pts(0.55, -3), pts(-0.55, -3), pts(-BATTERY_X, 3)].forEach((p) => {
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.03, 8, 32), new THREE.MeshBasicMaterial({ color: 0xfacc15, depthTest: false, transparent: true }));
             ring.rotation.x = Math.PI / 2;
             ring.position.copy(p);
-            const sp = textSprite(name, '#facc15');
-            sp.position.copy(p).add(new THREE.Vector3(0, -0.55, dz));
-            sp.scale.set(0.7, 0.7, 0.7);
-            markers.add(ring, sp);
+            ring.renderOrder = 5;
+            markers.add(ring);
         });
         markers.visible = false;
         scene.add(markers);
 
-        return { renderer, scene, camera, pickables, lever, halo, glassMat, filMat, bulbLight, charges, arrows, posAt, total, closingLen, stage, follower, fMat, markers };
+        return { renderer, scene, camera, pickables, lever, halo, glassMat, filMat, bulbLight, charges, arrows, posAt, total, closingLen, stage, follower, fMat, markers, equi };
     }
 
     /* ------------------------------------------------------ camera control */
@@ -479,8 +551,27 @@ window.Circuit3D = (function () {
         const want = { theta: view.theta, phi: view.phi, radius: view.radius, target: view.target.clone() };
         let leverAngle = 0.75, brightness = 0;
         const fs = { s: 0, dwell: 1.4, next: 1, active: false, cp: 0 };
-        const CPS = [PATH.A, PATH.B, PATH.C, PATH.D];
-        const CPNAMES = ['A · Θετικός πόλος (+)', 'B · Πριν τον λαμπτήρα', 'Γ · Μετά τον λαμπτήρα', 'Δ · Αρνητικός πόλος (−)'];
+        const CPS = [PATH.pA, PATH.pG, PATH.pD, PATH.pE, PATH.pZ, PATH.pB];
+        const CPNAMES = [LET[0] + ' · Θετικός πόλος (+)', LET[1] + ' · Είσοδος διακόπτη', LET[2] + ' · Έξοδος διακόπτη',
+            LET[3] + ' · Είσοδος λαμπτήρα', LET[4] + ' · Έξοδος λαμπτήρα', LET[5] + ' · Αρνητικός πόλος (−)'];
+        // letter chips for the checkpoints: [point, centre of the component it belongs to] (the chip is pushed away from that centre on screen)
+        const CHIPPOS = [[BATTERY_X, 3, 0, 3], [4, 0.6, 4, 0], [4, -0.6, 4, 0], [0.55, -3, 0, -3], [-0.55, -3, 0, -3], [-BATTERY_X, 3, 0, 3]];
+        const chips = CHIPPOS.map((c, i) => {
+            const el = document.createElement('div');
+            el.className = 'c3d-chip';
+            el.textContent = LET[i];
+            el.style.display = 'none';
+            stage.appendChild(el);
+            return { el, x: c[0], z: c[1], cx: c[2], cz: c[3] };
+        });
+        const mkCard = (cls) => {
+            const el = document.createElement('div');
+            el.className = 'c3d-label ' + cls;
+            el.style.display = 'none';
+            stage.appendChild(el);
+            return el;
+        };
+        const eqHiCard = mkCard('c3d-eq-h'), eqLoCard = mkCard('c3d-eq-l');
 
         const dom = o.renderer.domElement;
         const pointers = new Map();
@@ -620,13 +711,13 @@ window.Circuit3D = (function () {
             o.filMat.emissiveIntensity = brightness * 4;
             o.bulbLight.intensity = brightness * 3.5;
 
-            // moving charges and arrows
+            // moving charges and arrows (suspended while the equipotential view is on)
             const I = currentI();
             const speed = Math.min(6, 0.6 + 1.2 * I);
             const simDt = state.paused ? 0 : dt * state.speed;      // pause / speed apply to the charges only, the camera stays interactive
-            o.charges.visible = state.closed && !state.follow;
-            o.arrows.visible = state.closed;
-            if (state.closed) {
+            o.charges.visible = state.closed && !state.follow && !state.equi;
+            o.arrows.visible = state.closed && !state.equi;
+            if (o.charges.visible) {
                 o.charges.children.forEach((m) => {
                     m.userData.s += speed * simDt;
                     const info = o.posAt(m.userData.s);
@@ -636,18 +727,19 @@ window.Circuit3D = (function () {
             }
 
             // positive test charge following the conventional current
-            const act = state.follow && state.closed;
+            const act = state.follow && state.closed && !state.equi;
             if (act && !fs.active) { fs.s = 0; fs.next = 1; fs.dwell = 1.4; fs.cp = 0; }
             fs.active = act;
-            o.markers.visible = state.follow;
             o.follower.visible = act;
             labFollow.style.display = act ? 'block' : 'none';
             if (act) {
                 if (fs.dwell > 0) fs.dwell -= simDt;
                 else {
-                    fs.s += (fs.s >= PATH.B && fs.s < PATH.C ? 0.9 : 2.0) * simDt;
-                    if (fs.next <= 3 && fs.s >= CPS[fs.next]) { fs.s = CPS[fs.next]; fs.cp = fs.next; fs.next++; fs.dwell = (fs.cp === 1 || fs.cp === 2) ? 2.8 : 1.8; }
-                    else if (fs.s >= PATH.total) { fs.s = 0; fs.cp = 0; fs.next = 1; fs.dwell = 1.8; }
+                    fs.s += (fs.s >= PATH.pE && fs.s < PATH.pZ ? 0.9 : 2.0) * simDt;
+                    if (fs.next <= 5 && fs.s >= CPS[fs.next]) {
+                        fs.s = CPS[fs.next]; fs.cp = fs.next; fs.next++;
+                        fs.dwell = (fs.cp === 3 || fs.cp === 4) ? 3.2 : (fs.cp === 5 ? 2.6 : 1.8);
+                    } else if (fs.s >= PATH.total) { fs.s = 0; fs.cp = 0; fs.next = 1; fs.dwell = 1.8; }
                 }
                 const atCp = fs.dwell > 0;
                 const info = o.posAt(fs.s);
@@ -655,20 +747,25 @@ window.Circuit3D = (function () {
                 o.fMat.depthTest = !info.inside;
                 o.follower.scale.setScalar(atCp ? 1.25 * (1 + 0.08 * Math.sin(now / 160)) : 1);
                 const v = potAt(fs.s);
-                const inBulb = fs.s >= PATH.B && fs.s <= PATH.C;
+                const zone = fs.s >= PATH.pB ? 'battery' : (fs.s >= PATH.pE && fs.s <= PATH.pZ) ? 'bulb' : (fs.s >= PATH.pG && fs.s <= PATH.pD) ? 'switch' : (fs.s > 0 ? 'wire' : null);
+                const zeroDrop = '<div class="c3d-fo-eq"><i>ΔV</i> = <i>I</i> · <i>R</i> = ' + fmt(I, 2) + ' A · 0 Ω = <b>0 V</b></div>';
                 let ohm = '';
-                if (inBulb) {
+                if (zone === 'wire') {
+                    ohm = '<div class="c3d-fo">Ιδανικό καλώδιο</div>' + zeroDrop +
+                        '<p class="c3d-fnote">Δεν συμβαίνει πτώση τάσης (απώλεια δυναμικού), γιατί το καλώδιο, ως ιδανικό, θεωρείται ότι δεν παρουσιάζει καμία αντίσταση στη διέλευση του ηλεκτρικού ρεύματος, δηλαδή έχει <i>R</i> = 0 Ω.</p>';
+                } else if (zone === 'switch') {
+                    ohm = '<div class="c3d-fo">Ιδανικός διακόπτης</div>' + zeroDrop +
+                        '<p class="c3d-fnote">Ο ιδανικός διακόπτης, όταν είναι κλειστός, δεν καταναλώνει ενέργεια (δεν προκαλεί πτώση τάσης), γιατί θεωρείται ότι δεν παρουσιάζει καμία αντίσταση στη διέλευση του ηλεκτρικού ρεύματος, δηλαδή έχει <i>R</i> = 0 Ω.</p>';
+                } else if (zone === 'bulb') {
                     const drop = I * state.R;
                     ohm = '<div class="c3d-fo">Νόμος του Ohm στον λαμπτήρα</div>' +
                         '<div class="c3d-fo-eq"><i>ΔV</i> = <i>I</i> · <i>R</i> = ' + fmt(I, 2) + ' A · ' + state.R + ' Ω = <b>' + fv(drop) + ' V</b></div>' +
-                        (atCp && fs.cp === 2 ? '<div class="c3d-fo-eq"><i>V</i><sub>Γ</sub> = <i>V</i><sub>Β</sub> − <i>ΔV</i> = ' + fv(state.V) + ' − ' + fv(drop) + ' = <b>' + fv(v) + ' V</b></div>' : '');
-                }
-                const swLo = SEG[0] + 3 - 0.6, swHi = SEG[0] + 3 + 0.6;      // the switch sits on the vertical wire at x = 4
-                const inWire = (fs.s > 0 && fs.s < PATH.B && !(fs.s >= swLo && fs.s <= swHi)) || (fs.s > PATH.C && fs.s < PATH.D);
-                if (inWire) {
-                    ohm = '<div class="c3d-fo">Ιδανικό καλώδιο</div>' +
-                        '<div class="c3d-fo-eq"><i>ΔV</i> = <i>I</i> · <i>R</i> = ' + fmt(I, 2) + ' A · 0 Ω = <b>0 V</b></div>' +
-                        '<p class="c3d-fnote">Δεν συμβαίνει πτώση τάσης (απώλεια δυναμικού), γιατί το καλώδιο, ως ιδανικό, θεωρείται ότι δεν παρουσιάζει καμία αντίσταση στη διέλευση του ηλεκτρικού ρεύματος, δηλαδή έχει <i>R</i> = 0 Ω.</p>';
+                        (atCp && fs.cp === 4 ? '<div class="c3d-fo-eq"><i>V</i><sub>' + LET[4] + '</sub> = <i>V</i><sub>' + LET[3] + '</sub> − <i>ΔV</i> = ' + fv(state.V) + ' − ' + fv(drop) + ' = <b>' + fv(v) + ' V</b></div>' : '') +
+                        '<p class="c3d-fnote">Ο λαμπτήρας (αντιστάτης) παρουσιάζει αντίσταση στη διέλευση των ηλεκτρικών φορτίων: για να τον διαπεράσουν απαιτείται κατανάλωση ενέργειας (που μετατρέπεται σε φως και θερμότητα). Η αντίστοιχη πτώση τάσης υπολογίζεται από τον νόμο του Ohm.</p>';
+                } else if (zone === 'battery') {
+                    ohm = '<div class="c3d-fo">Πηγή</div>' +
+                        '<div class="c3d-fo-eq"><i>ΔV</i> = <i>V</i><sub>' + LET[0] + '</sub> − <i>V</i><sub>' + LET[5] + '</sub> = ' + fv(state.V) + ' − 0 = <b>+' + fv(state.V) + ' V</b></div>' +
+                        '<p class="c3d-fnote">Η πηγή, καταναλώνοντας δική της χημική ενέργεια, προσφέρει ηλεκτρική ενέργεια στα φορτία καθώς τα μεταφέρει από τον αρνητικό (χαμηλού δυναμικού) πόλο προς τον θετικό (υψηλού δυναμικού) πόλο.</p>';
                 }
                 const fhtml = '<div class="c3d-fhead"><span class="c3d-fplus">+</span><span>' + (atCp ? CPNAMES[fs.cp] : regionName(fs.s)) + '</span></div>' +
                     '<div class="c3d-fval"><i>V</i> = ' + fv(v) + ' V</div>' + ohm;
@@ -692,6 +789,43 @@ window.Circuit3D = (function () {
                 }
                 const gdot = document.getElementById('c3d-gdot');
                 if (gdot) { gdot.setAttribute('cx', graphX(fs.s).toFixed(1)); gdot.setAttribute('cy', graphY(v).toFixed(1)); }
+            }
+
+            // checkpoint rings + letter chips (screen-space, pushed away from their component so they stay readable from any angle)
+            const chipsOn = state.follow || state.equi;
+            o.markers.visible = chipsOn;
+            const rect = dom.getBoundingClientRect();
+            const toPx = (x, y, z) => {
+                const q = new THREE.Vector3(x, y, z).project(o.camera);
+                return { x: (q.x * 0.5 + 0.5) * rect.width, y: (-q.y * 0.5 + 0.5) * rect.height, z: q.z };
+            };
+            chips.forEach((c, i) => {
+                if (!chipsOn) { c.el.style.display = 'none'; return; }
+                const pa = toPx(c.x, H, c.z), pc = toPx(c.cx, H, c.cz);
+                if (pa.z > 1) { c.el.style.display = 'none'; return; }
+                let dx = pa.x - pc.x, dy = pa.y - pc.y;
+                const len = Math.hypot(dx, dy);
+                if (len < 4) { dx = 0; dy = -1; } else { dx /= len; dy /= len; }
+                c.el.style.display = 'block';
+                c.el.style.left = (pa.x + dx * 28) + 'px';
+                c.el.style.top = (pa.y + dy * 28) + 'px';
+                c.el.classList.toggle('c3d-chip-active', act && fs.dwell > 0 && fs.cp === i);
+            });
+
+            // equipotential highlight
+            o.equi.forEach((e) => {
+                const side = state.closed ? e.closed : e.open;
+                e.m.visible = state.equi && !!side;
+                if (side) e.m.material.color.setHex(side === 'H' ? EQ_HI : EQ_LO);
+            });
+            eqHiCard.style.display = eqLoCard.style.display = state.equi ? 'block' : 'none';
+            if (state.equi) {
+                const hiHtml = '<div class="c3d-lt">Ισοδυναμικό τμήμα</div><div class="c3d-lg">' + row('V', state.V, 'V') + '</div>';
+                const loHtml = '<div class="c3d-lt">Ισοδυναμικό τμήμα</div><div class="c3d-lg">' + row('V', 0, 'V') + '</div>';
+                if (eqHiCard._html !== hiHtml) { eqHiCard._html = hiHtml; eqHiCard.innerHTML = hiHtml; }
+                if (eqLoCard._html !== loHtml) { eqLoCard._html = loHtml; eqLoCard.innerHTML = loHtml; }
+                project(2.7, H + 0.5, 3, eqHiCard);
+                project(-4, H + 0.5, 0, eqLoCard);
             }
 
             const vSw = state.closed ? 0 : state.V;

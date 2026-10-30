@@ -9608,3 +9608,26 @@ button.exam-opt-pill:active:not(:disabled) {
 .c3d-stage .c3d-label-follow.c3d-flip::after { top: auto; bottom: -8px; border: none; border-right: 2px solid #fb923c; border-bottom: 2px solid #fb923c; }
 .c3d-stage .c3d-label-active.c3d-label-follow.c3d-flip::after { border-right-color: #fde047; border-bottom-color: #fde047; }
 .c3d-controls button.c3d-on { background: #2563eb; border-color: #93c5fd; color: #fff; font-weight: 700; }
+/* 3D intro: checkpoint letter chips, equipotential view */
+.c3d-chip { position: absolute; z-index: 2; transform: translate(-50%, -50%); width: 26px; height: 26px; border-radius: 50%; background: #facc15; color: #1f2937; border: 2px solid #0b1220; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); font: 800 14px/22px 'Segoe UI', Arial, sans-serif; text-align: center; pointer-events: none; }
+.c3d-chip-active { background: #fb923c; color: #fff; transform: translate(-50%, -50%) scale(1.3); box-shadow: 0 0 0 3px rgba(253, 224, 71, 0.6), 0 2px 8px rgba(0, 0, 0, 0.6); }
+.c3d-stage .c3d-eq-h { border-color: #ea580c; min-width: 120px; }
+.c3d-stage .c3d-eq-h::after { border-color: #ea580c; }
+.c3d-stage .c3d-eq-l { border-color: #0284c7; min-width: 120px; }
+.c3d-stage .c3d-eq-l::after { border-color: #0284c7; }
+.c3d-equi-panel { border-color: rgba(56, 189, 248, 0.5); }
+.c3d-eq-lead { margin: 4px 0 8px; font-size: 0.86rem; color: #94a3b8; }
+.c3d-eq-line { margin: 6px 0; font-size: 0.88rem; line-height: 1.45; }
+.c3d-sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 7px; vertical-align: -1px; }
+.c3d-sw-h { background: #ff6a3d; }
+.c3d-sw-l { background: #38bdf8; }
+[data-theme="light"] .c3d-eq-lead { color: #475569; }
+.c3d-modes { margin: 0; padding: 8px 10px 6px; border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 10px; display: flex; flex-direction: column; gap: 6px; }
+.c3d-modes legend { padding: 0 6px; font-size: 0.8rem; font-weight: 700; color: #94a3b8; }
+.c3d-modes label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.92rem; }
+.c3d-modes input { accent-color: #f97316; width: 16px; height: 16px; cursor: pointer; }
+[data-theme="light"] .c3d-modes legend { color: #475569; }
+/* stacking: letter chips always sit below every info card */
+.c3d-stage .c3d-chip { z-index: 1; }
+.c3d-stage .c3d-label { z-index: 3; }
+.c3d-stage .c3d-label-follow { z-index: 6; }
