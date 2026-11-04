@@ -9683,3 +9683,4 @@ button.exam-opt-pill:active:not(:disabled) {
 [data-theme="light"] .mc-shape { stroke: #1d6fd1; }
 [data-theme="light"] .mc-name { fill: #0f172a; stroke: #ffffff; }
 [data-theme="light"] .mc-point .mc-shape { stroke: #ffffff; }
+.mc-area .mc-hit { stroke: transparent; stroke-width: 14; pointer-events: all; }
