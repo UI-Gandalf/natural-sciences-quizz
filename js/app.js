@@ -1095,6 +1095,9 @@ function renderQuizRunner(quiz) {
                                 <span>${quiz.title.split(':')[0]}</span>
                             </div>
                             <div class="quiz-top-actions">
+                                <button class="quiz-exit-btn" onclick="confirmRestartQuiz()" title="Ξεκίνα το κουίζ από την αρχή">
+                                    ↻ Από την αρχή
+                                </button>
                                 <button class="quiz-exit-btn" onclick="confirmExitQuiz()">
                                     Έξοδος
                                 </button>
@@ -3374,6 +3377,10 @@ function toggleReviewList() {
         chevron.innerText = '▴';
         triggerMathTypeset(list);
     }
+}
+
+function confirmRestartQuiz() {
+    if (confirm('Να ξεκινήσει το κουίζ από την αρχή; Η πρόοδός σας σε αυτό το κουίζ θα χαθεί.')) restartCurrentQuiz();
 }
 
 function restartCurrentQuiz() {
