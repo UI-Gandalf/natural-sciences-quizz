@@ -9739,3 +9739,19 @@ button.exam-opt-pill:active:not(:disabled) {
 .mc-plain.missed .mc-shape { fill: rgba(34, 197, 94, 0.25); stroke: #22c55e; stroke-width: 3; stroke-dasharray: 6 4; }
 .mc-plain .mc-name { opacity: 0; }
 .mc-revealed .mc-plain.ok .mc-name, .mc-revealed .mc-plain.bad .mc-name, .mc-revealed .mc-plain.missed .mc-name { opacity: 1; }
+
+/* Land in earthy tones (olive, sand, sage, clay) so it stands clearly apart from the blue sea */
+.mc-c0 { fill: #7c8a54; } .mc-c1 { fill: #a89a68; } .mc-c2 { fill: #5f8a62; } .mc-c3 { fill: #9a7f66; }
+.mc-land { stroke: #f5f0dc; }
+.mc-cname { fill: #fffdf5; stroke: #1c2412; }
+
+/* Rivers: vivid blue with a dark casing (clear on the earthy land); selection in magenta */
+.mc-path .mc-shape { stroke: #38bdf8; filter: drop-shadow(0 0 1.5px #06121f) drop-shadow(0 0 1px #06121f); }
+.mc-path:hover .mc-shape, .mc-path:focus .mc-shape { stroke: #bae6fd; }
+.mc-path.sel .mc-shape { stroke: #f0abfc; }
+.mc-path.locked .mc-shape, .mc-path.ok .mc-shape { stroke: #4ade80; }
+.mc-path.bad .mc-shape, .mc-path.tried .mc-shape { stroke: #f87171; }
+.mc-path.missed .mc-shape { stroke: #4ade80; }
+[data-theme="light"] .mc-path .mc-shape { stroke: #0369a1; filter: drop-shadow(0 0 1px #ffffff); }
+[data-theme="light"] .mc-path.sel .mc-shape { stroke: #c026d3; }
+.mc-path .mc-shape { stroke-width: 4.5; }
