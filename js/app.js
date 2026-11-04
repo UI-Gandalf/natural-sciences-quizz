@@ -1057,6 +1057,17 @@ function renderQuizRunner(quiz) {
         return;
     }
 
+    // Click-on-the-map quizzes need the map data (js/map-data.js), loaded on demand
+    if (quiz.questions.some(q => q.type === 'mapclick') && typeof MAP_DATA === 'undefined') {
+        container.innerHTML = '<div class="quiz-runner-wrap"><div class="quiz-container" style="text-align:center;padding:40px 24px;">Φόρτωση χαρτών…</div></div>';
+        const s = document.createElement('script');
+        s.src = 'js/map-data.js?v=7';
+        s.onload = () => renderQuizRunner(quiz);
+        s.onerror = () => { container.innerHTML = '<div class="quiz-runner-wrap"><div class="quiz-container" style="text-align:center;padding:40px 24px;">Δεν ήταν δυνατή η φόρτωση των χαρτών. Ανανεώστε τη σελίδα.</div></div>'; };
+        document.head.appendChild(s);
+        return;
+    }
+
     // Initialize Quiz Runner State
     const qr = AppState.quizRunner;
     qr.activeQueue = Array.from({ length: quiz.questions.length }, (_, i) => i);
@@ -2455,22 +2466,32 @@ function buildMapSvg(q, onItemClick) {
         return e;
     };
     const svg = mk('svg', { viewBox: `0 0 ${map.w} ${map.h}`, class: 'mc-map', role: 'img', 'aria-label': 'Χάρτης' });
-    map.land.forEach(d => mk('path', { d, class: 'mc-land' }, svg));
-    map.labels.forEach(([n, x, y]) => { mk('text', { x, y, class: 'mc-cname' }, svg).textContent = n.toUpperCase(); });
-    (map.seas || []).forEach(([n, x, y]) => { mk('text', { x, y, class: 'mc-sea' }, svg).textContent = n; });
+    // sea areas are clipped to the water, so they never cover the land
+    window._mcClipSeq = (window._mcClipSeq || 0) + 1;
+    const clipId = 'mc-sea-clip-' + window._mcClipSeq;
+    const clip = mk('clipPath', { id: clipId }, mk('defs', {}, svg));
+    mk('path', { d: 'M0,0H' + map.w + 'V' + map.h + 'H0Z' + map.land.join(''), 'clip-rule': 'evenodd' }, clip);
+    svg.style.setProperty('--mc-lsz', (map.lsz || 21) + 'px');
+    map.land.forEach((d, i) => mk('path', { d, class: 'mc-land mc-c' + (i % 4) }, svg));
+    if (!q.hideLabels) {
+        map.labels.forEach(([n, x, y]) => { mk('text', { x, y, class: 'mc-cname' }, svg).textContent = n.toUpperCase(); });
+        (map.seas || []).forEach(([n, x, y]) => { mk('text', { x, y, class: 'mc-sea' }, svg).textContent = n; });
+    }
 
     (q.show || []).forEach(id => {
         const it = map.items[id];
         if (!it) return;
         const g = mk('g', { class: 'mc-item mc-' + it.type, 'data-id': id, tabindex: onItemClick ? 0 : -1, role: 'button', 'aria-label': 'Επιλογή στο χάρτη' }, svg);
+        if (it.sea) g.setAttribute('clip-path', 'url(#' + clipId + ')');
         let lx, ly;
         if (it.type === 'point') {
             mk('circle', { cx: it.x, cy: it.y, r: 8, class: 'mc-shape mc-dot' }, g);
             mk('circle', { cx: it.x, cy: it.y, r: 22, class: 'mc-hit' }, g);
             lx = it.x; ly = it.y - 16;
         } else {
-            mk('path', { d: it.d, class: 'mc-shape' }, g);
-            mk('path', { d: it.d, class: 'mc-hit' }, g);
+            const d = it.d || map.land[map.landNames.indexOf(it.ref)];
+            mk('path', { d, class: 'mc-shape' }, g);
+            mk('path', { d, class: 'mc-hit' }, g);
             lx = it.lx; ly = it.ly - 12;
         }
         mk('text', { x: lx, y: ly, class: 'mc-name' }, g).textContent = it.name;

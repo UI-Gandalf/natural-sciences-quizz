@@ -9684,3 +9684,19 @@ button.exam-opt-pill:active:not(:disabled) {
 [data-theme="light"] .mc-name { fill: #0f172a; stroke: #ffffff; }
 [data-theme="light"] .mc-point .mc-shape { stroke: #ffffff; }
 .mc-area .mc-hit { stroke: transparent; stroke-width: 14; pointer-events: all; }
+
+/* Map readability: stronger borders, distinct country tones, bolder labels */
+.mc-wrap { background: #0a2a4a; }
+.mc-land { stroke: #d6e4ff; stroke-width: 1.6; stroke-linejoin: round; }
+.mc-c0 { fill: #2f4670; } .mc-c1 { fill: #3a5382; } .mc-c2 { fill: #2a3f66; } .mc-c3 { fill: #43608f; }
+.mc-cname { fill: #f8fafc; font-size: 21px; font-weight: 800; letter-spacing: 0.05em; opacity: 1; paint-order: stroke; stroke: #0a1626; stroke-width: 4.5px; stroke-linejoin: round; }
+.mc-sea { fill: #a9d0f7; font-size: 22px; font-weight: 600; paint-order: stroke; stroke: #0a1f38; stroke-width: 4px; stroke-linejoin: round; }
+.mc-name { font-size: 22px; stroke-width: 5px; }
+[data-theme="light"] .mc-wrap { background: #bfe0fb; }
+[data-theme="light"] .mc-land { stroke: #5b6a4a; stroke-width: 1.5; }
+[data-theme="light"] .mc-c0 { fill: #f4f1dc; } [data-theme="light"] .mc-c1 { fill: #e6eed2; } [data-theme="light"] .mc-c2 { fill: #f7e8d3; } [data-theme="light"] .mc-c3 { fill: #e4ebf6; }
+[data-theme="light"] .mc-cname { fill: #1f2a37; stroke: #ffffff; }
+[data-theme="light"] .mc-sea { fill: #1d5ea8; stroke: #ffffff; }
+.mc-cname { font-size: var(--mc-lsz, 21px); }
+/* Map questions get a wider card so the maps and their labels are easy to read */
+.quiz-container:has(.mc-wrap) { max-width: min(1240px, 96vw); }
