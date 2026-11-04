@@ -65,3 +65,7 @@ __pycache__/
 # ==============================================================================
 Χημεία Γ 2026 - 2027/
 "Χημεία Γ 2026 - 2027/"
+
+# Claude Code personal settings (permissions)
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
