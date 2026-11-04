@@ -9642,3 +9642,44 @@ button.exam-opt-pill:active:not(:disabled) {
         margin-left: max(0px, calc((100vw - 388px - 1500px) / 2));
     }
 }
+
+/* ==========================================================================
+   Click-on-the-map questions (rivers, ports, gulfs)
+   ========================================================================== */
+.mc-wrap { margin: 6px 0 4px; border-radius: 14px; overflow: hidden; border: 1px solid var(--card-border, rgba(148, 163, 184, 0.3)); background: #0b2540; }
+.mc-map { display: block; width: 100%; height: auto; user-select: none; -webkit-tap-highlight-color: transparent; }
+.mc-land { fill: #26354f; stroke: #3a4a66; stroke-width: 0.8; }
+.mc-cname { fill: #8da2c4; font-size: 15px; letter-spacing: 0.06em; text-anchor: middle; pointer-events: none; opacity: 0.75; }
+.mc-sea { fill: #5f84b3; font-size: 17px; font-style: italic; text-anchor: middle; pointer-events: none; }
+.mc-shape { fill: none; stroke: #4ea1ff; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; transition: stroke 0.15s, stroke-width 0.15s, fill 0.15s; }
+.mc-hit { fill: none; stroke: transparent; stroke-width: 22; stroke-linecap: round; stroke-linejoin: round; cursor: pointer; pointer-events: stroke; }
+.mc-area .mc-shape { fill: rgba(56, 189, 248, 0.22); stroke: #38bdf8; stroke-width: 1.6; stroke-dasharray: 6 4; }
+.mc-area .mc-hit { fill: transparent; stroke: none; pointer-events: all; }
+.mc-point .mc-shape { fill: #f59e0b; stroke: #0b1220; stroke-width: 2; }
+.mc-point .mc-hit { fill: transparent; stroke: none; pointer-events: all; }
+.mc-item:focus { outline: none; }
+.mc-item:hover .mc-shape, .mc-item:focus .mc-shape { stroke: #bae6fd; stroke-width: 5; }
+.mc-area:hover .mc-shape, .mc-area:focus .mc-shape { fill: rgba(125, 211, 252, 0.4); stroke-width: 2.4; }
+.mc-point:hover .mc-shape, .mc-point:focus .mc-shape { fill: #fde68a; stroke: #0b1220; stroke-width: 2.5; }
+.mc-item.sel .mc-shape { stroke: #facc15; stroke-width: 6; }
+.mc-area.sel .mc-shape { fill: rgba(250, 204, 21, 0.4); stroke: #facc15; stroke-width: 3; stroke-dasharray: none; }
+.mc-point.sel .mc-shape { fill: #facc15; stroke: #fff; stroke-width: 3; }
+.mc-item.locked .mc-shape, .mc-item.ok .mc-shape { stroke: #22c55e; stroke-width: 6; }
+.mc-area.locked .mc-shape, .mc-area.ok .mc-shape { fill: rgba(34, 197, 94, 0.4); stroke: #22c55e; stroke-width: 3; stroke-dasharray: none; }
+.mc-point.locked .mc-shape, .mc-point.ok .mc-shape { fill: #22c55e; stroke: #fff; stroke-width: 3; }
+.mc-item.bad .mc-shape, .mc-item.tried .mc-shape { stroke: #ef4444; stroke-width: 6; stroke-dasharray: 8 6; }
+.mc-area.bad .mc-shape, .mc-area.tried .mc-shape { fill: rgba(239, 68, 68, 0.3); stroke: #ef4444; stroke-width: 3; }
+.mc-point.bad .mc-shape, .mc-point.tried .mc-shape { fill: #ef4444; stroke: #fff; stroke-width: 3; stroke-dasharray: none; }
+.mc-item.tried .mc-hit { cursor: not-allowed; }
+.mc-item.missed .mc-shape { stroke: #22c55e; stroke-width: 5; stroke-dasharray: 3 7; }
+.mc-area.missed .mc-shape { fill: rgba(34, 197, 94, 0.25); stroke: #22c55e; stroke-width: 3; }
+.mc-point.missed .mc-shape { fill: #86efac; stroke: #22c55e; stroke-width: 3; }
+.mc-name { fill: #fff; font-size: 18px; font-weight: 700; paint-order: stroke; stroke: #0b1220; stroke-width: 4px; text-anchor: middle; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.mc-revealed .mc-name { opacity: 1; }
+[data-theme="light"] .mc-wrap { background: #cfe8fb; border-color: #93b5d6; }
+[data-theme="light"] .mc-land { fill: #f1f5e6; stroke: #b3bfa0; }
+[data-theme="light"] .mc-cname { fill: #5b6b4a; opacity: 0.8; }
+[data-theme="light"] .mc-sea { fill: #2f6cb0; }
+[data-theme="light"] .mc-shape { stroke: #1d6fd1; }
+[data-theme="light"] .mc-name { fill: #0f172a; stroke: #ffffff; }
+[data-theme="light"] .mc-point .mc-shape { stroke: #ffffff; }

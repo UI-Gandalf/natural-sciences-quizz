@@ -1268,6 +1268,8 @@ function loadCurrentQuestion() {
 
     if (q.type === 'matching') {
         renderMatchingQuestion(q, qIndex, optionsContainer);
+    } else if (q.type === 'mapclick') {
+        renderMapClickQuestion(q, qIndex, optionsContainer);
     } else if (q.type === 'cascading') {
         renderCascadingQuestion(q, qIndex, optionsContainer);
     } else {
@@ -2420,6 +2422,276 @@ function renderStandardMcqReview(entry, container) {
     });
 }
 
+/* --------------------------------------------------------------------------
+   Type 4: Κλικ στον χάρτη (ποτάμια, λιμάνια, κόλποι)
+   The student clicks N items on a map (MAP_DATA, js/map-data.js). Answers are stored as hashes.
+   Scoring follows the matching rule: right on the 1st attempt = 1/N each, right on the 2nd = 0.5/N each.
+   -------------------------------------------------------------------------- */
+function _calcMapHash(qid, itemId) {
+    return sha256(String(qid) + ":map:" + String(itemId) + ":" + _GNE_HASH_SALT);
+}
+
+function isMapItemCorrect(q, itemId) {
+    return Array.isArray(q.correctHashes) && q.correctHashes.includes(_calcMapHash(q.id, itemId));
+}
+
+function mapCorrectIds(q) {
+    return (q.show || []).filter(id => isMapItemCorrect(q, id));
+}
+
+function mapItemName(q, id) {
+    const map = MAP_DATA[q.map];
+    return map && map.items[id] ? map.items[id].name : id;
+}
+
+/* Builds the SVG map. Item states are painted by paintMapSvg(). */
+function buildMapSvg(q, onItemClick) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const map = MAP_DATA[q.map];
+    const mk = (name, attrs, parent) => {
+        const e = document.createElementNS(NS, name);
+        Object.keys(attrs || {}).forEach(k => e.setAttribute(k, attrs[k]));
+        if (parent) parent.appendChild(e);
+        return e;
+    };
+    const svg = mk('svg', { viewBox: `0 0 ${map.w} ${map.h}`, class: 'mc-map', role: 'img', 'aria-label': 'Χάρτης' });
+    map.land.forEach(d => mk('path', { d, class: 'mc-land' }, svg));
+    map.labels.forEach(([n, x, y]) => { mk('text', { x, y, class: 'mc-cname' }, svg).textContent = n.toUpperCase(); });
+    (map.seas || []).forEach(([n, x, y]) => { mk('text', { x, y, class: 'mc-sea' }, svg).textContent = n; });
+
+    (q.show || []).forEach(id => {
+        const it = map.items[id];
+        if (!it) return;
+        const g = mk('g', { class: 'mc-item mc-' + it.type, 'data-id': id, tabindex: onItemClick ? 0 : -1, role: 'button', 'aria-label': 'Επιλογή στο χάρτη' }, svg);
+        let lx, ly;
+        if (it.type === 'point') {
+            mk('circle', { cx: it.x, cy: it.y, r: 8, class: 'mc-shape mc-dot' }, g);
+            mk('circle', { cx: it.x, cy: it.y, r: 22, class: 'mc-hit' }, g);
+            lx = it.x; ly = it.y - 16;
+        } else {
+            mk('path', { d: it.d, class: 'mc-shape' }, g);
+            mk('path', { d: it.d, class: 'mc-hit' }, g);
+            lx = it.lx; ly = it.ly - 12;
+        }
+        mk('text', { x: lx, y: ly, class: 'mc-name' }, g).textContent = it.name;
+        if (onItemClick) {
+            g.addEventListener('click', () => onItemClick(id));
+            g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onItemClick(id); } });
+        }
+    });
+    return svg;
+}
+
+/* state: { selected:[], locked:[], eliminated:[], ok:[], bad:[], missed:[], revealed:bool } */
+function paintMapSvg(svg, st) {
+    svg.classList.toggle('mc-revealed', !!st.revealed);
+    svg.querySelectorAll('.mc-item').forEach(g => {
+        const id = g.dataset.id;
+        g.classList.toggle('sel', (st.selected || []).includes(id));
+        g.classList.toggle('locked', (st.locked || []).includes(id));
+        g.classList.toggle('tried', (st.eliminated || []).includes(id));
+        g.classList.toggle('ok', (st.ok || []).includes(id));
+        g.classList.toggle('bad', (st.bad || []).includes(id));
+        g.classList.toggle('missed', (st.missed || []).includes(id));
+    });
+}
+
+function renderMapClickQuestion(q, qIndex, container) {
+    const qr = AppState.quizRunner;
+    qr.mapState = { attempts: 0, selected: [], locked: [], eliminated: [], firstTryCorrect: [], evaluated: false };
+
+    const wrap = document.createElement('div');
+    wrap.className = 'mc-wrap';
+    wrap.id = 'mc-wrap';
+    const svg = buildMapSvg(q, handleMapClick);
+    svg.id = 'mc-svg';
+    wrap.appendChild(svg);
+    container.appendChild(wrap);
+
+    const bar = document.createElement('div');
+    bar.className = 'matching-control-bar';
+    bar.innerHTML = `
+        <div class="matching-status">
+            <span class="matching-status-icon">🗺️</span>
+            <span id="mc-status-text"></span>
+        </div>
+        <div class="matching-actions">
+            <button type="button" class="matching-btn-reset" id="mc-reset-btn" onclick="resetMapSelection()" style="display: none;">Καθαρισμός</button>
+            <button type="button" class="matching-btn-submit" id="mapclick-submit-btn" onclick="submitMapAnswer()" disabled>Έλεγχος επιλογής</button>
+        </div>
+    `;
+    container.appendChild(bar);
+    updateMapUI(q);
+}
+
+function updateMapUI(q) {
+    const st = AppState.quizRunner.mapState;
+    if (!st) return;
+    const svg = document.getElementById('mc-svg');
+    if (svg) paintMapSvg(svg, st);
+    const need = q.pick - st.locked.length;
+    const status = document.getElementById('mc-status-text');
+    const submit = document.getElementById('mapclick-submit-btn');
+    const reset = document.getElementById('mc-reset-btn');
+    if (status && st.evaluated) {
+        status.innerHTML = 'Ολοκληρώθηκε. Πράσινο = σωστό, κόκκινο = λάθος επιλογή, διακεκομμένο πράσινο = σωστό που δεν επιλέχθηκε.';
+    }
+    if (status && !st.evaluated) {
+        const what = q.pick === 1 ? 'ένα στοιχείο' : q.pick + ' στοιχεία';
+        status.innerHTML = st.attempts === 0
+            ? `Πατήστε πάνω στον χάρτη για να επιλέξετε <strong>${what}</strong> (επιλέχθηκαν ${st.selected.length} από ${need}).`
+            : `<strong>2η προσπάθεια:</strong> επιλέξτε ακόμη <strong>${need}</strong> (επιλέχθηκαν ${st.selected.length}).`;
+    }
+    if (submit) {
+        submit.disabled = st.evaluated || st.selected.length !== need;
+        submit.style.display = st.evaluated ? 'none' : '';
+        submit.innerText = st.attempts === 0 ? 'Έλεγχος επιλογής' : 'Έλεγχος 2ης προσπάθειας';
+    }
+    if (reset) reset.style.display = (!st.evaluated && st.selected.length > 0) ? '' : 'none';
+}
+
+function handleMapClick(id) {
+    const qr = AppState.quizRunner;
+    const q = AppState.currentQuiz.questions[qr.activeQueue[qr.currentPos]];
+    const st = qr.mapState;
+    if (qr.answered || !st || st.evaluated) return;
+    if (st.locked.includes(id) || st.eliminated.includes(id)) return;
+    const i = st.selected.indexOf(id);
+    if (i >= 0) {
+        st.selected.splice(i, 1);
+    } else {
+        if (st.selected.length >= q.pick - st.locked.length) {
+            showToast('⚠️ Έχετε ήδη επιλέξει ' + st.selected.length + '. Πατήστε πάνω σε μία επιλογή για να την αναιρέσετε.');
+            return;
+        }
+        st.selected.push(id);
+    }
+    updateMapUI(q);
+}
+
+function resetMapSelection() {
+    const qr = AppState.quizRunner;
+    const q = AppState.currentQuiz.questions[qr.activeQueue[qr.currentPos]];
+    if (!qr.mapState || qr.mapState.evaluated) return;
+    qr.mapState.selected = [];
+    updateMapUI(q);
+}
+
+function submitMapAnswer() {
+    const qr = AppState.quizRunner;
+    const q = AppState.currentQuiz.questions[qr.activeQueue[qr.currentPos]];
+    const st = qr.mapState;
+    if (qr.answered || !st || st.evaluated) return;
+    const need = q.pick - st.locked.length;
+    if (st.selected.length !== need) {
+        showToast('⚠️ Επιλέξτε ' + need + ' στοιχεία πριν τον έλεγχο.');
+        return;
+    }
+
+    st.attempts++;
+    const attempt = st.attempts;
+    const rightNow = st.selected.filter(id => isMapItemCorrect(q, id));
+    const wrongNow = st.selected.filter(id => !isMapItemCorrect(q, id));
+    const allRight = st.locked.concat(rightNow);
+    const isFull = allRight.length === q.pick;
+    const feedback = document.getElementById('feedback-box');
+
+    if (attempt === 1 && !isFull) {
+        st.locked = allRight.slice();
+        st.firstTryCorrect = allRight.slice();
+        st.eliminated = wrongNow.slice();
+        st.selected = [];
+        feedback.className = 'feedback-box warning';
+        feedback.innerHTML = `<strong>⚠️ 2η Προσπάθεια:</strong> ` +
+            (allRight.length > 0 ? `Διατηρήθηκαν οι <strong>${allRight.length} σωστές</strong> επιλογές (πράσινο). ` : 'Καμία επιλογή δεν ήταν σωστή. ') +
+            `Οι λανθασμένες σημειώθηκαν με κόκκινη διακεκομμένη γραμμή και δεν μπορούν να επιλεγούν ξανά. Επιλέξτε τα υπόλοιπα και πατήστε <em>«Έλεγχος 2ης προσπάθειας»</em>.`;
+        feedback.style.display = 'block';
+        showToast(allRight.length > 0 ? `💡 2η Προσπάθεια: Διατηρήθηκαν ${allRight.length} σωστές!` : '💡 2η Προσπάθεια: Δοκιμάστε ξανά!');
+        updateMapUI(q);
+        return;
+    }
+
+    // final evaluation
+    st.evaluated = true;
+    qr.answered = true;
+    let awarded = 0;
+    allRight.forEach(id => { awarded += (st.firstTryCorrect.includes(id) || attempt === 1 ? 1.0 : 0.5) / q.pick; });
+    awarded = Math.round(awarded * 100) / 100;
+    qr.score += awarded;
+    document.getElementById('score-counter').innerText = `Σκορ: ${formatScore(qr.score)}`;
+
+    const correctIds = mapCorrectIds(q);
+    const badIds = st.eliminated.concat(wrongNow);
+    const missed = correctIds.filter(id => !allRight.includes(id));
+    st.selected = [];
+    st.locked = [];
+    st.eliminated = [];
+    const paint = { ok: allRight, bad: badIds, missed, revealed: true };
+    Object.assign(st, paint);
+    updateMapUI(q);
+    const svg = document.getElementById('mc-svg');
+    if (svg) paintMapSvg(svg, paint);
+
+    const names = correctIds.map(id => mapItemName(q, id)).join(' και ');
+    if (isFull) {
+        feedback.className = 'feedback-box correct';
+        feedback.innerHTML = attempt === 1
+            ? `<strong>🎉 Άριστα! Σωστά με την 1η προσπάθεια! (+1.0 βαθμός)</strong><br><br>${formatMathText(q.exp)}`
+            : `<strong>🎉 Μπράβο! Σωστά στη 2η προσπάθεια! (+${formatScore(awarded)} βαθμοί)</strong><br><br>${formatMathText(q.exp)}`;
+        showToast('🎉 Σωστά!');
+    } else if (allRight.length > 0) {
+        feedback.className = 'feedback-box warning';
+        feedback.innerHTML = `<strong>⚠️ Μερικώς σωστά (${allRight.length} από ${q.pick} — +${formatScore(awarded)} βαθμοί).</strong> Σωστά ήταν: ${names}.<br><br>${formatMathText(q.exp)}`;
+    } else {
+        feedback.className = 'feedback-box wrong';
+        feedback.innerHTML = `<strong>✗ Λανθασμένη επιλογή (0 από ${q.pick}).</strong> Σωστά ήταν: ${names}.<br><br>${formatMathText(q.exp)}`;
+    }
+    feedback.style.display = 'block';
+
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.classList.add('pulse-ready');
+    document.getElementById('next-btn-text').innerText = 'Επόμενο';
+    nextBtn.title = 'Συνέχεια στην επόμενη ερώτηση';
+
+    qr.userHistory.push({
+        type: 'mapclick',
+        qIndex: qr.activeQueue[qr.currentPos],
+        question: q.q,
+        mapQuestion: q,
+        mapPaint: { ok: allRight.slice(), bad: badIds.slice(), missed: missed.slice(), revealed: true },
+        correctNames: correctIds.map(id => mapItemName(q, id)),
+        chosenNames: allRight.concat(badIds).map(id => mapItemName(q, id)),
+        isCorrect: isFull,
+        partialScore: awarded,
+        attempts: attempt,
+        explanation: q.exp
+    });
+
+    if (window.innerWidth <= 768) {
+        setTimeout(() => feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+    }
+}
+
+function renderMapClickReview(entry, container) {
+    const wrap = document.createElement('div');
+    wrap.className = 'mc-wrap';
+    const svg = buildMapSvg(entry.mapQuestion, null);
+    paintMapSvg(svg, entry.mapPaint);
+    wrap.appendChild(svg);
+    container.appendChild(wrap);
+}
+
+function mapClickReviewSummary(item) {
+    const ok = item.mapPaint.ok.map(id => mapItemName(item.mapQuestion, id));
+    const bad = item.mapPaint.bad.map(id => mapItemName(item.mapQuestion, id));
+    return `
+        <div style="margin: 6px 0; font-size: 0.9rem;">
+            <strong>Σωστά:</strong> <span style="color: var(--success-border); font-weight: 600;">${ok.join(', ') || '—'}</span>
+            ${bad.length ? `<br><strong>Λάθος επιλογές:</strong> <span style="color: var(--danger-border); font-weight: 600;">${bad.join(', ')}</span>` : ''}
+            ${item.mapPaint.missed.length ? `<br><strong>Δεν επιλέχθηκαν:</strong> ${item.mapPaint.missed.map(id => mapItemName(item.mapQuestion, id)).join(', ')}` : ''}
+        </div>`;
+}
+
 function selectQuizOption(idx) {
     const qr = AppState.quizRunner;
     const quiz = AppState.currentQuiz;
@@ -2438,7 +2710,7 @@ function selectQuizOption(idx) {
     }
 
     // 2. If matching question, numeric shortcuts do not apply to dot-connecting
-    if (q.type === 'matching') {
+    if (q.type === 'matching' || q.type === 'mapclick') {
         return;
     }
 
@@ -2790,6 +3062,8 @@ function renderAnsweredQuestionReview(reviewIndex) {
 
     if (entry.type === 'matching') {
         renderMatchingReview(entry, optionsContainer);
+    } else if (entry.type === 'mapclick') {
+        renderMapClickReview(entry, optionsContainer);
     } else if (entry.type === 'cascading') {
         renderCascadingReview(entry, optionsContainer);
     } else {
@@ -2810,7 +3084,7 @@ function renderAnsweredQuestionReview(reviewIndex) {
         feedbackBox.innerHTML = `<strong>✓ Σωστό!</strong> ${formatMathText(entry.explanation)}`;
     } else {
         feedbackBox.className = 'feedback-box wrong';
-        if (entry.type === 'matching' || entry.type === 'cascading') {
+        if (entry.type === 'matching' || entry.type === 'cascading' || entry.type === 'mapclick') {
             feedbackBox.innerHTML = `<strong>Επεξήγηση:</strong> ${formatMathText(entry.explanation)}`;
         } else {
             feedbackBox.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Η σωστή απάντηση είναι η επιλογή <strong>${letters[entry.correctIdx]}</strong>.<br><br><strong>Επεξήγηση:</strong> ${formatMathText(entry.explanation)}`;
@@ -2951,7 +3225,9 @@ function buildReviewList() {
         }
 
         let bodyHtml = '';
-        if (item.type === 'matching') {
+        if (item.type === 'mapclick') {
+            bodyHtml = mapClickReviewSummary(item);
+        } else if (item.type === 'matching') {
             bodyHtml = `
                 <div class="review-matching-card">
                     <div class="review-matching-title">✓ Ολοκληρωμένες Αντιστοιχίσεις:</div>
@@ -3252,6 +3528,11 @@ function setupGlobalKeyboardShortcuts() {
                 const matchSubmitBtn = document.getElementById('matching-submit-btn');
                 if (matchSubmitBtn && matchSubmitBtn.style.display !== 'none' && !matchSubmitBtn.disabled) {
                     submitMatchingAnswer();
+                    return;
+                }
+                const mapSubmitBtn = document.getElementById('mapclick-submit-btn');
+                if (mapSubmitBtn && mapSubmitBtn.style.display !== 'none' && !mapSubmitBtn.disabled) {
+                    submitMapAnswer();
                     return;
                 }
             }
