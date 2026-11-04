@@ -9700,3 +9700,32 @@ button.exam-opt-pill:active:not(:disabled) {
 .mc-cname { font-size: var(--mc-lsz, 21px); }
 /* Map questions get a wider card so the maps and their labels are easy to read */
 .quiz-container:has(.mc-wrap) { max-width: min(1240px, 96vw); }
+
+/* Rivers in amber (high contrast on the map), selection in cyan */
+.mc-shape { stroke: #fbbf24; }
+.mc-item:hover .mc-shape, .mc-item:focus .mc-shape { stroke: #fff3b0; }
+.mc-item.sel .mc-shape { stroke: #22d3ee; stroke-width: 6.5; }
+.mc-point.sel .mc-shape { fill: #22d3ee; stroke: #ffffff; }
+.mc-area.sel .mc-shape { fill: rgba(34, 211, 238, 0.4); stroke: #22d3ee; }
+[data-theme="light"] .mc-shape { stroke: #d97706; }
+[data-theme="light"] .mc-item.sel .mc-shape { stroke: #0891b2; }
+[data-theme="light"] .mc-point .mc-shape { fill: #f59e0b; stroke: #ffffff; }
+[data-theme="light"] .mc-point.sel .mc-shape { fill: #0891b2; stroke: #ffffff; }
+
+/* Map questions: the map never grows beyond the screen height; compact header so question, map and controls fit together */
+.mc-wrap { width: fit-content; max-width: 100%; margin: 4px auto 0; display: flex; justify-content: center; }
+.mc-map { width: auto; max-width: 100%; height: auto; max-height: max(320px, calc(100vh - 330px)); }
+.quiz-container { scroll-margin-top: 8px; }
+.quiz-container:has(.mc-wrap) { padding: 14px 28px 12px; }
+.quiz-container:has(.mc-wrap) .question-jump-wrap,
+.quiz-container:has(.mc-wrap) .shortcuts-hint { display: none; }
+.quiz-container:has(.mc-wrap) .quiz-header { margin-bottom: 8px; }
+.quiz-container:has(.mc-wrap) .quiz-header-top { margin-bottom: 8px; }
+.quiz-container:has(.mc-wrap) .progress-bar-container { margin-bottom: 8px; }
+.quiz-container:has(.mc-wrap) .question-text { margin: 10px 0 10px 0; font-size: 1.15rem; }
+.quiz-container:has(.mc-wrap) .actions-bar { margin-top: 10px; padding-top: 10px; }
+.quiz-container:has(.mc-wrap) .matching-control-bar { margin-top: 8px; }
+
+/* final sizing: the map width follows the screen height, so the whole question fits */
+.mc-wrap { display: block; width: min(100%, max(480px, calc((100vh - 330px) * var(--mc-ar, 1.5)))); max-width: 100%; margin: 4px auto 0; }
+.mc-map { width: 100%; height: auto; max-height: none; }

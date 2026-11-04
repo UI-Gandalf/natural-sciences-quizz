@@ -2450,6 +2450,14 @@ function mapCorrectIds(q) {
     return (q.show || []).filter(id => isMapItemCorrect(q, id));
 }
 
+/* width / height of the part of the map that is shown (the whole map, or the question's crop) */
+function mapAspect(q) {
+    const m = MAP_DATA[q.map];
+    const w = q.crop ? q.crop[2] - q.crop[0] : m.w;
+    const h = q.crop ? q.crop[3] - q.crop[1] : m.h;
+    return (w / h).toFixed(3);
+}
+
 function mapItemName(q, id) {
     const map = MAP_DATA[q.map];
     return map && map.items[id] ? map.items[id].name : id;
@@ -2465,7 +2473,8 @@ function buildMapSvg(q, onItemClick) {
         if (parent) parent.appendChild(e);
         return e;
     };
-    const svg = mk('svg', { viewBox: `0 0 ${map.w} ${map.h}`, class: 'mc-map', role: 'img', 'aria-label': 'Χάρτης' });
+    const vb = q.crop ? q.crop[0] + ' ' + q.crop[1] + ' ' + (q.crop[2] - q.crop[0]) + ' ' + (q.crop[3] - q.crop[1]) : `0 0 ${map.w} ${map.h}`;
+    const svg = mk('svg', { viewBox: vb, class: 'mc-map', role: 'img', 'aria-label': 'Χάρτης' });
     // sea areas are clipped to the water, so they never cover the land
     window._mcClipSeq = (window._mcClipSeq || 0) + 1;
     const clipId = 'mc-sea-clip-' + window._mcClipSeq;
@@ -2474,7 +2483,9 @@ function buildMapSvg(q, onItemClick) {
     svg.style.setProperty('--mc-lsz', (map.lsz || 21) + 'px');
     map.land.forEach((d, i) => mk('path', { d, class: 'mc-land mc-c' + (i % 4) }, svg));
     if (!q.hideLabels) {
-        map.labels.forEach(([n, x, y]) => { mk('text', { x, y, class: 'mc-cname' }, svg).textContent = n.toUpperCase(); });
+        // in a cropped map, labels too close to the frame would be cut: leave them out
+        const inFrame = (x, y) => !q.crop || (x > q.crop[0] + 90 && x < q.crop[2] - 90 && y > q.crop[1] + 25 && y < q.crop[3] - 25);
+        map.labels.forEach(([n, x, y]) => { if (inFrame(x, y)) mk('text', { x, y, class: 'mc-cname' }, svg).textContent = n.toUpperCase(); });
         (map.seas || []).forEach(([n, x, y]) => { mk('text', { x, y, class: 'mc-sea' }, svg).textContent = n; });
     }
 
@@ -2524,6 +2535,7 @@ function renderMapClickQuestion(q, qIndex, container) {
     const wrap = document.createElement('div');
     wrap.className = 'mc-wrap';
     wrap.id = 'mc-wrap';
+    wrap.style.setProperty('--mc-ar', mapAspect(q));
     const svg = buildMapSvg(q, handleMapClick);
     svg.id = 'mc-svg';
     wrap.appendChild(svg);
@@ -2543,6 +2555,9 @@ function renderMapClickQuestion(q, qIndex, container) {
     `;
     container.appendChild(bar);
     updateMapUI(q);
+    // keep the question, the map and the controls together on the screen
+    const card = document.querySelector('.quiz-container');
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function updateMapUI(q) {
@@ -2696,6 +2711,7 @@ function submitMapAnswer() {
 function renderMapClickReview(entry, container) {
     const wrap = document.createElement('div');
     wrap.className = 'mc-wrap';
+    wrap.style.setProperty('--mc-ar', mapAspect(entry.mapQuestion));
     const svg = buildMapSvg(entry.mapQuestion, null);
     paintMapSvg(svg, entry.mapPaint);
     wrap.appendChild(svg);
