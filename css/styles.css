@@ -9729,3 +9729,13 @@ button.exam-opt-pill:active:not(:disabled) {
 /* final sizing: the map width follows the screen height, so the whole question fits */
 .mc-wrap { display: block; width: min(100%, max(480px, calc((100vh - 330px) * var(--mc-ar, 1.5)))); max-width: 100%; margin: 4px auto 0; }
 .mc-map { width: 100%; height: auto; max-height: none; }
+
+/* Country questions: nothing is highlighted in advance; any country can be clicked */
+.mc-plain .mc-shape { fill: transparent; stroke: transparent; stroke-dasharray: none; }
+.mc-plain:hover .mc-shape, .mc-plain:focus .mc-shape { fill: rgba(125, 211, 252, 0.22); stroke: #7dd3fc; stroke-width: 2; }
+.mc-plain.sel .mc-shape { fill: rgba(34, 211, 238, 0.4); stroke: #22d3ee; stroke-width: 3; }
+.mc-plain.ok .mc-shape, .mc-plain.locked .mc-shape { fill: rgba(34, 197, 94, 0.45); stroke: #22c55e; stroke-width: 3; }
+.mc-plain.bad .mc-shape, .mc-plain.tried .mc-shape { fill: rgba(239, 68, 68, 0.4); stroke: #ef4444; stroke-width: 3; stroke-dasharray: none; }
+.mc-plain.missed .mc-shape { fill: rgba(34, 197, 94, 0.25); stroke: #22c55e; stroke-width: 3; stroke-dasharray: 6 4; }
+.mc-plain .mc-name { opacity: 0; }
+.mc-revealed .mc-plain.ok .mc-name, .mc-revealed .mc-plain.bad .mc-name, .mc-revealed .mc-plain.missed .mc-name { opacity: 1; }

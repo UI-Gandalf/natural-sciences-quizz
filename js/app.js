@@ -1061,7 +1061,7 @@ function renderQuizRunner(quiz) {
     if (quiz.questions.some(q => q.type === 'mapclick') && typeof MAP_DATA === 'undefined') {
         container.innerHTML = '<div class="quiz-runner-wrap"><div class="quiz-container" style="text-align:center;padding:40px 24px;">Φόρτωση χαρτών…</div></div>';
         const s = document.createElement('script');
-        s.src = 'js/map-data.js?v=7';
+        s.src = 'js/map-data.js?v=8';
         s.onload = () => renderQuizRunner(quiz);
         s.onerror = () => { container.innerHTML = '<div class="quiz-runner-wrap"><div class="quiz-container" style="text-align:center;padding:40px 24px;">Δεν ήταν δυνατή η φόρτωση των χαρτών. Ανανεώστε τη σελίδα.</div></div>'; };
         document.head.appendChild(s);
@@ -2482,17 +2482,21 @@ function buildMapSvg(q, onItemClick) {
     mk('path', { d: 'M0,0H' + map.w + 'V' + map.h + 'H0Z' + map.land.join(''), 'clip-rule': 'evenodd' }, clip);
     svg.style.setProperty('--mc-lsz', (map.lsz || 21) + 'px');
     map.land.forEach((d, i) => mk('path', { d, class: 'mc-land mc-c' + (i % 4) }, svg));
-    if (!q.hideLabels) {
+    // names of countries and seas are drawn AFTER the selectable shapes, as an overlay, so highlighted areas never hide them
+    const drawLabels = () => {
+        if (q.hideLabels) return;
         // in a cropped map, labels too close to the frame would be cut: leave them out
         const inFrame = (x, y) => !q.crop || (x > q.crop[0] + 90 && x < q.crop[2] - 90 && y > q.crop[1] + 25 && y < q.crop[3] - 25);
-        map.labels.forEach(([n, x, y]) => { if (inFrame(x, y)) mk('text', { x, y, class: 'mc-cname' }, svg).textContent = n.toUpperCase(); });
+        map.labels.forEach(([n, x, y]) => { if (inFrame(x, y)) mk('text', { x, y, class: 'mc-cname' }, svg).textContent = n.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase(); });  // capitals carry no accents
         (map.seas || []).forEach(([n, x, y]) => { mk('text', { x, y, class: 'mc-sea' }, svg).textContent = n; });
-    }
+    };
 
-    (q.show || []).forEach(id => {
+    // questions about countries: every country of the map is clickable (drawn first, so the question's own items stay on top)
+    const extra = q.all === 'countries' ? Object.keys(map.items).filter(id => map.items[id].ref && !(q.show || []).includes(id)) : [];
+    extra.concat(q.show || []).forEach(id => {
         const it = map.items[id];
         if (!it) return;
-        const g = mk('g', { class: 'mc-item mc-' + it.type, 'data-id': id, tabindex: onItemClick ? 0 : -1, role: 'button', 'aria-label': 'Επιλογή στο χάρτη' }, svg);
+        const g = mk('g', { class: 'mc-item mc-' + it.type + (q.plain ? ' mc-plain' : ''), 'data-id': id, tabindex: onItemClick ? 0 : -1, role: 'button', 'aria-label': 'Επιλογή στο χάρτη' }, svg);
         if (it.sea) g.setAttribute('clip-path', 'url(#' + clipId + ')');
         let lx, ly;
         if (it.type === 'point') {
@@ -2511,6 +2515,7 @@ function buildMapSvg(q, onItemClick) {
             g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onItemClick(id); } });
         }
     });
+    drawLabels();
     return svg;
 }
 

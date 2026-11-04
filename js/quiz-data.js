@@ -11101,7 +11101,9 @@ geography: [
         "noDiagrams": true,
         "exp": "Η Ισπανία βρίσκεται στην Ευρώπη και βρέχεται από τη Μεσόγειο. Η Αίγυπτος βρίσκεται στην Αφρική και βρέχεται από τη Μεσόγειο.",
         "hint": "",
-        "hideLabels": true
+        "hideLabels": true,
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 2,
@@ -11174,7 +11176,9 @@ geography: [
           0,
           928,
           625
-        ]
+        ],
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 5,
@@ -11243,7 +11247,9 @@ geography: [
         "noDiagrams": true,
         "exp": "Η Φινλανδία βρέχεται από τη Βαλτική Θάλασσα. Η Πολωνία βρέχεται από τη Βαλτική· το Γκντανσκ είναι το μεγάλο λιμάνι της.",
         "hint": "",
-        "hideLabels": true
+        "hideLabels": true,
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 8,
@@ -11366,7 +11372,9 @@ geography: [
         "noDiagrams": true,
         "exp": "Η Νορβηγία συνορεύει με τη Σουηδία, τη Φινλανδία και τη Ρωσία.",
         "hint": "",
-        "hideLabels": true
+        "hideLabels": true,
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 13,
@@ -11394,7 +11402,9 @@ geography: [
           0,
           1000,
           503
-        ]
+        ],
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 14,
@@ -11519,7 +11529,9 @@ geography: [
           0,
           1000,
           503
-        ]
+        ],
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 19,
@@ -11595,7 +11607,9 @@ geography: [
           187,
           752,
           788
-        ]
+        ],
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 22,
@@ -11645,7 +11659,9 @@ geography: [
         "noDiagrams": true,
         "exp": "Το Καλίνινγκραντ συνορεύει με την Πολωνία και τη Λιθουανία και βρέχεται από τη Βαλτική Θάλασσα.",
         "hint": "",
-        "hideLabels": true
+        "hideLabels": true,
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 24,
@@ -11849,7 +11865,9 @@ geography: [
           0,
           890,
           689
-        ]
+        ],
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 32,
@@ -11987,7 +12005,9 @@ geography: [
           0,
           1000,
           380
-        ]
+        ],
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 5,
@@ -12028,7 +12048,9 @@ geography: [
         "noDiagrams": true,
         "exp": "Το Καλίνινγκραντ είναι ρωσική επικράτεια (εξκλάβο) που δεν συνορεύει με την υπόλοιπη Ρωσία· βρίσκεται ανάμεσα στην Πολωνία και τη Λιθουανία και βρέχεται από τη Βαλτική Θάλασσα.",
         "hint": "",
-        "hideLabels": true
+        "hideLabels": true,
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 7,
@@ -12101,7 +12123,9 @@ geography: [
         "noDiagrams": true,
         "exp": "Η Ελλάδα βρίσκεται στην Ευρώπη και βρέχεται από τη Μεσόγειο. Η Αλγερία βρίσκεται στην Αφρική και βρέχεται από τη Μεσόγειο.",
         "hint": "",
-        "hideLabels": true
+        "hideLabels": true,
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 10,
@@ -12202,7 +12226,9 @@ geography: [
           0,
           1000,
           625
-        ]
+        ],
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 14,
@@ -12363,7 +12389,9 @@ geography: [
           0,
           1000,
           839
-        ]
+        ],
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 21,
@@ -12481,7 +12509,9 @@ geography: [
           0,
           991,
           689
-        ]
+        ],
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 26,
@@ -12557,7 +12587,9 @@ geography: [
           124,
           848,
           795
-        ]
+        ],
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 29,
