@@ -9939,3 +9939,6 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .cell-explorer:fullscreen .cell-toggle, .cell-explorer:fullscreen .cell-btn-test, .cell-explorer.cell-fs .cell-toggle, .cell-explorer.cell-fs .cell-btn-test { display: none; }
 .cell-svg .c-annot-t { font-size: 6px; stroke-width: 1.8px; }
 .cell-svg .c-annot .c-lead-w { stroke-width: 3; } .cell-svg .c-annot .c-lead { stroke-width: 1.2; }
+
+/* During the self-test the names and the organelle list would give the answers away: hidden */
+.cell-explorer.cell-testing .cell-chips, .cell-explorer.cell-testing .cell-check, .cell-explorer.cell-testing .cell-btn-all, .cell-explorer.cell-testing .cell-compare { display: none; }

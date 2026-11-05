@@ -589,6 +589,7 @@
         function startTest() {
             const pool = TESTS.filter(t => !t[2] || t[2] === st.type).map(t => ({ q: t[0], ok: t[1].filter(present) })).filter(t => t.ok.length);
             for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const x = pool[i]; pool[i] = pool[j]; pool[j] = x; }
+            root.classList.add('cell-testing');
             st.test = { list: pool.slice(0, 10), i: 0, score: 0, tries: 0, done: false, locked: false };
             st.sel = null;
             applySelection();
@@ -600,6 +601,7 @@
         }
         function endTest() {
             st.test = null;
+            root.classList.remove('cell-testing');
             testbar.style.display = 'none';
             svg.querySelectorAll('.t-ok, .t-bad').forEach(el => el.classList.remove('t-ok', 't-bad'));
             root.querySelector('[data-act="test"]').textContent = '🎯 Δοκίμασε τον εαυτό σου ⛶';
