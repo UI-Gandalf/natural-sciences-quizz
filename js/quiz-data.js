@@ -11247,8 +11247,8 @@ geography: [
         "crop": [
           0,
           0,
-          886,
-          709
+          772,
+          618
         ]
       },
       {
@@ -11297,8 +11297,8 @@ geography: [
         "crop": [
           0,
           0,
-          886,
-          709
+          772,
+          618
         ]
       },
       {
@@ -11368,6 +11368,12 @@ geography: [
         "exp": "Η Νορβηγία συνορεύει με τη Σουηδία, τη Φινλανδία και τη Ρωσία.",
         "hint": "",
         "hideLabels": true,
+        "crop": [
+          127,
+          0,
+          1000,
+          671
+        ],
         "all": "countries",
         "plain": true
       },
@@ -12077,22 +12083,27 @@ geography: [
       {
         "id": 7,
         "type": "mapclick",
-        "q": "7. Κάντε κλικ στην ακτή με τα φιόρδ.",
-        "map": "europe",
+        "q": "7. Κάντε κλικ στις 2 χώρες με τα έντονα φιόρδ στις ακτές τους.",
+        "map": "north",
         "show": [
-          "fjords",
-          "dalmatia",
-          "jutland",
-          "brittany",
-          "andalusia"
+          "c_norway",
+          "c_iceland",
+          "c_sweden",
+          "c_finland",
+          "c_denmark",
+          "c_russia"
         ],
-        "pick": 1,
+        "pick": 2,
         "correctHashes": [
-          "fab7cc93cf6d753a8f4729d9a8f94d7886adedaaf62ffdc9ba45adc68859fc0c"
+          "4eeed96faf64f95a4b4291da64840a75ee04564c892dd80bbbb82ae574300a1d",
+          "59a36f46a295133d97d734d37bcc78eef0d8a41fa421e9b255e080792b3f0071"
         ],
         "noDiagrams": true,
-        "exp": "Οι δυτικές ακτές της Νορβηγίας έχουν τα χαρακτηριστικά φιόρδ: στενούς, βαθείς κόλπους που σχημάτισαν οι παγετώνες.",
-        "hint": ""
+        "exp": "Η Νορβηγία και η Ισλανδία έχουν στις ακτές τους έντονα φιόρδ: στενούς, βαθείς κόλπους που σχημάτισαν οι παγετώνες.",
+        "hint": "",
+        "hideLabels": true,
+        "all": "countries",
+        "plain": true
       },
       {
         "id": 8,
