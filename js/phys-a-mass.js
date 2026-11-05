@@ -50,8 +50,6 @@
         '<p>Οδηγός μελέτης με τους βασικούς ορισμούς, τη σύγκριση των δύο μεγεθών, τον λόγο της σύγχυσης και τη σχέση <strong>W = m · g</strong>, με εργαλείο υπολογισμού και ασκήσεις εμπέδωσης με λύσεις.</p>' +
         '<div class="pa-tools"><button type="button" class="pa-btn" data-act="open-sol">📂 Εμφάνιση όλων των λύσεων</button><button type="button" class="pa-btn" data-act="close-sol">📁 Απόκρυψη όλων</button></div></header>' +
 
-        '<nav class="pa-toc"><a href="#pm-s1">1 · Ορισμοί</a><a href="#pm-s2">2 · Σύγκριση</a><a href="#pm-s3">3 · Γιατί μπερδεύονται</a><a href="#pm-s4">4 · W = m · g</a><a href="#pm-s5">5 · Ασκήσεις</a></nav>' +
-
         /* 1 */
         '<section class="pa-card" id="pm-s1"><h3><span class="pa-num">1</span> Βασικοί ορισμοί</h3>' +
         '<div class="pa-two">' +
