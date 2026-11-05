@@ -9755,3 +9755,7 @@ button.exam-opt-pill:active:not(:disabled) {
 [data-theme="light"] .mc-path .mc-shape { stroke: #0369a1; filter: drop-shadow(0 0 1px #ffffff); }
 [data-theme="light"] .mc-path.sel .mc-shape { stroke: #c026d3; }
 .mc-path .mc-shape { stroke-width: 4.5; }
+
+/* revealed names live in their own top layer and appear only when flagged */
+.mc-revealed .mc-name { opacity: 0; }
+.mc-revealed .mc-name.nm-show { opacity: 1; }

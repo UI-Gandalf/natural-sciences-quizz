@@ -2496,6 +2496,7 @@ function buildMapSvg(q, onItemClick) {
 
     // questions about countries: every country of the map is clickable (drawn first, so the question's own items stay on top)
     const extra = q.all === 'countries' ? Object.keys(map.items).filter(id => map.items[id].ref && !(q.show || []).includes(id)) : [];
+    const nameLayer = mk('g', { class: 'mc-names' });   // revealed names: a separate top layer, never hidden by shapes or labels
     extra.concat(q.show || []).forEach(id => {
         const it = map.items[id];
         if (!it) return;
@@ -2512,13 +2513,14 @@ function buildMapSvg(q, onItemClick) {
             mk('path', { d, class: 'mc-hit' }, g);
             lx = it.lx; ly = it.ly - 12;
         }
-        mk('text', { x: lx, y: ly, class: 'mc-name' }, g).textContent = it.name;
+        mk('text', { x: lx, y: ly, class: 'mc-name', 'data-for': id }, nameLayer).textContent = it.name;
         if (onItemClick) {
             g.addEventListener('click', () => onItemClick(id));
             g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onItemClick(id); } });
         }
     });
     drawLabels();
+    svg.appendChild(nameLayer);
     return svg;
 }
 
@@ -2533,7 +2535,25 @@ function paintMapSvg(svg, st) {
         g.classList.toggle('ok', (st.ok || []).includes(id));
         g.classList.toggle('bad', (st.bad || []).includes(id));
         g.classList.toggle('missed', (st.missed || []).includes(id));
+        // the item's name is shown after the evaluation (for country questions only for the chosen / correct ones)
+        const nm = svg.querySelector('.mc-name[data-for="' + id + '"]');
+        if (nm) {
+            const involved = ['ok', 'bad', 'missed'].some(c => g.classList.contains(c));
+            nm.classList.toggle('nm-show', !!st.revealed && (!g.classList.contains('mc-plain') || involved));
+        }
     });
+    // base labels (countries / seas) that collide with a revealed name give way to it
+    const base = svg.querySelectorAll('.mc-cname, .mc-sea');
+    base.forEach(t => t.style.opacity = '');
+    if (st.revealed) {
+        try {
+            const shown = [...svg.querySelectorAll('.mc-name.nm-show')].map(t => t.getBBox());
+            base.forEach(t => {
+                const b = t.getBBox();
+                if (shown.some(s => b.x < s.x + s.width && b.x + b.width > s.x && b.y < s.y + s.height && b.y + b.height > s.y)) t.style.opacity = '0';
+            });
+        } catch (e) { /* not rendered yet */ }
+    }
 }
 
 function renderMapClickQuestion(q, qIndex, container) {
