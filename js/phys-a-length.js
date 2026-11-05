@@ -95,7 +95,8 @@
         '<header class="pa-head"><div class="pa-kicker">Φυσική Α΄ Γυμνασίου · Μέτρηση μήκους</div>' +
         '<h2>📏 Μετρήσεις μήκους: πώς μετράμε σωστά</h2>' +
         '<p>Τι σημαίνει μέτρηση, πόσο ακριβής μπορεί να είναι, ποια είναι τα συνηθισμένα λάθη και γιατί επαναλαμβάνουμε τη μέτρηση και παίρνουμε τη <strong>μέση τιμή</strong>. Το υλικό βασίζεται στο υποστηρικτικό υλικό του ΕΚΦΕ Νέας Ιωνίας.</p>' +
-        '<div class="pa-exlink"><button type="button" class="pa-btn pa-btn-main" data-act="example">🔬 Δείτε το σε ένα απτό παράδειγμα: το μήκος ενός θρανίου, 10 μετρήσεις →</button></div></header>' +
+        '<div class="pa-exlink"><button type="button" class="pa-btn pa-btn-main" data-act="example">🔬 Δείτε το σε ένα απτό παράδειγμα: το μήκος ενός θρανίου, 10 μετρήσεις →</button>' +
+        ' <button type="button" class="pa-btn pa-btn-main" data-act="tool">🧮 Δοκιμάστε με δικές σας μετρήσεις →</button></div></header>' +
 
         '<section class="pa-card"><h3><span class="pa-num">1</span> Τι είναι μέτρηση και τι είναι μήκος</h3>' +
         '<div class="pa-two"><div class="pa-box pa-a"><h4>Μέτρηση</h4><p>Είναι η σύγκριση ενός μεγέθους με ένα άλλο ομοειδές, το οποίο θεωρούμε ως <strong>μονάδα μέτρησης</strong>. Για να συγκρίνουμε, π.χ., το ύψος δύο μαθητών από διαφορετικές χώρες, χρειαζόμαστε ένα μέτρο σύγκρισης <strong>διεθνώς αναγνωρισμένο</strong>.</p></div>' +
@@ -124,7 +125,7 @@
         '<section class="pa-card"><h3><span class="pa-num">5</span> Μια μέτρηση δεν αρκεί: η μέση τιμή</h3>' +
         '<p>Μία μέτρηση δεν είναι «αλάνθαστη»: σε κάθε μέτρηση υπάρχουν μικρές αποκλίσεις. Γι\' αυτό <strong>επαναλαμβάνουμε</strong> τη μέτρηση πολλές φορές και υπολογίζουμε τη <strong>μέση τιμή</strong>, που στη γλώσσα των μαθηματικών είναι η πιθανότερη τιμή. Έτσι οι αποκλίσεις εξομαλύνονται.</p>' +
         '<p>Στο παράδειγμα με το θρανίο, το άθροισμα των 10 μετρήσεων είναι 1189,1 cm και η μέση τιμή 1189,1 ÷ 10 = 118,91 cm, που <strong>στρογγυλοποιείται στο ένα δεκαδικό ψηφίο</strong> του οργάνου: <strong>118,9 cm</strong>.</p>' +
-        '<p><button type="button" class="pa-btn pa-btn-main" data-act="example">🔬 Δείτε το παράδειγμα με τις 10 μετρήσεις →</button></p></section>' +
+        '<p><button type="button" class="pa-btn pa-btn-main" data-act="example">🔬 Δείτε το παράδειγμα με τις 10 μετρήσεις →</button> <button type="button" class="pa-btn pa-btn-main" data-act="tool">🧮 Δοκιμάστε με δικές σας μετρήσεις →</button></p></section>' +
 
         '<section class="pa-card"><h3><span class="pa-num">6</span> Συμπεραίνω και καταγράφω</h3>' +
         '<div class="pa-grid">' +
@@ -162,6 +163,7 @@
             const zb = e.target.closest('[data-zoom]');
             if (zb) { openZoom(zb); return; }
             if (e.target.closest('[data-act="example"]')) renderExample(mount, () => render(mount));
+            else if (e.target.closest('[data-act="tool"]') && window.PhysACalc) window.PhysACalc.render(mount, { kind: 'length', back: () => render(mount) });
         });
     }
 

@@ -31,7 +31,7 @@
         '<h2>⏱ Κρίσιμα σημεία της μέτρησης του χρόνου δέκα ταλαντώσεων ενός απλού εκκρεμούς</h2>' +
         '<p>Περιγραφή και ερμηνεία των σημαντικότερων σημείων της πειραματικής διαδικασίας. Οι μικρότερης σημασίας παρατηρήσεις και συμβουλές του φυλλαδίου βρίσκονται στις <strong>σημειώσεις</strong> (μικρά αριθμημένα κουμπιά): πατήστε ένα νούμερο για να ανοίξει. Μετά την αρχική μελέτη του κειμένου αξίζει να τις διαβάσετε όλες, γιατί δίνουν σημαντικές λεπτομέρειες, ερμηνείες και απαντήσεις σε απορίες για τις επιλογές μας.</p>' +
         '<div class="pa-tools"><button type="button" class="pa-btn" data-act="open-all">📂 Άνοιγμα όλων των σημειώσεων</button><button type="button" class="pa-btn" data-act="close-all">📁 Κλείσιμο όλων</button></div>' +
-        '<div class="pa-exlink"><button type="button" class="pa-btn pa-btn-main" data-act="example">🔬 Δείτε το σε ένα απτό παράδειγμα με πραγματικές μετρήσεις →</button></div></header>' +
+        '<div class="pa-exlink"><button type="button" class="pa-btn pa-btn-main" data-act="example">🔬 Δείτε το σε ένα απτό παράδειγμα με πραγματικές μετρήσεις →</button> <button type="button" class="pa-btn pa-btn-main" data-act="tool">🧮 Δοκιμάστε με δικές σας μετρήσεις →</button></div></header>' +
 
         /* 1 */
         '<section class="pa-card" id="pa-s1"><h3><span class="pa-num">1</span> Η πειραματική διαδικασία</h3>' +
@@ -72,7 +72,7 @@
         '<div class="pa-two">' +
         '<div class="pa-box"><h4>🕰️ Αναλογικό ρολόι (ακρίβεια δευτερολέπτου)</h4><p>Στρογγυλοποιούμε στο κοντινότερο δευτερόλεπτο, <strong>χωρίς κανένα δεκαδικό μέρος</strong>.</p><div class="pa-calc-ex">136 ÷ 10 = <strong>13,6 s</strong> → <strong class="pa-res">14 s</strong></div><p class="pa-small">Όλες οι αρχικές μετρήσεις λήφθηκαν με στρογγυλοποίηση στο κοντινότερο δευτερόλεπτο, άρα δεν μπορούμε να απαντήσουμε με μεγαλύτερη ακρίβεια. Θα ήταν σαν η διαδικασία του μέσου όρου να είχε «ως εκ θαύματος» αυξήσει την ακρίβεια, κάτι που δεν συμβαίνει. Αν το αποτέλεσμα ήταν από 13,1 έως 13,4 θα στρογγυλοποιούσαμε στο 13.</p></div>' +
         '<div class="pa-box"><h4>⏲️ Χρονόμετρο (ακρίβεια εκατοστού)</h4><p>Στρογγυλοποιούμε στα <strong>δύο δεκαδικά ψηφία</strong>.</p><div class="pa-calc-ex">142,67 ÷ 10 = <strong>14,267 s</strong> → <strong class="pa-res">14,27 s</strong></div><p class="pa-small">Οι αρχικές μετρήσεις λήφθηκαν με ακρίβεια εκατοστού (το χρονόμετρο «στρογγυλοποιεί» από μόνο του σε αυτό το επίπεδο), άρα δεν μπορούμε ξαφνικά να απαντήσουμε με ακρίβεια χιλιοστού. Αν είχαμε αποτέλεσμα από 14,260 έως 14,264 θα στρογγυλοποιούσαμε στο 14,26.</p></div></div>' +
-        '<p><button type="button" class="pa-btn pa-btn-main" data-act="example">🔬 Δείτε και ολόκληρο το παράδειγμα με τις 10 μετρήσεις →</button></p>' +
+        '<p><button type="button" class="pa-btn pa-btn-main" data-act="example">🔬 Δείτε και ολόκληρο το παράδειγμα με τις 10 μετρήσεις →</button> <button type="button" class="pa-btn pa-btn-main" data-act="tool">🧮 Δοκιμάστε με δικές σας μετρήσεις →</button></p>' +
         '<p class="pa-small">Τα παραδείγματα είναι από τις μετρήσεις και την επεξεργασία του συνοδευτικού υλικού του ΕΚΦΕ Χαλανδρίου (τελευταία σελίδα).</p>' +
 
         '<h4 class="pa-sub">Φαινομενικό παράδοξο, αλλά πολύ σημαντικό: 14 s ≠ 14,0 s</h4>' +
@@ -122,6 +122,7 @@
             else if (b.dataset.act === 'close-all') { for (let n = 1; n <= 8; n++) toggle(n, false); }
             else if (b.dataset.act === 'calc') calc();
             else if (b.dataset.act === 'example') renderExample(mount, () => render(mount));
+            else if (b.dataset.act === 'tool' && window.PhysACalc) window.PhysACalc.render(mount, { kind: 'time', back: () => render(mount) });
         });
         root.querySelector('#pa-sum').addEventListener('keydown', e => { if (e.key === 'Enter') calc(); });
 

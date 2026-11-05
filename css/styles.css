@@ -10142,3 +10142,10 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .pl-oktxt { font: 700 13px system-ui, sans-serif; fill: #4ade80; }
 .pl-badtxt { font: 700 13px system-ui, sans-serif; fill: #f87171; }
 [data-theme="light"] .pl-oktxt { fill: #15803d; } [data-theme="light"] .pl-badtxt { fill: #b91c1c; } [data-theme="light"] .pl-num { fill: #1f2937; }
+
+/* Physics Α: own-measurements tool */
+.pc-opts { display: flex; flex-direction: column; gap: 8px; }
+.pc-opt { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(148, 163, 184, 0.5); cursor: pointer; font-weight: 600; }
+.pc-opt:has(input:checked) { border-color: #0ea5e9; background: rgba(14, 165, 233, 0.18); }
+.pc-in { width: 100%; box-sizing: border-box; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(148, 163, 184, 0.6); background: rgba(15, 23, 42, 0.45); color: inherit; font: inherit; }
+[data-theme="light"] .pc-in { background: #fff; }
