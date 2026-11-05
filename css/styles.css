@@ -9905,3 +9905,12 @@ button.exam-opt-pill:active:not(:disabled) {
 .d-rib-l { fill: #3f5fc4; stroke: #1f2a7a; stroke-width: 2; } .d-rib-s { fill: #7a93e6; stroke: #1f2a7a; stroke-width: 2; }
 .d-rna { fill: none; stroke: #e11d48; stroke-width: 3; stroke-linecap: round; }
 .d-fib { stroke: #8a6a34; stroke-width: 3; stroke-linecap: round; } .d-fib2 { stroke: #b08a48; stroke-width: 3; stroke-linecap: round; }
+
+/* Full screen toggle (header + every quiz) */
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.fs-toggle-btn.nav-fs-btn { background: var(--badge-bg); border: 1px solid var(--badge-border); color: var(--text-primary); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); }
+.fs-toggle-btn.nav-fs-btn:hover { background: var(--btn-secondary-hover); }
+@media (max-width: 700px) { .fs-toggle-btn.nav-fs-btn { padding: 6px 10px; font-size: 0.75rem; } }
+html.is-fullscreen { scrollbar-width: thin; }
+#fs-float { display: none; position: fixed; top: 12px; right: 12px; z-index: 9999; background: rgba(8, 15, 30, 0.88); color: #fff; border: 1px solid #fbbf24; border-radius: 999px; padding: 8px 16px; font: inherit; font-weight: 700; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5); }
+html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }

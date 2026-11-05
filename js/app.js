@@ -40,6 +40,47 @@ function initTheme() {
     setTheme(savedTheme);
 }
 
+/* ---------- Full screen (whole page): available on every page, quiz and simulation ---------- */
+function isFullscreenNow() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+}
+
+function toggleFullscreen() {
+    const el = document.documentElement;
+    if (isFullscreenNow()) {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen;
+        if (exit) exit.call(document);
+    } else {
+        const req = el.requestFullscreen || el.webkitRequestFullscreen;
+        if (req) {
+            const r = req.call(el);
+            if (r && r.catch) r.catch(() => {});
+        }
+    }
+}
+
+function syncFullscreenButtons() {
+    if (!document.getElementById('fs-float')) {   // floating "back to normal view" button for simulations / presentations (quizzes have their own)
+        const f = document.createElement('button');
+        f.id = 'fs-float';
+        f.type = 'button';
+        f.className = 'fs-toggle-btn';
+        f.onclick = toggleFullscreen;
+        document.body.appendChild(f);
+    }
+    const supported = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+    const on = isFullscreenNow();
+    document.documentElement.classList.toggle('is-fullscreen', on);
+    document.querySelectorAll('.fs-toggle-btn').forEach(b => {
+        b.style.display = supported ? '' : 'none';
+        b.textContent = on ? '✕ Κανονική προβολή' : '⛶ Πλήρης οθόνη';
+        b.title = on ? 'Επιστροφή στην κανονική προβολή (ή πλήκτρο Esc)' : 'Πλήρης οθόνη (έξοδος με Esc ή με αυτό το κουμπί)';
+    });
+}
+document.addEventListener('fullscreenchange', syncFullscreenButtons);
+document.addEventListener('webkitfullscreenchange', syncFullscreenButtons);
+document.addEventListener('DOMContentLoaded', syncFullscreenButtons);
+
 function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -1127,6 +1168,7 @@ function renderQuizRunner(quiz) {
                                 <span>${quiz.title.split(':')[0]}</span>
                             </div>
                             <div class="quiz-top-actions">
+                                <button class="quiz-exit-btn fs-toggle-btn" type="button" onclick="toggleFullscreen()">⛶ Πλήρης οθόνη</button>
                                 <button class="quiz-exit-btn" onclick="confirmRestartQuiz()" title="Ξεκίνα το κουίζ από την αρχή">
                                     ↻ Από την αρχή
                                 </button>
@@ -1245,6 +1287,7 @@ function renderQuizRunner(quiz) {
     `;
 
     container.innerHTML = html;
+    syncFullscreenButtons();
     loadCurrentQuestion();
 }
 
