@@ -401,7 +401,7 @@ function renderQuizSelection(classKey, subjectKey) {
     // Physics Α has only the quizzes for now: the theory / simulation / syllabus tabs belong to Physics Γ
     const isPhysG = subjectKey === 'physics' && (classKey === 'Γ' || (classKey && classKey.startsWith('Γ')));
     const isPhysA = subjectKey === 'physics' && classKey === 'Α';
-    if (subjectKey === 'physics' && !isPhysG && !(isPhysA && (currentTab === 'time' || currentTab === 'mass')) && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
+    if (subjectKey === 'physics' && !isPhysG && !(isPhysA && (currentTab === 'time' || currentTab === 'mass' || currentTab === 'length')) && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
 
     let html = `
         <button class="back-btn" onclick="navigateTo('class/${classKey}')">
@@ -434,6 +434,12 @@ function renderQuizSelection(classKey, subjectKey) {
                 <button class="subject-tab-btn ${currentTab === 'time' ? 'active' : ''}" id="tab-btn-time" onclick="switchSubjectTab('time')">
                     <span class="tab-icon">⏱</span>
                     <span>Μέτρηση χρόνου: κρίσιμα σημεία</span>
+                </button>
+                ` : ''}
+                ${isPhysA ? `
+                <button class="subject-tab-btn ${currentTab === 'length' ? 'active' : ''}" id="tab-btn-length" onclick="switchSubjectTab('length')">
+                    <span class="tab-icon">📏</span>
+                    <span>Μέτρηση μήκους</span>
                 </button>
                 ` : ''}
                 ${isPhysA ? `
@@ -670,6 +676,12 @@ function renderQuizSelection(classKey, subjectKey) {
         </div>
         ` : ''}
         ${isPhysA ? `
+        <!-- PHYSICS Α: LENGTH MEASUREMENT -->
+        <div class="tab-panel" id="tab-panel-length" style="display: ${currentTab === 'length' ? 'block' : 'none'};">
+            <div id="length-mount"></div>
+        </div>
+        ` : ''}
+        ${isPhysA ? `
         <!-- PHYSICS Α: MASS AND WEIGHT -->
         <div class="tab-panel" id="tab-panel-mass" style="display: ${currentTab === 'mass' ? 'block' : 'none'};">
             <div id="mass-mount"></div>
@@ -726,6 +738,10 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'time') {
         const tm = document.getElementById('time-mount');
         if (tm && window.PhysATime) window.PhysATime.render(tm);
+    }
+    if (currentTab === 'length') {
+        const lm = document.getElementById('length-mount');
+        if (lm && window.PhysALength) window.PhysALength.render(lm);
     }
     if (currentTab === 'mass') {
         const mm = document.getElementById('mass-mount');
@@ -892,6 +908,18 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'intro3d') {
             i3Panel.style.animation = 'fadeIn 0.3s ease';
             renderIntro3dView();
+        }
+    }
+
+    const lenBtn = document.getElementById('tab-btn-length');
+    if (lenBtn) lenBtn.classList.toggle('active', tabKey === 'length');
+    const lenPanel = document.getElementById('tab-panel-length');
+    if (lenPanel) {
+        lenPanel.style.display = tabKey === 'length' ? 'block' : 'none';
+        if (tabKey === 'length') {
+            lenPanel.style.animation = 'fadeIn 0.3s ease';
+            const lm = document.getElementById('length-mount');
+            if (lm && !lm.hasChildNodes() && window.PhysALength) window.PhysALength.render(lm);
         }
     }
 

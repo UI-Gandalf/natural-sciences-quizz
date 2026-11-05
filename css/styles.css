@@ -10122,3 +10122,23 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .pe-r14 { fill: rgba(245, 158, 11, 0.35); stroke: #f59e0b; stroke-width: 2; }
 .pe-r140 { fill: rgba(34, 197, 94, 0.6); stroke: #22c55e; stroke-width: 2; }
 .pe-rt { font: 700 14px system-ui, sans-serif; fill: currentColor; }
+
+/* Physics Α: length page */
+.pl-photo { width: 100%; height: auto; display: block; border-radius: 10px; }
+.pl-errs { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.pl-err { display: flex; gap: 12px; padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.08); }
+.pl-err p { margin: 4px 0 0; font-size: 0.95rem; }
+.pl-err-n { flex: none; width: 30px; height: 30px; border-radius: 50%; background: #ef4444; color: #fff; display: grid; place-items: center; font-weight: 800; }
+.pl-ph { opacity: 0.75; font-size: 0.88rem; white-space: nowrap; }
+.pl-ruler { fill: #e9d9a6; stroke: #8a7a3c; stroke-width: 1.5; }
+.pl-tick { stroke: #4a3f12; stroke-width: 1.5; }
+.pl-num { font: 700 12px system-ui, sans-serif; fill: #e2e8f0; }
+.pl-obj { fill: #8b7355; stroke: #5b4a35; stroke-width: 1.5; }
+.pl-lbl { font: 700 12px system-ui, sans-serif; fill: currentColor; }
+.pl-ok { stroke: #22c55e; stroke-width: 3; }
+.pl-bad { stroke: #ef4444; stroke-width: 3; stroke-dasharray: 6 4; }
+.pl-eye { fill: #fff; stroke: #0b1220; stroke-width: 2; }
+.pl-pt { fill: #ef4444; stroke: #fff; stroke-width: 2; }
+.pl-oktxt { font: 700 13px system-ui, sans-serif; fill: #4ade80; }
+.pl-badtxt { font: 700 13px system-ui, sans-serif; fill: #f87171; }
+[data-theme="light"] .pl-oktxt { fill: #15803d; } [data-theme="light"] .pl-badtxt { fill: #b91c1c; } [data-theme="light"] .pl-num { fill: #1f2937; }
