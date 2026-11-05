@@ -10045,3 +10045,30 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .pm-score { margin-top: 10px; padding: 10px 14px; border-radius: 10px; background: rgba(14, 165, 233, 0.18); font-weight: 800; }
 .pm-sol { margin-top: 10px; padding: 10px 14px; border-radius: 10px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.5); }
 .pm-wrap .pa-box { margin-bottom: 12px; }
+
+/* Physics Α time: concrete example page */
+.pa-exlink { margin-top: 12px; }
+.pe-table input { width: 100%; box-sizing: border-box; padding: 5px 8px; border-radius: 8px; border: 1px solid rgba(148, 163, 184, 0.6); background: rgba(15, 23, 42, 0.45); color: inherit; font: inherit; }
+[data-theme="light"] .pe-table input { background: #fff; }
+.pe-sum td { font-weight: 800; background: rgba(251, 191, 36, 0.15); }
+.pe-plots { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+.pe-plots h4 { margin: 0 0 4px; }
+.pe-svg { width: 100%; height: auto; display: block; background: rgba(148, 163, 184, 0.08); border-radius: 10px; }
+.pe-axis { stroke: #94a3b8; stroke-width: 1.5; }
+.pe-tick { font: 600 10px system-ui, sans-serif; fill: #94a3b8; }
+.pe-dot { fill: #38bdf8; stroke: #0b1220; stroke-width: 1.5; }
+.pe-mean { stroke: #fbbf24; stroke-width: 2.5; stroke-dasharray: 5 3; }
+.pe-meant { font: 700 11px system-ui, sans-serif; fill: #fbbf24; }
+[data-theme="light"] .pe-meant { fill: #b45309; }
+.pe-steps { display: flex; flex-direction: column; gap: 8px; }
+.pe-step { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: 10px; background: rgba(148, 163, 184, 0.1); }
+.pe-sn { flex: none; width: 24px; height: 24px; border-radius: 50%; background: #0ea5e9; color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 0.8rem; }
+.pe-final { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.6); font-size: 1.1rem; }
+.pe-range { position: relative; margin: 8px 0 14px; padding-top: 22px; }
+.pe-range-axis { position: absolute; top: 0; left: 0; right: 0; height: 18px; font-size: 0.78rem; font-weight: 700; opacity: 0.85; }
+.pe-range-axis span { position: absolute; transform: translateX(-50%); }
+.pe-bar { height: 30px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; padding: 0 10px; font-size: 0.85rem; font-weight: 700; box-sizing: border-box; white-space: nowrap; overflow: hidden; }
+.pe-b14 { margin-left: 33.3%; width: 60%; background: rgba(245, 158, 11, 0.35); border: 1px solid #f59e0b; }
+.pe-b140 { margin-left: 65.2%; width: 3%; min-width: 14px; background: rgba(34, 197, 94, 0.5); border: 1px solid #22c55e; overflow: visible; position: relative; }
+.pe-b140 span { position: absolute; left: 24px; white-space: nowrap; }
+@media (max-width: 600px) { .pe-bar span { font-size: 0.72rem; } }

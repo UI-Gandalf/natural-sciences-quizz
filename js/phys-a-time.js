@@ -30,7 +30,8 @@
         '<header class="pa-head"><div class="pa-kicker">Φυσική Α΄ Γυμνασίου · Μέτρηση χρόνου · Βασικές παρατηρήσεις</div>' +
         '<h2>⏱ Κρίσιμα σημεία της μέτρησης του χρόνου δέκα ταλαντώσεων ενός απλού εκκρεμούς</h2>' +
         '<p>Περιγραφή και ερμηνεία των σημαντικότερων σημείων της πειραματικής διαδικασίας. Οι μικρότερης σημασίας παρατηρήσεις και συμβουλές του φυλλαδίου βρίσκονται στις <strong>σημειώσεις</strong> (μικρά αριθμημένα κουμπιά): πατήστε ένα νούμερο για να ανοίξει. Μετά την αρχική μελέτη του κειμένου αξίζει να τις διαβάσετε όλες, γιατί δίνουν σημαντικές λεπτομέρειες, ερμηνείες και απαντήσεις σε απορίες για τις επιλογές μας.</p>' +
-        '<div class="pa-tools"><button type="button" class="pa-btn" data-act="open-all">📂 Άνοιγμα όλων των σημειώσεων</button><button type="button" class="pa-btn" data-act="close-all">📁 Κλείσιμο όλων</button></div></header>' +
+        '<div class="pa-tools"><button type="button" class="pa-btn" data-act="open-all">📂 Άνοιγμα όλων των σημειώσεων</button><button type="button" class="pa-btn" data-act="close-all">📁 Κλείσιμο όλων</button></div>' +
+        '<div class="pa-exlink"><button type="button" class="pa-btn pa-btn-main" data-act="example">🔬 Δείτε το σε ένα απτό παράδειγμα με πραγματικές μετρήσεις →</button></div></header>' +
 
         /* 1 */
         '<section class="pa-card" id="pa-s1"><h3><span class="pa-num">1</span> Η πειραματική διαδικασία</h3>' +
@@ -71,6 +72,7 @@
         '<div class="pa-two">' +
         '<div class="pa-box"><h4>🕰️ Αναλογικό ρολόι (ακρίβεια δευτερολέπτου)</h4><p>Στρογγυλοποιούμε στο κοντινότερο δευτερόλεπτο, <strong>χωρίς κανένα δεκαδικό μέρος</strong>.</p><div class="pa-calc-ex">136 ÷ 10 = <strong>13,6 s</strong> → <strong class="pa-res">14 s</strong></div><p class="pa-small">Όλες οι αρχικές μετρήσεις λήφθηκαν με στρογγυλοποίηση στο κοντινότερο δευτερόλεπτο, άρα δεν μπορούμε να απαντήσουμε με μεγαλύτερη ακρίβεια. Θα ήταν σαν η διαδικασία του μέσου όρου να είχε «ως εκ θαύματος» αυξήσει την ακρίβεια, κάτι που δεν συμβαίνει. Αν το αποτέλεσμα ήταν από 13,1 έως 13,4 θα στρογγυλοποιούσαμε στο 13.</p></div>' +
         '<div class="pa-box"><h4>⏲️ Χρονόμετρο (ακρίβεια εκατοστού)</h4><p>Στρογγυλοποιούμε στα <strong>δύο δεκαδικά ψηφία</strong>.</p><div class="pa-calc-ex">142,67 ÷ 10 = <strong>14,267 s</strong> → <strong class="pa-res">14,27 s</strong></div><p class="pa-small">Οι αρχικές μετρήσεις λήφθηκαν με ακρίβεια εκατοστού (το χρονόμετρο «στρογγυλοποιεί» από μόνο του σε αυτό το επίπεδο), άρα δεν μπορούμε ξαφνικά να απαντήσουμε με ακρίβεια χιλιοστού. Αν είχαμε αποτέλεσμα από 14,260 έως 14,264 θα στρογγυλοποιούσαμε στο 14,26.</p></div></div>' +
+        '<p><button type="button" class="pa-btn pa-btn-main" data-act="example">🔬 Δείτε και ολόκληρο το παράδειγμα με τις 10 μετρήσεις →</button></p>' +
         '<p class="pa-small">Τα παραδείγματα είναι από τις μετρήσεις και την επεξεργασία του συνοδευτικού υλικού του ΕΚΦΕ Χαλανδρίου (τελευταία σελίδα).</p>' +
 
         '<h4 class="pa-sub">Φαινομενικό παράδοξο, αλλά πολύ σημαντικό: 14 s ≠ 14,0 s</h4>' +
@@ -119,6 +121,7 @@
             if (b.dataset.act === 'open-all') { for (let n = 1; n <= 8; n++) toggle(n, true); }
             else if (b.dataset.act === 'close-all') { for (let n = 1; n <= 8; n++) toggle(n, false); }
             else if (b.dataset.act === 'calc') calc();
+            else if (b.dataset.act === 'example') renderExample(mount, () => render(mount));
         });
         root.querySelector('#pa-sum').addEventListener('keydown', e => { if (e.key === 'Enter') calc(); });
 
@@ -138,6 +141,137 @@
             out.innerHTML = '<div class="pa-msg ok"><div>Μέσος όρος: ' + fmtN(sum, 2).replace(/,00$/, '') + ' ÷ 10 = <strong>' + fmtN(mean, 3).replace(/0+$/, '').replace(/,$/, '') + ' s</strong></div>' +
                 '<div class="pa-final">Τελικό αποτέλεσμα: <strong>' + fmtN(res, dec) + ' s</strong></div><div class="pa-small">' + why + '</div></div>';
         }
+    }
+
+
+    /* ------------------------------------------------------------------ second page: a concrete example (10 measurements) */
+    const CLOCK = [13, 13, 14, 14, 14, 13, 14, 13, 14, 14];
+    const STOP = [14.20, 14.09, 14.34, 14.40, 14.51, 14.28, 14.23, 14.21, 14.24, 14.17];
+
+    function nf(x, d) { return x.toFixed(d).replace('.', ','); }
+    function trimZ(s) { return s.indexOf(',') < 0 ? s : s.replace(/0+$/, '').replace(/,$/, ''); }
+
+    function exampleHtml() {
+        let rows = '';
+        for (let i = 0; i < 10; i++) {
+            rows += '<tr><td>' + (i + 1) + '</td><td><input class="pe-in" data-k="c" data-i="' + i + '" value="' + CLOCK[i] + '" inputmode="decimal"></td>' +
+                '<td><input class="pe-in" data-k="s" data-i="' + i + '" value="' + nf(STOP[i], 2) + '" inputmode="decimal"></td></tr>';
+        }
+        return '' +
+        '<div class="pa-wrap">' +
+        '<header class="pa-head"><div class="pa-kicker">Φυσική Α΄ Γυμνασίου · Μέτρηση χρόνου · Απτό παράδειγμα</div>' +
+        '<h2>🔬 Από τις 10 μετρήσεις στην τελική απάντηση</h2>' +
+        '<p>Εδώ εφαρμόζουμε όσα είπαμε σε ένα πραγματικό παράδειγμα: οι <strong>δέκα επαναλήψεις</strong> του πειράματος, με τον χρόνο 10 ταλαντώσεων του απλού εκκρεμούς, μετρημένο με <strong>αναλογικό ρολόι</strong> (ακρίβεια δευτερολέπτου) και με <strong>ψηφιακό χρονόμετρο</strong> (ακρίβεια εκατοστού του δευτερολέπτου). Μπορείτε να αλλάξετε τις τιμές στον πίνακα και να δείτε πώς αλλάζει το αποτέλεσμα.</p>' +
+        '<div class="pa-tools"><button type="button" class="pa-btn" data-act="back">⬅ Πίσω στα κρίσιμα σημεία</button><button type="button" class="pa-btn" data-act="reset-ex">↺ Αρχικές τιμές</button></div></header>' +
+
+        '<section class="pa-card"><h3><span class="pa-num">1</span> Οι μετρήσεις</h3>' +
+        '<p>Κάθε γραμμή είναι μία επανάληψη του πειράματος. Στο ρολόι οι μετρήσεις είναι ακέραια δευτερόλεπτα· στο χρονόμετρο έχουν δύο δεκαδικά.</p>' +
+        '<div class="pm-tablewrap"><table class="pm-table pe-table"><thead><tr><th>Μέτρηση</th><th>Χρόνος 10 ταλαντώσεων<br>αναλογικό ρολόι (s)</th><th>Χρόνος 10 ταλαντώσεων<br>ψηφιακό χρονόμετρο (s)</th></tr></thead><tbody>' + rows +
+        '<tr class="pe-sum"><td>Άθροισμα</td><td id="pe-sc">–</td><td id="pe-ss">–</td></tr></tbody></table></div>' +
+        '<p class="pa-key">Έχοντας έναν πίνακα γεμάτο αριθμούς, πώς βγάζουμε ένα και μοναδικό, αξιόπιστο συμπέρασμα; Με τον μέσο όρο και τον «χρυσό κανόνα» της στρογγυλοποίησης.</p></section>' +
+
+        '<section class="pa-card"><h3><span class="pa-num">2</span> Πώς πέφτουν οι μετρήσεις;</h3>' +
+        '<p>Κάθε τελεία είναι μία μέτρηση· η κάθετη γραμμή είναι ο μέσος όρος. Παρατηρήστε πόσο διαφορετική είναι η «πυκνότητα» των τιμών στα δύο όργανα.</p>' +
+        '<div class="pe-plots"><div><h4>🕰️ Αναλογικό ρολόι</h4><div id="pe-pc"></div></div><div><h4>⏲️ Ψηφιακό χρονόμετρο</h4><div id="pe-ps"></div></div></div></section>' +
+
+        '<section class="pa-card"><h3><span class="pa-num">3</span> Μέσος όρος και στρογγυλοποίηση, βήμα βήμα</h3>' +
+        '<p>Για να συνδυάσουμε όλες τις μετρήσεις σε μία αντιπροσωπευτική τιμή, αθροίζουμε όλες τις τιμές και διαιρούμε με τον αριθμό των μετρήσεων (εδώ 10).</p>' +
+        '<div class="pa-rule">Χρυσός κανόνας: το τελικό αποτέλεσμα δίνεται <strong>πάντα με την ακρίβεια των αρχικών μετρήσεων</strong>. Ο μέσος όρος δεν μπορεί «ως εκ θαύματος» να αυξήσει την ακρίβεια του οργάνου.</div>' +
+        '<div class="pa-two">' +
+        '<div class="pa-box pa-a"><h4>🕰️ Αναλογικό ρολόι</h4><div class="pe-steps" id="pe-stc"></div></div>' +
+        '<div class="pa-box pa-b"><h4>⏲️ Ψηφιακό χρονόμετρο</h4><div class="pe-steps" id="pe-sts"></div></div></div></section>' +
+
+        '<section class="pa-card"><h3><span class="pa-num">4</span> Τι σημαίνει «14 s» και τι «14,0 s»;</h3>' +
+        '<p>Μαθηματικά είναι ο ίδιος αριθμός, αλλά στη Φυσική η διαφορά τους δεν είναι στην ποσότητα, αλλά στην <strong>πληροφορία για την ακρίβεια</strong> της μέτρησης.</p>' +
+        '<div class="pe-range"><div class="pe-range-axis"><span style="left:0%">13,0</span><span style="left:33.3%">13,5</span><span style="left:66.7%">14,0</span><span style="left:93.3%">14,4</span><span style="left:100%">14,5</span></div>' +
+        '<div class="pe-bar pe-b14"><span>14 s: η τιμή μπορεί να είναι οπουδήποτε από 13,5 έως 14,4</span></div>' +
+        '<div class="pe-bar pe-b140"><span>14,0 s: το πρώτο δεκαδικό είναι μηδέν</span></div></div>' +
+        '<div class="pa-two"><div class="pa-box"><div class="pa-big">14 s</div><p>Δηλώνουμε ότι η μέτρηση είναι περίπου 14 δευτερόλεπτα. Δεν έχουμε καμία ιδέα για το δεκαδικό μέρος: η πραγματική τιμή θα μπορούσε να είναι από <strong>13,5 s έως 14,4 s</strong>, αφού όλες αυτές στρογγυλοποιούνται στο 14. Δήλωση <strong>χαμηλής ακρίβειας</strong>.</p></div>' +
+        '<div class="pa-box"><div class="pa-big">14,0 s</div><p>Δηλώνουμε κάτι πολύ ισχυρότερο: είμαστε πεπεισμένοι ότι το πρώτο δεκαδικό ψηφίο είναι πράγματι μηδέν, επειδή χρησιμοποιήσαμε όργανο με ακρίβεια τουλάχιστον δεκάτου του δευτερολέπτου. Δήλωση <strong>πολύ πιο ακριβής</strong>.</p></div></div>' +
+        '<p class="pa-key">Γι\' αυτό στο ρολόι γράφουμε 14 s και στο χρονόμετρο 14,27 s: το καθένα λέει την ιστορία του οργάνου του.</p></section>' +
+        '<div class="pa-tools"><button type="button" class="pa-btn" data-act="back">⬅ Πίσω στα κρίσιμα σημεία</button></div>' +
+        '</div>';
+    }
+
+    function dotPlot(vals, lo, hi, mean, unit) {
+        const cnt = {};
+        let maxStack = 1;
+        vals.forEach(v => { const k = Math.round(v * 100); cnt[k] = (cnt[k] || 0) + 1; if (cnt[k] > maxStack) maxStack = cnt[k]; });
+        const W = 520, H = 56 + 14 * maxStack, L = 18, R = W - 18, y0 = H - 32;
+        const X = v => L + (v - lo) / (hi - lo) * (R - L);
+        let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="pe-svg" role="img">';
+        s += '<line x1="' + L + '" y1="' + y0 + '" x2="' + R + '" y2="' + y0 + '" class="pe-axis"/>';
+        const step = (hi - lo) >= 2 ? 1 : 0.1;
+        for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) {
+            const x = X(v);
+            s += '<line x1="' + x + '" y1="' + y0 + '" x2="' + x + '" y2="' + (y0 + 5) + '" class="pe-axis"/><text x="' + x + '" y="' + (y0 + 18) + '" text-anchor="middle" class="pe-tick">' + nf(v, step === 1 ? 0 : 1) + '</text>';
+        }
+        const stack = {};
+        vals.forEach(v => {
+            const key = Math.round(v * 100);
+            stack[key] = (stack[key] || 0) + 1;
+            s += '<circle cx="' + X(v) + '" cy="' + (y0 - 8 - (stack[key] - 1) * 14) + '" r="6" class="pe-dot"/>';
+        });
+        if (isFinite(mean)) s += '<line x1="' + X(mean) + '" y1="6" x2="' + X(mean) + '" y2="' + y0 + '" class="pe-mean"/><text x="' + X(mean) + '" y="12" text-anchor="' + (X(mean) > W / 2 ? 'end' : 'start') + '" dx="' + (X(mean) > W / 2 ? -5 : 5) + '" class="pe-meant">μέσος όρος ' + nf(mean, 3).replace(/0+$/, '').replace(/,$/, '') + ' ' + unit + '</text>';
+        return s + '</svg>';
+    }
+
+    function renderExample(mount, back) {
+        mount.innerHTML = exampleHtml();
+        const root = mount.querySelector('.pa-wrap');
+        const val = { c: CLOCK.slice(), s: STOP.slice() };
+
+        function parse(v) { const x = parseFloat(String(v).trim().replace(',', '.')); return isFinite(x) ? x : NaN; }
+
+        function steps(vals, kind) {
+            const ok = vals.every(isFinite);
+            if (!ok) return '<div class="pa-msg bad">Συμπληρώστε και τις 10 μετρήσεις με αριθμούς.</div>';
+            const sum = vals.reduce((a, b) => a + b, 0);
+            const mean = sum / 10;
+            const clock = kind === 'c';
+            const res = clock ? Math.round(mean) : Math.round(mean * 100) / 100;
+            const sumS = trimZ(nf(sum, 2));
+            const meanS = trimZ(nf(mean, 3));
+            return '<div class="pe-step"><span class="pe-sn">1</span><div><strong>Άθροισμα</strong><br>' + sumS + ' s</div></div>' +
+                '<div class="pe-step"><span class="pe-sn">2</span><div><strong>Μέσος όρος</strong><br>' + sumS + ' ÷ 10 = <strong>' + meanS + ' s</strong></div></div>' +
+                '<div class="pe-step"><span class="pe-sn">3</span><div><strong>Ακρίβεια των μετρήσεων</strong><br>' + (clock ? 'ακέραια δευτερόλεπτα (ακρίβεια δευτερολέπτου)' : 'δύο δεκαδικά ψηφία (ακρίβεια εκατοστού)') + '</div></div>' +
+                '<div class="pe-step pe-final"><span class="pe-sn">4</span><div><strong>Τελική τιμή</strong><br>' + meanS + ' s → <span class="pa-res">' + nf(res, clock ? 0 : 2) + ' s</span><div class="pa-small">' +
+                (clock ? 'Στρογγυλοποιούμε στον πλησιέστερο ακέραιο, χωρίς δεκαδικό μέρος.' : 'Στρογγυλοποιούμε στα δύο δεκαδικά ψηφία.') + '</div></div></div>';
+        }
+
+        function update() {
+            const sc = val.c.every(isFinite) ? val.c.reduce((a, b) => a + b, 0) : NaN;
+            const ss = val.s.every(isFinite) ? val.s.reduce((a, b) => a + b, 0) : NaN;
+            root.querySelector('#pe-sc').textContent = isFinite(sc) ? trimZ(nf(sc, 2)) : '–';
+            root.querySelector('#pe-ss').textContent = isFinite(ss) ? trimZ(nf(ss, 2)) : '–';
+            root.querySelector('#pe-stc').innerHTML = steps(val.c, 'c');
+            root.querySelector('#pe-sts').innerHTML = steps(val.s, 's');
+            const okc = val.c.every(isFinite), oks = val.s.every(isFinite);
+            const cc = okc ? val.c : [];
+            const ssv = oks ? val.s : [];
+            root.querySelector('#pe-pc').innerHTML = okc ? dotPlot(cc, Math.floor(Math.min.apply(null, cc)) - 1, Math.ceil(Math.max.apply(null, cc)) + 1, sc / 10, 's') : '';
+            const lo = oks ? Math.floor(Math.min.apply(null, ssv) * 10) / 10 - 0.1 : 0, hi = oks ? Math.ceil(Math.max.apply(null, ssv) * 10) / 10 + 0.1 : 1;
+            root.querySelector('#pe-ps').innerHTML = oks ? dotPlot(ssv, lo, hi, ss / 10, 's') : '';
+        }
+
+        root.addEventListener('input', e => {
+            const t = e.target.closest('.pe-in');
+            if (!t) return;
+            val[t.dataset.k][+t.dataset.i] = parse(t.value);
+            update();
+        });
+        root.addEventListener('click', e => {
+            const b = e.target.closest('[data-act]');
+            if (!b) return;
+            if (b.dataset.act === 'back') { back(); }
+            else if (b.dataset.act === 'reset-ex') {
+                val.c = CLOCK.slice(); val.s = STOP.slice();
+                root.querySelectorAll('.pe-in').forEach(inp => { const i = +inp.dataset.i; inp.value = inp.dataset.k === 'c' ? CLOCK[i] : nf(STOP[i], 2); });
+                update();
+            }
+        });
+        update();
+        mount.scrollIntoView({ block: 'start' });
     }
 
     window.PhysATime = { render };
