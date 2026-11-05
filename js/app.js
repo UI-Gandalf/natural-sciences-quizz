@@ -1061,7 +1061,7 @@ function renderQuizRunner(quiz) {
     if (quiz.questions.some(q => q.type === 'mapclick') && typeof MAP_DATA === 'undefined') {
         container.innerHTML = '<div class="quiz-runner-wrap"><div class="quiz-container" style="text-align:center;padding:40px 24px;">Φόρτωση χαρτών…</div></div>';
         const s = document.createElement('script');
-        s.src = 'js/map-data.js?v=18';
+        s.src = 'js/map-data.js?v=20';
         s.onload = () => renderQuizRunner(quiz);
         s.onerror = () => { container.innerHTML = '<div class="quiz-runner-wrap"><div class="quiz-container" style="text-align:center;padding:40px 24px;">Δεν ήταν δυνατή η φόρτωση των χαρτών. Ανανεώστε τη σελίδα.</div></div>'; };
         document.head.appendChild(s);
