@@ -2450,7 +2450,10 @@ function isMapItemCorrect(q, itemId) {
 }
 
 function mapCorrectIds(q) {
-    return (q.show || []).filter(id => isMapItemCorrect(q, id));
+    // in country questions every country of the map is clickable, so every valid country counts
+    const map = MAP_DATA[q.map];
+    const extra = q.all === 'countries' && map ? Object.keys(map.items).filter(id => map.items[id].ref) : [];
+    return Array.from(new Set((q.show || []).concat(extra))).filter(id => isMapItemCorrect(q, id));
 }
 
 /* width / height of the part of the map that is shown (the whole map, or the question's crop) */
@@ -2717,7 +2720,7 @@ function submitMapAnswer() {
     const svg = document.getElementById('mc-svg');
     if (svg) paintMapSvg(svg, paint);
 
-    const names = correctIds.map(id => mapItemName(q, id)).join(' και ');
+    const names = correctIds.map(id => mapItemName(q, id)).join(correctIds.length > 2 ? ', ' : ' και ');
     if (isFull) {
         feedback.className = 'feedback-box correct';
         feedback.innerHTML = attempt === 1
