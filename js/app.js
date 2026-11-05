@@ -2547,6 +2547,22 @@ function paintMapSvg(svg, st) {
             nm.classList.toggle('nm-show', !!st.revealed && (!g.classList.contains('mc-plain') || involved));
         }
     });
+    // revealed names must stay fully inside the visible frame: shift them sideways when they would be cut
+    if (st.revealed) {
+        try {
+            const vb = svg.viewBox.baseVal;
+            svg.querySelectorAll('.mc-name.nm-show').forEach(t => {
+                if (t.dataset.x0 === undefined) t.dataset.x0 = t.getAttribute('x');
+                t.setAttribute('x', t.dataset.x0);
+                const bb = t.getBBox();
+                const m = 6;
+                let dx = 0;
+                if (bb.x < vb.x + m) dx = vb.x + m - bb.x;
+                else if (bb.x + bb.width > vb.x + vb.width - m) dx = vb.x + vb.width - m - (bb.x + bb.width);
+                if (dx) t.setAttribute('x', (parseFloat(t.dataset.x0) + dx).toFixed(1));
+            });
+        } catch (e) { /* not rendered yet */ }
+    }
     // base labels (countries / seas) that collide with a revealed name give way to it
     const base = svg.querySelectorAll('.mc-cname, .mc-sea');
     base.forEach(t => t.style.opacity = '');
