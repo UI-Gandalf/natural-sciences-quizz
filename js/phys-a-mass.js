@@ -107,7 +107,7 @@
         '<label>Τόπος<select id="pm-g">' + places + '</select></label>' +
         '<button type="button" class="pa-btn pa-btn-main" data-act="wcalc">Υπολογισμός</button></div>' +
         '<div class="pa-calc-out" id="pm-out" aria-live="polite"></div>' +
-        '<div class="pm-fig-wide"><img src="' + IMG + 'relation.jpg" alt="Infographic: η σχέση W = m·g και γιατί τα μπερδεύουμε στην καθημερινότητα" loading="lazy"></div></section>' +
+        '</section>' +
 
         /* 5 */
         '<section class="pa-card" id="pm-s5"><h3><span class="pa-num">5</span> Ασκήσεις και ερωτήσεις εμπέδωσης</h3>' +
