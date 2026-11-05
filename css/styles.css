@@ -9942,3 +9942,10 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 
 /* During the self-test the names and the organelle list would give the answers away: hidden */
 .cell-explorer.cell-testing .cell-chips, .cell-explorer.cell-testing .cell-check, .cell-explorer.cell-testing .cell-btn-all, .cell-explorer.cell-testing .cell-compare { display: none; }
+.cell-dots { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; }
+.cell-dot { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 0.8rem; font-weight: 800; background: rgba(148, 163, 184, 0.25); border: 2px solid transparent; }
+.cell-dot.cur { border-color: #f59e0b; background: rgba(245, 158, 11, 0.3); }
+.cell-dot.ok { background: #22c55e; color: #052e16; }
+.cell-dot.half { background: #a3e635; color: #1a2e05; }
+.cell-dot.bad { background: #ef4444; color: #fff; }
+.cell-dot.skip { background: #64748b; color: #fff; }

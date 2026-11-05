@@ -590,7 +590,7 @@
             const pool = TESTS.filter(t => !t[2] || t[2] === st.type).map(t => ({ q: t[0], ok: t[1].filter(present) })).filter(t => t.ok.length);
             for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const x = pool[i]; pool[i] = pool[j]; pool[j] = x; }
             root.classList.add('cell-testing');
-            st.test = { list: pool.slice(0, 10), i: 0, score: 0, tries: 0, done: false, locked: false };
+            st.test = { pool: pool.length, list: pool.slice(0, 10), res: [], i: 0, score: 0, tries: 0, done: false, locked: false };
             st.sel = null;
             applySelection();
             animateView([0, 0, 1000, 680]);
@@ -614,11 +614,15 @@
             svg.querySelectorAll('.t-ok, .t-bad').forEach(el => el.classList.remove('t-ok', 't-bad'));
             if (t.i >= t.list.length) {
                 t.done = true;
-                testbar.innerHTML = '<div class="cell-test-q"><strong>Τέλος!</strong> Σκορ: ' + fmt(t.score) + ' / ' + t.list.length + '</div><button type="button" class="cell-btn" data-act="test-again">↻ Ξανά</button>';
+                let dots = '';
+                t.list.forEach((x, k) => { dots += '<span class="cell-dot ' + (t.res[k] || '') + '">' + (k + 1) + '</span>'; });
+                testbar.innerHTML = '<div class="cell-dots">' + dots + '</div><div class="cell-test-q"><strong>Τέλος του γύρου!</strong> Σκορ: ' + fmt(t.score) + ' / ' + t.list.length + '. Κάθε γύρος έχει 10 ερωτήσεις (τυχαία από ' + t.pool + ' συνολικά)· το «Νέος γύρος» φέρνει άλλες 10.</div><button type="button" class="cell-btn" data-act="test-again">↻ Νέος γύρος</button>';
                 return;
             }
             t.tries = 0; t.locked = false;
-            testbar.innerHTML = '<div class="cell-test-q"><span class="cell-test-n">Ερώτηση ' + (t.i + 1) + ' / ' + t.list.length + '</span> ' + t.list[t.i].q + '</div><div class="cell-test-score">Σκορ: ' + fmt(t.score) + '</div><button type="button" class="cell-btn" data-act="test-skip">Παράλειψη ➡</button>';
+            let dots = '';
+            t.list.forEach((x, k) => { dots += '<span class="cell-dot ' + (k === t.i ? 'cur ' : '') + (t.res[k] || '') + '" title="Ερώτηση ' + (k + 1) + '">' + (k + 1) + '</span>'; });
+            testbar.innerHTML = '<div class="cell-dots" aria-label="Πρόοδος">' + dots + '</div><div class="cell-test-q"><span class="cell-test-n">Ερώτηση ' + (t.i + 1) + ' / ' + t.list.length + '</span> ' + t.list[t.i].q + '</div><div class="cell-test-score">Σκορ: ' + fmt(t.score) + '</div><button type="button" class="cell-btn" data-act="test-skip">Παράλειψη ➡</button>';
         }
         function fmt(n) { return String(Math.round(n * 10) / 10).replace('.', ','); }
         function flash(ids, cls) {
@@ -631,6 +635,7 @@
             const cur = t.list[t.i];
             if (cur.ok.includes(id)) {
                 t.score += t.tries === 0 ? 1 : 0.5;
+                t.res[t.i] = t.tries === 0 ? 'ok' : 'half';
                 t.locked = true;
                 flash(cur.ok, 't-ok');
                 info.innerHTML = '<h3>✅ Σωστά!</h3><p><strong>' + ORG[id].name + '</strong></p><p>' + ORG[id].func + '</p>';
@@ -639,6 +644,7 @@
                 t.tries++;
                 flash([id], 't-bad');
                 if (t.tries >= 2) {
+                    t.res[t.i] = 'bad';
                     t.locked = true;
                     flash(cur.ok, 't-ok');
                     info.innerHTML = '<h3>❌ Όχι ακριβώς</h3><p>Σωστό: <strong>' + cur.ok.map(x => ORG[x].name).join(' ή ') + '</strong></p><p>' + ORG[cur.ok[0]].structure + '</p>';
@@ -671,7 +677,7 @@
                 }
                 else if (act === 'test') { if (st.test) endTest(); else { startTest(); enterFs(); } }
                 else if (act === 'test-again') { startTest(); }
-                else if (act === 'test-skip') { const t = st.test; if (t && !t.locked) { t.i++; showTestQuestion(); } }
+                else if (act === 'test-skip') { const t = st.test; if (t && !t.locked) { t.res[t.i] = 'skip'; t.i++; showTestQuestion(); } }
                 else if (act === 'prev' || act === 'next') {
                     const list = orderNow().concat(['cyto']);
                     let i = list.indexOf(st.sel);
