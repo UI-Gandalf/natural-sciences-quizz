@@ -358,12 +358,12 @@
 
         root.innerHTML =
             '<div class="cell-head"><h2 class="cell-title">🔬 Εξερεύνηση του ευκαρυωτικού κυττάρου</h2>' +
-            '<p class="cell-sub">Πατήστε πάνω σε ένα οργανίδιο για να το προσεγγίσετε και να διαβάσετε τη δομή και τη λειτουργία του. Η ύλη είναι αυτή του σχολικού υλικού (Γ3.1 – Γ3.4).</p></div>' +
+            '<p class="cell-sub">Επιλέξτε Ζωικό ή Φυτικό κύτταρο (ανοίγει σε πλήρη οθόνη) ή δοκιμάστε τον εαυτό σας. Πατήστε πάνω σε ένα οργανίδιο για να το προσεγγίσετε. Η ύλη είναι αυτή του σχολικού υλικού (Γ3.1 – Γ3.4).</p></div>' +
             '<div class="cell-toolbar">' +
-            '<div class="cell-toggle" role="group" aria-label="Τύπος κυττάρου"><button type="button" data-act="type" data-v="animal" class="on">🐾 Ζωικό κύτταρο</button><button type="button" data-act="type" data-v="plant">🌿 Φυτικό κύτταρο</button></div>' +
-            '<button type="button" class="cell-btn" data-act="reset">⤢ Όλο το κύτταρο</button>' +
+            '<div class="cell-toggle" role="group" aria-label="Τύπος κυττάρου"><button type="button" data-act="type" data-v="animal" class="on">🐾 Ζωικό κύτταρο ⛶</button><button type="button" data-act="type" data-v="plant">🌿 Φυτικό κύτταρο ⛶</button></div>' +
             '<label class="cell-check"><input type="checkbox" data-act="labels" checked> Ονόματα στο σχέδιο</label>' +
-            '<button type="button" class="cell-btn cell-btn-test" data-act="test">🎯 Δοκίμασε τον εαυτό σου</button>' +
+            '<button type="button" class="cell-btn cell-btn-test" data-act="test">🎯 Δοκίμασε τον εαυτό σου ⛶</button>' +
+            '<span class="cell-fsbar"><button type="button" class="cell-btn" data-act="exitfs">✕ Κανονική προβολή</button><button type="button" class="cell-btn cell-btn-leave" data-act="leave">⎋ Έξοδος</button></span>' +
             '</div>' +
             '<div class="cell-testbar" style="display:none"></div>' +
             '<div class="cell-main"><div class="cell-stage"></div><aside class="cell-info"></aside></div>' +
@@ -566,7 +566,7 @@
             st.test = null;
             testbar.style.display = 'none';
             svg.querySelectorAll('.t-ok, .t-bad').forEach(el => el.classList.remove('t-ok', 't-bad'));
-            root.querySelector('[data-act="test"]').textContent = '🎯 Δοκίμασε τον εαυτό σου';
+            root.querySelector('[data-act="test"]').textContent = '🎯 Δοκίμασε τον εαυτό σου ⛶';
             drawLabels();
             showIntro();
         }
@@ -624,8 +624,14 @@
                         if (st.test) endTest();
                         buildStage(); buildChips(); showIntro();
                     }
+                    enterFs();
                 } else if (act === 'reset') { if (st.test) endTest(); resetView(); }
-                else if (act === 'test') { st.test ? endTest() : startTest(); }
+                else if (act === 'exitfs') { leaveFs(); }
+                else if (act === 'leave') {
+                    leaveFs();
+                    if (typeof switchSubjectTab === 'function') switchSubjectTab('quizzes');
+                }
+                else if (act === 'test') { if (st.test) endTest(); else { startTest(); enterFs(); } }
                 else if (act === 'test-again') { startTest(); }
                 else if (act === 'test-skip') { const t = st.test; if (t && !t.locked) { t.i++; showTestQuestion(); } }
                 else if (act === 'prev' || act === 'next') {
@@ -636,6 +642,7 @@
                 }
                 return;
             }
+            if (e.target.closest('.cell-zoombadge')) { if (!st.test) resetView(); return; }
             const chip = e.target.closest('.cell-chip');
             if (chip && !st.test) select(chip.dataset.id);
         });
@@ -643,6 +650,20 @@
             if (e.target.matches('[data-act="labels"]')) { st.labels = e.target.checked; drawLabels(); }
         });
         root.addEventListener('keydown', e => { if (e.key === 'Escape') { if (st.test) endTest(); resetView(); } });
+
+        /* full screen: the explorer itself fills the screen; Κανονική προβολή / Έξοδος live inside it */
+        function enterFs() {
+            if (document.fullscreenElement === root) return;
+            if (root.requestFullscreen) { const r = root.requestFullscreen(); if (r && r.catch) r.catch(() => {}); }
+        }
+        function leaveFs() {
+            if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+        }
+        function onFsChange() {
+            if (!root.isConnected) { document.removeEventListener('fullscreenchange', onFsChange); return; }
+            root.classList.toggle('cell-fs', document.fullscreenElement === root);
+        }
+        document.addEventListener('fullscreenchange', onFsChange);
 
         buildStage();
         buildChips();
