@@ -9802,3 +9802,4 @@ button.exam-opt-pill:active:not(:disabled) {
     .quiz-container:has(.mc-wrap) .question-jump-wrap { position: static; margin-top: 6px; }
     .quiz-container:has(.mc-wrap) .question-jump { flex: 1; max-width: none; }
 }
+.mc-detail .mc-item[data-id="suwalki"] .mc-shape { fill: rgba(251, 191, 36, 0.5); stroke: #fbbf24; stroke-width: 3; stroke-dasharray: none; }
