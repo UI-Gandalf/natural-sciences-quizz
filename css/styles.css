@@ -9759,3 +9759,6 @@ button.exam-opt-pill:active:not(:disabled) {
 /* revealed names live in their own top layer and appear only when flagged */
 .mc-revealed .mc-name { opacity: 0; }
 .mc-revealed .mc-name.nm-show { opacity: 1; }
+
+/* smaller revealed names */
+.mc-name { font-size: 12px; stroke-width: 3px; }
