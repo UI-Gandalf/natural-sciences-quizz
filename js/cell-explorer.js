@@ -361,6 +361,7 @@
             '<p class="cell-sub">Επιλέξτε Ζωικό ή Φυτικό κύτταρο (ανοίγει σε πλήρη οθόνη) ή δοκιμάστε τον εαυτό σας. Πατήστε πάνω σε ένα οργανίδιο για να το προσεγγίσετε. Η ύλη είναι αυτή του σχολικού υλικού (Γ3.1 – Γ3.4).</p></div>' +
             '<div class="cell-toolbar">' +
             '<div class="cell-toggle" role="group" aria-label="Τύπος κυττάρου"><button type="button" data-act="type" data-v="animal" class="on">🐾 Ζωικό κύτταρο ⛶</button><button type="button" data-act="type" data-v="plant">🌿 Φυτικό κύτταρο ⛶</button></div>' +
+            '<button type="button" class="cell-btn cell-btn-all" data-act="reset">↩ Όλα τα οργανίδια</button>' +
             '<label class="cell-check"><input type="checkbox" data-act="labels" checked> Ονόματα στο σχέδιο</label>' +
             '<button type="button" class="cell-btn cell-btn-test" data-act="test">🎯 Δοκίμασε τον εαυτό σου ⛶</button>' +
             '<span class="cell-fsbar"><button type="button" class="cell-btn" data-act="exitfs">✕ Κανονική προβολή</button><button type="button" class="cell-btn cell-btn-leave" data-act="leave">⎋ Έξοδος</button></span>' +
@@ -483,6 +484,18 @@
                 const id = el.dataset.org;
                 el.classList.toggle('sel', !!st.sel && id === st.sel);
             });
+            svg.querySelectorAll('.c-annot').forEach(n => n.remove());
+            if (st.sel === 'nucleus') {   // the nuclear envelope and pores are parts of the nucleus (2): named, not separately numbered
+                const g = svg.querySelector('.org[data-org="nucleus"][data-x]');
+                if (g) {
+                    const x = +g.dataset.x, y = +g.dataset.y, s = +g.dataset.s;
+                    const A = (tx, ty, px, py, txt, anc) => '<line x1="' + tx + '" y1="' + (ty + 2) + '" x2="' + px + '" y2="' + py + '" class="c-lead-w"/><line x1="' + tx + '" y1="' + (ty + 2) + '" x2="' + px + '" y2="' + py + '" class="c-lead"/><circle cx="' + px + '" cy="' + py + '" r="2.4" class="c-lead-dot"/><text x="' + tx + '" y="' + ty + '" text-anchor="' + anc + '" class="c-label c-annot-t">' + txt + '</text>';
+                    const a = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    a.setAttribute('class', 'c-annot');
+                    a.innerHTML = A(x - 160, y - 62, x - 98 * s, y - 40 * s, 'Πυρηνικός φάκελος', 'start') + A(x - 160, y - 49, x - 98 * s, y - 40 * s, '(διπλή μεμβράνη)', 'start') + A(x + 160, y - 62, x + 66 * s, y - 79 * s, 'Πυρηνικός πόρος', 'end');
+                    svg.appendChild(a);
+                }
+            }
             const zb = stage.querySelector('.cell-zoombadge');
             if (st.sel && st.sel !== 'cyto') { zb.style.display = 'block'; zb.textContent = '🔍 ' + (ORG[st.sel].num ? ORG[st.sel].num + '. ' : '') + ORG[st.sel].name; }
             else zb.style.display = 'none';

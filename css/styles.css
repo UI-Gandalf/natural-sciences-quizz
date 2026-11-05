@@ -9937,3 +9937,5 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 
 /* In full screen the cell/test choice is fixed: no switching to another topic from inside */
 .cell-explorer:fullscreen .cell-toggle, .cell-explorer:fullscreen .cell-btn-test, .cell-explorer.cell-fs .cell-toggle, .cell-explorer.cell-fs .cell-btn-test { display: none; }
+.cell-svg .c-annot-t { font-size: 6px; stroke-width: 1.8px; }
+.cell-svg .c-annot .c-lead-w { stroke-width: 3; } .cell-svg .c-annot .c-lead { stroke-width: 1.2; }
