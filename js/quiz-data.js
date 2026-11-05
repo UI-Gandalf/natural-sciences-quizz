@@ -12097,22 +12097,22 @@ geography: [
         "id": 7,
         "type": "mapclick",
         "q": "7. Κάντε κλικ στις 2 χώρες με τα έντονα φιόρδ στις ακτές τους.",
-        "map": "north",
+        "map": "europe",
         "show": [
           "c_norway",
-          "c_iceland",
+          "c_croatia",
           "c_sweden",
-          "c_finland",
           "c_denmark",
-          "c_russia"
+          "c_spain",
+          "c_italy"
         ],
         "pick": 2,
         "correctHashes": [
           "4eeed96faf64f95a4b4291da64840a75ee04564c892dd80bbbb82ae574300a1d",
-          "59a36f46a295133d97d734d37bcc78eef0d8a41fa421e9b255e080792b3f0071"
+          "d92d58a549b91fcf84a68520fe4d2d5e7940d0d77f3c3fab2127c41d361f3b0a"
         ],
         "noDiagrams": true,
-        "exp": "Η Νορβηγία και η Ισλανδία έχουν στις ακτές τους έντονα φιόρδ: στενούς, βαθείς κόλπους που σχημάτισαν οι παγετώνες.",
+        "exp": "Η Νορβηγία και η Κροατία έχουν στις ακτές τους έντονα φιόρδ: στενούς, βαθείς κόλπους που σχημάτισαν οι παγετώνες.",
         "hint": "",
         "hideLabels": true,
         "all": "countries",
