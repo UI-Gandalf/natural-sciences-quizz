@@ -172,7 +172,7 @@
 
         '<section class="pa-card"><h3><span class="pa-num">2</span> Πώς πέφτουν οι μετρήσεις;</h3>' +
         '<p>Κάθε τελεία είναι μία μέτρηση· η κάθετη γραμμή είναι ο μέσος όρος. Παρατηρήστε πόσο διαφορετική είναι η «πυκνότητα» των τιμών στα δύο όργανα.</p>' +
-        '<div class="pe-plots"><div><h4>🕰️ Αναλογικό ρολόι</h4><div id="pe-pc"></div></div><div><h4>⏲️ Ψηφιακό χρονόμετρο</h4><div id="pe-ps"></div></div></div></section>' +
+        '<div class="pe-plots"><div><h4>🕰️ Αναλογικό ρολόι</h4><div id="pe-pc" class="pe-plotbox" data-zoom="1"></div></div><div><h4>⏲️ Ψηφιακό χρονόμετρο</h4><div id="pe-ps" class="pe-plotbox" data-zoom="1"></div></div></div><p class="pm-zoomhint">🔍 Πατήστε πάνω σε ένα διάγραμμα για μεγέθυνση</p></section>' +
 
         '<section class="pa-card"><h3><span class="pa-num">3</span> Μέσος όρος και στρογγυλοποίηση, βήμα βήμα</h3>' +
         '<p>Για να συνδυάσουμε όλες τις μετρήσεις σε μία αντιπροσωπευτική τιμή, αθροίζουμε όλες τις τιμές και διαιρούμε με τον αριθμό των μετρήσεων (εδώ 10).</p>' +
@@ -183,9 +183,7 @@
 
         '<section class="pa-card"><h3><span class="pa-num">4</span> Τι σημαίνει «14 s» και τι «14,0 s»;</h3>' +
         '<p>Μαθηματικά είναι ο ίδιος αριθμός, αλλά στη Φυσική η διαφορά τους δεν είναι στην ποσότητα, αλλά στην <strong>πληροφορία για την ακρίβεια</strong> της μέτρησης.</p>' +
-        '<div class="pe-range"><div class="pe-range-axis"><span style="left:0%">13,0</span><span style="left:33.3%">13,5</span><span style="left:66.7%">14,0</span><span style="left:93.3%">14,4</span><span style="left:100%">14,5</span></div>' +
-        '<div class="pe-bar pe-b14"><span>14 s: η τιμή μπορεί να είναι οπουδήποτε από 13,5 έως 14,4</span></div>' +
-        '<div class="pe-bar pe-b140"><span>14,0 s: το πρώτο δεκαδικό είναι μηδέν</span></div></div>' +
+        '<div class="pe-range pe-plotbox" data-zoom="1"><svg viewBox="0 0 640 170" class="pe-svg" role="img" aria-label="14 s και 14,0 s"><line x1="20" y1="44" x2="620" y2="44" class="pe-axis"/><line x1="20" y1="34" x2="20" y2="44" class="pe-axis"/><text x="20" y="24" text-anchor="middle" class="pe-tick">13,0</text><line x1="220" y1="34" x2="220" y2="44" class="pe-axis"/><text x="220" y="24" text-anchor="middle" class="pe-tick">13,5</text><line x1="420" y1="34" x2="420" y2="44" class="pe-axis"/><text x="420" y="24" text-anchor="middle" class="pe-tick">14,0</text><line x1="580" y1="34" x2="580" y2="44" class="pe-axis"/><text x="580" y="24" text-anchor="middle" class="pe-tick">14,4</text><line x1="620" y1="34" x2="620" y2="44" class="pe-axis"/><text x="620" y="24" text-anchor="middle" class="pe-tick">14,5</text><rect x="220" y="56" width="380" height="36" rx="8" class="pe-r14"/><text x="410" y="79" text-anchor="middle" class="pe-rt">14 s: οπουδήποτε από 13,5 έως 14,4</text><rect x="413" y="108" width="14" height="36" rx="5" class="pe-r140"/><text x="396" y="131" text-anchor="end" class="pe-rt">14,0 s: το πρώτο δεκαδικό είναι μηδέν</text></svg><div class="pm-zoomhint">🔍 Πατήστε για μεγέθυνση</div></div>' +
         '<div class="pa-two"><div class="pa-box"><div class="pa-big">14 s</div><p>Δηλώνουμε ότι η μέτρηση είναι περίπου 14 δευτερόλεπτα. Δεν έχουμε καμία ιδέα για το δεκαδικό μέρος: η πραγματική τιμή θα μπορούσε να είναι από <strong>13,5 s έως 14,4 s</strong>, αφού όλες αυτές στρογγυλοποιούνται στο 14. Δήλωση <strong>χαμηλής ακρίβειας</strong>.</p></div>' +
         '<div class="pa-box"><div class="pa-big">14,0 s</div><p>Δηλώνουμε κάτι πολύ ισχυρότερο: είμαστε πεπεισμένοι ότι το πρώτο δεκαδικό ψηφίο είναι πράγματι μηδέν, επειδή χρησιμοποιήσαμε όργανο με ακρίβεια τουλάχιστον δεκάτου του δευτερολέπτου. Δήλωση <strong>πολύ πιο ακριβής</strong>.</p></div></div>' +
         '<p class="pa-key">Γι\' αυτό στο ρολόι γράφουμε 14 s και στο χρονόμετρο 14,27 s: το καθένα λέει την ιστορία του οργάνου του.</p></section>' +
@@ -197,23 +195,54 @@
         const cnt = {};
         let maxStack = 1;
         vals.forEach(v => { const k = Math.round(v * 100); cnt[k] = (cnt[k] || 0) + 1; if (cnt[k] > maxStack) maxStack = cnt[k]; });
-        const W = 520, H = 56 + 14 * maxStack, L = 18, R = W - 18, y0 = H - 32;
+        const W = 520, H = 70 + 18 * maxStack, L = 24, R = W - 24, y0 = H - 40;
         const X = v => L + (v - lo) / (hi - lo) * (R - L);
         let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="pe-svg" role="img">';
         s += '<line x1="' + L + '" y1="' + y0 + '" x2="' + R + '" y2="' + y0 + '" class="pe-axis"/>';
         const step = (hi - lo) >= 2 ? 1 : 0.1;
         for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) {
             const x = X(v);
-            s += '<line x1="' + x + '" y1="' + y0 + '" x2="' + x + '" y2="' + (y0 + 5) + '" class="pe-axis"/><text x="' + x + '" y="' + (y0 + 18) + '" text-anchor="middle" class="pe-tick">' + nf(v, step === 1 ? 0 : 1) + '</text>';
+            s += '<line x1="' + x + '" y1="' + y0 + '" x2="' + x + '" y2="' + (y0 + 6) + '" class="pe-axis"/><text x="' + x + '" y="' + (y0 + 24) + '" text-anchor="middle" class="pe-tick">' + nf(v, step === 1 ? 0 : 1) + '</text>';
         }
         const stack = {};
         vals.forEach(v => {
             const key = Math.round(v * 100);
             stack[key] = (stack[key] || 0) + 1;
-            s += '<circle cx="' + X(v) + '" cy="' + (y0 - 8 - (stack[key] - 1) * 14) + '" r="6" class="pe-dot"/>';
+            s += '<circle cx="' + X(v) + '" cy="' + (y0 - 11 - (stack[key] - 1) * 18) + '" r="8" class="pe-dot"/>';
         });
         if (isFinite(mean)) s += '<line x1="' + X(mean) + '" y1="6" x2="' + X(mean) + '" y2="' + y0 + '" class="pe-mean"/><text x="' + X(mean) + '" y="12" text-anchor="' + (X(mean) > W / 2 ? 'end' : 'start') + '" dx="' + (X(mean) > W / 2 ? -5 : 5) + '" class="pe-meant">μέσος όρος ' + nf(mean, 3).replace(/0+$/, '').replace(/,$/, '') + ' ' + unit + '</text>';
         return s + '</svg>';
+    }
+
+
+    function openZoomPlot(box) {
+        const svg = box.querySelector('svg');
+        if (!svg) return;
+        const ov = document.createElement('div');
+        ov.className = 'pm-lb';
+        ov.innerHTML = '<div class="pm-lb-bar"><button type="button" data-z="out">− Σμίκρυνση</button><button type="button" data-z="in">+ Μεγέθυνση</button><button type="button" data-z="fit">⤢ Προσαρμογή</button><button type="button" data-z="close">✕ Κλείσιμο</button></div><div class="pm-lb-body"></div>';
+        const body = ov.querySelector('.pm-lb-body');
+        const big = svg.cloneNode(true);
+        big.setAttribute('class', 'pm-lb-svg');
+        body.appendChild(big);
+        let z = 1;
+        const apply = () => { big.style.width = (z * 100) + '%'; };
+        const onKey = e => { if (e.key === 'Escape') close(); else if (e.key === '+') { z = Math.min(4, z + 0.25); apply(); } else if (e.key === '-') { z = Math.max(0.5, z - 0.25); apply(); } };
+        function close() { document.removeEventListener('keydown', onKey); ov.remove(); }
+        ov.addEventListener('click', e => {
+            const b = e.target.closest('[data-z]');
+            if (b) {
+                const a = b.dataset.z;
+                if (a === 'close') close();
+                else if (a === 'in') z = Math.min(4, z + 0.25);
+                else if (a === 'out') z = Math.max(0.5, z - 0.25);
+                else z = 1;
+                apply();
+            } else if (e.target === ov || e.target === body) close();
+        });
+        document.addEventListener('keydown', onKey);
+        document.body.appendChild(ov);
+        apply();
     }
 
     function renderExample(mount, back) {
@@ -261,6 +290,8 @@
             update();
         });
         root.addEventListener('click', e => {
+            const zb = e.target.closest('[data-zoom]');
+            if (zb) { openZoomPlot(zb); return; }
             const b = e.target.closest('[data-act]');
             if (!b) return;
             if (b.dataset.act === 'back') { back(); }
