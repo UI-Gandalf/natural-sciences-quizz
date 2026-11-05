@@ -2492,8 +2492,9 @@ function buildMapSvg(q, onItemClick) {
     const drawLabels = () => {
         // permanent names (and optional dots) the question refers to
         (q.marks || []).forEach(([n, x, y, dot, dy]) => {
+            // marks with a dot are the answer's hidden details (ports): they appear only after the evaluation
             if (dot) mk('circle', { cx: x, cy: y, r: 5, class: 'mc-markdot' }, svg);
-            mk('text', { x, y: dot ? y + (dy === undefined ? -12 : dy) : y, class: 'mc-mark' }, svg).textContent = n;
+            mk('text', { x, y: dot ? y + (dy === undefined ? -12 : dy) : y, class: dot ? 'mc-mark mc-rv' : 'mc-mark' }, svg).textContent = n;
         });
         if (q.hideLabels) return;
         // in a cropped map, labels too close to the frame would be cut: leave them out
@@ -2569,6 +2570,20 @@ function paintMapSvg(svg, st) {
                 else if (bb.x + bb.width > vb.x + vb.width - m) dx = vb.x + vb.width - m - (bb.x + bb.width);
                 if (dx) t.setAttribute('x', (parseFloat(t.dataset.x0) + dx).toFixed(1));
             });
+        } catch (e) { /* not rendered yet */ }
+    }
+    // revealed names move down when they would cover a revealed port mark (dot + name)
+    if (st.revealed) {
+        try {
+            const marks = [...svg.querySelectorAll('.mc-markdot, .mc-mark.mc-rv')].map(t => t.getBBox());
+            if (marks.length) {
+                const hit = (a, b) => a.x < b.x + b.width + 4 && a.x + a.width + 4 > b.x && a.y < b.y + b.height + 4 && a.y + a.height + 4 > b.y;
+                svg.querySelectorAll('.mc-name.nm-show').forEach(t => {
+                    if (t.dataset.y0 === undefined) t.dataset.y0 = t.getAttribute('y');
+                    t.setAttribute('y', t.dataset.y0);
+                    for (let k = 0; k < 8 && marks.some(m => hit(t.getBBox(), m)); k++) t.setAttribute('y', (parseFloat(t.getAttribute('y')) + 9).toFixed(1));
+                });
+            }
         } catch (e) { /* not rendered yet */ }
     }
     // base labels (countries / seas) that collide with a revealed name give way to it
