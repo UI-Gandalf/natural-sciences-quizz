@@ -9774,3 +9774,22 @@ button.exam-opt-pill:active:not(:disabled) {
 .mc-markdot { fill: #fbbf24; stroke: #0b1220; stroke-width: 2.5px; pointer-events: none; }
 .mc-markdot, .mc-mark.mc-rv { opacity: 0; transition: opacity 0.25s; }
 .mc-revealed .mc-markdot, .mc-revealed .mc-mark.mc-rv { opacity: 1; }
+
+/* Detail (zoom) map of the extension questions, with hover information */
+.mc-detail-box { position: relative; margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(148, 163, 184, 0.5); }
+.mc-detail-title { font-weight: 800; font-size: 1.05rem; margin-bottom: 2px; }
+.mc-detail-hint { font-size: 0.85rem; opacity: 0.75; margin-bottom: 6px; }
+.mc-detail .mc-path .mc-shape { stroke: #fbbf24; stroke-width: 6; stroke-linecap: round; filter: drop-shadow(0 0 3px #06121f); }
+.mc-detail .mc-path:hover .mc-shape { stroke: #fff3b0; stroke-width: 8; }
+.mc-detail .mc-path .mc-hit { stroke-width: 26; }
+.mc-detail .mc-name { font-size: 19px; stroke-width: 4.5px; pointer-events: auto; cursor: help; }
+.mc-detail .mc-cname { font-size: 24px; }
+.mc-tip { position: absolute; z-index: 20; max-width: min(380px, 90%); padding: 10px 12px; border-radius: 10px; background: rgba(8, 15, 30, 0.96); color: #e2e8f0; border: 1px solid #fbbf24; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55); font-size: 0.85rem; line-height: 1.4; pointer-events: none; }
+.mc-tip strong { display: block; color: #fbbf24; font-size: 0.95rem; margin-bottom: 4px; }
+.mc-tip table { border-collapse: collapse; margin: 2px 0 6px; }
+.mc-tip td { padding: 1px 8px 1px 0; vertical-align: top; }
+.mc-tip td:first-child { color: #94a3b8; white-space: nowrap; }
+.mc-tip p { margin: 4px 0 0; }
+[data-theme="light"] .mc-tip { background: rgba(255, 255, 255, 0.98); color: #0f172a; border-color: #d97706; }
+[data-theme="light"] .mc-tip strong { color: #b45309; }
+[data-theme="light"] .mc-tip td:first-child { color: #475569; }

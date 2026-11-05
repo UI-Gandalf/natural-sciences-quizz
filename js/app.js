@@ -1061,7 +1061,7 @@ function renderQuizRunner(quiz) {
     if (quiz.questions.some(q => q.type === 'mapclick') && typeof MAP_DATA === 'undefined') {
         container.innerHTML = '<div class="quiz-runner-wrap"><div class="quiz-container" style="text-align:center;padding:40px 24px;">Φόρτωση χαρτών…</div></div>';
         const s = document.createElement('script');
-        s.src = 'js/map-data.js?v=15';
+        s.src = 'js/map-data.js?v=18';
         s.onload = () => renderQuizRunner(quiz);
         s.onerror = () => { container.innerHTML = '<div class="quiz-runner-wrap"><div class="quiz-container" style="text-align:center;padding:40px 24px;">Δεν ήταν δυνατή η φόρτωση των χαρτών. Ανανεώστε τη σελίδα.</div></div>'; };
         document.head.appendChild(s);
@@ -2600,6 +2600,63 @@ function paintMapSvg(svg, st) {
     }
 }
 
+/* Zoomed detail map shown after the answer (extension questions): hover / tap a name for its facts */
+function buildMapDetail(q) {
+    const d = q.detail;
+    const map = MAP_DATA[d.map];
+    const dq = { id: q.id, map: d.map, show: d.show };
+    const box = document.createElement('div');
+    box.className = 'mc-detail-box';
+    box.innerHTML = '<div class="mc-detail-title"></div><div class="mc-detail-hint">Περάστε το ποντίκι (ή πατήστε) πάνω σε ένα όνομα για πληροφορίες.</div>';
+    box.querySelector('.mc-detail-title').textContent = '🔍 ' + d.title;
+    const wrap = document.createElement('div');
+    wrap.className = 'mc-wrap mc-detail';
+    wrap.style.setProperty('--mc-ar', mapAspect(dq));
+    const svg = buildMapSvg(dq, null);
+    wrap.appendChild(svg);
+    box.appendChild(wrap);
+    const tip = document.createElement('div');
+    tip.className = 'mc-tip';
+    tip.style.display = 'none';
+    box.appendChild(tip);
+    const show = (id, ev) => {
+        const it = map.items[id];
+        if (!it || !it.info) return;
+        const i = it.info;
+        tip.innerHTML = '<strong></strong><table></table><p></p>';
+        tip.querySelector('strong').textContent = i.t;
+        const tb = tip.querySelector('table');
+        (i.rows || []).forEach(r => { const tr = tb.insertRow(); tr.insertCell().textContent = r[0]; tr.insertCell().textContent = r[1]; });
+        tip.querySelector('p').textContent = i.s || '';
+        tip.style.display = 'block';
+        const b = box.getBoundingClientRect();
+        let x = ev.clientX - b.left + 14, y = ev.clientY - b.top + 14;
+        x = Math.max(8, Math.min(x, b.width - tip.offsetWidth - 8));
+        if (y + tip.offsetHeight > b.height - 4) y = Math.max(8, ev.clientY - b.top - tip.offsetHeight - 14);
+        tip.style.left = x + 'px';
+        tip.style.top = y + 'px';
+    };
+    // the shapes and their names (names live in a separate top layer) both open the information box
+    svg.querySelectorAll('.mc-item, .mc-name').forEach(el => {
+        const id = el.dataset.id || el.dataset.for;
+        el.addEventListener('mouseenter', e => show(id, e));
+        el.addEventListener('mousemove', e => show(id, e));
+        el.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+        el.addEventListener('click', e => show(id, e));
+    });
+    return { box, svg };
+}
+
+function appendMapDetail(q, afterEl) {
+    if (!q.detail || !afterEl || !MAP_DATA[q.detail.map]) return;
+    const old = afterEl.parentNode.querySelector('.mc-detail-box');
+    if (old) old.remove();
+    const { box, svg } = buildMapDetail(q);
+    afterEl.insertAdjacentElement('afterend', box);
+    paintMapSvg(svg, { revealed: true });     // after insertion: the names are positioned with the real text sizes
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function renderMapClickQuestion(q, qIndex, container) {
     const qr = AppState.quizRunner;
     qr.mapState = { attempts: 0, selected: [], locked: [], eliminated: [], firstTryCorrect: [], evaluated: false };
@@ -2739,6 +2796,7 @@ function submitMapAnswer() {
     updateMapUI(q);
     const svg = document.getElementById('mc-svg');
     if (svg) paintMapSvg(svg, paint);
+    if (q.detail) appendMapDetail(q, document.getElementById('mc-wrap'));
 
     const names = correctIds.map(id => mapItemName(q, id)).join(correctIds.length > 2 ? ', ' : ' και ');
     if (isFull) {
@@ -2788,6 +2846,11 @@ function renderMapClickReview(entry, container) {
     paintMapSvg(svg, entry.mapPaint);
     wrap.appendChild(svg);
     container.appendChild(wrap);
+    if (entry.mapQuestion.detail && MAP_DATA[entry.mapQuestion.detail.map]) {
+        const { box, svg: dsvg } = buildMapDetail(entry.mapQuestion);
+        container.appendChild(box);
+        paintMapSvg(dsvg, { revealed: true });
+    }
 }
 
 function mapClickReviewSummary(item) {
