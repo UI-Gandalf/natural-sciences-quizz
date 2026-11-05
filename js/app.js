@@ -2490,6 +2490,7 @@ function buildMapSvg(q, onItemClick) {
     map.land.forEach((d, i) => mk('path', { d, class: 'mc-land mc-c' + (i % 4) }, svg));
     // names of countries and seas are drawn AFTER the selectable shapes, as an overlay, so highlighted areas never hide them
     const drawLabels = () => {
+        (q.marks || []).forEach(([n, x, y]) => { mk('text', { x, y, class: 'mc-mark' }, svg).textContent = n; });   // permanent names the question refers to
         if (q.hideLabels) return;
         // in a cropped map, labels too close to the frame would be cut: leave them out
         const inFrame = (x, y) => !q.crop || (x > q.crop[0] + 90 && x < q.crop[2] - 90 && y > q.crop[1] + 25 && y < q.crop[3] - 25);

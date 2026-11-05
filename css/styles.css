@@ -9768,3 +9768,6 @@ button.exam-opt-pill:active:not(:disabled) {
 .mc-point.missed .mc-shape { fill: #4ade80; stroke: #ffffff; stroke-width: 4; filter: drop-shadow(0 0 6px #22c55e); }
 .mc-path.missed .mc-shape { stroke: #4ade80; stroke-width: 8; filter: drop-shadow(0 0 6px #22c55e) drop-shadow(0 0 2px #06121f); }
 .mc-name { font-size: 13px; }
+
+/* permanent label of a place the question names but which is not clickable */
+.mc-mark { fill: #fff; font-size: 13px; font-weight: 800; text-anchor: middle; paint-order: stroke; stroke: #0b1220; stroke-width: 3.5px; stroke-linejoin: round; pointer-events: none; }

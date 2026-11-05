@@ -11678,7 +11678,14 @@ geography: [
         "hint": "",
         "hideLabels": true,
         "all": "countries",
-        "plain": true
+        "plain": true,
+        "marks": [
+          [
+            "Καλίνινγκραντ",
+            444.4,
+            372.7
+          ]
+        ]
       },
       {
         "id": 24,
