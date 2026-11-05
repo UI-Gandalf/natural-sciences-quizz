@@ -9717,7 +9717,6 @@ button.exam-opt-pill:active:not(:disabled) {
 .mc-map { width: auto; max-width: 100%; height: auto; max-height: max(320px, calc(100vh - 330px)); }
 .quiz-container { scroll-margin-top: 8px; }
 .quiz-container:has(.mc-wrap) { padding: 14px 28px 12px; }
-.quiz-container:has(.mc-wrap) .question-jump-wrap,
 .quiz-container:has(.mc-wrap) .shortcuts-hint { display: none; }
 .quiz-container:has(.mc-wrap) .quiz-header { margin-bottom: 8px; }
 .quiz-container:has(.mc-wrap) .quiz-header-top { margin-bottom: 8px; }
@@ -9793,3 +9792,13 @@ button.exam-opt-pill:active:not(:disabled) {
 [data-theme="light"] .mc-tip { background: rgba(255, 255, 255, 0.98); color: #0f172a; border-color: #d97706; }
 [data-theme="light"] .mc-tip strong { color: #b45309; }
 [data-theme="light"] .mc-tip td:first-child { color: #475569; }
+
+/* Map quizzes: the jump-to-question dropdown sits compactly on the badges row (so the map still fits the screen) */
+.quiz-container:has(.mc-wrap) .quiz-header { position: relative; }
+.quiz-container:has(.mc-wrap) .question-jump-wrap { display: flex; align-items: center; gap: 8px; position: absolute; right: 0; bottom: 0; margin: 0; }
+.quiz-container:has(.mc-wrap) .question-jump-label { display: inline; margin: 0; text-align: left; font-size: 0.78rem; white-space: nowrap; }
+.quiz-container:has(.mc-wrap) .question-jump { width: auto; min-width: 200px; max-width: 300px; padding: 5px 10px; font-size: 0.82rem; border-radius: 8px; border-width: 1.5px; box-shadow: none; }
+@media (max-width: 900px) {
+    .quiz-container:has(.mc-wrap) .question-jump-wrap { position: static; margin-top: 6px; }
+    .quiz-container:has(.mc-wrap) .question-jump { flex: 1; max-width: none; }
+}
