@@ -1061,7 +1061,7 @@ function renderQuizRunner(quiz) {
     if (quiz.questions.some(q => q.type === 'mapclick') && typeof MAP_DATA === 'undefined') {
         container.innerHTML = '<div class="quiz-runner-wrap"><div class="quiz-container" style="text-align:center;padding:40px 24px;">Φόρτωση χαρτών…</div></div>';
         const s = document.createElement('script');
-        s.src = 'js/map-data.js?v=14';
+        s.src = 'js/map-data.js?v=15';
         s.onload = () => renderQuizRunner(quiz);
         s.onerror = () => { container.innerHTML = '<div class="quiz-runner-wrap"><div class="quiz-container" style="text-align:center;padding:40px 24px;">Δεν ήταν δυνατή η φόρτωση των χαρτών. Ανανεώστε τη σελίδα.</div></div>'; };
         document.head.appendChild(s);
@@ -2490,7 +2490,11 @@ function buildMapSvg(q, onItemClick) {
     map.land.forEach((d, i) => mk('path', { d, class: 'mc-land mc-c' + (i % 4) }, svg));
     // names of countries and seas are drawn AFTER the selectable shapes, as an overlay, so highlighted areas never hide them
     const drawLabels = () => {
-        (q.marks || []).forEach(([n, x, y]) => { mk('text', { x, y, class: 'mc-mark' }, svg).textContent = n; });   // permanent names the question refers to
+        // permanent names (and optional dots) the question refers to
+        (q.marks || []).forEach(([n, x, y, dot, dy]) => {
+            if (dot) mk('circle', { cx: x, cy: y, r: 5, class: 'mc-markdot' }, svg);
+            mk('text', { x, y: dot ? y + (dy === undefined ? -12 : dy) : y, class: 'mc-mark' }, svg).textContent = n;
+        });
         if (q.hideLabels) return;
         // in a cropped map, labels too close to the frame would be cut: leave them out
         const inFrame = (x, y) => !q.crop || (x > q.crop[0] + 90 && x < q.crop[2] - 90 && y > q.crop[1] + 25 && y < q.crop[3] - 25);

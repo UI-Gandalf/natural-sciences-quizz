@@ -9771,3 +9771,4 @@ button.exam-opt-pill:active:not(:disabled) {
 
 /* permanent label of a place the question names but which is not clickable */
 .mc-mark { fill: #fff; font-size: 13px; font-weight: 800; text-anchor: middle; paint-order: stroke; stroke: #0b1220; stroke-width: 3.5px; stroke-linejoin: round; pointer-events: none; }
+.mc-markdot { fill: #fbbf24; stroke: #0b1220; stroke-width: 2.5px; pointer-events: none; }
