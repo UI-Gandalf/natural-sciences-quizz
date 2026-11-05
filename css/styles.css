@@ -9762,3 +9762,9 @@ button.exam-opt-pill:active:not(:disabled) {
 
 /* smaller revealed names */
 .mc-name { font-size: 12px; stroke-width: 3px; }
+
+/* The correct answer that was not chosen: intense, unmistakable colour */
+.mc-area.missed .mc-shape, .mc-plain.missed .mc-shape { fill: rgba(74, 222, 128, 0.85); stroke: #ffffff; stroke-width: 4; stroke-dasharray: none; filter: drop-shadow(0 0 5px #22c55e); }
+.mc-point.missed .mc-shape { fill: #4ade80; stroke: #ffffff; stroke-width: 4; filter: drop-shadow(0 0 6px #22c55e); }
+.mc-path.missed .mc-shape { stroke: #4ade80; stroke-width: 8; filter: drop-shadow(0 0 6px #22c55e) drop-shadow(0 0 2px #06121f); }
+.mc-name { font-size: 13px; }
