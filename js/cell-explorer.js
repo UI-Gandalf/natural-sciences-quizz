@@ -207,6 +207,19 @@
         plant: [[540, 330], [700, 330], [850, 220], [690, 335], [500, 480], [690, 480], [870, 470], [700, 590], [470, 575], [880, 360], [560, 175], [715, 105], [150, 160], [150, 560]]
     };
 
+    /* labels: [text x, text y, target x, target y]  (target null = text only) */
+    const LABELS = {
+        animal: {
+            membrane: [500, 34, 500, 62], nucleus: [395, 150, 395, 192], rer: [600, 205, 600, 238], ser: [660, 505, 660, 462], ribosome: [420, 562, 440, 468],
+            golgi: [735, 90, 735, 118], mito: [235, 565, 262, 520], lyso: [270, 112, 270, 138], dvacuole: [215, 252, 215, 283]
+        },
+        plant: {
+            wall: [330, 24, 330, 54], membrane: [800, 24, 800, 74], vacuole: [345, 350, null, null], nucleus: [640, 120, 640, 143], rer: [880, 342, 800, 360, 'end'], ser: [610, 372, 610, 396],
+            ribosome: [190, 128, 150, 160], golgi: [790, 112, 790, 138], mito: [560, 612, 560, 574], lyso: [455, 392, 470, 410], chloro: [520, 168, 520, 140]
+        }
+    };
+    const BADGE_OFF = { mito: [50, -40], lyso: [20, -22], chloro: [50, -34] };
+
     function cellOutline(type) {
         if (type === 'animal') {
             const d = 'M118,330 C112,160 330,55 520,60 C725,66 890,165 886,350 C882,525 722,630 520,628 C320,626 124,520 118,330 Z';
@@ -417,20 +430,27 @@
             const gl = svg.querySelector('.c-labels');
             gl.innerHTML = '';
             if (!st.labels || st.test) return;
-            const seen = {};
             let out = '';
-            const place = (id, x, y) => {
-                if (seen[id]) return; seen[id] = 1;
+            const L = LABELS[st.type];
+            // one label per organelle: text (number + name) with a leader line that touches the structure
+            Object.keys(L).forEach(id => {
                 const o = ORG[id];
-                out += '<text x="' + x + '" y="' + y + '" class="c-label" text-anchor="middle">' + (o.num ? o.num + '. ' : '') + o.name + '</text>';
-            };
-            const a = st.type === 'animal';
-            const P = a ? {
-                nucleus: [395, 300], rer: [610, 213], ser: [660, 495], golgi: [735, 112], mito: [250, 535], lyso: [270, 122], dvacuole: [215, 372], membrane: [500, 98], ribosome: null
-            } : {
-                vacuole: [345, 350], nucleus: [640, 238], rer: [775, 335], ser: [610, 505], golgi: [790, 118], mito: [560, 596], lyso: [470, 398], chloro: [520, 168], membrane: [330, 100], wall: [330, 70]
-            };
-            Object.keys(P).forEach(id => { if (P[id]) place(id, P[id][0], P[id][1]); });
+                const q = L[id];                      // [textX, textY, targetX, targetY]
+                const nm = (o.num ? o.num + '. ' : '') + o.name;
+                if (q[2] !== null) {
+                    out += '<line x1="' + q[0] + '" y1="' + (q[1] + 5) + '" x2="' + q[2] + '" y2="' + q[3] + '" class="c-lead-w"/><line x1="' + q[0] + '" y1="' + (q[1] + 5) + '" x2="' + q[2] + '" y2="' + q[3] + '" class="c-lead"/>';
+                    out += '<circle cx="' + q[2] + '" cy="' + q[3] + '" r="4.5" class="c-lead-dot"/>';
+                }
+                out += '<text x="' + q[0] + '" y="' + q[1] + '" class="c-label" text-anchor="' + (q[4] || 'middle') + '">' + nm + '</text>';
+            });
+            // organelles that occur several times: a numbered badge on every copy, so none is mistaken for another organelle
+            const cnt = {};
+            LAYOUT[st.type].forEach(o => { cnt[o[0]] = (cnt[o[0]] || 0) + 1; });
+            LAYOUT[st.type].forEach(o => {
+                if (cnt[o[0]] < 2 || !ORG[o[0]].num) return;
+                const off = BADGE_OFF[o[0]] || [40, -30];
+                out += '<g transform="translate(' + (o[1] + off[0] * o[3]) + ',' + (o[2] + off[1] * o[3]) + ')"><circle r="12" class="c-badge"/><text y="5" text-anchor="middle" class="c-badge-t">' + ORG[o[0]].num + '</text></g>';
+            });
             gl.innerHTML = out;
         }
 
