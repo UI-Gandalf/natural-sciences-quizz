@@ -2513,6 +2513,11 @@ function buildMapSvg(q, onItemClick) {
             mk('path', { d, class: 'mc-hit' }, g);
             lx = it.lx; ly = it.ly - 12;
         }
+        {   // a name whose anchor lies outside the visible frame (crop or whole map) is pulled back into it
+            const fr = q.crop || [0, 0, map.w, map.h];
+            lx = Math.min(Math.max(lx, fr[0] + 70), fr[2] - 70);
+            ly = Math.min(Math.max(ly, fr[1] + 30), fr[3] - 30);
+        }
         mk('text', { x: lx, y: ly, class: 'mc-name', 'data-for': id }, nameLayer).textContent = it.name;
         if (onItemClick) {
             g.addEventListener('click', () => onItemClick(id));
