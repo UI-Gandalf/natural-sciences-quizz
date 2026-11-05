@@ -373,6 +373,12 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span class="tab-icon">📝</span>
                     <span>Κουίζ Αξιολόγησης</span>
                 </button>
+                ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'biology') ? `
+                <button class="subject-tab-btn ${currentTab === 'cell' ? 'active' : ''}" id="tab-btn-cell" onclick="switchSubjectTab('cell')">
+                    <span class="tab-icon">🔬</span>
+                    <span>Εξερεύνηση κυττάρου</span>
+                </button>
+                ` : ''}
                 ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') ? `
                 <button class="subject-tab-btn ${currentTab === 'intro3d' ? 'active' : ''}" id="tab-btn-intro3d" onclick="switchSubjectTab('intro3d')">
                     <span class="tab-icon">💡</span>
@@ -588,6 +594,12 @@ function renderQuizSelection(classKey, subjectKey) {
             <div id="intro3d-mount"></div>
         </div>
         ` : ''}
+        ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'biology') ? `
+        <!-- BIOLOGY Γ: CELL EXPLORER -->
+        <div class="tab-panel" id="tab-panel-cell" style="display: ${currentTab === 'cell' ? 'block' : 'none'};">
+            <div id="cell-mount"></div>
+        </div>
+        ` : ''}
         ${subjectKey === 'chemistry' ? `
         <!-- CHEMISTRY: NEUTRALISATION LAB -->
         <div class="tab-panel" id="tab-panel-neutral" style="display: ${currentTab === 'neutral' ? 'block' : 'none'};">
@@ -639,6 +651,9 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'intro3d') {
         renderIntro3dView();
     }
+    if (currentTab === 'cell') {
+        renderCellView();
+    }
 
     if (currentTab === 'simulation' && subjectKey === 'physics') {
         renderSimulationView();
@@ -653,6 +668,11 @@ function renderQuizSelection(classKey, subjectKey) {
 function renderIntro3dView() {
     const mount = document.getElementById('intro3d-mount');
     if (mount && window.Circuit3D) window.Circuit3D.render(mount);
+}
+
+function renderCellView() {
+    const mount = document.getElementById('cell-mount');
+    if (mount && window.CellExplorer) window.CellExplorer.render(mount);
 }
 
 function renderNeutralView() {
@@ -795,6 +815,18 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'intro3d') {
             i3Panel.style.animation = 'fadeIn 0.3s ease';
             renderIntro3dView();
+        }
+    }
+
+    const cellBtn = document.getElementById('tab-btn-cell');
+    if (cellBtn) cellBtn.classList.toggle('active', tabKey === 'cell');
+    const cellPanel = document.getElementById('tab-panel-cell');
+    if (cellPanel) {
+        cellPanel.style.display = tabKey === 'cell' ? 'block' : 'none';
+        if (tabKey === 'cell') {
+            cellPanel.style.animation = 'fadeIn 0.3s ease';
+            const cm = document.getElementById('cell-mount');
+            if (cm && !cm.hasChildNodes()) renderCellView();
         }
     }
 

@@ -9803,3 +9803,105 @@ button.exam-opt-pill:active:not(:disabled) {
     .quiz-container:has(.mc-wrap) .question-jump { flex: 1; max-width: none; }
 }
 .mc-detail .mc-item[data-id="suwalki"] .mc-shape { fill: rgba(251, 191, 36, 0.5); stroke: #fbbf24; stroke-width: 3; stroke-dasharray: none; }
+
+/* ==========================================================================
+   Biology Γ: cell explorer
+   ========================================================================== */
+.cell-explorer { display: flex; flex-direction: column; gap: 14px; }
+.cell-title { font-size: 1.5rem; margin: 0 0 4px; }
+.cell-sub { margin: 0; opacity: 0.8; font-size: 0.95rem; }
+.cell-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.cell-toggle { display: inline-flex; border-radius: 12px; overflow: hidden; border: 2px solid rgba(56, 189, 248, 0.6); }
+.cell-toggle button { background: transparent; color: inherit; border: 0; padding: 9px 16px; font: inherit; font-weight: 700; cursor: pointer; }
+.cell-toggle button.on { background: #0ea5e9; color: #fff; }
+.cell-btn { background: rgba(148, 163, 184, 0.18); color: inherit; border: 1px solid rgba(148, 163, 184, 0.45); border-radius: 10px; padding: 8px 14px; font: inherit; font-weight: 600; cursor: pointer; }
+.cell-btn:hover { background: rgba(148, 163, 184, 0.32); }
+.cell-btn-test { background: #f59e0b; color: #1f1300; border-color: #f59e0b; }
+.cell-btn-test:hover { background: #fbbf24; }
+.cell-check { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; cursor: pointer; }
+.cell-testbar { align-items: center; gap: 14px; padding: 10px 14px; border-radius: 12px; border: 1px solid #f59e0b; background: rgba(245, 158, 11, 0.12); flex-wrap: wrap; }
+.cell-test-q { flex: 1; min-width: 220px; font-weight: 600; }
+.cell-test-n { display: inline-block; margin-right: 8px; padding: 2px 8px; border-radius: 999px; background: #f59e0b; color: #1f1300; font-size: 0.8rem; font-weight: 800; }
+.cell-test-score { font-weight: 800; color: #f59e0b; }
+.cell-main { display: grid; grid-template-columns: minmax(0, 1fr) 370px; gap: 16px; align-items: start; }
+.cell-stage { position: relative; border-radius: 16px; overflow: hidden; background: radial-gradient(circle at 50% 40%, #16314f 0%, #0a1626 80%); border: 1px solid rgba(148, 163, 184, 0.35); }
+.cell-svg { display: block; width: 100%; height: auto; aspect-ratio: 1000 / 680; user-select: none; }
+.cell-info { border-radius: 16px; border: 1px solid rgba(148, 163, 184, 0.35); background: rgba(15, 23, 42, 0.55); padding: 16px 18px; min-height: 280px; }
+[data-theme="light"] .cell-info { background: #ffffff; }
+.cell-info h3 { margin: 0 0 8px; font-size: 1.2rem; }
+.cell-info h4 { margin: 12px 0 4px; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.75; }
+.cell-info p { margin: 0 0 8px; line-height: 1.5; }
+.cell-func { font-weight: 700; }
+.cell-info-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.cell-info-top h3 { margin: 0; }
+.cell-num { flex: none; width: 34px; height: 34px; border-radius: 50%; background: #0ea5e9; color: #fff; display: grid; place-items: center; font-weight: 800; }
+.cell-presence { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.cell-badge { font-size: 0.78rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+.cell-badge.yes { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.6); }
+.cell-badge.no { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); }
+[data-theme="light"] .cell-badge.yes { color: #15803d; }
+[data-theme="light"] .cell-badge.no { color: #b91c1c; }
+.cell-detail { background: #e9f0f7; border-radius: 12px; padding: 6px; margin-bottom: 6px; }
+.cell-detail-svg { display: block; width: 100%; height: auto; }
+.cell-endo { margin-top: 8px; padding: 10px 12px; border-radius: 10px; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.5); font-size: 0.92rem; line-height: 1.45; }
+.cell-nav { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; }
+.cell-tipline { opacity: 0.85; }
+.cell-tip { position: absolute; z-index: 5; padding: 4px 10px; border-radius: 8px; background: rgba(8, 15, 30, 0.92); color: #fff; font-size: 0.85rem; font-weight: 700; pointer-events: none; border: 1px solid #fbbf24; }
+.cell-zoombadge { position: absolute; left: 10px; top: 10px; z-index: 5; padding: 5px 12px; border-radius: 999px; background: rgba(8, 15, 30, 0.85); color: #fbbf24; font-weight: 800; font-size: 0.9rem; border: 1px solid #fbbf24; pointer-events: none; }
+.cell-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.cell-chip { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid rgba(148, 163, 184, 0.5); background: rgba(148, 163, 184, 0.12); color: inherit; font: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; }
+.cell-chip:hover { background: rgba(14, 165, 233, 0.22); }
+.cell-chip.on { background: #0ea5e9; color: #fff; border-color: #0ea5e9; }
+.cell-chip-n { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #0ea5e9; color: #fff; font-size: 0.78rem; font-weight: 800; }
+.cell-chip.on .cell-chip-n { background: #fff; color: #0369a1; }
+.cell-compare { border-radius: 12px; border: 1px solid rgba(148, 163, 184, 0.35); padding: 10px 14px; }
+.cell-compare summary { cursor: pointer; font-weight: 700; }
+.cell-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.cell-table th, .cell-table td { padding: 6px 10px; border-bottom: 1px solid rgba(148, 163, 184, 0.25); text-align: left; }
+.cell-note { opacity: 0.8; font-size: 0.9rem; }
+@media (max-width: 980px) { .cell-main { grid-template-columns: 1fr; } }
+
+/* the drawing */
+.cell-svg .c-cyto-animal { fill: #cfe0f1; }
+.cell-svg .c-cyto-plant { fill: #d9edcf; }
+.cell-svg .c-membrane-line { fill: none; stroke: #b9772e; stroke-width: 5; }
+.cell-svg .c-membrane-hit, .cell-svg .c-wall-hit { fill: none; stroke: none; pointer-events: none; }
+.cell-svg .c-hit-mem { fill: none; stroke: transparent; stroke-width: 26; pointer-events: stroke; }
+.cell-svg .c-wall-1 { fill: #6f4f25; } .cell-svg .c-wall-2 { fill: #96753a; } .cell-svg .c-wall-3 { fill: #bd9a58; }
+.c-nuc-o { fill: #6f5bb0; stroke: #4a3a85; stroke-width: 3; } .c-nuc-i { fill: #cfc4ee; stroke: #8e7cc3; stroke-width: 2; }
+.c-pore { fill: #ffffff; stroke: #4a3a85; stroke-width: 1.5; } .c-chrom { fill: none; stroke: #5a3e9b; stroke-width: 3; stroke-linecap: round; }
+.c-tube-o, .c-tube-i { fill: none; stroke-linecap: round; }
+.c-tube-o { stroke-width: 11; } .c-tube-i { stroke-width: 6.5; }
+.c-rer.c-tube-o { stroke: #2e6aa8; } .c-rer.c-tube-i { stroke: #8fc0ea; }
+.c-ser.c-tube-o { stroke: #1f8a7a; } .c-ser.c-tube-i { stroke: #8fdccf; }
+.c-golgi.c-tube-o { stroke: #d9822b; } .c-golgi.c-tube-i { stroke: #f8cf9a; }
+.c-ribo { fill: #1f2a7a; }
+.c-vesicle { fill: #f8cf9a; stroke: #d9822b; stroke-width: 2; }
+.c-mito-o { fill: #e76f51; stroke: #a8402a; stroke-width: 3; } .c-mito-i { fill: #f7b39d; stroke: #a8402a; stroke-width: 1.5; }
+.c-crista { fill: none; stroke: #c4503a; stroke-width: 3; stroke-linecap: round; } .c-dna { fill: none; stroke: #5b2a86; stroke-width: 2; }
+.c-lyso { fill: #f2d16b; stroke: #b48a14; stroke-width: 3; } .c-enz { fill: #b3541e; }
+.c-dvac { fill: #f3e7ab; stroke: #b8a23a; stroke-width: 3; } .c-food { fill: #c98c5a; }
+.c-chl-o { fill: #2f8f46; stroke: #1d6130; stroke-width: 3; } .c-chl-i { fill: #7cc98c; }
+.c-thyl { fill: #2a7d3c; stroke: #1d5a2b; stroke-width: 1; } .c-lam { fill: none; stroke: #2a7d3c; stroke-width: 3; }
+.c-vac-o { fill: #6fb7d6; stroke: #3a86a8; stroke-width: 3; } .c-vac-i { fill: #bfe4f2; }
+.c-shine { fill: none; stroke: #fff; stroke-width: 5; opacity: 0.6; stroke-linecap: round; }
+.c-hit { fill: transparent; stroke: none; pointer-events: all; }
+.c-hit-ribo { fill: transparent; pointer-events: all; }
+.cell-svg .c-label { font: 700 17px system-ui, "Segoe UI", sans-serif; fill: #0f172a; paint-order: stroke; stroke: #ffffff; stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+.cell-svg .org { cursor: pointer; transition: opacity 0.25s, filter 0.25s; }
+.cell-svg .c-cell { cursor: default; }
+.cell-svg .org:hover { filter: brightness(1.1) drop-shadow(0 0 5px rgba(255, 255, 255, 0.95)); }
+.cell-svg.has-sel .org:not(.sel) { opacity: 0.35; }
+.cell-svg.sel-ribosome .org { opacity: 1; }
+.cell-svg.sel-ribosome .c-ribo { fill: #e11d48; }
+.cell-svg .org.sel { filter: drop-shadow(0 0 6px #facc15) drop-shadow(0 0 14px #facc15); }
+.cell-svg .org.t-ok { opacity: 1 !important; filter: drop-shadow(0 0 8px #22c55e) drop-shadow(0 0 16px #22c55e); }
+.cell-svg .org.t-bad { filter: drop-shadow(0 0 8px #ef4444) drop-shadow(0 0 16px #ef4444); }
+.cell-svg.has-sel .c-labels { display: none; }
+.d-txt { font: 600 11px system-ui, "Segoe UI", sans-serif; fill: #0f172a; }
+.d-ln { stroke: #64748b; stroke-width: 1; }
+.d-head { fill: #f2b45a; stroke: #b9772e; stroke-width: 1.5; } .d-tail { stroke: #b9772e; stroke-width: 2.5; stroke-linecap: round; }
+.d-prot { fill: #6aa7d8; stroke: #2e6aa8; stroke-width: 2; } .d-chan { fill: #e9f0f7; }
+.d-rib-l { fill: #3f5fc4; stroke: #1f2a7a; stroke-width: 2; } .d-rib-s { fill: #7a93e6; stroke: #1f2a7a; stroke-width: 2; }
+.d-rna { fill: none; stroke: #e11d48; stroke-width: 3; stroke-linecap: round; }
+.d-fib { stroke: #8a6a34; stroke-width: 3; stroke-linecap: round; } .d-fib2 { stroke: #b08a48; stroke-width: 3; stroke-linecap: round; }
