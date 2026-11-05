@@ -397,7 +397,10 @@ function renderQuizSelection(classKey, subjectKey) {
     const sub = SUBJECT_CONFIG[subjectKey];
     const quizzes = (QUIZ_DATABASE[classKey] && QUIZ_DATABASE[classKey][subjectKey]) || [];
     const activeQuizzes = quizzes.filter(q => !q.isPlaceholder);
-    const currentTab = AppState.currentSubjectTab || 'quizzes';
+    let currentTab = AppState.currentSubjectTab || 'quizzes';
+    // Physics Α has only the quizzes for now: the theory / simulation / syllabus tabs belong to Physics Γ
+    const isPhysG = subjectKey === 'physics' && (classKey === 'Γ' || (classKey && classKey.startsWith('Γ')));
+    if (subjectKey === 'physics' && !isPhysG && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
 
     let html = `
         <button class="back-btn" onclick="navigateTo('class/${classKey}')">
@@ -426,7 +429,7 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span>3D εισαγωγή στο απλό ιδανικό κύκλωμα</span>
                 </button>
                 ` : ''}
-                ${subjectKey === 'physics' ? `
+                ${isPhysG ? `
                 <button class="subject-tab-btn ${currentTab === 'theory' ? 'active' : ''}" id="tab-btn-theory" onclick="switchSubjectTab('theory')">
                     <span class="tab-icon">📖</span>
                     <span class="tab-multiline">
@@ -449,7 +452,7 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span>Προσομοίωση εξουδετέρωσης</span>
                 </button>
                 ` : ''}
-                ${subjectKey === 'physics' ? `
+                ${isPhysG ? `
                 <button class="subject-tab-btn ${currentTab === 'simulation' ? 'active' : ''}" id="tab-btn-simulation" onclick="switchSubjectTab('simulation')">
                     <span class="tab-icon">⚡</span>
                     <span>Προσομοίωση</span>
@@ -647,7 +650,7 @@ function renderQuizSelection(classKey, subjectKey) {
             <div id="neutral-mount"></div>
         </div>
         ` : ''}
-        ${subjectKey === 'physics' ? `
+        ${isPhysG ? `
         <!-- TAB 4: SIMULATION PANEL -->
         <div class="tab-panel" id="tab-panel-simulation" style="display: ${currentTab === 'simulation' ? 'block' : 'none'};">
             <div id="simulation-mount"></div>
