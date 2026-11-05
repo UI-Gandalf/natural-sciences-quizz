@@ -9949,3 +9949,69 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .cell-dot.half { background: #a3e635; color: #1a2e05; }
 .cell-dot.bad { background: #ef4444; color: #fff; }
 .cell-dot.skip { background: #64748b; color: #fff; }
+
+/* ==========================================================================
+   Physics Α: time measurement - critical points
+   ========================================================================== */
+.pa-wrap { display: flex; flex-direction: column; gap: 16px; max-width: 1000px; margin: 0 auto; line-height: 1.55; }
+.pa-head { padding: 18px 20px; border-radius: 16px; background: linear-gradient(135deg, rgba(14, 165, 233, 0.22), rgba(16, 185, 129, 0.18)); border: 1px solid rgba(56, 189, 248, 0.45); }
+.pa-kicker { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; opacity: 0.8; }
+.pa-head h2 { margin: 6px 0 8px; font-size: 1.5rem; }
+.pa-head p { margin: 0 0 10px; }
+.pa-tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.pa-btn { background: rgba(148, 163, 184, 0.2); color: inherit; border: 1px solid rgba(148, 163, 184, 0.5); border-radius: 10px; padding: 7px 14px; font: inherit; font-weight: 700; cursor: pointer; }
+.pa-btn:hover { background: rgba(148, 163, 184, 0.35); }
+.pa-btn-main { background: #0ea5e9; border-color: #0ea5e9; color: #fff; }
+.pa-btn-main:hover { background: #38bdf8; }
+.pa-toc { display: flex; flex-wrap: wrap; gap: 8px; position: sticky; top: 0; z-index: 3; padding: 8px 0; }
+.pa-toc a { padding: 6px 12px; border-radius: 999px; background: rgba(15, 23, 42, 0.8); color: #e2e8f0; border: 1px solid rgba(148, 163, 184, 0.45); font-size: 0.85rem; font-weight: 700; text-decoration: none; }
+.pa-toc a:hover { background: #0ea5e9; color: #fff; }
+[data-theme="light"] .pa-toc a { background: rgba(255, 255, 255, 0.92); color: #0f172a; }
+.pa-card { padding: 18px 20px; border-radius: 16px; border: 1px solid rgba(148, 163, 184, 0.35); background: rgba(15, 23, 42, 0.6); scroll-margin-top: 60px; }
+[data-theme="light"] .pa-card { background: #ffffff; }
+.pa-card h3 { margin: 0 0 10px; font-size: 1.25rem; display: flex; align-items: center; gap: 10px; }
+.pa-card h4 { margin: 0 0 6px; font-size: 1.02rem; }
+.pa-sub { margin: 16px 0 6px; font-size: 1.1rem; }
+.pa-num { flex: none; min-width: 32px; height: 32px; padding: 0 6px; border-radius: 50%; background: #0ea5e9; color: #fff; display: inline-grid; place-items: center; font-weight: 800; font-size: 0.95rem; }
+.pa-card p { margin: 0 0 10px; }
+.pa-key { padding: 10px 14px; border-left: 4px solid #fbbf24; background: rgba(251, 191, 36, 0.12); border-radius: 0 10px 10px 0; font-weight: 600; }
+.pa-rule { padding: 12px 14px; border-radius: 12px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.5); margin-bottom: 12px; }
+.pa-small { font-size: 0.88rem; opacity: 0.9; }
+.pa-roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 10px 0 12px; }
+.pa-role { padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(56, 189, 248, 0.5); background: rgba(14, 165, 233, 0.1); }
+.pa-role-n { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.8; }
+.pa-role-t { font-size: 1.1rem; font-weight: 800; margin: 2px 0 6px; }
+.pa-role p { margin: 0; font-size: 0.95rem; }
+.pa-steps { margin: 0 0 12px; padding-left: 22px; }
+.pa-steps li { margin-bottom: 6px; }
+.pa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px; }
+.pa-point { padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(148, 163, 184, 0.4); background: rgba(148, 163, 184, 0.08); }
+.pa-point p { margin: 0; font-size: 0.95rem; }
+.pa-ico { font-size: 1.5rem; }
+.pa-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-bottom: 8px; }
+.pa-box { padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(148, 163, 184, 0.45); background: rgba(148, 163, 184, 0.08); }
+.pa-good { border-color: rgba(34, 197, 94, 0.6); background: rgba(34, 197, 94, 0.1); }
+.pa-warn { border-color: rgba(245, 158, 11, 0.6); background: rgba(245, 158, 11, 0.1); }
+.pa-warn ul { margin: 0; padding-left: 20px; }
+.pa-a { border-color: rgba(56, 189, 248, 0.7); }
+.pa-b { border-color: rgba(168, 85, 247, 0.7); }
+.pa-tag { display: inline-block; padding: 1px 10px; border-radius: 999px; background: #0ea5e9; color: #fff; font-weight: 800; margin-bottom: 4px; }
+.pa-b .pa-tag { background: #a855f7; }
+.pa-big { font-size: 2rem; font-weight: 900; color: #fbbf24; margin-bottom: 4px; }
+.pa-calc-ex { padding: 8px 12px; margin: 6px 0 8px; border-radius: 10px; background: rgba(15, 23, 42, 0.5); font-size: 1.05rem; }
+[data-theme="light"] .pa-calc-ex { background: #eef2f7; }
+.pa-res { color: #4ade80; }
+[data-theme="light"] .pa-res { color: #15803d; }
+.pa-fn { display: inline-grid; place-items: center; width: 20px; height: 20px; margin: 0 2px; vertical-align: super; font-size: 0.7rem; font-weight: 800; border-radius: 50%; border: 1px solid #fbbf24; background: rgba(251, 191, 36, 0.2); color: #fbbf24; cursor: pointer; padding: 0; line-height: 1; }
+.pa-fn:hover, .pa-fn.on { background: #fbbf24; color: #1f1300; }
+[data-theme="light"] .pa-fn { color: #b45309; border-color: #d97706; }
+.pa-note { display: block; margin: 8px 0; padding: 10px 14px; border-radius: 10px; background: rgba(251, 191, 36, 0.14); border: 1px dashed #fbbf24; font-size: 0.92rem; font-weight: 400; line-height: 1.5; }
+.pa-note[hidden] { display: none; }
+.pa-calc-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.pa-calc-form label { display: flex; flex-direction: column; gap: 4px; font-weight: 700; font-size: 0.9rem; }
+.pa-calc-form select, .pa-calc-form input { padding: 9px 12px; border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.6); background: rgba(15, 23, 42, 0.5); color: inherit; font: inherit; min-width: 220px; }
+[data-theme="light"] .pa-calc-form select, [data-theme="light"] .pa-calc-form input { background: #fff; }
+.pa-msg { margin-top: 12px; padding: 12px 16px; border-radius: 12px; }
+.pa-msg.ok { background: rgba(34, 197, 94, 0.14); border: 1px solid rgba(34, 197, 94, 0.6); }
+.pa-msg.bad { background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(239, 68, 68, 0.6); }
+.pa-final { font-size: 1.3rem; margin: 4px 0; }

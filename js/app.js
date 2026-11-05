@@ -400,7 +400,8 @@ function renderQuizSelection(classKey, subjectKey) {
     let currentTab = AppState.currentSubjectTab || 'quizzes';
     // Physics Α has only the quizzes for now: the theory / simulation / syllabus tabs belong to Physics Γ
     const isPhysG = subjectKey === 'physics' && (classKey === 'Γ' || (classKey && classKey.startsWith('Γ')));
-    if (subjectKey === 'physics' && !isPhysG && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
+    const isPhysA = subjectKey === 'physics' && classKey === 'Α';
+    if (subjectKey === 'physics' && !isPhysG && !(isPhysA && currentTab === 'time') && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
 
     let html = `
         <button class="back-btn" onclick="navigateTo('class/${classKey}')">
@@ -427,6 +428,12 @@ function renderQuizSelection(classKey, subjectKey) {
                 <button class="subject-tab-btn ${currentTab === 'intro3d' ? 'active' : ''}" id="tab-btn-intro3d" onclick="switchSubjectTab('intro3d')">
                     <span class="tab-icon">💡</span>
                     <span>3D εισαγωγή στο απλό ιδανικό κύκλωμα</span>
+                </button>
+                ` : ''}
+                ${isPhysA ? `
+                <button class="subject-tab-btn ${currentTab === 'time' ? 'active' : ''}" id="tab-btn-time" onclick="switchSubjectTab('time')">
+                    <span class="tab-icon">⏱</span>
+                    <span>Μέτρηση χρόνου: κρίσιμα σημεία</span>
                 </button>
                 ` : ''}
                 ${isPhysG ? `
@@ -650,6 +657,12 @@ function renderQuizSelection(classKey, subjectKey) {
             <div id="neutral-mount"></div>
         </div>
         ` : ''}
+        ${isPhysA ? `
+        <!-- PHYSICS Α: TIME MEASUREMENT, CRITICAL POINTS -->
+        <div class="tab-panel" id="tab-panel-time" style="display: ${currentTab === 'time' ? 'block' : 'none'};">
+            <div id="time-mount"></div>
+        </div>
+        ` : ''}
         ${isPhysG ? `
         <!-- TAB 4: SIMULATION PANEL -->
         <div class="tab-panel" id="tab-panel-simulation" style="display: ${currentTab === 'simulation' ? 'block' : 'none'};">
@@ -697,6 +710,10 @@ function renderQuizSelection(classKey, subjectKey) {
     }
     if (currentTab === 'cell') {
         renderCellView();
+    }
+    if (currentTab === 'time') {
+        const tm = document.getElementById('time-mount');
+        if (tm && window.PhysATime) window.PhysATime.render(tm);
     }
 
     if (currentTab === 'simulation' && subjectKey === 'physics') {
@@ -859,6 +876,18 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'intro3d') {
             i3Panel.style.animation = 'fadeIn 0.3s ease';
             renderIntro3dView();
+        }
+    }
+
+    const timeBtn = document.getElementById('tab-btn-time');
+    if (timeBtn) timeBtn.classList.toggle('active', tabKey === 'time');
+    const timePanel = document.getElementById('tab-panel-time');
+    if (timePanel) {
+        timePanel.style.display = tabKey === 'time' ? 'block' : 'none';
+        if (tabKey === 'time') {
+            timePanel.style.animation = 'fadeIn 0.3s ease';
+            const tm = document.getElementById('time-mount');
+            if (tm && !tm.hasChildNodes() && window.PhysATime) window.PhysATime.render(tm);
         }
     }
 
