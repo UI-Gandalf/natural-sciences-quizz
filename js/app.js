@@ -254,7 +254,7 @@ function updateBreadcrumbs() {
             } else if (AppState.currentSubjectTab === 'theory') {
                 html += `<a class="crumb-item" onclick="switchSubjectTab('quizzes')">${subConf.emoji} ${subConf.name}</a>`;
                 html += `<span class="crumb-sep">/</span>`;
-                html += `<span class="crumb-active">📖 Θεωρία και Επίλυση κυκλωμάτων</span>`;
+                html += `<span class="crumb-active">📖 Συμπυκνωμένος οδηγός μελέτης και πρωτόκολλο επίλυσης ασκήσεων (βασισμένος στον έντυπο οδηγό που σας έχει δοθεί)</span>`;
             } else if (AppState.currentSubjectTab === 'exam_solutions') {
                 html += `<a class="crumb-item" onclick="switchSubjectTab('quizzes')">${subConf.emoji} ${subConf.name}</a>`;
                 html += `<span class="crumb-sep">/</span>`;
@@ -437,7 +437,7 @@ function renderQuizSelection(classKey, subjectKey) {
                 <button class="subject-tab-btn ${currentTab === 'theory' ? 'active' : ''}" id="tab-btn-theory" onclick="switchSubjectTab('theory')">
                     <span class="tab-icon">📖</span>
                     <span class="tab-multiline">
-                        <span class="tab-line-main">Θεωρία και Επίλυση κυκλωμάτων</span>
+                        <span class="tab-line-main">Συμπυκνωμένος οδηγός μελέτης και πρωτόκολλο επίλυσης ασκήσεων (βασισμένος στον έντυπο οδηγό που σας έχει δοθεί)</span>
                     </span>
                 </button>
                 ` : ''}
