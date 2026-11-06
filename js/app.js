@@ -467,6 +467,10 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span class="tab-icon">💡</span>
                     <span>3D εισαγωγή στο απλό ιδανικό κύκλωμα</span>
                 </button>
+                <button class="subject-tab-btn ${currentTab === 'series3d' ? 'active' : ''}" id="tab-btn-series3d" onclick="switchSubjectTab('series3d')">
+                    <span class="tab-icon">💡</span>
+                    <span>3D κύκλωμα με δύο αντιστάτες σε σειρά</span>
+                </button>
                 ` : ''}
                 ${isPhysA ? `
                 <button class="subject-tab-btn ${currentTab === 'time' ? 'active' : ''}" id="tab-btn-time" onclick="switchSubjectTab('time')">
@@ -677,6 +681,10 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-intro3d" style="display: ${currentTab === 'intro3d' ? 'block' : 'none'};">
             <div id="intro3d-mount"></div>
         </div>
+        <!-- PHYSICS Γ: 3D CIRCUIT WITH TWO RESISTORS IN SERIES -->
+        <div class="tab-panel" id="tab-panel-series3d" style="display: ${currentTab === 'series3d' ? 'block' : 'none'};">
+            <div id="series3d-mount"></div>
+        </div>
         ` : ''}
         ${(((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'biology') || isBioA) ? `
         <!-- BIOLOGY Α / Γ: CELL EXPLORER -->
@@ -765,6 +773,9 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'intro3d') {
         renderIntro3dView();
     }
+    if (currentTab === 'series3d') {
+        renderSeries3dView();
+    }
     if (currentTab === 'cell') {
         renderCellView();
     }
@@ -800,6 +811,11 @@ function renderQuizSelection(classKey, subjectKey) {
 function renderIntro3dView() {
     const mount = document.getElementById('intro3d-mount');
     if (mount && window.Circuit3D) window.Circuit3D.render(mount);
+}
+
+function renderSeries3dView() {
+    const mount = document.getElementById('series3d-mount');
+    if (mount && window.Circuit3DSeries) window.Circuit3DSeries.render(mount);
 }
 
 function renderSkeletonView() {
@@ -958,6 +974,17 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'intro3d') {
             i3Panel.style.animation = 'fadeIn 0.3s ease';
             renderIntro3dView();
+        }
+    }
+
+    const s3Btn = document.getElementById('tab-btn-series3d');
+    if (s3Btn) s3Btn.classList.toggle('active', tabKey === 'series3d');
+    const s3Panel = document.getElementById('tab-panel-series3d');
+    if (s3Panel) {
+        s3Panel.style.display = tabKey === 'series3d' ? 'block' : 'none';
+        if (tabKey === 'series3d') {
+            s3Panel.style.animation = 'fadeIn 0.3s ease';
+            renderSeries3dView();
         }
     }
 

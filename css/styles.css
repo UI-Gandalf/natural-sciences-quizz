@@ -10338,3 +10338,52 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .sk-signif-h { font-weight: 800; font-size: 0.92rem; margin-bottom: 4px; }
 .sk-signif-h span { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; background: rgba(245, 158, 11, 0.25); }
 .sk-signif p { margin: 0; line-height: 1.5; }
+
+/* ---------- 3D circuits: potential study (big graph + small flat circuit) ---------- */
+.c3d-study { height: clamp(520px, calc(100vh - 150px), 900px); overflow: auto; box-sizing: border-box; padding: 12px 14px; border-radius: 14px; background: #0b1220; border: 1px solid rgba(96, 165, 250, 0.25); display: flex; flex-direction: column; gap: 10px; }
+.c3d-wrap:fullscreen .c3d-study { height: calc(100vh - 24px); }
+.c3d-study-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.c3d-study-title { font-weight: 800; font-size: 1.15rem; color: #e2e8f0; }
+.c3d-study-exit, .c3d-study-btn { cursor: pointer; font: inherit; font-weight: 700; border-radius: 10px; border: 1px solid rgba(249, 115, 22, 0.7); background: rgba(249, 115, 22, 0.18); color: inherit; padding: 8px 14px; }
+.c3d-study-exit:hover, .c3d-study-btn:hover:not(:disabled) { background: #f97316; color: #fff; }
+.c3d-study-btn { width: 100%; margin-top: 8px; }
+.c3d-study-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.c3d-study-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 340px); gap: 12px; align-items: start; min-height: 0; }
+.c3d-study-graph { border-radius: 12px; background: #0f1a2e; border: 1px solid rgba(148, 163, 184, 0.22); padding: 6px; }
+.c3d-study-svg { width: 100%; height: auto; display: block; }
+.c3d-s-axis { stroke: #94a3b8; stroke-width: 2; }
+.c3d-s-guide { stroke: #475569; stroke-width: 1.2; stroke-dasharray: 6 5; }
+.c3d-s-cap { fill: #94a3b8; font-size: 15px; }
+.c3d-s-yt { fill: #cbd5e1; font-size: 15px; font-weight: 700; }
+.c3d-s-chip { fill: #facc15; stroke: #0b1220; stroke-width: 2; }
+.c3d-s-chipt { fill: #1f2937; font-size: 14px; font-weight: 800; }
+.c3d-s-curve { fill: none; stroke: #38bdf8; stroke-width: 4.5; stroke-linejoin: round; stroke-linecap: round; }
+.c3d-s-pt { fill: #facc15; stroke: #0b1220; stroke-width: 2; transition: opacity 0.3s; }
+.c3d-s-val { fill: #f1f5f9; font-size: 17px; transition: opacity 0.3s; paint-order: stroke; stroke: #0f1a2e; stroke-width: 4px; }
+.c3d-s-lv { transition: opacity 0.3s; }
+.c3d-s-dot { fill: #ff5a36; stroke: #fff; stroke-width: 2.5; }
+.c3d-study-side { display: flex; flex-direction: column; gap: 10px; }
+.c3d-study-mini { border-radius: 12px; background: #0f1a2e; border: 1px solid rgba(148, 163, 184, 0.22); padding: 8px; }
+.c3d-mini-cap { font-weight: 700; font-size: 0.85rem; color: #94a3b8; margin-bottom: 2px; }
+.c3d-mini-svg { width: 100%; height: auto; display: block; }
+.c3d-m-wire { stroke: #3b82f6; stroke-width: 3.5; stroke-linecap: round; }
+.c3d-m-plate { stroke: #f59e0b; stroke-width: 4; stroke-linecap: round; }
+.c3d-m-sign { fill: #e2e8f0; font-size: 13px; font-weight: 800; }
+.c3d-m-post { fill: #cbd5e1; }
+.c3d-m-lever { stroke: #e5e7eb; stroke-width: 3.5; stroke-linecap: round; }
+.c3d-m-bulb { fill: rgba(255, 246, 213, 0.12); stroke: #fde68a; stroke-width: 2.5; }
+.c3d-m-x { stroke: #fde68a; stroke-width: 2; }
+.c3d-m-chip { fill: #facc15; stroke: #0b1220; stroke-width: 1.5; }
+.c3d-m-chipt { fill: #1f2937; font-size: 9.5px; font-weight: 800; }
+.c3d-m-dot { fill: #ff5a36; stroke: #fff; stroke-width: 2; }
+.c3d-study-card { padding: 10px 12px; border-radius: 12px; background: #1c0f08; border: 2px solid #fb923c; color: #ffedd5; box-shadow: 0 0 14px rgba(251, 146, 60, 0.4); }
+.c3d-study-card .c3d-fnote { max-width: none; }
+.c3d-study-card .c3d-fo-eq { white-space: normal; }
+.c3d-stage .c3d-eq-m { border-color: #059669; min-width: 120px; }
+.c3d-stage .c3d-eq-m::after { border-color: #059669; }
+.c3d-sw-m { background: #34d399; }
+[data-theme="light"] .c3d-study, [data-theme="light"] .c3d-study-graph, [data-theme="light"] .c3d-study-mini { background: #ffffff; border-color: #cbd5e1; }
+[data-theme="light"] .c3d-study-title, [data-theme="light"] .c3d-s-yt, [data-theme="light"] .c3d-m-sign { fill: #0f172a; color: #0f172a; }
+[data-theme="light"] .c3d-s-val { fill: #0f172a; stroke: #ffffff; }
+[data-theme="light"] .c3d-s-cap, [data-theme="light"] .c3d-mini-cap { fill: #475569; color: #475569; }
+@media (max-width: 960px) { .c3d-study-body { grid-template-columns: 1fr; } }
