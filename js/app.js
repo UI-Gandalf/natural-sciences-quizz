@@ -1249,6 +1249,7 @@ function renderQuizRunner(quiz) {
     const qr = AppState.quizRunner;
     qr.activeQueue = Array.from({ length: quiz.questions.length }, (_, i) => i);
     qr.skippedSet.clear();
+    qr.everSkipped = new Set();
     qr.currentPos = 0;
     qr.score = 0;
     qr.answered = false;
@@ -1363,6 +1364,7 @@ function renderQuizRunner(quiz) {
                     </div>
                     <div class="final-pct" id="final-pct">0%</div>
                     <div class="final-message" id="final-message"></div>
+                    <div class="perf-summary" id="perf-summary" style="display: none;"></div>
                     
                     <div class="results-actions">
                         <button class="restart-btn" onclick="restartCurrentQuiz()">
@@ -1392,6 +1394,10 @@ function renderQuizRunner(quiz) {
 
     container.innerHTML = html;
     syncFullscreenButtons();
+    if (quiz.performanceSummary) {
+        const sc = document.getElementById('score-counter');
+        if (sc) sc.style.display = 'none';
+    }
     loadCurrentQuestion();
 }
 
@@ -2322,7 +2328,7 @@ function renderActiveCascadingStep(q, stepIdx) {
     card.innerHTML = `
         <div class="step-badge-title">
             <span class="step-badge">Βήμα ${stepIdx + 1} από ${q.steps.length}</span>
-            <span class="step-badge-weight">Ισοδύναμη βαθμολόγηση (${stepPct}%)</span>
+            ${AppState.currentQuiz && AppState.currentQuiz.performanceSummary ? '' : `<span class="step-badge-weight">Ισοδύναμη βαθμολόγηση (${stepPct}%)</span>`}
         </div>
         ${stepFigureHtml(step, stepIdx)}
         <div class="step-prompt">${formatMathText(step.prompt)}</div>
@@ -2540,7 +2546,9 @@ function selectCascadingStepOption(stepIdx, optIdx) {
                 chosenIdx: optIdx,
                 correctIdx,
                 isCorrect: false,
-                attempts: 2
+                attempts: 2,
+                tips: ((qr.cascadingState.advisor || {})[stepIdx] || {}).used || 0,
+                revealed: !!((qr.cascadingState.advisor || {})[stepIdx] || {}).revealed
             });
 
             setTimeout(() => {
@@ -3364,6 +3372,7 @@ function handleNextOrSkip() {
         const wasAlreadySkipped = qr.skippedSet.has(skippedQ);
         qr.activeQueue.push(skippedQ);
         qr.skippedSet.add(skippedQ);
+        if (qr.everSkipped) qr.everSkipped.add(skippedQ);
 
         // Record skip action into navHistory
         qr.navHistory.push({
@@ -3634,6 +3643,15 @@ function showQuizResults() {
 
     document.getElementById('final-message').innerText = msg;
 
+    if (quiz.performanceSummary) {
+        // no points: a qualitative summary per question instead
+        ['.score-circle', '#final-pct', '#final-message'].forEach(sel => { const el = document.querySelector('#results-screen ' + sel); if (el) el.style.display = 'none'; });
+        const title = document.querySelector('#results-screen h2');
+        if (title) title.textContent = 'Ολοκλήρωση Κουίζ! 🎉 Σύνοψη επίδοσης';
+        const box = document.getElementById('perf-summary');
+        if (box) { box.innerHTML = buildPerformanceSummary(); box.style.display = 'block'; triggerMathTypeset(box); }
+    }
+
     // Save best score to localStorage
     const savedScoreKey = `stem_quiz_score_${quiz.id}`;
     const previousBest = parseInt(localStorage.getItem(savedScoreKey) || '0');
@@ -3643,6 +3661,74 @@ function showQuizResults() {
 
     // Build Detailed Review List
     buildReviewList();
+}
+
+/* Qualitative summary per question: which sub-questions, how many attempts, advisor tips, correct / wrong */
+function buildPerformanceSummary() {
+    const qr = AppState.quizRunner;
+    const quiz = AppState.currentQuiz;
+    const items = qr.userHistory.slice().sort((a, b) => a.qIndex - b.qIndex);
+    const tot = { steps: 0, first: 0, second: 0, wrong: 0, tips: 0, reveal: 0, skipped: 0 };
+    const review = [];
+    let cards = '';
+    items.forEach(it => {
+        const qn = it.qIndex + 1;
+        const skipped = qr.everSkipped && qr.everSkipped.has(it.qIndex);
+        if (skipped) tot.skipped++;
+        let rows = '', f = 0, sc = 0, w = 0, tips = 0, rev = 0;
+        if (it.type === 'cascading') {
+            it.steps.forEach((st, si) => {
+                const r = (it.stepResults || [])[si] || {};
+                tot.steps++;
+                const t = r.tips || 0;
+                tips += t; tot.tips += t;
+                let label, cls;
+                if (r.isCorrect && r.attempts === 1) { label = '✓ σωστό με την 1η προσπάθεια'; cls = 'ok1'; f++; tot.first++; }
+                else if (r.isCorrect) { label = '✓ σωστό με τη 2η προσπάθεια'; cls = 'ok2'; sc++; tot.second++; }
+                else { label = '✗ λάθος και στις 2 προσπάθειες'; cls = 'bad'; w++; tot.wrong++; }
+                if (r.revealed) { rev++; tot.reveal++; label += ' · 🔓 αποκαλύφθηκε από τον Συμβουλάτορα'; }
+                if (!r.isCorrect || r.attempts > 1 || r.revealed) review.push(`Ερώτηση ${qn}: ${plainFromMath(String(st.stepTitle || '').replace(/^Βήμα\s*\d+:\s*/, ''))}`);
+                rows += `<tr class="perf-${cls}"><td>${si + 1}. ${plainFromMath(String(st.stepTitle || '').replace(/^Βήμα\s*\d+:\s*/, ''))}</td><td>${label}</td><td>${t ? '🤖 ' + t : '—'}</td></tr>`;
+            });
+        } else {
+            tot.steps++;
+            if (it.isCorrect) { f++; tot.first++; } else { w++; tot.wrong++; }
+            rows = `<tr class="perf-${it.isCorrect ? 'ok1' : 'bad'}"><td>${plainFromMath(String(it.question || '').slice(0, 90))}</td><td>${it.isCorrect ? '✓ σωστό' : '✗ λάθος'}</td><td>—</td></tr>`;
+        }
+        const n = f + sc + w;
+        const q = quiz.questions[it.qIndex] || {};
+        const text = plainFromMath(String(q.q || it.question || '').replace(/^\s*\d+\.\s*/, ''));
+        const chips = [`<span class="perf-chip ok1">✓ ${f} με 1η</span>`];
+        if (sc) chips.push(`<span class="perf-chip ok2">✓ ${sc} με 2η</span>`);
+        if (w) chips.push(`<span class="perf-chip bad">✗ ${w} λάθος</span>`);
+        if (tips) chips.push(`<span class="perf-chip tip">🤖 ${tips} συμβουλ${tips === 1 ? 'ή' : 'ές'}</span>`);
+        if (rev) chips.push(`<span class="perf-chip tip">🔓 ${rev} αποκάλυψη${rev === 1 ? '' : 'ς'}</span>`);
+        if (skipped) chips.push('<span class="perf-chip skip">⏭️ παραλείφθηκε αρχικά</span>');
+        cards += `<details class="perf-card"${(w || sc || rev) ? ' open' : ''}><summary><span class="perf-qn">Ερώτηση ${qn}</span><span class="perf-qt">${text.length > 100 ? text.slice(0, 100) + '…' : text}</span><span class="perf-chips">${chips.join('')}</span></summary>
+            <table class="perf-table"><thead><tr><th>Ερώτημα (βήμα)</th><th>Αποτέλεσμα</th><th>Συμβουλές</th></tr></thead><tbody>${rows}</tbody></table></details>`;
+    });
+    const pctFirst = tot.steps ? Math.round(100 * tot.first / tot.steps) : 0;
+    let verdict;
+    if (tot.wrong === 0 && tot.second === 0 && tot.reveal === 0) verdict = '🌟 Εξαιρετική και αυτόνομη επίδοση: όλα τα ερωτήματα σωστά με την 1η προσπάθεια' + (tot.tips ? ', με λίγη βοήθεια από τον Συμβουλάτορα.' : '.');
+    else if (pctFirst >= 75 && tot.wrong <= 2) verdict = '👏 Πολύ καλή επίδοση: οι περισσότερες απαντήσεις ήταν σωστές με την 1η προσπάθεια. Δείτε παρακάτω τα λίγα ερωτήματα που θέλουν επανάληψη.';
+    else if (pctFirst >= 50) verdict = '👍 Καλή βάση, αλλά αρκετά ερωτήματα χρειάστηκαν δεύτερη προσπάθεια ή βοήθεια. Αξίζει επανάληψη στα σημεία που εμφανίζονται στη λίστα «Προς επανάληψη».';
+    else verdict = '📖 Χρειάζεται επανάληψη της ύλης: πολλά ερωτήματα απαντήθηκαν λάθος ή με βοήθεια. Επαναλάβετε το κουίζ μετά τη μελέτη των σημείων της λίστας «Προς επανάληψη».';
+    const review_html = review.length ? `<div class="perf-review"><strong>Προς επανάληψη:</strong><ul>${review.map(r => `<li>${r}</li>`).join('')}</ul></div>` : '';
+    return `<div class="perf-head">
+            <div class="perf-totals">
+                <span class="perf-chip">${items.length} ερωτήσεις · ${tot.steps} ερωτήματα</span>
+                <span class="perf-chip ok1">✓ ${tot.first} με 1η προσπάθεια</span>
+                <span class="perf-chip ok2">✓ ${tot.second} με 2η</span>
+                <span class="perf-chip bad">✗ ${tot.wrong} λάθος</span>
+                <span class="perf-chip tip">🤖 ${tot.tips} συμβουλές</span>
+                <span class="perf-chip tip">🔓 ${tot.reveal} αποκαλύψεις</span>
+                <span class="perf-chip skip">⏭️ ${tot.skipped} παραλείψεις</span>
+            </div>
+            <p class="perf-verdict">${verdict}</p>
+            ${review_html}
+        </div>
+        <div class="perf-cards">${cards}</div>
+        <p class="perf-hint">Πατήστε πάνω σε μια ερώτηση για να δείτε αναλυτικά τα ερωτήματά της.</p>`;
 }
 
 function buildReviewList() {

@@ -12,6 +12,7 @@
  "level": "Ενεργό",
  "time": "15-20 λεπτά",
  "isPlaceholder": false,
+ "performanceSummary": true,
  "questions": [
   {
    "id": 1,
