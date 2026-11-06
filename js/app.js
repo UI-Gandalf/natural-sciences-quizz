@@ -435,7 +435,7 @@ function renderQuizSelection(classKey, subjectKey) {
                 ${isBioB ? `
                 <button class="subject-tab-btn ${currentTab === 'topics' ? 'active' : ''}" id="tab-btn-topics" onclick="switchSubjectTab('topics')">
                     <span class="tab-icon">🧩</span>
-                    <span>Ειδικά θέματα</span>
+                    <span>Βαθιά εστίαση & ερμηνεία</span>
                 </button>
                 ` : ''}
                 ${isBioB ? `
