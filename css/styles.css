@@ -10387,3 +10387,51 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 [data-theme="light"] .c3d-s-val { fill: #0f172a; stroke: #ffffff; }
 [data-theme="light"] .c3d-s-cap, [data-theme="light"] .c3d-mini-cap { fill: #475569; color: #475569; }
 @media (max-width: 960px) { .c3d-study-body { grid-template-columns: 1fr; } }
+
+/* ---------- Physics Γ: gravitational analogy of the series circuit ---------- */
+.ga-wrap { max-width: 1150px; margin: 0 auto; }
+.ga-head h2 { margin: 0 0 6px; font-size: 1.5rem; }
+.ga-head p { margin: 0 0 12px; opacity: 0.92; }
+.ga-fig { border-radius: 16px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px 12px 6px; color: #0f172a; }
+.ga-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 4px; }
+.ga-btn { cursor: pointer; font: inherit; font-weight: 700; padding: 6px 14px; border-radius: 10px; border: 1px solid #94a3b8; background: #fff; color: #0f172a; }
+.ga-btn:hover { background: #e2e8f0; }
+.ga-bar-note { font-size: 0.85rem; color: #475569; }
+.ga-svg { width: 100%; height: auto; display: block; }
+.ga-guide { stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 7 6; }
+.ga-lv { fill: #334155; font-size: 18px; font-weight: 800; }
+.ga-hill { fill: #fde68a; opacity: 0.85; }
+.ga-ground { fill: #86efac; }
+.ga-step { fill: #cbd5e1; stroke: #64748b; stroke-width: 2; }
+.ga-belt { stroke: #64748b; stroke-width: 6; stroke-linecap: round; opacity: 0.55; }
+.ga-track { fill: none; stroke: #b45309; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+.ga-tooth { fill: none; stroke: #dc2626; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.ga-return { stroke: #166534; stroke-width: 5; stroke-dasharray: 2 10; stroke-linecap: round; }
+.ga-dim { fill: none; stroke: #0f172a; stroke-width: 2; }
+.ga-dimt { fill: #0f172a; font-size: 20px; font-weight: 800; }
+.ga-t-src { fill: #1d4ed8; }
+.ga-t-r { fill: #b91c1c; }
+.ga-cap { fill: #0f172a; font-size: 17px; font-weight: 700; paint-order: stroke; stroke: #f8fafc; stroke-width: 4px; stroke-linejoin: round; }
+.ga-cap-r { fill: #b91c1c; }
+.ga-cap-s { fill: #1d4ed8; }
+.ga-mk circle { fill: #7c3aed; stroke: #fff; stroke-width: 3; }
+.ga-mk text { fill: #fff; font-size: 18px; font-weight: 800; }
+.ga-q circle { fill: #facc15; stroke: #0f172a; stroke-width: 2; transition: fill 0.2s; }
+.ga-q text { fill: #0f172a; font-size: 17px; font-weight: 900; }
+.ga-q-hot circle { fill: #fb923c; stroke: #b91c1c; }
+.ga-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 14px 0; }
+.ga-card { padding: 12px 14px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--card-border); box-shadow: var(--shadow-card); }
+.ga-card p { margin: 6px 0 0; line-height: 1.55; }
+.ga-card-h { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+.ga-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: #7c3aed; color: #fff; font-weight: 800; flex: 0 0 auto; }
+.ga-h3 { margin: 20px 0 8px; font-size: 1.15rem; color: var(--primary); }
+.ga-tw { overflow-x: auto; border-radius: 12px; border: 1px solid var(--card-border); }
+.ga-table { width: 100%; border-collapse: collapse; }
+.ga-table th, .ga-table td { padding: 9px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--card-border); line-height: 1.5; }
+.ga-table thead th { background: rgba(124, 58, 237, 0.25); }
+.ga-table tbody th { background: rgba(148, 163, 184, 0.12); white-space: nowrap; }
+.ga-table tbody tr:last-child th, .ga-table tbody tr:last-child td { border-bottom: none; }
+.ga-steps { padding-left: 22px; line-height: 1.7; }
+.ga-note { margin: 14px 0; padding: 12px 16px; border-radius: 12px; border-left: 5px solid #10b981; background: rgba(16, 185, 129, 0.12); line-height: 1.55; }
+.ga-warn { border-left-color: #f59e0b; background: rgba(245, 158, 11, 0.13); }
+@media (max-width: 800px) { .ga-cards { grid-template-columns: 1fr; } .ga-table tbody th { white-space: normal; } }

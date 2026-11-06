@@ -471,6 +471,10 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span class="tab-icon">💡</span>
                     <span>3D κύκλωμα με δύο αντιστάτες σε σειρά</span>
                 </button>
+                <button class="subject-tab-btn ${currentTab === 'analogy' ? 'active' : ''}" id="tab-btn-analogy" onclick="switchSubjectTab('analogy')">
+                    <span class="tab-icon">🎢</span>
+                    <span>Βαρυτικό ανάλογο: δύο αντιστάτες σε σειρά</span>
+                </button>
                 ` : ''}
                 ${isPhysA ? `
                 <button class="subject-tab-btn ${currentTab === 'time' ? 'active' : ''}" id="tab-btn-time" onclick="switchSubjectTab('time')">
@@ -685,6 +689,10 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-series3d" style="display: ${currentTab === 'series3d' ? 'block' : 'none'};">
             <div id="series3d-mount"></div>
         </div>
+        <!-- PHYSICS Γ: GRAVITATIONAL ANALOGY OF THE SERIES CIRCUIT -->
+        <div class="tab-panel" id="tab-panel-analogy" style="display: ${currentTab === 'analogy' ? 'block' : 'none'};">
+            <div id="analogy-mount"></div>
+        </div>
         ` : ''}
         ${(((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'biology') || isBioA) ? `
         <!-- BIOLOGY Α / Γ: CELL EXPLORER -->
@@ -776,6 +784,9 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'series3d') {
         renderSeries3dView();
     }
+    if (currentTab === 'analogy') {
+        renderAnalogyView();
+    }
     if (currentTab === 'cell') {
         renderCellView();
     }
@@ -811,6 +822,11 @@ function renderQuizSelection(classKey, subjectKey) {
 function renderIntro3dView() {
     const mount = document.getElementById('intro3d-mount');
     if (mount && window.Circuit3D) window.Circuit3D.render(mount);
+}
+
+function renderAnalogyView() {
+    const mount = document.getElementById('analogy-mount');
+    if (mount && window.PhysGAnalogy) window.PhysGAnalogy.render(mount);
 }
 
 function renderSeries3dView() {
@@ -974,6 +990,18 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'intro3d') {
             i3Panel.style.animation = 'fadeIn 0.3s ease';
             renderIntro3dView();
+        }
+    }
+
+    const anBtn = document.getElementById('tab-btn-analogy');
+    if (anBtn) anBtn.classList.toggle('active', tabKey === 'analogy');
+    const anPanel = document.getElementById('tab-panel-analogy');
+    if (anPanel) {
+        anPanel.style.display = tabKey === 'analogy' ? 'block' : 'none';
+        if (tabKey === 'analogy') {
+            anPanel.style.animation = 'fadeIn 0.3s ease';
+            const am = document.getElementById('analogy-mount');
+            if (am && !am.hasChildNodes()) renderAnalogyView();
         }
     }
 
