@@ -424,6 +424,12 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span class="tab-icon">📝</span>
                     <span>Κουίζ Αξιολόγησης</span>
                 </button>
+                ${isBioA ? `
+                <button class="subject-tab-btn ${currentTab === 'bioguide' ? 'active' : ''}" id="tab-btn-bioguide" onclick="switchSubjectTab('bioguide')">
+                    <span class="tab-icon">📋</span>
+                    <span>Συνοπτικός οδηγός ύλης</span>
+                </button>
+                ` : ''}
                 ${(((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'biology') || isBioA) ? `
                 <button class="subject-tab-btn ${currentTab === 'cell' ? 'active' : ''}" id="tab-btn-cell" onclick="switchSubjectTab('cell')">
                     <span class="tab-icon">🔬</span>
@@ -670,6 +676,12 @@ function renderQuizSelection(classKey, subjectKey) {
             <div id="cell-mount"></div>
         </div>
         ` : ''}
+        ${isBioA ? `
+        <!-- BIOLOGY Α: CONCISE STUDY GUIDE (1.1 - 1.4) -->
+        <div class="tab-panel" id="tab-panel-bioguide" style="display: ${currentTab === 'bioguide' ? 'block' : 'none'};">
+            <div id="bioguide-mount"></div>
+        </div>
+        ` : ''}
         ${subjectKey === 'chemistry' ? `
         <!-- CHEMISTRY: NEUTRALISATION LAB -->
         <div class="tab-panel" id="tab-panel-neutral" style="display: ${currentTab === 'neutral' ? 'block' : 'none'};">
@@ -742,6 +754,9 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'cell') {
         renderCellView();
     }
+    if (currentTab === 'bioguide') {
+        renderBioGuideView();
+    }
     if (currentTab === 'time') {
         const tm = document.getElementById('time-mount');
         if (tm && window.PhysATime) window.PhysATime.render(tm);
@@ -768,6 +783,11 @@ function renderQuizSelection(classKey, subjectKey) {
 function renderIntro3dView() {
     const mount = document.getElementById('intro3d-mount');
     if (mount && window.Circuit3D) window.Circuit3D.render(mount);
+}
+
+function renderBioGuideView() {
+    const mount = document.getElementById('bioguide-mount');
+    if (mount && window.BioAGuide) window.BioAGuide.render(mount);
 }
 
 function renderCellView() {
@@ -951,6 +971,18 @@ function switchSubjectTab(tabKey) {
             timePanel.style.animation = 'fadeIn 0.3s ease';
             const tm = document.getElementById('time-mount');
             if (tm && !tm.hasChildNodes() && window.PhysATime) window.PhysATime.render(tm);
+        }
+    }
+
+    const bgBtn = document.getElementById('tab-btn-bioguide');
+    if (bgBtn) bgBtn.classList.toggle('active', tabKey === 'bioguide');
+    const bgPanel = document.getElementById('tab-panel-bioguide');
+    if (bgPanel) {
+        bgPanel.style.display = tabKey === 'bioguide' ? 'block' : 'none';
+        if (tabKey === 'bioguide') {
+            bgPanel.style.animation = 'fadeIn 0.3s ease';
+            const bm = document.getElementById('bioguide-mount');
+            if (bm && !bm.hasChildNodes()) renderBioGuideView();
         }
     }
 
