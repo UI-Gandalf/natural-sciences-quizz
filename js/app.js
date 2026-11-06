@@ -428,7 +428,8 @@ function renderQuizSelection(classKey, subjectKey) {
                 <button class="subject-tab-btn ${currentTab === 'theory' ? 'active' : ''}" id="tab-btn-theory" onclick="switchSubjectTab('theory')">
                     <span class="tab-icon">📖</span>
                     <span class="tab-multiline">
-                        <span class="tab-line-main">Συμπυκνωμένος οδηγός μελέτης και πρωτόκολλο επίλυσης ασκήσεων (βασισμένος στον έντυπο οδηγό που σας έχει δοθεί)</span>
+                        <span class="tab-line-main">Συμπυκνωμένος οδηγός μελέτης και πρωτόκολλο επίλυσης ασκήσεων</span>
+                        <span class="tab-line-sub">(βασισμένος στον έντυπο οδηγό που σας έχει δοθεί)</span>
                     </span>
                 </button>
                 ` : ''}
