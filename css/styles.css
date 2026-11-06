@@ -10333,3 +10333,8 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .sk-side .sk-chip { font-size: 0.82rem; padding: 3px 10px; }
 @media (max-width: 800px) { .sk-side { position: static; max-height: none; overflow: visible; } }
 .sk-side .sk-chips { padding: 12px 14px; border-radius: 16px; background: var(--card-bg); border: 1px solid var(--card-border); box-shadow: var(--shadow-card); }
+
+.sk-signif { margin-top: 12px; padding: 10px 12px; border-radius: 12px; border: 1px dashed rgba(245, 158, 11, 0.7); background: rgba(245, 158, 11, 0.09); }
+.sk-signif-h { font-weight: 800; font-size: 0.92rem; margin-bottom: 4px; }
+.sk-signif-h span { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; background: rgba(245, 158, 11, 0.25); }
+.sk-signif p { margin: 0; line-height: 1.5; }
