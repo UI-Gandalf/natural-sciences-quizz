@@ -10479,3 +10479,14 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .bt-jcard h4 { margin: 0 0 6px; color: var(--primary); }
 .bt-jcard p { margin: 0; line-height: 1.55; }
 @media (max-width: 900px) { .bt-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bt-joint-wrap { grid-template-columns: 1fr; } }
+
+.bt-fig img { cursor: zoom-in; }
+.bt-zoomhint { display: block; font-size: 0.72rem; color: #64748b; margin-top: 2px; }
+.bt-viewer { position: fixed; inset: 0; z-index: 10000; background: rgba(2, 6, 23, 0.92); display: flex; flex-direction: column; }
+.bt-v-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; color: #e2e8f0; }
+.bt-v-cap { font-weight: 700; }
+.bt-v-btns { display: flex; gap: 8px; }
+.bt-v-btns button { cursor: pointer; width: 42px; height: 42px; font-size: 1.3rem; font-weight: 800; border-radius: 10px; border: 1px solid #64748b; background: #1e293b; color: #fff; }
+.bt-v-btns button:hover { background: #10b981; }
+.bt-v-area { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: grab; }
+.bt-v-area img { max-width: 96%; max-height: 96%; background: #fff; border-radius: 8px; user-select: none; transform-origin: center; }

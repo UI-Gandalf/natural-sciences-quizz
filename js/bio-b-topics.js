@@ -9,7 +9,7 @@
     const K = window.BioGuideKit;
     const { tbl, ul, box, flow } = K;
     const IMG = 'assets/images/bioB/';
-    const fig = (src, cap, cls) => '<figure class="bt-fig ' + (cls || '') + '"><img src="' + IMG + src + '" alt="' + cap.replace(/"/g, '') + '"><figcaption><span class="bt-src">Βιβλίο</span> ' + cap + '</figcaption></figure>';
+    const fig = (src, cap, cls) => '<figure class="bt-fig ' + (cls || '') + '"><img src="' + IMG + src + '" alt="' + cap.replace(/"/g, '') + '"><figcaption><span class="bt-src">Βιβλίο</span> ' + cap + ' <span class="bt-zoomhint">🔍 πάτα για μεγέθυνση</span></figcaption></figure>';
     const figs = (items) => '<div class="bt-figs">' + items.join('') + '</div>';
     const supp = (title, body) => '<div class="bga-box bt-supp"><strong>➕ ' + title + ' <span class="bt-tag">συμπληρωματικό · εκτός βιβλίου · δεν ζητείται</span></strong>' + body + '</div>';
     const ctrl = (id, buttons) => '<div class="bt-ctrl" id="' + id + '">' + buttons.map(b => '<button type="button" class="bt-btn" data-act="' + b[0] + '">' + b[1] + '</button>').join('') + '</div>';
@@ -28,7 +28,6 @@
         '<div class="bt-stage"><svg id="bt-worm" viewBox="0 0 800 230" class="bt-svg" role="img" aria-label="Κίνηση γεωσκώληκα"></svg>' +
         '<div class="bt-legend"><span><i class="bt-sw bt-sw-a"></i> συστέλλονται οι <strong>κυκλικοί</strong> μύες: το τμήμα γίνεται <strong>μακρύ και λεπτό</strong></span><span><i class="bt-sw bt-sw-b"></i> συστέλλονται οι <strong>επιμήκεις</strong> μύες: το τμήμα γίνεται <strong>κοντό και χοντρό</strong> (τα τριχίδια πιάνονται στο έδαφος)</span></div>' +
         ctrl('bt-worm-c', [['pause', '⏸ Παύση']]) + '</div>' +
-        figs([fig('worm_seq.png', 'Διαδοχικές θέσεις του γεωσκώληκα καθώς μετακινείται (ένθετο «Με συστολή και… χαλάρωση»).', 'bt-fig-small')]) +
         '<h4>Η μέδουσα: παίξε την κίνηση</h4>' +
         '<div class="bt-stage"><svg id="bt-medusa" viewBox="0 0 800 260" class="bt-svg" role="img" aria-label="Κίνηση μέδουσας"></svg>' + ctrl('bt-medusa-c', [['pause', '⏸ Παύση']]) +
         '<p class="bga-note">Σχηματική απεικόνιση: ο θόλος συσπάται με τη βοήθεια κυκλικών μυϊκών ινών και το ζώο κινείται.</p></div>' +
@@ -96,6 +95,55 @@
             ul(['<strong>Κάταγμα:</strong> το σπάσιμο των οστών.',
                 '<strong>Διάστρεμμα (στραμπούληγμα):</strong> κάκωση των ιστών μιας άρθρωσης (στον σύνδεσμο ή στον θύλακα), χωρίς απομάκρυνση των αρθρούμενων οστών.',
                 '<strong>Εξάρθρωση:</strong> η πιο σοβαρή βλάβη μιας άρθρωσης, με απομάκρυνση των αρθρούμενων οστών.']));
+
+
+    /* ---------- zoom viewer: click a picture, then wheel / buttons to zoom and drag to move ---------- */
+    function openViewer(src, caption) {
+        const ov = document.createElement('div');
+        ov.className = 'bt-viewer';
+        ov.innerHTML = '<div class="bt-v-bar"><span class="bt-v-cap"></span><span class="bt-v-btns"><button type="button" data-z="out" title="Σμίκρυνση">−</button><button type="button" data-z="in" title="Μεγέθυνση">+</button><button type="button" data-z="reset" title="Αρχική θέση">⟲</button><button type="button" data-z="close" title="Κλείσιμο (Esc)">✕</button></span></div><div class="bt-v-area"><img alt="" draggable="false"></div>';
+        ov.querySelector('.bt-v-cap').textContent = caption;
+        const area = ov.querySelector('.bt-v-area'), im = ov.querySelector('img');
+        im.src = src;
+        document.body.appendChild(ov);
+        const st = { k: 1, x: 0, y: 0 };
+        const apply = () => { im.style.transform = 'translate(' + st.x + 'px,' + st.y + 'px) scale(' + st.k + ')'; };
+        const zoomAt = (f, cx, cy) => {
+            const r = area.getBoundingClientRect();
+            const px = (cx === undefined ? r.left + r.width / 2 : cx) - r.left - r.width / 2, py = (cy === undefined ? r.top + r.height / 2 : cy) - r.top - r.height / 2;
+            const nk = Math.min(10, Math.max(1, st.k * f)), g = nk / st.k;
+            st.x = px - (px - st.x) * g; st.y = py - (py - st.y) * g; st.k = nk;
+            if (nk === 1) { st.x = 0; st.y = 0; }
+            apply();
+        };
+        const close = () => { document.removeEventListener('keydown', onKey); ov.remove(); };
+        const onKey = (e) => { if (e.key === 'Escape') close(); else if (e.key === '+') zoomAt(1.3); else if (e.key === '-') zoomAt(1 / 1.3); };
+        document.addEventListener('keydown', onKey);
+        ov.addEventListener('click', (e) => {
+            const z = e.target.dataset && e.target.dataset.z;
+            if (z === 'close' || e.target === ov) close();
+            else if (z === 'in') zoomAt(1.4); else if (z === 'out') zoomAt(1 / 1.4);
+            else if (z === 'reset') { st.k = 1; st.x = 0; st.y = 0; apply(); }
+        });
+        area.addEventListener('wheel', (e) => { e.preventDefault(); zoomAt(e.deltaY < 0 ? 1.2 : 1 / 1.2, e.clientX, e.clientY); }, { passive: false });
+        area.addEventListener('dblclick', (e) => { if (st.k > 1) { st.k = 1; st.x = 0; st.y = 0; apply(); } else zoomAt(3, e.clientX, e.clientY); });
+        const pts = new Map(); let lastD = 0;
+        area.addEventListener('pointerdown', (e) => { area.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); lastD = 0; });
+        area.addEventListener('pointermove', (e) => {
+            const pr = pts.get(e.pointerId); if (!pr) return;
+            if (pts.size === 2) {
+                pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+                const [a, b] = [...pts.values()]; const dd = Math.hypot(a.x - b.x, a.y - b.y);
+                if (lastD) zoomAt(dd / lastD, (a.x + b.x) / 2, (a.y + b.y) / 2);
+                lastD = dd; return;
+            }
+            if (st.k > 1) { st.x += e.clientX - pr.x; st.y += e.clientY - pr.y; apply(); }
+            pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        });
+        const up = (e) => pts.delete(e.pointerId);
+        area.addEventListener('pointerup', up); area.addEventListener('pointercancel', up);
+        area.style.touchAction = 'none';
+    }
 
     /* ================================================================== visuals */
     const NS = 'http://www.w3.org/2000/svg';
@@ -347,6 +395,10 @@
             ]
         });
         initWorm(root); initMedusa(root); initMolt(root); initSkel(root); initJoint(root);
+        root.addEventListener('click', (e) => {
+            const im = e.target.closest('.bt-fig img');
+            if (im) openViewer(im.src, im.getAttribute('alt'));
+        });
     }
 
     window.BioBTopics = { render };
