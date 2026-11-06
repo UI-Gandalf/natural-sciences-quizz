@@ -10551,3 +10551,5 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .bj-grid:fullscreen { background: #0b1220; padding: 10px; box-sizing: border-box; grid-template-columns: minmax(0, 1fr) 340px; color: #e2e8f0; }
 .bj-grid:fullscreen .bj-stage { height: calc(100vh - 20px); }
 @media (max-width: 900px) { .bj-grid { grid-template-columns: 1fr; } .bj-side { max-height: none; } }
+
+.bj-callout { padding: 12px 14px; border-radius: 12px; border: 2px solid #f59e0b; background: rgba(245, 158, 11, 0.16); line-height: 1.55; font-size: 0.94rem; }
