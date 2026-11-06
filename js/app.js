@@ -407,6 +407,7 @@ function renderQuizSelection(classKey, subjectKey) {
     const isPhysG = subjectKey === 'physics' && (classKey === 'Γ' || (classKey && classKey.startsWith('Γ')));
     const isPhysA = subjectKey === 'physics' && classKey === 'Α';
     const isBioA = subjectKey === 'biology' && classKey === 'Α';
+    const isBioG = subjectKey === 'biology' && (classKey === 'Γ' || (classKey && classKey.startsWith('Γ')));
     if (subjectKey === 'physics' && !isPhysG && !(isPhysA && (currentTab === 'time' || currentTab === 'mass' || currentTab === 'length')) && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
 
     let html = `
@@ -424,7 +425,7 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span class="tab-icon">📝</span>
                     <span>Κουίζ Αξιολόγησης</span>
                 </button>
-                ${isBioA ? `
+                ${(isBioA || isBioG) ? `
                 <button class="subject-tab-btn ${currentTab === 'bioguide' ? 'active' : ''}" id="tab-btn-bioguide" onclick="switchSubjectTab('bioguide')">
                     <span class="tab-icon">📋</span>
                     <span>Συνοπτικός οδηγός ύλης</span>
@@ -676,8 +677,8 @@ function renderQuizSelection(classKey, subjectKey) {
             <div id="cell-mount"></div>
         </div>
         ` : ''}
-        ${isBioA ? `
-        <!-- BIOLOGY Α: CONCISE STUDY GUIDE (1.1 - 1.4) -->
+        ${(isBioA || isBioG) ? `
+        <!-- BIOLOGY: CONCISE STUDY GUIDE -->
         <div class="tab-panel" id="tab-panel-bioguide" style="display: ${currentTab === 'bioguide' ? 'block' : 'none'};">
             <div id="bioguide-mount"></div>
         </div>
@@ -787,7 +788,8 @@ function renderIntro3dView() {
 
 function renderBioGuideView() {
     const mount = document.getElementById('bioguide-mount');
-    if (mount && window.BioAGuide) window.BioAGuide.render(mount);
+    const g = AppState.currentClass === 'Α' ? window.BioAGuide : window.BioGGuide;
+    if (mount && g) g.render(mount);
 }
 
 function renderCellView() {
