@@ -406,6 +406,7 @@ function renderQuizSelection(classKey, subjectKey) {
     // Physics Α has only the quizzes for now: the theory / simulation / syllabus tabs belong to Physics Γ
     const isPhysG = subjectKey === 'physics' && (classKey === 'Γ' || (classKey && classKey.startsWith('Γ')));
     const isPhysA = subjectKey === 'physics' && classKey === 'Α';
+    const isBioA = subjectKey === 'biology' && classKey === 'Α';
     if (subjectKey === 'physics' && !isPhysG && !(isPhysA && (currentTab === 'time' || currentTab === 'mass' || currentTab === 'length')) && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
 
     let html = `
@@ -423,7 +424,7 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span class="tab-icon">📝</span>
                     <span>Κουίζ Αξιολόγησης</span>
                 </button>
-                ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'biology') ? `
+                ${(((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'biology') || isBioA) ? `
                 <button class="subject-tab-btn ${currentTab === 'cell' ? 'active' : ''}" id="tab-btn-cell" onclick="switchSubjectTab('cell')">
                     <span class="tab-icon">🔬</span>
                     <span>Εξερεύνηση κυττάρου</span>
@@ -663,8 +664,8 @@ function renderQuizSelection(classKey, subjectKey) {
             <div id="intro3d-mount"></div>
         </div>
         ` : ''}
-        ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'biology') ? `
-        <!-- BIOLOGY Γ: CELL EXPLORER -->
+        ${(((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'biology') || isBioA) ? `
+        <!-- BIOLOGY Α / Γ: CELL EXPLORER -->
         <div class="tab-panel" id="tab-panel-cell" style="display: ${currentTab === 'cell' ? 'block' : 'none'};">
             <div id="cell-mount"></div>
         </div>
@@ -771,7 +772,7 @@ function renderIntro3dView() {
 
 function renderCellView() {
     const mount = document.getElementById('cell-mount');
-    if (mount && window.CellExplorer) window.CellExplorer.render(mount);
+    if (mount && window.CellExplorer) window.CellExplorer.render(mount, { level: AppState.currentClass === 'Α' ? 'A' : 'G' });
 }
 
 function renderNeutralView() {

@@ -265,14 +265,14 @@
         if (type === 'plant') s += '<g class="org" data-org="wall" data-inst="0"><path d="M88,48 H912 V632 H88 Z M102,62 V618 H898 V62 Z" fill-rule="evenodd" class="c-hit"/></g>';
         s += '<g class="org" data-org="membrane" data-inst="0"><path class="c-hit-mem" d="' + (type === 'animal' ? 'M118,330 C112,160 330,55 520,60 C725,66 890,165 886,350 C882,525 722,630 520,628 C320,626 124,520 118,330 Z' : 'M112,72 H888 V608 H112 Z') + '"/></g>';
         // free ribosomes first (under the organelles)
-        FREE_RIBOS[type].forEach((p, i) => {
-            s += '<g class="org" data-org="ribosome" data-inst="' + (100 + i) + '" transform="translate(' + p[0] + ',' + p[1] + ')">' + ART.ribosome() + '</g>';
+        C.FREE_RIBOS[type].forEach((p, i) => {
+            s += '<g class="org" data-org="ribosome" data-inst="' + (100 + i) + '" transform="translate(' + p[0] + ',' + p[1] + ')">' + C.ART.ribosome() + '</g>';
         });
         const count = {};
-        LAYOUT[type].forEach(o => {
+        C.LAYOUT[type].forEach(o => {
             const id = o[0];
             count[id] = (count[id] || 0) + 1;
-            const inner = id === 'vacuole' ? vacuoleBig() : ART[id]();
+            const inner = id === 'vacuole' ? vacuoleBig() : C.ART[id]();
             s += '<g class="org" data-org="' + id + '" data-inst="' + count[id] + '" data-x="' + o[1] + '" data-y="' + o[2] + '" data-s="' + o[3] + '" transform="translate(' + o[1] + ',' + o[2] + ') rotate(' + o[4] + ') scale(' + o[3] + ')">' + inner + '</g>';
             if (id === 'rer') {  // the ribosomes of the rough ER are ribosomes too
                 s += '<g class="org" data-org="ribosome" data-inst="r' + count[id] + '" data-follow="rer" transform="translate(' + o[1] + ',' + o[2] + ') rotate(' + o[4] + ') scale(' + o[3] + ')">' + dotsOnlyRer() + '</g>';
@@ -370,22 +370,164 @@
         }
     };
 
+    /* ================================================================== level A (Α΄ Γυμνασίου): only what the school book says (§1.2, p. 21-23) */
+    const ORG_A = {
+        membrane: {
+            name: 'Πλασματική μεμβράνη', num: 1, animal: true, plant: true,
+            structure: 'Όλα τα κύτταρα περιβάλλονται από την πλασματική μεμβράνη.',
+            func: 'Περιβάλλει το κύτταρο, το ξεχωρίζει από το περιβάλλον του και επιτρέπει σε ορισμένες μόνο ουσίες να εισέρχονται και να εξέρχονται.',
+            house: 'τοίχος, σκεπή (οριοθέτηση του σπιτιού) · πόρτες, παράθυρα, κουδούνι, τηλέφωνο, διαδίκτυο (είσοδος, έξοδος, επικοινωνία).'
+        },
+        nucleus: {
+            name: 'Πυρήνας', num: 2, animal: true, plant: true,
+            structure: 'Τα ευκαρυωτικά κύτταρα, όπως είναι τα φυτικά και τα ζωικά, διαθέτουν πυρήνα.',
+            func: 'Περιέχει το DNA, δηλαδή το γενετικό υλικό στο οποίο είναι αποθηκευμένες οι πληροφορίες που ρυθμίζουν τη δομή και τις λειτουργίες των κυττάρων.'
+        },
+        mito: {
+            name: 'Μιτοχόνδριο', num: 3, animal: true, plant: true,
+            structure: 'Οργανίδιο με ιδιαίτερη σημασία για το κύτταρο. Υπάρχει στα ζωικά και στα φυτικά κύτταρα.',
+            func: 'Εξασφαλίζει ενέργεια για τις ανάγκες του κυττάρου. Σχετίζεται με την αναπνοή.',
+            house: 'καλοριφέρ, πρίζες, τζάκι (εξασφάλιση ενέργειας).'
+        },
+        ribosome: {
+            name: 'Ριβοσώματα', num: 4, animal: true, plant: true,
+            structure: 'Στις εικόνες 1.7 και 1.8 του βιβλίου σημειώνονται ως μικρά στίγματα μέσα στο ζωικό και στο φυτικό κύτταρο.',
+            func: 'Το σχολικό βιβλίο τα αναφέρει μόνο ως ονομασία στις εικόνες· δεν περιγράφει τη λειτουργία τους.'
+        },
+        wall: {
+            name: 'Κυτταρικό τοίχωμα', num: 5, animal: false, plant: true,
+            structure: 'Αποτελείται κυρίως από κυτταρίνη. Περιβάλλει εξωτερικά την πλασματική μεμβράνη των φυτικών κυττάρων.',
+            func: 'Προσφέρει στήριξη στο κύτταρο.'
+        },
+        chloro: {
+            name: 'Χλωροπλάστης', num: 6, animal: false, plant: true,
+            structure: 'Υπάρχει μόνο στα φυτικά κύτταρα, και συγκεκριμένα σε αυτά που συναντώνται στα πράσινα μέρη του φυτού. Περιέχει μια ουσία με πράσινο χρώμα, τη χλωροφύλλη.',
+            func: 'Εκεί γίνεται η φωτοσύνθεση: η χλωροφύλλη δεσμεύει την ηλιακή ενέργεια.',
+            house: 'ηλιακός θερμοσίφωνας (αξιοποίηση της ηλιακής ενέργειας).'
+        },
+        vacuole: {
+            name: 'Χυμοτόπιο', num: 7, animal: false, plant: true,
+            structure: 'Οργανίδιο των φυτικών κυττάρων.',
+            func: 'Αποθηκεύει νερό, άλατα και άλλες ουσίες του φυτικού κυττάρου.'
+        },
+        cyto: {
+            name: 'Κυτταρόπλασμα', num: null, animal: true, plant: true,
+            structure: 'Μια ζελατινώδης μάζα που γεμίζει τον χώρο ανάμεσα στην πλασματική μεμβράνη και στον πυρήνα.',
+            func: 'Στο κυτταρόπλασμα υπάρχουν πολλά οργανίδια. Τόσο στο ίδιο το κυτταρόπλασμα όσο και στο εσωτερικό των οργανιδίων επιτελείται ένας μεγάλος αριθμός λειτουργιών.'
+        }
+    };
+    const TESTS_A = [
+        ['Περιβάλλει το κύτταρο και το ξεχωρίζει από το περιβάλλον του.', ['membrane']],
+        ['Επιτρέπει σε ορισμένες μόνο ουσίες να εισέρχονται και να εξέρχονται από το κύτταρο.', ['membrane']],
+        ['Όλα τα κύτταρα περιβάλλονται από αυτήν.', ['membrane']],
+        ['Περιέχει το DNA, το γενετικό υλικό του κυττάρου.', ['nucleus']],
+        ['Σε αυτό είναι αποθηκευμένες οι πληροφορίες που ρυθμίζουν τη δομή και τις λειτουργίες του κυττάρου.', ['nucleus']],
+        ['Τα ευκαρυωτικά κύτταρα, φυτικά και ζωικά, διαθέτουν αυτό το οργανίδιο.', ['nucleus']],
+        ['Εξασφαλίζει ενέργεια για τις ανάγκες του κυττάρου.', ['mito']],
+        ['Σχετίζεται με την αναπνοή.', ['mito']],
+        ['Με τις λειτουργίες του απελευθερώνεται ενέργεια.', ['mito']],
+        ['Ζελατινώδης μάζα που γεμίζει τον χώρο ανάμεσα στην πλασματική μεμβράνη και στον πυρήνα.', ['cyto']],
+        ['Σε αυτό βρίσκονται τα περισσότερα οργανίδια του κυττάρου.', ['cyto']],
+        ['Εκεί γίνεται η φωτοσύνθεση.', ['chloro'], 'plant'],
+        ['Περιέχει τη χλωροφύλλη, μια ουσία με πράσινο χρώμα που δεσμεύει την ηλιακή ενέργεια.', ['chloro'], 'plant'],
+        ['Υπάρχει μόνο στα κύτταρα που συναντώνται στα πράσινα μέρη του φυτού.', ['chloro'], 'plant'],
+        ['Αποτελείται κυρίως από κυτταρίνη.', ['wall'], 'plant'],
+        ['Περιβάλλει εξωτερικά την πλασματική μεμβράνη των φυτικών κυττάρων.', ['wall'], 'plant'],
+        ['Προσφέρει στήριξη στο κύτταρο.', ['wall'], 'plant'],
+        ['Αποθηκεύει νερό και άλλες ουσίες του φυτικού κυττάρου.', ['vacuole'], 'plant'],
+        ['Αποθήκη νερού, αλάτων και άλλων ουσιών.', ['vacuole'], 'plant']
+    ];
+    const ART_A = Object.assign({}, ART, {
+        nucleus() {
+            return '<circle r="104" class="c-nuc-i" style="stroke-width:5"/>' +
+                '<path d="M-52,-18 C-30,-52 -8,-4 12,-34 S52,-14 40,16 M-44,26 C-20,56 6,14 28,44 M-62,2 C-48,22 -36,-6 -20,8" class="c-chrom"/>' +
+                '<circle r="108" class="c-hit"/>';
+        },
+        mito() {
+            return '<ellipse rx="72" ry="38" class="c-mito-o"/><ellipse rx="62" ry="28" class="c-mito-i"/><ellipse rx="76" ry="42" class="c-hit"/>';
+        },
+        chloro() {
+            return '<ellipse rx="80" ry="45" class="c-chl-o"/><ellipse rx="70" ry="35" class="c-chl-i"/><ellipse rx="84" ry="49" class="c-hit"/>';
+        }
+    });
+    const LAYOUT_A = {
+        animal: [['nucleus', 395, 300, 1, 0], ['mito', 250, 480, 1, -22], ['mito', 560, 490, 1, 8], ['mito', 800, 340, 0.9, 70]],
+        plant: [['vacuole', 345, 350, 1, 0], ['nucleus', 640, 235, 0.88, 0], ['mito', 560, 545, 0.8, 4], ['mito', 780, 540, 0.78, -14],
+            ['chloro', 520, 118, 0.74, 0], ['chloro', 168, 350, 0.74, 90], ['chloro', 345, 575, 0.62, 0]]
+    };
+    const LABELS_A = {
+        animal: { membrane: [500, 34, 500, 62], nucleus: [395, 150, 395, 192], ribosome: [420, 562, 440, 468], mito: [235, 565, 262, 520], cyto: [700, 200, 650, 262] },
+        plant: { wall: [330, 24, 330, 54], membrane: [800, 24, 800, 74], vacuole: [345, 350, null, null], nucleus: [640, 120, 640, 143], ribosome: [190, 128, 150, 160], mito: [560, 612, 560, 574], chloro: [520, 168, 520, 140], cyto: [800, 440, 760, 400] }
+    };
+    const DETAIL_A = {
+        membrane() {
+            return '<rect x="0" y="0" width="320" height="94" fill="#eaf3fb"/><rect x="0" y="102" width="320" height="94" fill="#cfe0f1"/>' +
+                '<path d="M0,98 H96 M138,98 H206 M248,98 H320" stroke="#b9772e" stroke-width="9" fill="none"/>' +
+                '<circle cx="118" cy="62" r="6" fill="#0ea5e9"/><circle cx="118" cy="134" r="6" fill="#0ea5e9"/>' + L(118, 70, 118, 126) +
+                '<circle cx="227" cy="62" r="6" fill="#0ea5e9"/><circle cx="227" cy="134" r="6" fill="#0ea5e9"/>' + L(227, 70, 227, 126) +
+                T(160, 20, 'έξω από το κύτταρο', 'middle') + T(160, 184, 'μέσα στο κύτταρο', 'middle') + T(160, 92, 'πλασματική μεμβράνη', 'middle') +
+                T(118, 52, 'περνούν', 'middle') + T(227, 52, 'περνούν', 'middle') + T(54, 84, '✕', 'middle') + T(290, 84, '✕', 'middle') + T(160, 46, 'ορισμένες μόνο ουσίες', 'middle');
+        },
+        nucleus() {
+            return '<circle cx="160" cy="95" r="72" class="c-nuc-i" style="stroke-width:5"/>' +
+                '<path d="M120,80 C136,56 150,100 166,76 S196,90 190,114 M126,116 C142,136 158,104 176,128" class="c-chrom"/>' +
+                T(160, 98, 'DNA', 'middle') + T(160, 186, 'γενετικό υλικό του κυττάρου', 'middle');
+        },
+        mito() {
+            return '<ellipse cx="160" cy="95" rx="116" ry="58" class="c-mito-o"/><ellipse cx="160" cy="95" rx="100" ry="44" class="c-mito-i"/>' +
+                T(160, 100, 'ενέργεια για το κύτταρο', 'middle') + T(160, 186, 'σχετίζεται με την αναπνοή', 'middle');
+        },
+        ribosome() {
+            let s = '';
+            [[110, 90], [150, 66], [196, 98], [172, 130], [128, 128], [226, 64], [92, 56]].forEach(p => { s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="6" class="c-ribo"/>'; });
+            return s + T(160, 24, 'ριβοσώματα: μικρά στίγματα στο κύτταρο', 'middle') + T(160, 186, '(μόνο ονομασία στις εικόνες 1.7 και 1.8)', 'middle');
+        },
+        wall() {
+            return '<rect x="0" y="10" width="320" height="52" fill="#bd9a58"/><rect x="0" y="62" width="320" height="9" fill="#b9772e"/><rect x="0" y="71" width="320" height="125" fill="#d9edcf"/>' +
+                T(160, 42, 'κυτταρικό τοίχωμα (κυτταρίνη)', 'middle') + T(160, 114, 'πλασματική μεμβράνη', 'middle') + L(160, 106, 160, 70) + T(160, 160, 'κυτταρόπλασμα του φυτικού κυττάρου', 'middle');
+        },
+        chloro() {
+            return '<circle cx="48" cy="40" r="15" fill="#facc15"/><path d="M48,14 V4 M48,66 V76 M22,40 H12 M84,40 H74 M30,22 L22,14 M66,58 L74,66 M30,58 L22,66 M66,22 L74,14" stroke="#facc15" stroke-width="3"/>' +
+                '<ellipse cx="180" cy="104" rx="116" ry="60" class="c-chl-o"/><ellipse cx="180" cy="104" rx="102" ry="46" class="c-chl-i"/>' +
+                T(180, 102, 'χλωροφύλλη (πράσινη ουσία)', 'middle') + T(180, 186, 'δεσμεύει την ηλιακή ενέργεια: φωτοσύνθεση', 'middle');
+        },
+        vacuole() {
+            return '<path d="M60,100 C56,40 120,22 170,24 C236,26 266,60 262,110 C258,160 210,176 160,176 C100,176 62,152 60,100 Z" class="c-vac-o"/><path d="M74,100 C72,52 124,38 170,40 C226,42 250,68 248,108 C244,150 204,162 160,162 C110,162 76,142 74,100 Z" class="c-vac-i"/>' +
+                T(160, 98, 'νερό, άλατα', 'middle') + T(160, 114, 'και άλλες ουσίες', 'middle') + T(160, 192, 'αποθήκη του φυτικού κυττάρου', 'middle');
+        },
+        cyto() {
+            return '<path d="M30,100 C34,34 120,14 190,16 C262,18 296,60 290,110 C284,162 214,176 150,176 C80,176 26,150 30,100 Z" class="c-cyto c-cyto-animal"/><circle cx="90" cy="86" r="30" class="c-nuc-i"/><ellipse cx="210" cy="108" rx="34" ry="18" class="c-mito-o"/>' +
+                T(160, 12, 'πλασματική μεμβράνη', 'middle') + T(150, 140, 'ζελατινώδης μάζα', 'middle') + T(160, 190, 'ανάμεσα στην πλασματική μεμβράνη και στον πυρήνα', 'middle');
+        }
+    };
+
+    const G_CFG = {
+        level: 'G', ORG, ORDER_ANIMAL, ORDER_PLANT, TESTS, LAYOUT, FREE_RIBOS, LABELS, BADGE_OFF, ART, DETAIL
+    };
+    const A_CFG = {
+        level: 'A', ORG: ORG_A, ORDER_ANIMAL: ['membrane', 'nucleus', 'mito', 'ribosome'], ORDER_PLANT: ['membrane', 'nucleus', 'mito', 'ribosome', 'wall', 'chloro', 'vacuole'],
+        TESTS: TESTS_A, LAYOUT: LAYOUT_A, FREE_RIBOS, LABELS: LABELS_A, BADGE_OFF, ART: ART_A, DETAIL: DETAIL_A, testCyto: true, analogy: true
+    };
+    let C = G_CFG;
+
     /* ------------------------------------------------------------------ component */
-    function render(mount) {
+    function render(mount, opts) {
+        C = (opts && opts.level === 'A') ? A_CFG : G_CFG;
         mount.innerHTML = '';
         const root = document.createElement('div');
         root.className = 'cell-explorer';
         mount.appendChild(root);
 
-        const st = { type: 'animal', sel: null, labels: true, test: null, view: [0, 0, 1000, 680] };
+        const st = { type: 'animal', sel: null, labels: true, test: null, analogy: false, view: [0, 0, 1000, 680] };
 
         root.innerHTML =
-            '<div class="cell-head"><h2 class="cell-title">🔬 Εξερεύνηση του ευκαρυωτικού κυττάρου</h2>' +
-            '<p class="cell-sub">Επιλέξτε Ζωικό ή Φυτικό κύτταρο (ανοίγει σε πλήρη οθόνη) ή δοκιμάστε τον εαυτό σας. Πατήστε πάνω σε ένα οργανίδιο για να το προσεγγίσετε. Η ύλη είναι αυτή του σχολικού υλικού (Γ3.1 – Γ3.4).</p></div>' +
+            '<div class="cell-head"><h2 class="cell-title">🔬 ' + (C.level === 'A' ? 'Εξερεύνηση του κυττάρου' : 'Εξερεύνηση του ευκαρυωτικού κυττάρου') + '</h2>' +
+            '<p class="cell-sub">Επιλέξτε Ζωικό ή Φυτικό κύτταρο (ανοίγει σε πλήρη οθόνη) ή δοκιμάστε τον εαυτό σας. Πατήστε πάνω σε ένα οργανίδιο για να το προσεγγίσετε. ' + (C.level === 'A' ? 'Η ύλη είναι αυτή του σχολικού βιβλίου Βιολογίας Α΄ Γυμνασίου (§1.2 «Κύτταρο: η μονάδα της ζωής»).' : 'Η ύλη είναι αυτή του σχολικού υλικού (Γ3.1 – Γ3.4).') + '</p></div>' +
             '<div class="cell-toolbar">' +
             '<div class="cell-toggle" role="group" aria-label="Τύπος κυττάρου"><button type="button" data-act="type" data-v="animal" class="on">🐾 Ζωικό κύτταρο ⛶</button><button type="button" data-act="type" data-v="plant">🌿 Φυτικό κύτταρο ⛶</button></div>' +
             '<button type="button" class="cell-btn cell-btn-all" data-act="reset">↩ Όλα τα οργανίδια</button>' +
             '<label class="cell-check"><input type="checkbox" data-act="labels" checked> Ονόματα στο σχέδιο</label>' +
+            (C.analogy ? '<label class="cell-check"><input type="checkbox" data-act="analogy"> 🏠 Αναλογία με το σπίτι (Εικ. 1.9)</label>' : '') +
             '<button type="button" class="cell-btn cell-btn-test" data-act="test">🎯 Δοκίμασε τον εαυτό σου ⛶</button>' +
             '<span class="cell-fsbar"><button type="button" class="cell-btn" data-act="exitfs">✕ Κανονική προβολή</button><button type="button" class="cell-btn cell-btn-leave" data-act="leave">⎋ Έξοδος</button></span>' +
             '</div>' +
@@ -402,8 +544,8 @@
         let tip = null;
         let raf = 0;
 
-        function orderNow() { return st.type === 'animal' ? ORDER_ANIMAL : ORDER_PLANT; }
-        function present(id) { return !!ORG[id] && (st.type === 'animal' ? ORG[id].animal : ORG[id].plant); }
+        function orderNow() { return st.type === 'animal' ? C.ORDER_ANIMAL : C.ORDER_PLANT; }
+        function present(id) { return !!C.ORG[id] && (st.type === 'animal' ? C.ORG[id].animal : C.ORG[id].plant); }
 
         /* ---------- stage ---------- */
         function buildStage() {
@@ -455,10 +597,10 @@
             gl.innerHTML = '';
             if (!st.labels || st.test) return;
             let out = '';
-            const L = LABELS[st.type];
+            const L = C.LABELS[st.type];
             // one label per organelle: text (number + name) with a leader line that touches the structure
             Object.keys(L).forEach(id => {
-                const o = ORG[id];
+                const o = C.ORG[id];
                 const q = L[id];                      // [textX, textY, targetX, targetY]
                 const nm = (o.num ? o.num + '. ' : '') + o.name;
                 if (q[2] !== null) {
@@ -469,11 +611,11 @@
             });
             // organelles that occur several times: a numbered badge on every copy, so none is mistaken for another organelle
             const cnt = {};
-            LAYOUT[st.type].forEach(o => { cnt[o[0]] = (cnt[o[0]] || 0) + 1; });
-            LAYOUT[st.type].forEach(o => {
-                if (cnt[o[0]] < 2 || !ORG[o[0]].num) return;
-                const off = BADGE_OFF[o[0]] || [40, -30];
-                out += '<g transform="translate(' + (o[1] + off[0] * o[3]) + ',' + (o[2] + off[1] * o[3]) + ')"><circle r="12" class="c-badge"/><text y="5" text-anchor="middle" class="c-badge-t">' + ORG[o[0]].num + '</text></g>';
+            C.LAYOUT[st.type].forEach(o => { cnt[o[0]] = (cnt[o[0]] || 0) + 1; });
+            C.LAYOUT[st.type].forEach(o => {
+                if (cnt[o[0]] < 2 || !C.ORG[o[0]].num) return;
+                const off = C.BADGE_OFF[o[0]] || [40, -30];
+                out += '<g transform="translate(' + (o[1] + off[0] * o[3]) + ',' + (o[2] + off[1] * o[3]) + ')"><circle r="12" class="c-badge"/><text y="5" text-anchor="middle" class="c-badge-t">' + C.ORG[o[0]].num + '</text></g>';
             });
             gl.innerHTML = out;
         }
@@ -494,7 +636,7 @@
             const id = orgFromEvent(e);
             if (!id || id === 'cyto' || !present(id)) { tip.style.display = 'none'; return; }
             const b = stage.getBoundingClientRect();
-            tip.textContent = ORG[id].name;
+            tip.textContent = C.ORG[id].name;
             tip.style.display = 'block';
             tip.style.left = Math.min(b.width - 160, e.clientX - b.left + 14) + 'px';
             tip.style.top = (e.clientY - b.top + 16) + 'px';
@@ -520,7 +662,7 @@
                 }
             }
             const zb = stage.querySelector('.cell-zoombadge');
-            if (st.sel && st.sel !== 'cyto') { zb.style.display = 'block'; zb.textContent = '🔍 ' + (ORG[st.sel].num ? ORG[st.sel].num + '. ' : '') + ORG[st.sel].name; }
+            if (st.sel && st.sel !== 'cyto') { zb.style.display = 'block'; zb.textContent = '🔍 ' + (C.ORG[st.sel].num ? C.ORG[st.sel].num + '. ' : '') + C.ORG[st.sel].name; }
             else zb.style.display = 'none';
             chips.querySelectorAll('.cell-chip').forEach(c => c.classList.toggle('on', c.dataset.id === st.sel));
         }
@@ -538,7 +680,17 @@
         }
 
         /* ---------- info panel ---------- */
+        const HOUSE_LIST = '<ul class="cell-house"><li><strong>Πλασματική μεμβράνη:</strong> τοίχος, σκεπή (οριοθέτηση) · πόρτες, παράθυρα, κουδούνι, τηλέφωνο, διαδίκτυο (είσοδος, έξοδος, επικοινωνία)</li><li><strong>Μιτοχόνδριο:</strong> καλοριφέρ, πρίζες, τζάκι (εξασφάλιση ενέργειας)</li><li><strong>Χλωροπλάστης:</strong> ηλιακός θερμοσίφωνας (αξιοποίηση της ηλιακής ενέργειας)</li></ul>';
         function showIntro() {
+            if (C.level === 'A') {
+                info.innerHTML =
+                    '<h3>Το κύτταρο: η μονάδα της ζωής</h3>' +
+                    '<p>Το <strong>κύτταρο</strong> είναι η μικρότερη μονάδα που μπορεί να τρέφεται, να αναπνέει, να αναπαράγεται κτλ., να εμφανίζει δηλαδή τα χαρακτηριστικά της ζωής. Γι’ αυτό χαρακτηρίζεται <strong>η βασική μονάδα της ζωής</strong>.</p>' +
+                    '<p>Όλα τα κύτταρα περιβάλλονται από την πλασματική μεμβράνη. Τα <strong>ευκαρυωτικά</strong> κύτταρα, όπως είναι τα φυτικά και τα ζωικά, διαθέτουν πυρήνα. Στο κυτταρόπλασμα υπάρχουν πολλά οργανίδια.</p>' +
+                    (st.analogy ? '<p class="cell-tipline">🏠 <strong>Αναλογία με το σπίτι (Εικ. 1.9)</strong>: όπως στο σπίτι, έτσι και στο κύτταρο εξασφαλίζονται οριοθέτηση, επικοινωνία και ενέργεια.</p>' + HOUSE_LIST : '') +
+                    '<p class="cell-tipline">👉 Επιλέξτε ένα οργανίδιο από το σχέδιο ή από τη λίστα. ' + (st.type === 'animal' ? 'Το ζωικό κύτταρο δεν έχει κυτταρικό τοίχωμα, χλωροπλάστες και χυμοτόπιο.' : 'Το φυτικό κύτταρο έχει επιπλέον κυτταρικό τοίχωμα, χλωροπλάστες και χυμοτόπιο.') + '</p>';
+                return;
+            }
             info.innerHTML =
                 '<h3>Το ευκαρυωτικό κύτταρο</h3>' +
                 '<p><strong>Ευκαρυωτικό κύτταρο</strong> είναι το κύτταρο στο οποίο υπάρχει δομή πυρήνα, δηλαδή κυτταρικό οργανίδιο με μεμβράνη που περιβάλλει το γενετικό του υλικό και είναι ευδιάκριτη με μικροσκόπιο.</p>' +
@@ -546,22 +698,23 @@
                 '<p class="cell-tipline">👉 Επιλέξτε ένα οργανίδιο από το σχέδιο ή από τη λίστα. ' + (st.type === 'animal' ? 'Το ζωικό κύτταρο δεν έχει κυτταρικό τοίχωμα, χλωροπλάστες και χυμοτόπιο.' : 'Το φυτικό κύτταρο έχει επιπλέον κυτταρικό τοίχωμα, χλωροπλάστες και χυμοτόπιο.') + '</p>';
         }
         function showInfo(id) {
-            const o = ORG[id];
+            const o = C.ORG[id];
             if (!o) return;
             const badge = (txt, on) => '<span class="cell-badge ' + (on ? 'yes' : 'no') + '">' + txt + '</span>';
             info.innerHTML =
                 '<div class="cell-info-top">' + (o.num ? '<span class="cell-num">' + o.num + '</span>' : '<span class="cell-num">∗</span>') + '<h3>' + o.name + '</h3></div>' +
-                '<div class="cell-presence">' + badge('Ζωικό κύτταρο ' + (o.animal || (id === 'vacuole') ? (o.animal ? '✓' : '(πεπτικό κενοτόπιο)') : '✗'), o.animal || id === 'vacuole') + badge('Φυτικό κύτταρο ' + (o.plant ? '✓' : '✗'), o.plant) + '</div>' +
-                '<div class="cell-detail"><svg viewBox="0 0 320 196" class="cell-detail-svg" aria-hidden="true">' + ((DETAIL[id] || DETAIL.cyto)()) + '</svg></div>' +
-                '<h4>Δομή</h4><p>' + o.structure + '</p>' +
+                '<div class="cell-presence">' + (C.level === 'A' ? badge('Ζωικό κύτταρο ' + (o.animal ? '✓' : '✗'), o.animal) : badge('Ζωικό κύτταρο ' + (o.animal || (id === 'vacuole') ? (o.animal ? '✓' : '(πεπτικό κενοτόπιο)') : '✗'), o.animal || id === 'vacuole')) + badge('Φυτικό κύτταρο ' + (o.plant ? '✓' : '✗'), o.plant) + '</div>' +
+                '<div class="cell-detail"><svg viewBox="0 0 320 196" class="cell-detail-svg" aria-hidden="true">' + ((C.DETAIL[id] || C.DETAIL.cyto)()) + '</svg></div>' +
+                (o.structure ? '<h4>' + (C.level === 'A' ? 'Τι πρέπει να ξέρω' : 'Δομή') + '</h4><p>' + o.structure + '</p>' : '') +
                 '<h4>Λειτουργία</h4><p class="cell-func">' + o.func + '</p>' +
+                (st.analogy && o.house ? '<div class="cell-endo">🏠 <strong>Στο σπίτι (Εικ. 1.9):</strong> ' + o.house + '</div>' : '') +
                 (o.endo ? '<div class="cell-endo">🧬 ' + o.endo + '</div>' : '') +
                 '<div class="cell-nav"><button type="button" class="cell-btn" data-act="prev">⬅ Προηγούμενο</button><button type="button" class="cell-btn" data-act="next">Επόμενο ➡</button></div>';
         }
         function buildChips() {
             chips.innerHTML = '';
             orderNow().forEach(id => {
-                const o = ORG[id];
+                const o = C.ORG[id];
                 const b = document.createElement('button');
                 b.type = 'button';
                 b.className = 'cell-chip';
@@ -578,6 +731,13 @@
         function buildCompare() {
             const body = root.querySelector('.cell-compare-body');
             const row = (n, a, p) => '<tr><td>' + n + '</td><td>' + a + '</td><td>' + p + '</td></tr>';
+            if (C.level === 'A') {
+                body.innerHTML = '<table class="cell-table"><thead><tr><th>Δομή / οργανίδιο</th><th>Ζωικό</th><th>Φυτικό</th></tr></thead><tbody>' +
+                    row('Πλασματική μεμβράνη', '✓', '✓') + row('Πυρήνας', '✓', '✓') + row('Κυτταρόπλασμα', '✓', '✓') + row('Μιτοχόνδρια', '✓', '✓') +
+                    row('<strong>Κυτταρικό τοίχωμα</strong>', '✗', '✓') + row('<strong>Χλωροπλάστες</strong>', '✗', '✓') + row('<strong>Χυμοτόπια</strong>', '✗', '✓') + '</tbody></table>' +
+                    '<p class="cell-note">Τα φυτικά κύτταρα, εκτός από τα κοινά χαρακτηριστικά, διαθέτουν επιπλέον κυτταρικό τοίχωμα, χλωροπλάστες και χυμοτόπια.</p>';
+                return;
+            }
             body.innerHTML = '<table class="cell-table"><thead><tr><th>Δομή / οργανίδιο</th><th>Ζωικό</th><th>Φυτικό</th></tr></thead><tbody>' +
                 row('Πλασματική μεμβράνη', '✓', '✓') + row('Πυρήνας', '✓', '✓') + row('Ενδοπλασματικό δίκτυο (αδρό και λείο)', '✓', '✓') + row('Ριβοσώματα', '✓', '✓') +
                 row('Σύμπλεγμα Golgi', '✓', '✓') + row('Μιτοχόνδρια', '✓', '✓') + row('Λυσοσώματα', '✓', '✓') +
@@ -587,7 +747,7 @@
 
         /* ---------- self-test ---------- */
         function startTest() {
-            const pool = TESTS.filter(t => !t[2] || t[2] === st.type).map(t => ({ q: t[0], ok: t[1].filter(present) })).filter(t => t.ok.length);
+            const pool = C.TESTS.filter(t => !t[2] || t[2] === st.type).map(t => ({ q: t[0], ok: t[1].filter(present) })).filter(t => t.ok.length);
             for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const x = pool[i]; pool[i] = pool[j]; pool[j] = x; }
             root.classList.add('cell-testing');
             st.test = { pool: pool.length, list: pool.slice(0, 10), res: [], i: 0, score: 0, tries: 0, done: false, locked: false };
@@ -626,19 +786,19 @@
         }
         function fmt(n) { return String(Math.round(n * 10) / 10).replace('.', ','); }
         function flash(ids, cls) {
-            ids.forEach(id => svg.querySelectorAll('.org[data-org="' + id + '"]').forEach(el => el.classList.add(cls)));
+            ids.forEach(id => svg.querySelectorAll('.org[data-org="' + id + '"], .c-cell[data-org="' + id + '"]').forEach(el => el.classList.add(cls)));
         }
         function answerTest(id) {
             const t = st.test;
             if (!t || t.done || t.locked) return;
-            if (id === 'cyto') return;
+            if (id === 'cyto' && !C.testCyto) return;
             const cur = t.list[t.i];
             if (cur.ok.includes(id)) {
                 t.score += t.tries === 0 ? 1 : 0.5;
                 t.res[t.i] = t.tries === 0 ? 'ok' : 'half';
                 t.locked = true;
                 flash(cur.ok, 't-ok');
-                info.innerHTML = '<h3>✅ Σωστά!</h3><p><strong>' + ORG[id].name + '</strong></p><p>' + ORG[id].func + '</p>';
+                info.innerHTML = '<h3>✅ Σωστά!</h3><p><strong>' + C.ORG[id].name + '</strong></p><p>' + C.ORG[id].func + '</p>';
                 setTimeout(() => { if (st.test === t) { t.i++; showTestQuestion(); } }, 1300);
             } else {
                 t.tries++;
@@ -647,10 +807,10 @@
                     t.res[t.i] = 'bad';
                     t.locked = true;
                     flash(cur.ok, 't-ok');
-                    info.innerHTML = '<h3>❌ Όχι ακριβώς</h3><p>Σωστό: <strong>' + cur.ok.map(x => ORG[x].name).join(' ή ') + '</strong></p><p>' + ORG[cur.ok[0]].structure + '</p>';
+                    info.innerHTML = '<h3>❌ Όχι ακριβώς</h3><p>Σωστό: <strong>' + cur.ok.map(x => C.ORG[x].name).join(' ή ') + '</strong></p><p>' + (C.level === 'A' ? C.ORG[cur.ok[0]].func : C.ORG[cur.ok[0]].structure) + '</p>';
                     setTimeout(() => { if (st.test === t) { t.i++; showTestQuestion(); } }, 2400);
                 } else {
-                    info.innerHTML = '<h3>❌ Δοκιμάστε ξανά</h3><p>Αυτό ήταν: <strong>' + ORG[id].name + '</strong>. Έχετε μία ακόμα προσπάθεια.</p>';
+                    info.innerHTML = '<h3>❌ Δοκιμάστε ξανά</h3><p>Αυτό ήταν: <strong>' + C.ORG[id].name + '</strong>. Έχετε μία ακόμα προσπάθεια.</p>';
                 }
             }
         }
@@ -692,6 +852,7 @@
         });
         root.addEventListener('change', e => {
             if (e.target.matches('[data-act="labels"]')) { st.labels = e.target.checked; drawLabels(); }
+            if (e.target.matches('[data-act="analogy"]')) { st.analogy = e.target.checked; if (st.sel) showInfo(st.sel); else showIntro(); }
         });
         root.addEventListener('keydown', e => { if (e.key === 'Escape') { if (st.test) endTest(); resetView(); } });
 
