@@ -17,16 +17,16 @@
 
     const ground = 440, y12 = 120, y8 = 227;
 
+    /* moving escalator: the staircase slides up the slope at the same speed as the charges that ride on it */
+    const ESC_N = 9, ESC_LEN = Math.hypot(140, 320), ESC_UX = 140 / ESC_LEN, ESC_UY = -320 / ESC_LEN, ESC_STEP = ESC_LEN / ESC_N;
     function steps() {
-        // stairs of the escalator between (60,440) and (200,120)
-        let s = '';
-        const n = 9;
-        for (let i = 0; i < n; i++) {
-            const x0 = 60 + (140 / n) * i, x1 = 60 + (140 / n) * (i + 1);
-            const yTop = 440 - (320 / n) * (i + 1);
-            s += '<rect x="' + x0.toFixed(1) + '" y="' + yTop.toFixed(1) + '" width="' + (x1 - x0 + 0.5).toFixed(1) + '" height="' + (440 - yTop).toFixed(1) + '" class="ga-step"/>';
+        const a = 140 / ESC_N, b = 320 / ESC_N;
+        let s = '<clipPath id="ga-esc-clip"><rect x="60" y="120" width="140" height="320"/></clipPath><g clip-path="url(#ga-esc-clip)"><g id="ga-esc">';
+        for (let i = -1; i <= ESC_N + 1; i++) {
+            const cx = 60 + a * i, cy = 440 - b * i;           // corner on the slope line
+            s += '<rect x="' + (cx - a).toFixed(1) + '" y="' + cy.toFixed(1) + '" width="' + a.toFixed(1) + '" height="' + (460 - cy + b).toFixed(1) + '" class="ga-step"/>';
         }
-        return s;
+        return s + '</g></g>';
     }
     function rough(x1, y1, x2, y2) {
         // little teeth along a slope: "rough" surface
@@ -143,6 +143,8 @@
             for (let i = 0; i < SEGLEN.length; i++) { if (t <= SEGLEN[i]) return i; t -= SEGLEN[i]; }
             return SEGLEN.length - 1;
         };
+        const esc = root.querySelector('#ga-esc');
+        let escPhase = 0;
         let paused = false, last = performance.now();
         root.querySelector('[data-act="pause"]').addEventListener('click', (e) => {
             paused = !paused;
@@ -154,6 +156,8 @@
             const dt = Math.min(0.05, (now - last) / 1000);
             last = now;
             if (!svg.clientWidth) return;                       // tab hidden
+            if (!paused) escPhase = (escPhase + 120 * SPEED[0] * dt) % ESC_STEP;
+            if (esc) esc.setAttribute('transform', 'translate(' + (ESC_UX * escPhase).toFixed(2) + ',' + (ESC_UY * escPhase).toFixed(2) + ')');
             charges.forEach((c) => {
                 const si = segAt(c.s);
                 if (!paused) c.s = (c.s + 120 * SPEED[si] * dt) % TOTAL;
