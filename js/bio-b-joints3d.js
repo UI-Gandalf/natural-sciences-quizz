@@ -51,9 +51,9 @@
             name: 'Αστράγαλος', type: 'μεντεσές (κυρίως)', color: 0xa855f7, dofCount: 1,
             desc: 'Η άρθρωση του αστραγάλου ανεβοκατεβάζει το πέλμα (σηκώνει ή κατεβάζει τις μύτες των ποδιών), κυρίως σαν <strong>μεντεσές</strong>.',
             range: 'προς τα κάτω έως περίπου 45°, προς τα πάνω έως περίπου 20°',
-            dofs: [{ k: 'dors', label: 'Μύτη πάνω – μύτη κάτω', min: -45, max: 20, def: 0 }],
-            locks: ['Γύρισμα του πέλματος προς τα μέσα ή προς τα έξω (γίνεται στην υπαστραγαλική άρθρωση, κάτω από τον αστράγαλο)', 'Στροφή του πέλματος γύρω από την κνήμη'],
-            callout: '<strong>⚠️ Συχνή παρεξήγηση:</strong> πολλοί νομίζουν ότι ο αστράγαλος κάνει και το «στραμπούληγμα», δηλαδή γύρισμα του πέλματος προς τα πλάγια. Στην πραγματικότητα ο αστράγαλος κάνει <strong>μόνο</strong> το ανεβοκατέβασμα της μύτης (σαν μεντεσές). Το γύρισμα του πέλματος προς τα μέσα (<strong>ανταροφή</strong>) ή προς τα έξω (<strong>εξωστροφή</strong>) γίνεται σε μια άλλη άρθρωση ακριβώς από κάτω του, την <strong>υπαστραγαλική</strong> (ανάμεσα στον αστράγαλο και την πτέρνα). Γι’ αυτό το πόδι μπορεί να «γυρίσει» προς τα πλάγια ενώ ο μεντεσές του αστραγάλου δεν το επιτρέπει.'
+            dofs: [{ k: 'dors', label: 'Μύτη πάνω – μύτη κάτω (άρθρωση αστραγάλου)', min: -45, max: 20, def: 0 }, { k: 'inv', label: 'Γύρισμα πέλματος: έκστροφη – αναστροφή (υπαστραγαλική άρθρωση)', min: -20, max: 30, def: 0 }],
+            locks: ['Το γύρισμα του πέλματος δεν γίνεται στον αστράγαλο (δες το δεύτερο ρυθμιστικό: ανήκει στην υπαστραγαλική άρθρωση)', 'Στροφή του πέλματος γύρω από την κνήμη'],
+            callout: '<strong>⚠️ Συχνή παρεξήγηση:</strong> πολλοί νομίζουν ότι ο αστράγαλος κάνει και το «στραμπούληγμα», δηλαδή γύρισμα του πέλματος προς τα πλάγια. Στην πραγματικότητα ο αστράγαλος κάνει <strong>μόνο</strong> το ανεβοκατέβασμα της μύτης (σαν μεντεσές). Το γύρισμα του πέλματος προς τα μέσα (<strong>αναστροφή</strong>) ή προς τα έξω (<strong>έκστροφη</strong>) γίνεται σε μια άλλη άρθρωση ακριβώς από κάτω του, την <strong>υπαστραγαλική</strong> (ανάμεσα στον αστράγαλο και την πτέρνα). Γι’ αυτό το πόδι μπορεί να «γυρίσει» προς τα πλάγια ενώ ο μεντεσές του αστραγάλου δεν το επιτρέπει.'
         },
         forearm: {
             name: 'Στροφή της παλάμης', type: 'στροφική (τροχοειδής) διάρθρωση: ακτινοωλενική', color: 0xe11d48, dofCount: 1,
@@ -143,21 +143,27 @@
                 samples() { const o = []; for (let f = 0; f <= 135; f += 4) o.push({ flex: f }); return o; }
             };
         }
-        // ---------------- ankle
+        // ---------------- ankle (hinge) + subtalar joint (foot inversion / eversion, a different joint under the ankle)
         {
             const g = new T.Group();
             g.add(H.between(V(0, 3.4, 0), V(0, 0.15, 0), 0.34));
             const pin = new T.Mesh(new T.CylinderGeometry(0.15, 0.15, 1.2, 16), new T.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.6, roughness: 0.3 }));
             pin.rotation.z = Math.PI / 2; g.add(pin);
-            const foot = new T.Group();
-            const sole = new T.Mesh(new T.BoxGeometry(0.9, 0.32, 2.3), H.jointMat); sole.position.set(0, -0.55, 0.55); foot.add(sole);
-            const heel = new T.Mesh(new T.SphereGeometry(0.36, 16, 12), H.jointMat); heel.position.set(0, -0.5, -0.55); foot.add(heel);
-            const tipObj = new T.Object3D(); tipObj.position.set(0, -0.55, 1.7); foot.add(tipObj);
-            g.add(foot);
+            const talusG = new T.Group();                       // follows the ankle hinge (dorsiflexion)
+            const talus = new T.Mesh(new T.SphereGeometry(0.5, 20, 14), new T.MeshStandardMaterial({ color: 0xc4b5fd, roughness: 0.5 })); talus.scale.set(1, 0.8, 1.1); talus.position.set(0, -0.3, 0.1); talusG.add(talus);
+            const foot = new T.Group();                         // rotates about the long axis of the foot: subtalar joint
+            foot.position.set(0, -0.62, 0);
+            const subPin = new T.Mesh(new T.CylinderGeometry(0.07, 0.07, 2.6, 12), new T.MeshStandardMaterial({ color: 0xfb923c, emissive: 0xfb923c, emissiveIntensity: 0.4 }));
+            subPin.rotation.x = Math.PI / 2; subPin.position.set(0, 0, 0.3); foot.add(subPin);
+            const sole = new T.Mesh(new T.BoxGeometry(0.9, 0.3, 2.3), H.jointMat); sole.position.set(0, -0.2, 0.55); foot.add(sole);
+            const heel = new T.Mesh(new T.SphereGeometry(0.36, 16, 12), new T.MeshStandardMaterial({ color: 0xfdba74, roughness: 0.5 })); heel.position.set(0, -0.12, -0.55); foot.add(heel);
+            const tipObj = new T.Object3D(); tipObj.position.set(0, -0.2, 1.7); foot.add(tipObj);
+            talusG.add(foot);
+            g.add(talusG);
             joints.ankle = {
                 group: g, tipObj,
-                apply(v) { foot.rotation.set(-(v.dors || 0) * D, 0, 0); },
-                samples() { const o = []; for (let f = -45; f <= 20; f += 3) o.push({ dors: f }); return o; }
+                apply(v) { talusG.rotation.set(-(v.dors || 0) * D, 0, 0); foot.rotation.set(0, 0, (v.inv || 0) * D); },
+                samples() { const o = []; for (let f = -45; f <= 20; f += 5) for (let i = -20; i <= 30; i += 10) o.push({ dors: f, inv: i }); return o; }
             };
         }
         // ---------------- forearm rotation (pronation / supination)
