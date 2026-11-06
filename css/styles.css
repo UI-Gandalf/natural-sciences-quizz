@@ -10435,3 +10435,15 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .ga-note { margin: 14px 0; padding: 12px 16px; border-radius: 12px; border-left: 5px solid #10b981; background: rgba(16, 185, 129, 0.12); line-height: 1.55; }
 .ga-warn { border-left-color: #f59e0b; background: rgba(245, 158, 11, 0.13); }
 @media (max-width: 800px) { .ga-cards { grid-template-columns: 1fr; } .ga-table tbody th { white-space: normal; } }
+
+.ga-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 6px 0 10px; }
+.ga-pick-t { font-weight: 800; }
+.ga-presets { display: flex; flex-wrap: wrap; gap: 8px; }
+.ga-preset { cursor: pointer; font: inherit; padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(124, 58, 237, 0.7); background: rgba(124, 58, 237, 0.14); color: inherit; }
+.ga-preset:hover { background: rgba(124, 58, 237, 0.35); }
+.ga-preset.on { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+.ga-calc { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 10px 14px; margin-bottom: 10px; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--card-border); }
+.ga-calc b { color: #fbbf24; }
+[data-theme="light"] .ga-calc b { color: #b45309; }
+.ga-pill rect { fill: #fff; stroke: #b91c1c; stroke-width: 2.5; }
+.ga-pill text { fill: #b91c1c; font-size: 18px; font-weight: 800; }
