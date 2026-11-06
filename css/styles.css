@@ -10151,3 +10151,18 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 [data-theme="light"] .pc-in { background: #fff; }
 
 .pm-list li.pc-hl { list-style: none; margin-left: -20px; padding: 12px 14px; border-radius: 12px; background: rgba(251, 191, 36, 0.16); border: 2px solid #fbbf24; box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.12); font-size: 1.02rem; }
+
+/* Advisor (Συμβουλάτορας) in step-by-step exercises */
+.advisor { margin: 10px 0 12px; }
+.advisor-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.advisor-btn { background: rgba(14, 165, 233, 0.2); color: inherit; border: 2px solid #0ea5e9; border-radius: 12px; padding: 8px 14px; font: inherit; font-weight: 800; cursor: pointer; }
+.advisor-btn:hover:not(:disabled) { background: #0ea5e9; color: #fff; }
+.advisor-btn:disabled { opacity: 0.6; cursor: default; }
+.advisor-reveal-btn { border-color: #f59e0b; background: rgba(245, 158, 11, 0.18); }
+.advisor-reveal-btn:hover:not(:disabled) { background: #f59e0b; color: #1f1300; }
+.advisor-meta { font-size: 0.82rem; opacity: 0.8; }
+.advisor-log { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.advisor-tip { padding: 10px 14px; border-radius: 12px; border-left: 5px solid #0ea5e9; background: rgba(14, 165, 233, 0.12); line-height: 1.5; animation: fadeIn 0.3s ease; }
+.advisor-tip-n { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.75; margin-bottom: 2px; }
+.advisor-wrong { margin-top: 8px; padding: 10px 14px; border-radius: 12px; border-left: 5px solid #f59e0b; background: rgba(245, 158, 11, 0.14); line-height: 1.5; }
+.step-option-btn.advisor-pointed { outline: 3px solid #f59e0b; outline-offset: 2px; animation: pulse-ready 1.4s ease-in-out infinite; }

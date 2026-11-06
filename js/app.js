@@ -2235,7 +2235,8 @@ function renderCascadingQuestion(q, qIndex, container) {
         currentStep: 0,
         stepResults: [],
         stepAttempts: 0,
-        totalSteps: q.steps.length
+        totalSteps: q.steps.length,
+        advisor: {}          // per step: { used: number of tips shown, revealed: bool }
     };
 
     const cascadingWrap = document.createElement('div');
@@ -2308,6 +2309,7 @@ function renderActiveCascadingStep(q, stepIdx) {
             <span class="step-badge-weight">Ισοδύναμη βαθμολόγηση (${stepPct}%)</span>
         </div>
         <div class="step-prompt">${formatMathText(step.prompt)}</div>
+        ${advisorBarHtml(step, stepIdx)}
         <div class="step-options-grid" id="step-options-${stepIdx}"></div>
         <div class="step-mini-feedback" id="step-feedback-${stepIdx}" style="display: none;"></div>
     `;
@@ -2335,6 +2337,62 @@ function renderActiveCascadingStep(q, stepIdx) {
     }, 120);
 }
 
+/* ---------- Advisor (Συμβουλάτορας): progressive tips for the step-by-step exercises ---------- */
+function advisorBarHtml(step, stepIdx) {
+    const a = step && step.advisor;
+    if (!a || !Array.isArray(a.tips) || !a.tips.length) return '';
+    return `<div class="advisor" id="advisor-${stepIdx}">
+        <div class="advisor-bar">
+            <button type="button" class="advisor-btn" id="advisor-btn-${stepIdx}" onclick="advisorNext(${stepIdx})">🤖 Συμβουλάτορας: δώσε μου μια συμβουλή</button>
+            <span class="advisor-meta" id="advisor-meta-${stepIdx}">${a.tips.length} συμβουλές διαθέσιμες · δεν επηρεάζουν τον βαθμό</span>
+        </div>
+        <div class="advisor-log" id="advisor-log-${stepIdx}" aria-live="polite"></div>
+    </div>`;
+}
+
+function advisorWrongHtml(step, optIdx) {
+    const w = step && step.advisor && step.advisor.wrong && step.advisor.wrong[String(optIdx)];
+    return w ? `<div class="advisor-wrong"><strong>🤖 Συμβουλάτορας:</strong> ${formatMathText(w)}</div>` : '';
+}
+
+function advisorNext(stepIdx) {
+    const qr = AppState.quizRunner;
+    const q = AppState.currentQuiz.questions[qr.activeQueue[qr.currentPos]];
+    const step = q && q.steps && q.steps[stepIdx];
+    if (!step || !step.advisor || qr.answered || qr.cascadingState.currentStep !== stepIdx) return;
+    const st = qr.cascadingState.advisor[stepIdx] || (qr.cascadingState.advisor[stepIdx] = { used: 0, revealed: false });
+    const tips = step.advisor.tips;
+    const btn = document.getElementById('advisor-btn-' + stepIdx);
+    const meta = document.getElementById('advisor-meta-' + stepIdx);
+    const log = document.getElementById('advisor-log-' + stepIdx);
+    if (!btn || !log) return;
+    if (st.used < tips.length) {
+        const b = document.createElement('div');
+        b.className = 'advisor-tip';
+        b.innerHTML = `<span class="advisor-tip-n">Συμβουλή ${st.used + 1} από ${tips.length}</span>${formatMathText(tips[st.used])}`;
+        log.appendChild(b);
+        triggerMathTypeset(b);
+        st.used++;
+        if (st.used < tips.length) {
+            btn.textContent = '🤖 Θέλω και άλλη συμβουλή';
+            meta.textContent = `Συμβουλές που είδατε: ${st.used} από ${tips.length} · δεν επηρεάζουν τον βαθμό`;
+        } else {
+            btn.textContent = '🔓 Δείξε μου τη σωστή επιλογή (το βήμα θα βαθμολογηθεί με το μισό)';
+            btn.classList.add('advisor-reveal-btn');
+            meta.textContent = 'Δεν υπάρχουν άλλες συμβουλές.';
+        }
+    } else if (!st.revealed) {
+        st.revealed = true;
+        const correctIdx = resolveCascadingCorrectIndex(q, stepIdx);
+        const card = document.getElementById('cascading-step-card-' + stepIdx);
+        const opt = card && card.querySelectorAll('.step-option-btn')[correctIdx];
+        if (opt) opt.classList.add('advisor-pointed');
+        btn.disabled = true;
+        btn.textContent = '✔ Η σωστή επιλογή επισημάνθηκε: πατήστε την';
+        meta.textContent = 'Το βήμα θα βαθμολογηθεί με το μισό.';
+    }
+}
+
 function selectCascadingStepOption(stepIdx, optIdx) {
     const qr = AppState.quizRunner;
     const q = AppState.currentQuiz.questions[qr.activeQueue[qr.currentPos]];
@@ -2360,8 +2418,9 @@ function selectCascadingStepOption(stepIdx, optIdx) {
         btns[optIdx].appendChild(badge);
         btns.forEach(b => b.disabled = true);
 
-        // Add equal fractional score
-        qr.score += (1 / q.steps.length);
+        // Add equal fractional score (half of it when the advisor revealed the answer)
+        const advSt = (qr.cascadingState.advisor || {})[stepIdx] || {};
+        qr.score += (1 / q.steps.length) * (advSt.revealed ? 0.5 : 1);
         document.getElementById('score-counter').innerText = `Σκορ: ${formatScore(qr.score)}`;
 
         feedbackEl.className = 'step-mini-feedback correct';
@@ -2374,8 +2433,11 @@ function selectCascadingStepOption(stepIdx, optIdx) {
             chosenIdx: optIdx,
             correctIdx,
             isCorrect: true,
-            attempts: qr.cascadingState.stepAttempts
+            attempts: qr.cascadingState.stepAttempts,
+            tips: advSt.used || 0,
+            revealed: !!advSt.revealed
         });
+        if (advSt.revealed) feedbackEl.innerHTML += '<br><small>🤖 Η σωστή επιλογή αποκαλύφθηκε από τον Συμβουλάτορα: το βήμα βαθμολογείται με το μισό.</small>';
 
         handleCascadingStepAdvance(q, stepIdx);
     } else {
@@ -2407,7 +2469,9 @@ function selectCascadingStepOption(stepIdx, optIdx) {
                 feedbackEl.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Έχετε άλλη 1 προσπάθεια. Δοκιμάστε ξανά!`;
                 showToast('⚠️ Μη σωστή επιλογή! Δοκιμάστε ξανά.');
             }
+            feedbackEl.innerHTML += advisorWrongHtml(step, optIdx);
             feedbackEl.style.display = 'block';
+            triggerMathTypeset(feedbackEl);
         } else {
             // Second wrong attempt: reveal correct and unlock next step
             btns.forEach(b => b.disabled = true);
@@ -2420,7 +2484,7 @@ function selectCascadingStepOption(stepIdx, optIdx) {
             }
 
             feedbackEl.className = 'step-mini-feedback wrong';
-            feedbackEl.innerHTML = `<strong>✗ Λάθος στη 2η προσπάθεια.</strong> Η σωστή απάντηση επισημαίνεται με πράσινο.<br><br><strong>Επεξήγηση βήματος:</strong> ${formatMathText(step.exp)}`;
+            feedbackEl.innerHTML = `<strong>✗ Λάθος στη 2η προσπάθεια.</strong> Η σωστή απάντηση επισημαίνεται με πράσινο.${advisorWrongHtml(step, optIdx)}<br><br><strong>Επεξήγηση βήματος:</strong> ${formatMathText(step.exp)}`;
             feedbackEl.style.display = 'block';
             triggerMathTypeset(feedbackEl);
 
