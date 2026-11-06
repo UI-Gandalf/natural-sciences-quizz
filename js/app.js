@@ -425,6 +425,23 @@ function renderQuizSelection(classKey, subjectKey) {
                 </button>
                 ` : ''}
                 ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') ? `
+                <button class="subject-tab-btn ${currentTab === 'exam_solutions' ? 'active' : ''}" id="tab-btn-exam-solutions" onclick="switchSubjectTab('exam_solutions')">
+                    <span class="tab-icon">📑</span>
+                    <span class="tab-multiline">
+                        <span class="tab-line-main">Επίλυση ενδεικτικού διαγωνίσματος</span>
+                        <span class="tab-line-sub">και συναφής θεωρία</span>
+                    </span>
+                </button>
+                ` : ''}
+                ${isPhysG ? `
+                <button class="subject-tab-btn ${currentTab === 'theory' ? 'active' : ''}" id="tab-btn-theory" onclick="switchSubjectTab('theory')">
+                    <span class="tab-icon">📖</span>
+                    <span class="tab-multiline">
+                        <span class="tab-line-main">Θεωρία και Επίλυση κυκλωμάτων</span>
+                    </span>
+                </button>
+                ` : ''}
+                ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') ? `
                 <button class="subject-tab-btn ${currentTab === 'intro3d' ? 'active' : ''}" id="tab-btn-intro3d" onclick="switchSubjectTab('intro3d')">
                     <span class="tab-icon">💡</span>
                     <span>3D εισαγωγή στο απλό ιδανικό κύκλωμα</span>
@@ -446,23 +463,6 @@ function renderQuizSelection(classKey, subjectKey) {
                 <button class="subject-tab-btn ${currentTab === 'mass' ? 'active' : ''}" id="tab-btn-mass" onclick="switchSubjectTab('mass')">
                     <span class="tab-icon">⚖️</span>
                     <span>Μάζα και Βάρος</span>
-                </button>
-                ` : ''}
-                ${isPhysG ? `
-                <button class="subject-tab-btn ${currentTab === 'theory' ? 'active' : ''}" id="tab-btn-theory" onclick="switchSubjectTab('theory')">
-                    <span class="tab-icon">📖</span>
-                    <span class="tab-multiline">
-                        <span class="tab-line-main">Θεωρία και Επίλυση κυκλωμάτων</span>
-                    </span>
-                </button>
-                ` : ''}
-                ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') ? `
-                <button class="subject-tab-btn ${currentTab === 'exam_solutions' ? 'active' : ''}" id="tab-btn-exam-solutions" onclick="switchSubjectTab('exam_solutions')">
-                    <span class="tab-icon">📑</span>
-                    <span class="tab-multiline">
-                        <span class="tab-line-main">Υποδειγματική επίλυση ενδεικτικού διαγωνίσματος</span>
-                        <span class="tab-line-sub">και συναφής θεωρία</span>
-                    </span>
                 </button>
                 ` : ''}
                 ${subjectKey === 'chemistry' ? `
