@@ -98,10 +98,26 @@
             ['Παραδείγματα του βιβλίου', 'Ώμος · αγκώνας', 'Λεκάνη (καμία κίνηση) · σπονδυλική στήλη (πολύ περιορισμένες κινήσεις)']
         ], 'bga-plain') +
         '<h4>Η διάρθρωση του αγκώνα και τα μέρη της</h4>' +
-        '<div class="bt-joint-wrap"><div class="bt-stage bt-joint-stage"><svg id="bt-joint" viewBox="0 0 520 420" class="bt-svg" role="img" aria-label="Σχηματική διάρθρωση"></svg>' +
+        '<div class="bt-joint-wrap"><div class="bt-stage bt-joint-stage"><svg id="bt-joint" viewBox="0 0 600 420" class="bt-svg" role="img" aria-label="Σχηματική διάρθρωση"></svg>' +
         ctrl('bt-joint-c', [['flex', '💪 Κάμψη'], ['ext', '↔ Έκταση'], ['auto', '🔁 Αυτόματα']]) + '</div>' +
         '<div class="bt-joint-info" id="bt-joint-info"></div></div>' +
         '<p class="bga-note">Πάτησε πάνω σε ένα μέρος του σχήματος για να δεις τι είναι και τι κάνει. Το σχήμα είναι σχηματικό. Κάμψη: συστέλλεται ο μυς Α και χαλαρώνει ο Β· έκταση: συστέλλεται ο Β και χαλαρώνει ο Α (όπως στη σελ. 105 του βιβλίου).</p>' +
+        '<h4>Η διάρθρωση του ώμου</h4>' +
+        '<p>Ο ώμος είναι το δεύτερο παράδειγμα διάρθρωσης του βιβλίου. Τα μέρη είναι τα ίδια με του αγκώνα: οστά, <strong>αρθρικός χόνδρος</strong>, <strong>αρθρικό υγρό</strong>, <strong>αρθρικός θύλακας</strong> και <strong>σύνδεσμοι</strong>.</p>' +
+        '<div class="bt-joint-wrap"><div class="bt-stage bt-joint-stage"><svg id="bt-shoulder" viewBox="0 0 620 440" class="bt-svg" role="img" aria-label="Σχηματική διάρθρωση ώμου"></svg>' +
+        ctrl('bt-shoulder-c', [['down', '⬇ Χέρι κάτω'], ['side', '➡ Οριζόντια'], ['up', '⬆ Ανύψωση'], ['auto', '🔁 Αυτόματα']]) + '</div>' +
+        '<div class="bt-joint-info" id="bt-shoulder-info"></div></div>' +
+        supp('Αγκώνας και ώμος: τι διαφέρει;', '<p>Ο αγκώνας κινείται κυρίως σε ένα επίπεδο (κάμψη και έκταση). Στον ώμο το στρογγυλό άκρο του βραχιονίου κινείται μέσα στην εσοχή της ωμοπλάτης και το χέρι μπορεί να κινηθεί προς <strong>πολλές κατευθύνσεις</strong>. Εδώ φαίνεται μία από αυτές (ανύψωση στο πλάι).</p>') +
+        '<h4>Πώς γίνεται η κίνηση (σελ. 105)</h4>' +
+        '<p>Οι σκελετικοί μύες συνδέονται με τα οστά με <strong>τένοντες</strong> και λειτουργούν συνήθως <strong>κατά ζεύγη</strong>: όταν ο ένας <strong>συστέλλεται</strong>, ο άλλος <strong>χαλαρώνει</strong>, και έτσι κινούνται τα οστά. Στο βιβλίο το παράδειγμα είναι η κίνηση του κάτω άκρου.</p>' +
+        '<div class="bt-joint-wrap"><div>' + figs([fig('movement.png', 'Πώς γίνεται η κίνηση (σελ. 105): κάμψη και έκταση του κάτω άκρου με τους μυς Α και Β.', 'bt-fig-tall')]) + '</div>' +
+        '<div><div class="bt-stage"><svg id="bt-leg" viewBox="0 0 520 460" class="bt-svg" role="img" aria-label="Κάμψη και έκταση του κάτω άκρου"></svg>' +
+        ctrl('bt-leg-c', [['flex', '💪 Κάμψη'], ['ext', '↔ Έκταση'], ['auto', '🔁 Αυτόματα']]) + '<div class="bt-hy-info" id="bt-leg-info"></div></div></div></div>' +
+        tbl(['Κίνηση', 'Ποιος μυς συστέλλεται', 'Ποιος μυς χαλαρώνει'], [
+            ['Κάμψη του κάτω άκρου', '<strong>Α</strong>', 'Β'],
+            ['Έκταση του κάτω άκρου', '<strong>Β</strong>', 'Α']
+        ], 'bga-plain') +
+        '<h4>Τα μέρη μιας διάρθρωσης</h4>' +
         tbl(['Μέρος', 'Τι είναι / τι κάνει (από το βιβλίο)'], [
             ['Σύνδεσμοι', 'Συγκρατούν τα οστά στη διάρθρωση'],
             ['Αρθρικός θύλακας', 'Σάκος που περιβάλλει τα οστά της διάρθρωσης'],
@@ -494,7 +510,7 @@
         const svg = root.querySelector('#bt-joint'); if (!svg) return;
         const info = root.querySelector('#bt-joint-info');
         const P = { x: 260, y: 190 };
-        svg.innerHTML = '<rect width="520" height="420" fill="#f8fafc"/>' +
+        svg.innerHTML = '<rect width="600" height="420" fill="#f8fafc"/>' +
             '<g id="j-up"><rect x="228" y="20" width="64" height="170" rx="22" fill="#ecd9b8" stroke="#a16207" stroke-width="3" data-p="bone1" class="j-part"/><circle cx="260" cy="190" r="40" fill="#ecd9b8" stroke="#a16207" stroke-width="3" data-p="bone1" class="j-part"/></g>' +
             '<g id="j-low"><rect x="228" y="190" width="64" height="200" rx="22" fill="#ecd9b8" stroke="#a16207" stroke-width="3" data-p="bone2" class="j-part"/></g>' +
             '<path id="j-cart1" d="" fill="none" stroke="#0ea5e9" stroke-width="9" stroke-linecap="round" data-p="cart" class="j-part"/>' +
@@ -557,6 +573,113 @@
         requestAnimationFrame(frame);
     }
 
+
+    const SINFO = {
+        scap: ['Οστό (ωμοπλάτη)', 'Η ωμοπλάτη είναι ένα από τα οστά του ώμου. Τα οστά συνδέονται μεταξύ τους με τις αρθρώσεις.'],
+        hum: ['Οστό (βραχιόνιο)', 'Το βραχιόνιο κινείται στη διάρθρωση του ώμου. Στη διάρθρωση τα οστά κινούνται το ένα ως προς το άλλο.'],
+        cart: JINFO.cart, fluid: JINFO.fluid, capsule: JINFO.capsule, lig: JINFO.lig
+    };
+    function initShoulder(root) {
+        const svg = root.querySelector('#bt-shoulder'); if (!svg) return;
+        const info = root.querySelector('#bt-shoulder-info');
+        const P = { x: 300, y: 200 };
+        svg.innerHTML = '<rect width="620" height="440" fill="#f8fafc"/>' +
+            '<path d="M24,40 L246,40 Q306,76 292,128 C268,158 258,184 266,206 C258,232 270,252 294,278 Q304,330 246,366 L24,366 Z" fill="#e8d9b5" stroke="#a16207" stroke-width="3" data-p="scap" class="j-part"/>' +
+            '<text x="40" y="210" font-size="20" font-weight="800" fill="#7c5a12">ωμοπλάτη</text>' +
+            '<ellipse cx="300" cy="200" rx="82" ry="88" fill="rgba(125,211,252,0.35)" data-p="fluid" class="j-part"/>' +
+            '<g id="s-hum"><rect x="272" y="214" width="56" height="210" rx="22" fill="#ecd9b8" stroke="#a16207" stroke-width="3" data-p="hum" class="j-part"/><circle cx="300" cy="200" r="44" fill="#ecd9b8" stroke="#a16207" stroke-width="3" data-p="hum" class="j-part"/><path d="M268,174 A42,42 0 0 0 268,226" fill="none" stroke="#0ea5e9" stroke-width="8" stroke-linecap="round" data-p="cart" class="j-part"/></g>' +
+            '<path d="M272,150 A52,52 0 0 0 272,250" fill="none" stroke="#0ea5e9" stroke-width="9" stroke-linecap="round" data-p="cart" class="j-part"/>' +
+            '<ellipse cx="300" cy="200" rx="96" ry="104" fill="none" stroke="#2563eb" stroke-width="5" stroke-dasharray="12 7" data-p="capsule" class="j-part"/>' +
+            '<g id="s-lig"></g>' +
+            '<text x="372" y="90" font-size="17" font-weight="800" fill="#0f172a">αρθρικός θύλακας</text><text x="372" y="118" font-size="17" font-weight="800" fill="#0f172a">αρθρικό υγρό</text><text x="372" y="146" font-size="17" font-weight="800" fill="#0f172a">αρθρικός χόνδρος</text><text x="372" y="174" font-size="17" font-weight="800" fill="#0f172a">σύνδεσμοι</text>' +
+            '<g stroke="#0f172a" stroke-width="1.6"><line x1="368" y1="85" x2="352" y2="140"/><line x1="368" y1="113" x2="330" y2="170"/><line x1="368" y1="141" x2="262" y2="186"/><line x1="368" y1="169" x2="340" y2="248"/></g>';
+        const hum = svg.querySelector('#s-hum'), lig = svg.querySelector('#s-lig');
+        const mk = (n, o) => { const e = document.createElementNS(NS, n); Object.keys(o).forEach(k => e.setAttribute(k, o[k])); return e; };
+        const L1 = mk('line', { stroke: '#7c3aed', 'stroke-width': 6, 'stroke-linecap': 'round', 'data-p': 'lig', class: 'j-part' });
+        const L2 = mk('line', { stroke: '#7c3aed', 'stroke-width': 6, 'stroke-linecap': 'round', 'data-p': 'lig', class: 'j-part' });
+        lig.appendChild(L1); lig.appendChild(L2);
+        let ang = 0, target = 0, auto = false, t = 0;       // 0: arm down, 90: horizontal (to the right), 170: raised
+        const rot = (px, py, a) => { const r = -a * Math.PI / 180; const dx = px - P.x, dy = py - P.y; return [P.x + dx * Math.cos(r) - dy * Math.sin(r), P.y + dx * Math.sin(r) + dy * Math.cos(r)]; };
+        function layout() {
+            hum.setAttribute('transform', 'rotate(' + (-ang).toFixed(1) + ' ' + P.x + ' ' + P.y + ')');
+            const a = rot(278, 262, ang), b = rot(322, 262, ang);
+            L1.setAttribute('x1', 262); L1.setAttribute('y1', 112); L1.setAttribute('x2', a[0].toFixed(1)); L1.setAttribute('y2', a[1].toFixed(1));
+            L2.setAttribute('x1', 262); L2.setAttribute('y1', 290); L2.setAttribute('x2', b[0].toFixed(1)); L2.setAttribute('y2', b[1].toFixed(1));
+        }
+        const show = (k) => { const dd = SINFO[k]; if (dd) info.innerHTML = '<div class="bt-jcard"><h4>' + dd[0] + '</h4><p>' + dd[1] + '</p></div>'; };
+        info.innerHTML = '<div class="bt-jcard"><h4>Διάρθρωση του ώμου</h4><p>Πάτησε ένα μέρος του σχήματος. Με τα κουμπιά κινείς το χέρι και βλέπεις το άκρο του βραχιονίου να κινείται μέσα στην εσοχή της ωμοπλάτης, με τον χόνδρο και το υγρό να μειώνουν την τριβή.</p></div>';
+        svg.addEventListener('click', e => { const q = e.target.closest('[data-p]'); if (q) show(q.dataset.p); });
+        root.querySelector('#bt-shoulder-c').addEventListener('click', e => {
+            const a = e.target.dataset.act; if (!a) return;
+            if (a === 'auto') { auto = !auto; e.target.textContent = auto ? '⏸ Παύση' : '🔁 Αυτόματα'; }
+            else { auto = false; target = { down: 0, side: 90, up: 165 }[a]; }
+        });
+        let last = performance.now();
+        function frame(now) {
+            if (!root.isConnected) return;
+            requestAnimationFrame(frame);
+            const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+            if (!svg.clientWidth) return;
+            if (auto) { t += dt; target = 82 + 82 * Math.sin(t * 1.2 - 1.57); }
+            ang += (target - ang) * (1 - Math.exp(-dt * 5));
+            layout();
+        }
+        layout();
+        requestAnimationFrame(frame);
+    }
+
+    function initLeg(root) {
+        const svg = root.querySelector('#bt-leg'); if (!svg) return;
+        const info = root.querySelector('#bt-leg-info');
+        const H = { x: 270, y: 70 }, KN = { x: 270, y: 240 };
+        svg.innerHTML = '<rect width="520" height="460" fill="#f8fafc"/>' +
+            '<text x="40" y="40" font-size="18" font-weight="800" fill="#0f172a">εμπρός</text><text x="410" y="40" font-size="18" font-weight="800" fill="#0f172a">πίσω</text>' +
+            '<rect x="238" y="70" width="64" height="170" rx="26" fill="#ecd9b8" stroke="#a16207" stroke-width="3"/>' +
+            '<g id="l-low"><rect x="240" y="240" width="60" height="176" rx="24" fill="#ecd9b8" stroke="#a16207" stroke-width="3"/><path d="M240,410 q-44,2 -40,26 l100,0 q-6,-24 0,-26 Z" fill="#d6c19a" stroke="#a16207" stroke-width="3"/></g>' +
+            '<circle cx="270" cy="240" r="34" fill="#ecd9b8" stroke="#a16207" stroke-width="3"/>' +
+            '<path id="l-mA" d="" fill="none" stroke-linecap="round"/><path id="l-mB" d="" fill="none" stroke-linecap="round"/>' +
+            '<g font-size="30" font-weight="900" fill="#7f1d1d"><text x="378" y="150">Α</text><text x="136" y="150">Β</text></g>' +
+            '<g id="l-arrow"></g>';
+        const low = svg.querySelector('#l-low'), mA = svg.querySelector('#l-mA'), mB = svg.querySelector('#l-mB');
+        let ang = 0, target = 0, auto = false, t = 0;       // 0 straight; 100 flexed (foot goes backwards = to the right)
+        const rot = (px, py, a) => { const r = -a * Math.PI / 180; const dx = px - KN.x, dy = py - KN.y; return [KN.x + dx * Math.cos(r) - dy * Math.sin(r), KN.y + dx * Math.sin(r) + dy * Math.cos(r)]; };
+        const TXT = {
+            flex: 'Για να γίνει η <strong>κάμψη</strong> του κάτω άκρου, <strong>συστέλλεται ο μυς Α</strong> και <strong>χαλαρώνει ο Β</strong>.',
+            ext: 'Για να γίνει <strong>έκταση</strong> του κάτω άκρου, <strong>συστέλλεται ο μυς Β</strong> και <strong>χαλαρώνει ο Α</strong>.',
+            mid: 'Οι δύο μύες λειτουργούν κατά ζεύγη: όταν ο ένας συστέλλεται, ο άλλος χαλαρώνει. Πάτησε «Κάμψη» ή «Έκταση».'
+        };
+        info.innerHTML = TXT.mid;
+        function layout() {
+            low.setAttribute('transform', 'rotate(' + (-ang).toFixed(1) + ' ' + KN.x + ' ' + KN.y + ')');
+            const f = ang / 100;                               // 0..1 flexion
+            const a1 = rot(318, 350, ang), b1 = rot(222, 330, ang);
+            const mus = (el, x0, y0, bx, by, x1, y1, w, op) => {
+                el.setAttribute('d', 'M' + x0 + ',' + y0 + ' Q' + bx + ',' + by + ' ' + x1.toFixed(1) + ',' + y1.toFixed(1));
+                el.setAttribute('stroke-width', w.toFixed(1)); el.setAttribute('stroke', 'rgba(220,38,38,' + op.toFixed(2) + ')');
+            };
+            mus(mA, 312, 96, 372, 220 - 30 * f, a1[0], a1[1], 8 + 18 * f, 0.3 + 0.65 * f);
+            mus(mB, 228, 96, 164, 230 + 20 * f, b1[0], b1[1], 8 + 18 * (1 - f), 0.3 + 0.65 * (1 - f));
+        }
+        root.querySelector('#bt-leg-c').addEventListener('click', e => {
+            const a = e.target.dataset.act; if (!a) return;
+            if (a === 'flex') { auto = false; target = 100; info.innerHTML = TXT.flex; }
+            else if (a === 'ext') { auto = false; target = 0; info.innerHTML = TXT.ext; }
+            else if (a === 'auto') { auto = !auto; e.target.textContent = auto ? '⏸ Παύση' : '🔁 Αυτόματα'; }
+        });
+        let last = performance.now();
+        function frame(now) {
+            if (!root.isConnected) return;
+            requestAnimationFrame(frame);
+            const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+            if (!svg.clientWidth) return;
+            if (auto) { t += dt; const s = Math.sin(t * 1.3); target = 50 + 50 * s; info.innerHTML = s > 0.15 ? TXT.flex : (s < -0.15 ? TXT.ext : TXT.mid); }
+            ang += (target - ang) * (1 - Math.exp(-dt * 6));
+            layout();
+        }
+        layout();
+        requestAnimationFrame(frame);
+    }
+
     function render(mount) {
         const root = K.renderPage(mount, {
             title: '🧩 Ειδικά θέματα: στήριξη και κίνηση στα ζώα',
@@ -569,7 +692,7 @@
                 { id: 'bt4', icon: '🦴', title: '4. Διαρθρώσεις και συναρθρώσεις', nav: 'Αρθρώσεις', sub: 'μέρη της διάρθρωσης · κάμψη και έκταση', body: S4 }
             ]
         });
-        initWorm(root); initMedusa(root); initHydra(root); initFlow(root); initMolt(root); initSkel(root); initJoint(root);
+        initWorm(root); initMedusa(root); initHydra(root); initFlow(root); initShoulder(root); initLeg(root); initMolt(root); initSkel(root); initJoint(root);
         root.addEventListener('click', (e) => {
             const im = e.target.closest('.bt-fig img');
             if (im) openViewer(im.src, im.getAttribute('alt'));

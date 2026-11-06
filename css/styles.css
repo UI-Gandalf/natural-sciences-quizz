@@ -10509,3 +10509,5 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .bt-drag { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; margin-top: 6px; font-size: 0.85rem; }
 .bt-drag-bar { height: 12px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
 .bt-drag-bar i { display: block; height: 100%; border-radius: 6px; }
+
+.bt-fig-tall { max-width: 330px; }
