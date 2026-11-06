@@ -373,7 +373,7 @@
         const sgx = (s) => SG.L + (s / PATH.total) * (SG.W - SG.L - SG.R);
         const sgy = (v) => SG.bot - (v / state.V) * (SG.bot - SG.top);
         // flat schematic: world (x, z) of the 3D loop -> svg
-        const mx = (x) => 130 + x * 27, my = (z) => 100 - z * 22;
+        const mx = (x) => 130 + x * 27, my = (z) => 114 - z * 22;
         let studyEls = null;
         function setStudy(on) {
             if (on && !(state.follow && state.closed)) on = false;
@@ -446,20 +446,24 @@
             ylab += '<line x1="' + SG.L + '" y1="' + sgy(state.V) + '" x2="' + (SG.W - SG.R) + '" y2="' + sgy(state.V) + '" class="c3d-s-guide"/>';
             // points + value labels on the curve (they appear when the charge reaches them)
             let pts = '';
-            const lp = labelPoints();
-            const lpByS = {};
-            lp.forEach(([s, k, name]) => { lpByS[s] = [k, name]; });
+            const mid = (PATH.pG + PATH.pD) / 2;
+            // labels of the big graph: [s, level index, text, position]; a point sits above ('up'), below ('down') or beside the axis ('zero' / 'zeroend')
+            const lpBig = [[PATH.pA, 0, LET[0], 'up'], [mid, 0, LET[1] + '·' + LET[2], 'up'], [PATH.pE[0], 0, LET[3], 'up']];
+            for (let i = 0; i < n; i++) {
+                if (i < n - 1) lpBig.push([PATH.pZ[i], i + 1, LET[4 + 2 * i], 'downend'], [PATH.pE[i + 1], i + 1, LET[5 + 2 * i], 'downstart']);
+                else lpBig.push([PATH.pZ[i], n, LET[4 + 2 * i], 'zero']);
+            }
+            lpBig.push([PATH.pB, n, LET[LAST_CP], 'zeroend']);
             CPS.forEach((s, i) => {
                 const v = potAt(s === 0 ? 0.0001 : s);
                 pts += '<circle class="c3d-s-pt" data-cp="' + i + '" cx="' + sgx(s) + '" cy="' + sgy(v) + '" r="6" style="opacity:0"/>';
             });
-            lp.forEach(([s, k, name], j) => {
+            lpBig.forEach(([s, k, name, where]) => {
                 const v = lev(k);
-                // labels at 0 V sit above the axis, beside the point (so they never cover the letter chips under the axis)
-                const atEnd = name === LET[LAST_CP];
-                const tx = v > 0 ? sgx(s) : sgx(s) + (atEnd ? -12 : 12);
-                const anc = v > 0 ? 'middle' : (atEnd ? 'end' : 'start');
-                pts += '<text class="c3d-s-val" data-s="' + s + '" x="' + tx + '" y="' + (sgy(v) + (v > 0 ? -14 : -12)) + '" text-anchor="' + anc + '" style="opacity:0"><tspan font-weight="800">' + name + '</tspan> ' + fv(v) + ' V</text>';
+                const tx = (where === 'zero' || where === 'downstart') ? sgx(s) + 12 : (where === 'zeroend' || where === 'downend') ? sgx(s) - 12 : sgx(s);
+                const anc = (where === 'zero' || where === 'downstart') ? 'start' : (where === 'zeroend' || where === 'downend') ? 'end' : 'middle';
+                const ty = sgy(v) + (where === 'up' ? -14 : (where === 'downstart' || where === 'downend') ? 30 : -12);
+                pts += '<text class="c3d-s-val" data-s="' + s + '" x="' + tx + '" y="' + ty + '" text-anchor="' + anc + '" style="opacity:0"><tspan font-weight="800">' + name + '</tspan> ' + fv(v) + ' V</text>';
             });
             study.innerHTML =
                 '<div class="c3d-study-top"><div class="c3d-study-title">📈 Μελέτη μεταβολής δυναμικού</div>' +
@@ -472,8 +476,8 @@
                 '<text x="' + (SG.W - SG.R) + '" y="' + (SG.Hh - 6) + '" class="c3d-s-cap" text-anchor="end">διαδρομή του φορτίου →</text>' +
                 ylab + ticks + '<polyline id="c3d-s-curve" class="c3d-s-curve" points=""/>' + pts +
                 '<circle id="c3d-s-dot" class="c3d-s-dot" cx="' + sgx(0) + '" cy="' + sgy(state.V) + '" r="9"/></svg></div>' +
-                '<div class="c3d-study-side"><div class="c3d-study-mini"><div class="c3d-mini-cap">Το κύκλωμα (σμικρυμένο)</div>' +
-                '<svg viewBox="0 0 260 182" class="c3d-mini-svg" role="img" aria-label="Σχηματικό κύκλωμα">' + schematic() +
+                '<div class="c3d-study-side"><div class="c3d-study-mini"><div class="c3d-mini-cap">Το κύκλωμα</div>' +
+                '<svg viewBox="0 0 260 200" class="c3d-mini-svg" role="img" aria-label="Σχηματικό κύκλωμα">' + schematic() +
                 '<circle id="c3d-m-dot" class="c3d-m-dot" cx="' + mx(BATTERY_X) + '" cy="' + my(3) + '" r="6"/></svg></div>' +
                 '<div class="c3d-study-card" id="c3d-study-card"></div></div></div>';
             studyEls = {
