@@ -433,6 +433,12 @@ function renderQuizSelection(classKey, subjectKey) {
                 </button>
                 ` : ''}
                 ${isBioB ? `
+                <button class="subject-tab-btn ${currentTab === 'topics' ? 'active' : ''}" id="tab-btn-topics" onclick="switchSubjectTab('topics')">
+                    <span class="tab-icon">🧩</span>
+                    <span>Ειδικά θέματα</span>
+                </button>
+                ` : ''}
+                ${isBioB ? `
                 <button class="subject-tab-btn ${currentTab === 'skeleton' ? 'active' : ''}" id="tab-btn-skeleton" onclick="switchSubjectTab('skeleton')">
                     <span class="tab-icon">🦴</span>
                     <span>Ερειστικό σύστημα (διαδραστικός σκελετός)</span>
@@ -707,6 +713,12 @@ function renderQuizSelection(classKey, subjectKey) {
         </div>
         ` : ''}
         ${isBioB ? `
+        <!-- BIOLOGY Β: SPECIAL TOPICS -->
+        <div class="tab-panel" id="tab-panel-topics" style="display: ${currentTab === 'topics' ? 'block' : 'none'};">
+            <div id="topics-mount"></div>
+        </div>
+        ` : ''}
+        ${isBioB ? `
         <!-- BIOLOGY Β: INTERACTIVE SKELETON (book page 104) -->
         <div class="tab-panel" id="tab-panel-skeleton" style="display: ${currentTab === 'skeleton' ? 'block' : 'none'};">
             <div id="skeleton-mount"></div>
@@ -796,6 +808,9 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'skeleton') {
         renderSkeletonView();
     }
+    if (currentTab === 'topics') {
+        renderTopicsView();
+    }
     if (currentTab === 'time') {
         const tm = document.getElementById('time-mount');
         if (tm && window.PhysATime) window.PhysATime.render(tm);
@@ -832,6 +847,11 @@ function renderAnalogyView() {
 function renderSeries3dView() {
     const mount = document.getElementById('series3d-mount');
     if (mount && window.Circuit3DSeries) window.Circuit3DSeries.render(mount);
+}
+
+function renderTopicsView() {
+    const mount = document.getElementById('topics-mount');
+    if (mount && window.BioBTopics) window.BioBTopics.render(mount);
 }
 
 function renderSkeletonView() {
@@ -1049,6 +1069,18 @@ function switchSubjectTab(tabKey) {
             timePanel.style.animation = 'fadeIn 0.3s ease';
             const tm = document.getElementById('time-mount');
             if (tm && !tm.hasChildNodes() && window.PhysATime) window.PhysATime.render(tm);
+        }
+    }
+
+    const tpBtn = document.getElementById('tab-btn-topics');
+    if (tpBtn) tpBtn.classList.toggle('active', tabKey === 'topics');
+    const tpPanel = document.getElementById('tab-panel-topics');
+    if (tpPanel) {
+        tpPanel.style.display = tabKey === 'topics' ? 'block' : 'none';
+        if (tabKey === 'topics') {
+            tpPanel.style.animation = 'fadeIn 0.3s ease';
+            const tm = document.getElementById('topics-mount');
+            if (tm && !tm.hasChildNodes()) renderTopicsView();
         }
     }
 
