@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a1030"/>
+      <stop offset="0.5" stop-color="#1a1650"/>
+      <stop offset="1" stop-color="#06364a"/>
+    </linearGradient>
+    <radialGradient id="o1" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#8b5cf6" stop-opacity="0.55"/><stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/></radialGradient>
+    <radialGradient id="o2" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#06b6d4" stop-opacity="0.5"/><stop offset="1" stop-color="#06b6d4" stop-opacity="0"/></radialGradient>
+    <radialGradient id="o3" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#f59e0b" stop-opacity="0.35"/><stop offset="1" stop-color="#f59e0b" stop-opacity="0"/></radialGradient>
+    <radialGradient id="o4" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#10b981" stop-opacity="0.4"/><stop offset="1" stop-color="#10b981" stop-opacity="0"/></radialGradient>
+    <pattern id="dots" width="48" height="48" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.6" fill="#ffffff" fill-opacity="0.12"/></pattern>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#g)"/>
+  <rect width="1920" height="1080" fill="url(#dots)"/>
+  <circle cx="300" cy="200" r="520" fill="url(#o1)"/>
+  <circle cx="1650" cy="260" r="480" fill="url(#o2)"/>
+  <circle cx="1500" cy="950" r="520" fill="url(#o3)"/>
+  <circle cx="250" cy="930" r="460" fill="url(#o4)"/>
+  <!-- atom -->
+  <g fill="none" stroke="#a5b4fc" stroke-opacity="0.28" stroke-width="2" transform="translate(1560 300)">
+    <ellipse rx="230" ry="82"/><ellipse rx="230" ry="82" transform="rotate(60)"/><ellipse rx="230" ry="82" transform="rotate(120)"/>
+    <circle r="16" fill="#c7d2fe" fill-opacity="0.5" stroke="none"/>
+    <circle cx="230" r="9" fill="#67e8f9" fill-opacity="0.8" stroke="none"/>
+    <circle cx="-115" cy="71" r="9" fill="#fcd34d" fill-opacity="0.8" stroke="none"/>
+    <circle cx="-115" cy="-71" r="9" fill="#6ee7b7" fill-opacity="0.8" stroke="none"/>
+  </g>
+  <!-- waves -->
+  <g fill="none" stroke-width="2.5" stroke-linecap="round">
+    <path d="M0 820 C160 740 320 900 480 820 S800 740 960 820 S1280 900 1440 820 S1760 740 1920 820" stroke="#67e8f9" stroke-opacity="0.3"/>
+    <path d="M0 870 C160 790 320 950 480 870 S800 790 960 870 S1280 950 1440 870 S1760 790 1920 870" stroke="#a78bfa" stroke-opacity="0.25"/>
+    <path d="M0 920 C160 840 320 1000 480 920 S800 840 960 920 S1280 1000 1440 920 S1760 840 1920 920" stroke="#fcd34d" stroke-opacity="0.18"/>
+  </g>
+  <!-- circuit traces -->
+  <g fill="none" stroke="#5eead4" stroke-opacity="0.28" stroke-width="2.5" stroke-linejoin="round">
+    <path d="M80 130 H300 V230 H470"/>
+    <path d="M80 190 H190 V330 H400"/>
+    <path d="M120 420 H260 V520"/>
+  </g>
+  <g fill="#5eead4" fill-opacity="0.55"><circle cx="470" cy="230" r="7"/><circle cx="400" cy="330" r="7"/><circle cx="260" cy="520" r="7"/><circle cx="80" cy="130" r="7"/></g>
+  <!-- molecule -->
+  <g stroke="#fcd34d" stroke-opacity="0.3" stroke-width="3" fill="none" transform="translate(1700 640)">
+    <path d="M0 0 L70 -40 L140 0 L140 80 L70 120 L0 80 Z"/>
+  </g>
+  <g fill="#fde68a" fill-opacity="0.55" transform="translate(1700 640)"><circle r="9"/><circle cx="70" cy="-40" r="9"/><circle cx="140" r="9"/><circle cx="140" cy="80" r="9"/><circle cx="70" cy="120" r="9"/><circle cy="80" r="9"/></g>
+  <!-- DNA-like helix -->
+  <g fill="none" stroke-width="3" stroke-linecap="round" transform="translate(150 560)">
+    <path d="M0 0 C60 40 60 80 0 120 S-60 200 0 240" stroke="#6ee7b7" stroke-opacity="0.35"/>
+    <path d="M0 0 C-60 40 -60 80 0 120 S60 200 0 240" stroke="#93c5fd" stroke-opacity="0.35"/>
+    <path d="M-30 30 H30 M-38 70 H38 M-30 110 H30 M-30 150 H30 M-38 190 H38 M-26 226 H26" stroke="#e2e8f0" stroke-opacity="0.18"/>
+  </g>
+</svg>

@@ -122,7 +122,7 @@ function handleRoute() {
         AppState.currentSubject = null;
         AppState.currentQuiz = null;
         renderClassSelection();
-        updateDynamicBg('assets/images/school_photo_bg.jpg', null);
+        updateDynamicBg('assets/images/home_bg.svg', null);
         updateBreadcrumbs();
         return;
     }
@@ -296,21 +296,26 @@ function renderClassSelection() {
         <div class="classes-grid">
     `;
 
+    const HOME_ACCENTS = { 'Α': ['#10b981', '#06b6d4'], 'Β': ['#f59e0b', '#f97316'], 'Γ': ['#8b5cf6', '#3b82f6'] };
     Object.keys(CLASS_CONFIG).forEach(classKey => {
         const cls = CLASS_CONFIG[classKey];
-        const quizzesCount = countQuizzesForClass(classKey);
+        const acc = HOME_ACCENTS[classKey] || ['#10b981', '#3b82f6'];
+        const subs = (typeof CLASS_SUBJECTS !== 'undefined' && CLASS_SUBJECTS[classKey]) || Object.keys(SUBJECT_CONFIG);
+        const chips = subs.filter(k => SUBJECT_CONFIG[k]).map(k => `<span class="home-chip" style="--c:${SUBJECT_CONFIG[k].color}"><span>${SUBJECT_CONFIG[k].emoji}</span>${SUBJECT_CONFIG[k].name}</span>`).join('');
+        const n = subs.length;
 
         html += `
-            <div class="glass-card class-card" onclick="navigateTo('class/${classKey}')">
-                <div class="card-ambient-glow" style="background: var(--primary);"></div>
+            <div class="glass-card class-card home-card" style="--a1:${acc[0]}; --a2:${acc[1]};" onclick="navigateTo('class/${classKey}')">
+                <div class="home-card-bar"></div>
+                <div class="home-card-bigletter">${classKey}</div>
                 <div class="card-content-wrap">
-                    <div class="card-top-meta" style="justify-content: flex-end;">
-                        <span class="card-badge">4 Μαθήματα</span>
-                    </div>
-                    <div class="card-icon-box">
-                        <span class="class-emoji-icon">${cls.icon}</span>
+                    <div class="home-card-top">
+                        <div class="card-icon-box home-card-icon"><span class="class-emoji-icon">${cls.icon}</span></div>
+                        <span class="card-badge">${n} ${n === 1 ? 'Μάθημα' : 'Μαθήματα'}</span>
                     </div>
                     <h2 class="card-title">${cls.name}</h2>
+                    <div class="home-chips">${chips}</div>
+                    <div class="home-enter"><span>Είσοδος</span><span class="home-arrow">→</span></div>
                 </div>
             </div>
         `;
