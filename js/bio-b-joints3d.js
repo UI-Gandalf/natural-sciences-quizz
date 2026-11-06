@@ -251,16 +251,17 @@
                 const m = new T.Mesh(new T.SphereGeometry(0.22, 16, 12), new T.MeshStandardMaterial({ color: META[k].color, emissive: META[k].color, emissiveIntensity: 0.6 }));
                 j.tipObj.add(m);
             });
-            const spacing = 6.8;
+            const spacing = 9;
             const view = { th: 0.6, ph: 1.2, r: 15, tx: 0, ty: -0.2, tz: 0 }, want = Object.assign({}, view);
             function layoutScene() {
                 ORDER.forEach((k, i) => {
                     const j = joints[k];
                     j.group.visible = st.compare || st.sel === k;
-                    j.group.position.set(st.compare ? (i - 2) * spacing : 0, 0, 0);
+                    const rowTop = i < 3, col = rowTop ? i - 1 : i - 3 - 0.5;
+                    j.group.position.set(st.compare ? col * spacing : 0, st.compare ? (rowTop ? 4.6 : -5.4) : 0, 0);
                     clouds[k].visible = st.cloud;
                 });
-                want.tx = 0; want.th = st.compare ? 0.12 : 0.6; want.r = st.compare ? 50 : 15; want.ph = st.compare ? 1.25 : 1.2;
+                want.tx = 0; want.th = st.compare ? 0.12 : 0.6; want.r = st.compare ? 36 : 15; want.ph = st.compare ? 1.45 : 1.2;
                 tabs.querySelectorAll('.bj-tab').forEach(b => b.classList.toggle('on', st.compare ? b.dataset.j === 'all' : b.dataset.j === st.sel));
                 chips.innerHTML = st.compare ? ORDER.map(k => '<span class="bj-chip" data-k="' + k + '" style="border-color:#' + META[k].color.toString(16).padStart(6, '0') + '">' + META[k].name + '</span>').join('') : '';
                 buildSide();
@@ -304,7 +305,7 @@
                 if (b.dataset.j) { if (b.dataset.j === 'all') { st.compare = true; st.auto = true; } else { st.compare = false; st.sel = b.dataset.j; } layoutScene(); }
                 else if (b.dataset.act === 'auto') { st.auto = !st.auto; buildSide(); }
                 else if (b.dataset.act === 'cloud') { st.cloud = !st.cloud; layoutScene(); }
-                else if (b.dataset.act === 'reset') { st.auto = false; ORDER.forEach(k => { META[k].dofs.forEach(d => { joints[k].values[d.k] = d.def; }); joints[k].apply(joints[k].values); }); want.th = 0.6; want.ph = 1.2; want.r = st.compare ? 50 : 15; buildSide(); }
+                else if (b.dataset.act === 'reset') { st.auto = false; ORDER.forEach(k => { META[k].dofs.forEach(d => { joints[k].values[d.k] = d.def; }); joints[k].apply(joints[k].values); }); want.th = 0.6; want.ph = 1.2; want.r = st.compare ? 36 : 15; buildSide(); }
                 else if (b.dataset.act === 'fs') { const w = root.querySelector('.bj-grid'); if (document.fullscreenElement) document.exitFullscreen(); else if (w.requestFullscreen) w.requestFullscreen().catch(() => {}); }
             });
             root.addEventListener('input', e => {
@@ -353,7 +354,7 @@
                     const r = dom.getBoundingClientRect();
                     chips.querySelectorAll('.bj-chip').forEach(c => {
                         const j = joints[c.dataset.k];
-                        proj.set(j.group.position.x, 3.9, 0).project(cam);
+                        proj.set(j.group.position.x, j.group.position.y + 3.9, 0).project(cam);
                         c.style.left = ((proj.x * 0.5 + 0.5) * r.width) + 'px'; c.style.top = ((-proj.y * 0.5 + 0.5) * r.height) + 'px';
                     });
                 }
