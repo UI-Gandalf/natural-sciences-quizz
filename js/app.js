@@ -2324,6 +2324,7 @@ function renderActiveCascadingStep(q, stepIdx) {
             <span class="step-badge">Βήμα ${stepIdx + 1} από ${q.steps.length}</span>
             <span class="step-badge-weight">Ισοδύναμη βαθμολόγηση (${stepPct}%)</span>
         </div>
+        ${stepFigureHtml(step, stepIdx)}
         <div class="step-prompt">${formatMathText(step.prompt)}</div>
         ${advisorBarHtml(step, stepIdx)}
         <div class="step-options-grid" id="step-options-${stepIdx}"></div>
@@ -2351,6 +2352,34 @@ function renderActiveCascadingStep(q, stepIdx) {
     setTimeout(() => {
         card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, 120);
+}
+
+/* ---------- Figure of the circuit with the extra (ideal) wire / meter drawn in another colour ---------- */
+function stepFigureHtml(step, stepIdx) {
+    const f = step && step.figure;
+    if (!f || !f.img) return '';
+    const col = '#d6007f';
+    let svg = '';
+    (f.items || []).forEach(it => {
+        if (it.wire) svg += `<path d="${it.wire}" fill="none" stroke="${col}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
+        (it.ends || []).forEach(e => { svg += `<circle cx="${e[0]}" cy="${e[1]}" r="6" fill="${col}"/>`; });
+        if (it.ammeter) svg += `<circle cx="${it.ammeter[0]}" cy="${it.ammeter[1]}" r="17" fill="#ffffff" stroke="${col}" stroke-width="4"/><text x="${it.ammeter[0]}" y="${it.ammeter[1] + 8}" text-anchor="middle" font-size="22" font-weight="700" font-family="serif" fill="${col}">A</text>`;
+    });
+    return `<div class="step-fig-wrap">
+        <button type="button" class="step-fig-btn" id="step-fig-btn-${stepIdx}" onclick="toggleStepFigure(${stepIdx})">🔌 Δείξε το σχήμα με το καλώδιο</button>
+        <div class="step-fig" id="step-fig-${stepIdx}" hidden>
+            <div class="step-fig-img"><img src="${f.img}" alt="Σχήμα κυκλώματος με το επιπλέον καλώδιο"><svg viewBox="0 0 ${f.w} ${f.h}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${svg}</svg></div>
+            <div class="step-fig-cap">${f.caption || ''}</div>
+        </div>
+    </div>`;
+}
+
+function toggleStepFigure(stepIdx) {
+    const box = document.getElementById('step-fig-' + stepIdx);
+    const btn = document.getElementById('step-fig-btn-' + stepIdx);
+    if (!box || !btn) return;
+    box.hidden = !box.hidden;
+    btn.textContent = box.hidden ? '🔌 Δείξε το σχήμα με το καλώδιο' : '🔌 Απόκρυψη σχήματος';
 }
 
 /* ---------- Advisor (Συμβουλάτορας): progressive tips for the step-by-step exercises ---------- */
