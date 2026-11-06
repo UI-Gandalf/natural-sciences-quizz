@@ -10214,3 +10214,6 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 [data-theme="light"] .sim-container, [data-theme="light"] .c3d-wrap { background: linear-gradient(135deg, #93c5fd 0%, #a5b4fc 55%, #67e8f9 100%); border-color: #3b82f6; box-shadow: 0 10px 28px rgba(59, 130, 246, 0.3); }
 .c3d-wrap .c3d-head p, .c3d-wrap .c3d-ohm-note { color: #e0e7ff; }
 [data-theme="light"] .c3d-wrap .c3d-head p, [data-theme="light"] .c3d-wrap .c3d-ohm-note { color: #1e293b; }
+/* subject tabs: brighter text on the dark, translucent tab bar */
+:root:not([data-theme="light"]) .subject-tab-btn:not(.active) { color: #f1f5f9; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65); }
+:root:not([data-theme="light"]) .subject-tab-btn:not(.active) .tab-line-sub { opacity: 1; color: #e2e8f0; }
