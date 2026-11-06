@@ -31,6 +31,24 @@
         '<h4>Η μέδουσα: παίξε την κίνηση</h4>' +
         '<div class="bt-stage"><svg id="bt-medusa" viewBox="0 0 800 260" class="bt-svg" role="img" aria-label="Κίνηση μέδουσας"></svg>' + ctrl('bt-medusa-c', [['pause', '⏸ Παύση']]) +
         '<p class="bga-note">Σχηματική απεικόνιση: ο θόλος συσπάται με τη βοήθεια κυκλικών μυϊκών ινών και το ζώο κινείται.</p></div>' +
+        '<h4>Η ύδρα και ο υδροστατικός της σκελετός</h4>' +
+        tbl(['Τι λέει το βιβλίο για την ύδρα', ''], [
+            ['Πού ζει', 'Βρίσκεται <strong>προσκολλημένη στον βυθό</strong> (Εικ. 5.1).'],
+            ['Στήριξη', 'Το σώμα της στηρίζεται από <strong>εσωτερικά υγρά</strong> (υδροστατικός σκελετός). Δεν έχει σκληρά μέρη.'],
+            ['Κίνηση', '<strong>Κινεί τις κεραίες της</strong> για να προσλάβει την τροφή της.'],
+            ['Μετακίνηση', 'Μπορεί να <strong>κινηθεί</strong>, αλλά <strong>δεν μπορεί να μετακινηθεί</strong> (ζει προσκολλημένη).']
+        ], 'bga-plain') +
+        '<div class="bt-stage"><div class="bt-hy-bar"><span>Δοκίμασε μια κίνηση:</span>' +
+        ctrl('bt-hydra-c', [['rest', 'Ηρεμία'], ['long', '↕ Επιμήκυνση'], ['short', '⇣ Σύντμηση'], ['bend', '↪ Κάμψη'], ['catch', '🍤 Πιάνει τροφή']]) + '</div>' +
+        '<svg id="bt-hydra" viewBox="0 0 800 440" class="bt-svg" role="img" aria-label="Κινήσεις της ύδρας"></svg>' +
+        '<div class="bt-hy-info" id="bt-hydra-info"></div></div>' +
+        supp('Πώς δουλεύει ο υδροστατικός σκελετός της ύδρας;',
+            '<p>Το σώμα της ύδρας είναι ένας <strong>κοίλος σωλήνας γεμάτος υγρό</strong>. Γύρω από το υγρό υπάρχουν μυϊκές ίνες σε δύο διευθύνσεις: <strong>κυκλικές</strong> (γύρω από τον σωλήνα) και <strong>επιμήκεις</strong> (κατά μήκος του). Επειδή το υγρό δεν συμπιέζεται εύκολα, όταν συστέλλονται οι μύες το σώμα αλλάζει σχήμα, ενώ η ποσότητα του υγρού μένει ίδια:</p>' +
+            ul(['<strong>Κυκλικοί μύες</strong> συστέλλονται: ο σωλήνας στενεύει και <strong>επιμηκύνεται</strong>.',
+                '<strong>Επιμήκεις μύες</strong> συστέλλονται: ο σωλήνας <strong>κονταίνει</strong> και φουσκώνει.',
+                'Επιμήκεις μύες <strong>της μίας πλευράς</strong> συστέλλονται: το σώμα <strong>λυγίζει</strong> προς αυτή την πλευρά.',
+                'Έτσι η ύδρα μπορεί να σκύψει και να φέρει τις κεραίες της προς την τροφή, χωρίς κανένα σκληρό μέρος.']) +
+            '<p class="bga-note">Το βιβλίο το αναφέρει ως θέμα για ερευνητική εργασία («Μικρές έρευνες και εργασίες», 1). Η παραπάνω περιγραφή είναι συμπληρωματική και δεν ζητείται.</p>') +
         supp('Γιατί λειτουργεί;', '<p>Τα υγρά του σώματος δεν συμπιέζονται εύκολα. Όταν οι μύες πιέζουν μέρος του σώματος, το υγρό «μετακινείται» και το σχήμα του σώματος αλλάζει (λεπτό και μακρύ, ή κοντό και χοντρό). Έτσι τα υγρά παίζουν τον ρόλο του σκελετού που στηρίζει και του «μοχλού» που βοηθά τους μύες να κινούν το σώμα.</p>');
 
     /* ------------------------------------------------------------ 2. arthropods and moulting */
@@ -145,6 +163,29 @@
         area.style.touchAction = 'none';
     }
 
+
+    /* ------------------------------------------------------------ 5. aerodynamic / hydrodynamic shape */
+    const S5 =
+        '<p class="bga-lead">Στα σπονδυλωτά ο σκελετός και το σχήμα του σώματος διαφέρουν ανάλογα με το περιβάλλον όπου ζουν και μετακινούνται.</p>' +
+        tbl(['Περιβάλλον', 'Μετακίνηση', 'Τι λέει το βιβλίο'], [
+            ['Αέρας', 'Πτήση', 'Μπροστινά άκρα σε <strong>πτέρυγες</strong>. Τα φτερά είναι <strong>ελαφριά</strong>. Το σώμα των σπονδυλωτών που πετούν έχει <strong>αεροδυναμικό σχήμα</strong>, που εξυπηρετεί την πτήση.'],
+            ['Νερό', 'Κολύμβηση', 'Διευκολύνεται από το <strong>υδροδυναμικό σχήμα</strong> του σώματος, από τα <strong>πτερύγια</strong> και τα <strong>λέπια</strong>.'],
+            ['Ξηρά', 'Βάδιση, τρέξιμο, έρπειν', 'Άκρα <strong>κάθετα προς το έδαφος</strong>· τα ερπετά (π.χ. φίδια) μετακινούνται έρποντας.']
+        ], 'bga-plain') +
+        figs([fig('bird.png', 'Πτηνό: αεροδυναμικό σχήμα, πτέρυγες, ελαφριά φτερά.'), fig('fish.png', 'Ψάρια: υδροδυναμικό σχήμα, πτερύγια, λέπια.'), fig('tortoise.png', 'Χελώνα στην ξηρά: βάδιση με άκρα κάθετα προς το έδαφος.')]) +
+        '<h4>Τι σημαίνουν οι όροι «αεροδυναμικό» και «υδροδυναμικό» σχήμα</h4>' +
+        supp('Η φυσική με λίγα λόγια',
+            ul(['Όταν ένα σώμα κινείται μέσα στον <strong>αέρα</strong> ή στο <strong>νερό</strong> (που λέγονται ρευστά), το ρευστό <strong>αντιστέκεται</strong> στην κίνησή του. Αυτή η αντίσταση λέγεται <strong>αντίσταση του ρευστού</strong> (στον αέρα: αεροδυναμική αντίσταση).',
+                'Η αντίσταση εξαρτάται από το <strong>σχήμα</strong>. Αν το μπροστινό μέρος είναι τετράγωνο και το πίσω απότομο, το ρευστό δεν προλαβαίνει να «κλείσει» πίσω από το σώμα και σχηματίζει <strong>στροβίλους</strong> (ακαταστατική ροή). Η αντίσταση είναι μεγάλη και το σώμα καταναλώνει πολλή ενέργεια για να προχωρήσει.',
+                'Ένα σώμα με <strong>στρογγυλεμένο μέτωπο και μυτερή ουρά</strong> (σχήμα σταγόνας) αφήνει το ρευστό να ρέει ομαλά γύρω του, χωρίς στροβίλους. Η αντίσταση είναι μικρή.',
+                '<strong>Αεροδυναμικό</strong> λέμε το σχήμα που μειώνει την αντίσταση του <strong>αέρα</strong>· <strong>υδροδυναμικό</strong> αυτό που μειώνει την αντίσταση του <strong>νερού</strong>. Είναι η ίδια ιδέα, σε διαφορετικό ρευστό.',
+                'Το νερό είναι πολύ πυκνότερο από τον αέρα, γι’ αυτό η αντίσταση του νερού είναι πολύ μεγαλύτερη και το καλό σχήμα έχει ακόμη μεγαλύτερη σημασία για τα ψάρια.'])) +
+        '<h4>Δες τη ροή γύρω από διαφορετικά σχήματα</h4>' +
+        '<div class="bt-stage"><div class="bt-flowgrid" id="bt-flow"></div><p class="bga-note">Οι γραμμές δείχνουν πώς κινείται το ρευστό (από αριστερά προς τα δεξιά). Η ένδειξη «αντίσταση» είναι ποιοτική, για σύγκριση των σχημάτων.</p></div>' +
+        '<h4>Παραδείγματα από τη φύση</h4>' +
+        '<div class="bt-stage"><div class="bt-flowgrid" id="bt-flow2"></div></div>' +
+        '<p class="bga-note">Το βιβλίο δίνει μόνο τα ονόματα των σχημάτων· η εξήγηση της φυσικής και τα σχέδια ροής είναι συμπληρωματικά και δεν ζητούνται.</p>';
+
     /* ================================================================== visuals */
     const NS = 'http://www.w3.org/2000/svg';
     const el = (n, a, p) => { const e = document.createElementNS(NS, n); Object.keys(a || {}).forEach(k => e.setAttribute(k, a[k])); if (p) p.appendChild(e); return e; };
@@ -173,7 +214,7 @@
         function frame(now) {
             if (!root.isConnected) return;
             requestAnimationFrame(frame);
-            const dt = Math.min(0.05, (now - last) / 1000); last = now;
+            const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
             if (!svg.clientWidth) return;
             if (!paused) t += dt;
             let x = 70;
@@ -195,6 +236,139 @@
         requestAnimationFrame(frame);
     }
 
+
+    function initHydra(root) {
+        const svg = root.querySelector('#bt-hydra'); if (!svg) return;
+        const info = root.querySelector('#bt-hydra-info');
+        const MODES = {
+            rest: { L: 215, w: 32, bend: 0, tent: 1.0, circ: 0, lon: 0, side: 0, prey: 0, t: 'Ηρεμία: οι δύο ομάδες μυών είναι χαλαρές και το υγρό δίνει στο σώμα το σχήμα του σωλήνα. Η ύδρα στέκεται όρθια, προσκολλημένη στον βυθό.' },
+            long: { L: 300, w: 22, bend: 0, tent: 1.1, circ: 1, lon: 0, side: 0, prey: 0, t: 'Συστέλλονται οι <strong>κυκλικοί</strong> μύες (μπλε): ο σωλήνας στενεύει και, επειδή το υγρό δεν πάει πουθενά, το σώμα <strong>επιμηκύνεται</strong>.' },
+            short: { L: 125, w: 48, bend: 0, tent: 0.55, circ: 0, lon: 1, side: 0, prey: 0, t: 'Συστέλλονται οι <strong>επιμήκεις</strong> μύες (πορτοκαλί): το σώμα <strong>κονταίνει</strong> και φουσκώνει. Οι κεραίες μαζεύονται.' },
+            bend: { L: 215, w: 32, bend: 1.0, tent: 1.0, circ: 0, lon: 0.5, side: 1, prey: 0, t: 'Συστέλλονται οι επιμήκεις μύες <strong>της μίας πλευράς</strong> (πορτοκαλί): το σώμα <strong>λυγίζει</strong> προς αυτή την πλευρά. Η ύδρα κινείται, αλλά η βάση της μένει στον βυθό: δεν μετακινείται.' },
+            catch: { L: 235, w: 29, bend: 0.8, tent: 1.7, circ: 0.4, lon: 0.4, side: 1, prey: 1, t: 'Η ύδρα <strong>κινεί τις κεραίες της</strong> για να προσλάβει την τροφή της: το σώμα σκύβει προς την τροφή και οι κεραίες απλώνονται.' }
+        };
+        let mode = 'rest', last = performance.now(), t = 0;
+        const cur = { L: 215, w: 32, bend: 0, tent: 1, circ: 0, lon: 0, side: 0, prey: 0 };
+        info.innerHTML = MODES.rest.t;
+        root.querySelector('#bt-hydra-c').addEventListener('click', e => {
+            const m = e.target.dataset.act; if (!m || !MODES[m]) return;
+            mode = m; info.innerHTML = MODES[m].t;
+        });
+        const bx = 400, by = 392;
+        function frame(now) {
+            if (!root.isConnected) return;
+            requestAnimationFrame(frame);
+            const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
+            if (!svg.clientWidth) return;
+            t += dt;
+            const T = MODES[mode], k = 1 - Math.exp(-dt * 4.5);
+            ['L', 'w', 'bend', 'tent', 'circ', 'lon', 'side', 'prey'].forEach(q => { cur[q] += (T[q] - cur[q]) * k; });
+            // centre line from the base upwards; heading starts up and turns by the total bend
+            const n = 26, pts = [];
+            let x = bx, y = by - 10, h = -Math.PI / 2;
+            for (let i = 0; i <= n; i++) {
+                pts.push([x, y, h]);
+                x += Math.cos(h) * cur.L / n; y += Math.sin(h) * cur.L / n;
+                h += (cur.bend * 1.25) / n + 0.012 * Math.sin(t * 1.4 + i * 0.3) * (mode === 'rest' ? 1 : 0.4);
+            }
+            const hw = (i) => cur.w * (1.12 - 0.35 * i / n);
+            const off = (p, d) => [p[0] + Math.cos(p[2] + Math.PI / 2) * d, p[1] + Math.sin(p[2] + Math.PI / 2) * d];
+            const L = pts.map((p, i) => off(p, -hw(i))), R = pts.map((p, i) => off(p, hw(i)));
+            const poly = (a, b) => a.concat(b.slice().reverse()).map(q => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' ');
+            const Li = pts.map((p, i) => off(p, -hw(i) * 0.62)), Ri = pts.map((p, i) => off(p, hw(i) * 0.62));
+            let s = '<defs><linearGradient id="hy-sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bae6fd"/><stop offset="1" stop-color="#0e7490"/></linearGradient></defs>' +
+                '<rect width="800" height="440" fill="url(#hy-sea)"/><path d="M0,404 C120,392 220,414 340,404 S600,394 800,406 L800,440 L0,440 Z" fill="#a16207"/><path d="M0,414 C140,404 260,424 400,414 S650,408 800,418 L800,440 L0,440 Z" fill="#78350f"/>';
+            // base (foot disc) on a rock
+            s += '<ellipse cx="' + bx + '" cy="' + (by + 2) + '" rx="46" ry="12" fill="#f472b6" stroke="#be185d" stroke-width="3"/>';
+            // body
+            s += '<polygon points="' + poly(L, R) + '" fill="#f9a8d4" stroke="#be185d" stroke-width="4" stroke-linejoin="round"/>';
+            // fluid inside
+            s += '<polygon points="' + poly(Li, Ri) + '" fill="#bae6fd" stroke="#38bdf8" stroke-width="2" opacity="0.95"/>';
+            // fluid particles moving along the tube
+            for (let i = 0; i < 9; i++) {
+                const u = ((t * 0.18 + i / 9) % 1) * n, ii = Math.min(n, Math.floor(u)), p = pts[ii];
+                const sd = Math.sin(i * 2.3) * hw(ii) * 0.35;
+                const q = off(p, sd);
+                s += '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="4" fill="#0284c7" opacity="0.65"/>';
+            }
+            // circular muscles (rings): blue; stronger when they contract
+            const ca = (0.25 + 0.75 * cur.circ).toFixed(2), cw = (2 + 3.5 * cur.circ).toFixed(1);
+            for (let i = 1; i < n; i += 2) {
+                const a = off(pts[i], -hw(i)), b = off(pts[i], hw(i));
+                s += '<line x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + b[0].toFixed(1) + '" y2="' + b[1].toFixed(1) + '" stroke="#2563eb" stroke-width="' + cw + '" opacity="' + ca + '" stroke-linecap="round"/>';
+            }
+            // longitudinal muscles: orange; both sides, or only one side when bending
+            const lw = (2 + 4 * cur.lon).toFixed(1);
+            const side = (arr, base, extra) => 'M' + arr.map(q => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' L');
+            const la = (0.25 + 0.75 * Math.max(cur.lon, 0)).toFixed(2);
+            const outer = pts.map((p, i) => off(p, -hw(i) * 0.82)), outer2 = pts.map((p, i) => off(p, hw(i) * 0.82));
+            const bendSide = cur.side;
+            s += '<path d="' + side(outer) + '" fill="none" stroke="#ea580c" stroke-width="' + ((2 + 6 * cur.lon * (0.4 + 0.6 * bendSide)).toFixed(1)) + '" opacity="' + (0.3 + 0.7 * Math.min(1, cur.lon * 1.5)).toFixed(2) + '" stroke-linecap="round"/>';
+            s += '<path d="' + side(outer2) + '" fill="none" stroke="#ea580c" stroke-width="' + ((2 + 4 * cur.lon * (1 - 0.7 * bendSide)).toFixed(1)) + '" opacity="' + (0.25 + 0.5 * Math.min(1, cur.lon * (1 - 0.6 * bendSide))).toFixed(2) + '" stroke-linecap="round"/>';
+            // mouth and tentacles
+            const top = pts[n], mouth = off(top, 0);
+            s += '<ellipse cx="' + mouth[0].toFixed(1) + '" cy="' + mouth[1].toFixed(1) + '" rx="' + (hw(n) * 0.5).toFixed(1) + '" ry="7" fill="#9d174d" transform="rotate(' + ((top[2] + Math.PI / 2) * 180 / Math.PI).toFixed(1) + ' ' + mouth[0].toFixed(1) + ' ' + mouth[1].toFixed(1) + ')"/>';
+            const tips = [];
+            for (let k2 = 0; k2 < 6; k2++) {
+                const sp = (k2 - 2.5) / 2.5;                              // -1 .. 1 across the crown
+                const a0 = top[2] + sp * 1.0;
+                const len = (62 + 18 * Math.abs(sp)) * cur.tent;
+                const sw = Math.sin(t * 2 + k2) * 9;
+                const sx = top[0] + Math.cos(top[2] + Math.PI / 2) * sp * hw(n) * 0.8, sy = top[1] + Math.sin(top[2] + Math.PI / 2) * sp * hw(n) * 0.8;
+                const ex = sx + Math.cos(a0) * len + sw, ey = sy + Math.sin(a0) * len;
+                const mx = sx + Math.cos(a0 + sp * 0.5) * len * 0.55, my = sy + Math.sin(a0 + sp * 0.5) * len * 0.55;
+                tips.push([ex, ey]);
+                s += '<path d="M' + sx.toFixed(1) + ',' + sy.toFixed(1) + ' Q' + mx.toFixed(1) + ',' + my.toFixed(1) + ' ' + ex.toFixed(1) + ',' + ey.toFixed(1) + '" fill="none" stroke="#f472b6" stroke-width="5" stroke-linecap="round"/><circle cx="' + ex.toFixed(1) + '" cy="' + ey.toFixed(1) + '" r="3.5" fill="#be185d"/>';
+            }
+            // prey for the "catch" mode
+            if (cur.prey > 0.05) {
+                const tp = tips[Math.max(0, Math.min(5, cur.side > 0 ? 5 : 0))];
+                const px = tp[0] + 26 * cur.prey, py = tp[1] - 4 + Math.sin(t * 3) * 3;
+                s += '<g opacity="' + Math.min(1, cur.prey).toFixed(2) + '"><ellipse cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" rx="12" ry="7" fill="#16a34a" stroke="#14532d" stroke-width="2"/><circle cx="' + (px + 9).toFixed(1) + '" cy="' + (py - 2).toFixed(1) + '" r="2" fill="#052e16"/></g>';
+            }
+            // legend inside the picture
+            s += '<g font-size="17" font-weight="800"><rect x="16" y="14" width="16" height="16" rx="3" fill="#2563eb"/><text x="38" y="28" fill="#0f172a">κυκλικοί μύες</text><rect x="16" y="40" width="16" height="16" rx="3" fill="#ea580c"/><text x="38" y="54" fill="#0f172a">επιμήκεις μύες</text><rect x="16" y="66" width="16" height="16" rx="3" fill="#bae6fd" stroke="#38bdf8"/><text x="38" y="80" fill="#0f172a">υγρό στο εσωτερικό</text></g>';
+            s += '<text x="' + (bx + 70) + '" y="' + (by + 26) + '" font-size="16" font-weight="800" fill="#fef3c7">προσκολλημένη στον βυθό</text>';
+            svg.innerHTML = s;
+        }
+        requestAnimationFrame(frame);
+    }
+
+
+    /* streamlines around a body: panels with a blunt, a round and a streamlined shape (qualitative, for comparison) */
+    function flowPanel(o) {
+        const cx = 130, cy = 92;
+        let lines = '';
+        const ys = [-72, -54, -38, -24, -12, 12, 24, 38, 54, 72];
+        ys.forEach((y0, idx) => {
+            const sign = Math.sign(y0), a0 = Math.abs(y0);
+            let pts = '';
+            for (let x = 0; x <= 260; x += 4) {
+                let y = y0;
+                const dx = (x - cx) / o.sw;
+                if (a0 < o.H + 18) y = sign * (a0 + (o.H + 10 - a0 * 0.4) * Math.exp(-dx * dx));       // pushed around the body
+                if (x > cx + o.len) y += sign * o.wake * Math.exp(-(x - cx - o.len) / 55) * Math.sin((x - cx) / 7 + idx) * (a0 < o.H + 28 ? 1 : 0.2);
+                pts += (x ? 'L' : 'M') + x + ',' + (cy + y).toFixed(1);
+            }
+            lines += '<path d="' + pts + '" class="bt-fl"/>';
+        });
+        const swirl = o.wake > 8 ? '<g class="bt-swirl"><circle cx="' + (cx + o.len + 24) + '" cy="' + (cy - 14) + '" r="14"/><circle cx="' + (cx + o.len + 24) + '" cy="' + (cy + 18) + '" r="14"/><circle cx="' + (cx + o.len + 56) + '" cy="' + (cy + 2) + '" r="9"/></g>' : '';
+        return '<div class="bt-flow"><div class="bt-flow-t">' + o.name + '</div><svg viewBox="0 0 260 184" class="bt-svg">' + lines + swirl + '<g class="bt-body">' + o.shape + '</g></svg>' +
+            '<div class="bt-drag"><span>αντίσταση</span><div class="bt-drag-bar"><i style="width:' + o.drag + '%;background:' + o.col + '"></i></div><b>' + o.dragT + '</b></div></div>';
+    }
+    function initFlow(root) {
+        const a = root.querySelector('#bt-flow'), b = root.querySelector('#bt-flow2'); if (!a || !b) return;
+        const cx = 130, cy = 92;
+        a.innerHTML =
+            flowPanel({ name: 'Επίπεδο (απότομο) σχήμα', H: 46, sw: 14, len: 8, wake: 22, drag: 92, col: '#dc2626', dragT: 'μεγάλη', shape: '<rect x="' + (cx - 7) + '" y="' + (cy - 46) + '" width="14" height="92" rx="3"/>' }) +
+            flowPanel({ name: 'Σφαίρα (στρογγυλό)', H: 36, sw: 30, len: 36, wake: 11, drag: 52, col: '#f59e0b', dragT: 'μέτρια', shape: '<circle cx="' + cx + '" cy="' + cy + '" r="36"/>' }) +
+            flowPanel({ name: 'Σχήμα σταγόνας (αεροδυναμικό / υδροδυναμικό)', H: 26, sw: 52, len: 62, wake: 2.5, drag: 14, col: '#16a34a', dragT: 'μικρή', shape: '<path d="M' + (cx - 52) + ',' + cy + ' C' + (cx - 52) + ',' + (cy - 26) + ' ' + (cx - 6) + ',' + (cy - 28) + ' ' + (cx + 26) + ',' + (cy - 12) + ' L' + (cx + 64) + ',' + cy + ' L' + (cx + 26) + ',' + (cy + 12) + ' C' + (cx - 6) + ',' + (cy + 28) + ' ' + (cx - 52) + ',' + (cy + 26) + ' ' + (cx - 52) + ',' + cy + ' Z"/>' });
+        b.innerHTML =
+            flowPanel({ name: 'Ψάρι στο νερό (υδροδυναμικό)', H: 24, sw: 52, len: 66, wake: 3, drag: 16, col: '#0ea5e9', dragT: 'μικρή', shape: '<path d="M' + (cx - 58) + ',' + cy + ' C' + (cx - 50) + ',' + (cy - 24) + ' ' + (cx - 4) + ',' + (cy - 26) + ' ' + (cx + 30) + ',' + (cy - 8) + ' L' + (cx + 52) + ',' + (cy - 20) + ' L' + (cx + 52) + ',' + (cy + 20) + ' L' + (cx + 30) + ',' + (cy + 8) + ' C' + (cx - 4) + ',' + (cy + 26) + ' ' + (cx - 50) + ',' + (cy + 24) + ' ' + (cx - 58) + ',' + cy + ' Z"/><circle cx="' + (cx - 38) + '" cy="' + (cy - 5) + '" r="3.5" class="bt-eye"/><path d="M' + (cx - 14) + ',' + (cy - 20) + ' L' + (cx + 2) + ',' + (cy - 36) + ' L' + (cx + 14) + ',' + (cy - 14) + '" class="bt-fin"/>' }) +
+            flowPanel({ name: 'Πουλί στον αέρα (αεροδυναμικό)', H: 24, sw: 50, len: 60, wake: 3, drag: 18, col: '#16a34a', dragT: 'μικρή', shape: '<path d="M' + (cx - 56) + ',' + (cy + 2) + ' L' + (cx - 44) + ',' + (cy - 3) + ' C' + (cx - 36) + ',' + (cy - 24) + ' ' + (cx + 4) + ',' + (cy - 24) + ' ' + (cx + 26) + ',' + (cy - 6) + ' L' + (cx + 60) + ',' + (cy + 2) + ' L' + (cx + 26) + ',' + (cy + 8) + ' C' + (cx + 4) + ',' + (cy + 24) + ' ' + (cx - 36) + ',' + (cy + 20) + ' ' + (cx - 44) + ',' + (cy + 6) + ' Z"/><path d="M' + (cx - 6) + ',' + (cy - 14) + ' Q' + (cx + 4) + ',' + (cy - 44) + ' ' + (cx + 34) + ',' + (cy - 38) + ' Q' + (cx + 20) + ',' + (cy - 20) + ' ' + (cx + 8) + ',' + (cy - 12) + ' Z" class="bt-fin"/><circle cx="' + (cx - 34) + '" cy="' + (cy - 6) + '" r="3" class="bt-eye"/>' }) +
+            flowPanel({ name: 'Αντιπαράδειγμα: χελώνα (σκληρό, ψηλό καβούκι)', H: 38, sw: 28, len: 40, wake: 9, drag: 58, col: '#f59e0b', dragT: 'μέτρια', shape: '<path d="M' + (cx - 40) + ',' + (cy + 14) + ' C' + (cx - 40) + ',' + (cy - 40) + ' ' + (cx + 40) + ',' + (cy - 40) + ' ' + (cx + 40) + ',' + (cy + 14) + ' Z"/><rect x="' + (cx - 46) + '" y="' + (cy + 12) + '" width="92" height="10" rx="4"/>' });
+    }
+
     function initMedusa(root) {
         const svg = root.querySelector('#bt-medusa'); if (!svg) return;
         el('rect', { x: 0, y: 0, width: 800, height: 260, fill: '#0e7490' }, svg);
@@ -211,7 +385,7 @@
         function frame(now) {
             if (!root.isConnected) return;
             requestAnimationFrame(frame);
-            const dt = Math.min(0.05, (now - last) / 1000); last = now;
+            const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
             if (!svg.clientWidth) return;
             if (!paused) t += dt;
             const ph = (Math.sin(t * 2.4) + 1) / 2;              // 1: bell contracted
@@ -373,7 +547,7 @@
         function frame(now) {
             if (!root.isConnected) return;
             requestAnimationFrame(frame);
-            const dt = Math.min(0.05, (now - last) / 1000); last = now;
+            const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
             if (!svg.clientWidth) return;
             if (auto) { t += dt; target = 35 + 35 * Math.sin(t * 1.6); }
             ang += (target - ang) * (1 - Math.exp(-dt * 6));
@@ -391,10 +565,11 @@
                 { id: 'bt1', icon: '💧', title: '1. Υδροστατικός σκελετός', nav: 'Υδροστατικός σκελετός', sub: 'μέδουσα · ύδρα · γεωσκώληκας', body: S1, open: true },
                 { id: 'bt2', icon: '🦀', title: '2. Αρθρόποδα και το φαινόμενο της έκδυσης', nav: 'Αρθρόποδα και έκδυση', sub: 'καρκινοειδή · μυριάποδα · έντομα · αραχνοειδή', body: S2 },
                 { id: 'bt3', icon: '🛡️', title: '3. Εξωσκελετός', nav: 'Εξωσκελετός', sub: 'ενδοσκελετός ή εξωσκελετός', body: S3 },
+                { id: 'bt5', icon: '🐦', title: '5. Αεροδυναμικό και υδροδυναμικό σχήμα', nav: 'Αεροδυναμικό / υδροδυναμικό', sub: 'πτήση · κολύμβηση · αντίσταση του ρευστού', body: S5 },
                 { id: 'bt4', icon: '🦴', title: '4. Διαρθρώσεις και συναρθρώσεις', nav: 'Αρθρώσεις', sub: 'μέρη της διάρθρωσης · κάμψη και έκταση', body: S4 }
             ]
         });
-        initWorm(root); initMedusa(root); initMolt(root); initSkel(root); initJoint(root);
+        initWorm(root); initMedusa(root); initHydra(root); initFlow(root); initMolt(root); initSkel(root); initJoint(root);
         root.addEventListener('click', (e) => {
             const im = e.target.closest('.bt-fig img');
             if (im) openViewer(im.src, im.getAttribute('alt'));

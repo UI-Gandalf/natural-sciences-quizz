@@ -10490,3 +10490,22 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .bt-v-btns button:hover { background: #10b981; }
 .bt-v-area { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: grab; }
 .bt-v-area img { max-width: 96%; max-height: 96%; background: #fff; border-radius: 8px; user-select: none; transform-origin: center; }
+
+.bt-hy-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 8px 12px 0; font-weight: 800; }
+.bt-hy-bar .bt-ctrl { padding: 4px 0; }
+.bt-hy-info { padding: 10px 14px 12px; line-height: 1.55; min-height: 3.2em; }
+
+.bt-flowgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; padding: 10px; }
+.bt-flow { background: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e1; padding: 6px 8px 10px; color: #0f172a; }
+.bt-flow-t { font-weight: 800; font-size: 0.92rem; text-align: center; min-height: 2.4em; display: flex; align-items: center; justify-content: center; }
+.bt-flow .bt-svg { background: #e0f2fe; border-radius: 8px; }
+.bt-fl { fill: none; stroke: #0284c7; stroke-width: 2.2; stroke-dasharray: 9 12; stroke-linecap: round; animation: btflow 0.9s linear infinite; }
+@keyframes btflow { to { stroke-dashoffset: -21; } }
+.bt-body path, .bt-body rect, .bt-body circle { fill: #f59e0b; stroke: #92400e; stroke-width: 3; }
+.bt-body .bt-fin { fill: #fbbf24; }
+.bt-body .bt-eye { fill: #0f172a; stroke: none; }
+.bt-swirl circle { fill: none; stroke: #dc2626; stroke-width: 2.5; stroke-dasharray: 5 5; transform-box: fill-box; transform-origin: center; animation: btspin 1.4s linear infinite; }
+@keyframes btspin { to { transform: rotate(360deg); } }
+.bt-drag { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; margin-top: 6px; font-size: 0.85rem; }
+.bt-drag-bar { height: 12px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+.bt-drag-bar i { display: block; height: 100%; border-radius: 6px; }
