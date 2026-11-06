@@ -10293,3 +10293,33 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .bga-pyr-tier { box-sizing: border-box; padding: 8px 12px; text-align: center; border-radius: 10px; color: #fff; display: flex; flex-direction: column; gap: 2px; min-width: 190px; font-size: 0.9rem; }
 .bga-pyr-tier span { font-size: 0.78rem; opacity: 0.92; }
 .bga-pyr-t0 { background: #b45309; } .bga-pyr-t1 { background: #a16207; } .bga-pyr-t2 { background: #4d7c0f; } .bga-pyr-t3 { background: #15803d; }
+
+/* ---------- Biology Β: interactive skeleton (book page 104) ---------- */
+.sk-wrap { max-width: 1200px; margin: 0 auto; }
+.sk-head h2 { margin: 0 0 6px; font-size: 1.5rem; }
+.sk-head p { margin: 0 0 10px; opacity: 0.92; }
+.sk-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.sk-btn { cursor: pointer; font: inherit; font-weight: 700; padding: 7px 14px; border-radius: 10px; border: 1px solid var(--card-border); background: var(--card-bg); color: inherit; }
+.sk-btn:hover { background: rgba(16, 185, 129, 0.25); }
+.sk-main { display: grid; grid-template-columns: minmax(0, 700px) minmax(260px, 1fr); gap: 16px; align-items: start; }
+.sk-stage { position: relative; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid var(--card-border); aspect-ratio: 450 / 615; max-height: 92vh; width: 100%; cursor: pointer; touch-action: manipulation; }
+.sk-img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; user-select: none; }
+.sk-hl { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.sk-tip { position: absolute; padding: 4px 10px; border-radius: 8px; background: rgba(15, 23, 42, 0.92); color: #fff; font-weight: 800; font-size: 0.9rem; pointer-events: none; white-space: nowrap; z-index: 3; }
+.sk-info { padding: 16px 18px; border-radius: 16px; background: var(--card-bg); border: 1px solid var(--card-border); box-shadow: var(--shadow-card); position: sticky; top: 76px; }
+.sk-info h3 { margin: 0 0 6px; }
+.sk-group { display: inline-block; padding: 3px 12px; border-radius: 999px; font-weight: 700; font-size: 0.82rem; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.55); margin-bottom: 10px; }
+.sk-note { line-height: 1.55; }
+.sk-note ul { margin: 6px 0 0; padding-left: 20px; }
+.sk-hint { font-size: 0.86rem; color: var(--text-secondary); }
+.sk-chips { margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
+.sk-chiprow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.sk-chipt { font-weight: 800; min-width: 190px; color: var(--primary); }
+.sk-chip { cursor: pointer; font: inherit; font-weight: 700; font-size: 0.88rem; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(148, 163, 184, 0.5); background: var(--card-bg); color: inherit; }
+.sk-chip:hover, .sk-chip.on { background: #f59e0b; color: #fff; border-color: #f59e0b; }
+.sk-general { margin: 10px 0; border-radius: 12px; border: 1px solid var(--card-border); background: var(--card-bg); }
+.sk-general > summary { cursor: pointer; padding: 10px 14px; font-weight: 800; }
+.sk-general-body { padding: 0 16px 12px; }
+.sk-wrap.sk-fs { background: #0b1220; color: #e2e8f0; padding: 14px; overflow: auto; box-sizing: border-box; width: 100vw; max-width: none; }
+.sk-wrap.sk-fs .sk-stage { max-height: calc(100vh - 28px); }
+@media (max-width: 800px) { .sk-main { grid-template-columns: 1fr; } .sk-info { position: static; } .sk-chipt { min-width: 100%; } }
