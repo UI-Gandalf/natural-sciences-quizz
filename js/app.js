@@ -439,6 +439,12 @@ function renderQuizSelection(classKey, subjectKey) {
                 </button>
                 ` : ''}
                 ${isBioB ? `
+                <button class="subject-tab-btn ${currentTab === 'joints3d' ? 'active' : ''}" id="tab-btn-joints3d" onclick="switchSubjectTab('joints3d')">
+                    <span class="tab-icon">🧭</span>
+                    <span>Αρθρώσεις σε 3D</span>
+                </button>
+                ` : ''}
+                ${isBioB ? `
                 <button class="subject-tab-btn ${currentTab === 'skeleton' ? 'active' : ''}" id="tab-btn-skeleton" onclick="switchSubjectTab('skeleton')">
                     <span class="tab-icon">🦴</span>
                     <span>Ερειστικό σύστημα (διαδραστικός σκελετός)</span>
@@ -713,6 +719,12 @@ function renderQuizSelection(classKey, subjectKey) {
         </div>
         ` : ''}
         ${isBioB ? `
+        <!-- BIOLOGY Β: JOINTS IN 3D -->
+        <div class="tab-panel" id="tab-panel-joints3d" style="display: ${currentTab === 'joints3d' ? 'block' : 'none'};">
+            <div id="joints3d-mount"></div>
+        </div>
+        ` : ''}
+        ${isBioB ? `
         <!-- BIOLOGY Β: SPECIAL TOPICS -->
         <div class="tab-panel" id="tab-panel-topics" style="display: ${currentTab === 'topics' ? 'block' : 'none'};">
             <div id="topics-mount"></div>
@@ -811,6 +823,9 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'topics') {
         renderTopicsView();
     }
+    if (currentTab === 'joints3d') {
+        renderJoints3dView();
+    }
     if (currentTab === 'time') {
         const tm = document.getElementById('time-mount');
         if (tm && window.PhysATime) window.PhysATime.render(tm);
@@ -847,6 +862,11 @@ function renderAnalogyView() {
 function renderSeries3dView() {
     const mount = document.getElementById('series3d-mount');
     if (mount && window.Circuit3DSeries) window.Circuit3DSeries.render(mount);
+}
+
+function renderJoints3dView() {
+    const mount = document.getElementById('joints3d-mount');
+    if (mount && window.BioBJoints3D) window.BioBJoints3D.render(mount);
 }
 
 function renderTopicsView() {
@@ -1069,6 +1089,18 @@ function switchSubjectTab(tabKey) {
             timePanel.style.animation = 'fadeIn 0.3s ease';
             const tm = document.getElementById('time-mount');
             if (tm && !tm.hasChildNodes() && window.PhysATime) window.PhysATime.render(tm);
+        }
+    }
+
+    const j3Btn = document.getElementById('tab-btn-joints3d');
+    if (j3Btn) j3Btn.classList.toggle('active', tabKey === 'joints3d');
+    const j3Panel = document.getElementById('tab-panel-joints3d');
+    if (j3Panel) {
+        j3Panel.style.display = tabKey === 'joints3d' ? 'block' : 'none';
+        if (tabKey === 'joints3d') {
+            j3Panel.style.animation = 'fadeIn 0.3s ease';
+            const jm = document.getElementById('joints3d-mount');
+            if (jm && !jm.hasChildNodes()) renderJoints3dView();
         }
     }
 
