@@ -424,20 +424,20 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span>Εξερεύνηση κυττάρου</span>
                 </button>
                 ` : ''}
+                ${isPhysG ? `
+                <button class="subject-tab-btn ${currentTab === 'theory' ? 'active' : ''}" id="tab-btn-theory" onclick="switchSubjectTab('theory')">
+                    <span class="tab-icon">📖</span>
+                    <span class="tab-multiline">
+                        <span class="tab-line-main">Συμπυκνωμένος οδηγός μελέτης και πρωτόκολλο επίλυσης ασκήσεων (βασισμένος στον έντυπο οδηγό που σας έχει δοθεί)</span>
+                    </span>
+                </button>
+                ` : ''}
                 ${((classKey === 'Γ' || (classKey && classKey.startsWith('Γ'))) && subjectKey === 'physics') ? `
                 <button class="subject-tab-btn ${currentTab === 'exam_solutions' ? 'active' : ''}" id="tab-btn-exam-solutions" onclick="switchSubjectTab('exam_solutions')">
                     <span class="tab-icon">📑</span>
                     <span class="tab-multiline">
                         <span class="tab-line-main">Επίλυση ενδεικτικού διαγωνίσματος</span>
                         <span class="tab-line-sub">και συναφής θεωρία</span>
-                    </span>
-                </button>
-                ` : ''}
-                ${isPhysG ? `
-                <button class="subject-tab-btn ${currentTab === 'theory' ? 'active' : ''}" id="tab-btn-theory" onclick="switchSubjectTab('theory')">
-                    <span class="tab-icon">📖</span>
-                    <span class="tab-multiline">
-                        <span class="tab-line-main">Συμπυκνωμένος οδηγός μελέτης και πρωτόκολλο επίλυσης ασκήσεων (βασισμένος στον έντυπο οδηγό που σας έχει δοθεί)</span>
                     </span>
                 </button>
                 ` : ''}
