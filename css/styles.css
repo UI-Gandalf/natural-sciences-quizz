@@ -10323,3 +10323,13 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .sk-wrap.sk-fs { background: #0b1220; color: #e2e8f0; padding: 14px; overflow: auto; box-sizing: border-box; width: 100vw; max-width: none; }
 .sk-wrap.sk-fs .sk-stage { max-height: calc(100vh - 28px); }
 @media (max-width: 800px) { .sk-main { grid-template-columns: 1fr; } .sk-info { position: static; } .sk-chipt { min-width: 100%; } }
+
+/* skeleton: info card and the bone list share the right column, so the list is always visible on wide screens */
+.sk-side { position: sticky; top: 76px; display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 92px); overflow: auto; }
+.sk-side .sk-info { position: static; }
+.sk-side .sk-chips { margin: 0; gap: 6px; }
+.sk-side .sk-chipt { min-width: 100%; margin-top: 4px; }
+.sk-side .sk-chiprow { gap: 5px; }
+.sk-side .sk-chip { font-size: 0.82rem; padding: 3px 10px; }
+@media (max-width: 800px) { .sk-side { position: static; max-height: none; overflow: visible; } }
+.sk-side .sk-chips { padding: 12px 14px; border-radius: 16px; background: var(--card-bg); border: 1px solid var(--card-border); box-shadow: var(--shadow-card); }

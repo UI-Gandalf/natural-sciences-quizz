@@ -81,8 +81,7 @@
             '<p>Περνάς το ποντίκι (ή αγγίζεις) πάνω από ένα οστό για να δεις πώς το ονομάζει το βιβλίο (σελ. 104). Πατώντας σε ένα οστό, η πληροφορία μένει στο πλαίσιο.</p></div>' +
             '<div class="sk-toolbar"><button type="button" class="sk-btn" data-act="reset">↩ Καθαρισμός επιλογής</button><button type="button" class="sk-btn" data-act="fs">⛶ Πλήρης οθόνη</button></div>' +
             '<div class="sk-main"><div class="sk-stage"><img class="sk-img" src="assets/images/bio_b_skeleton.svg" alt="Ο σκελετός του ανθρώπου, χωρίς ονομασίες" draggable="false"><canvas class="sk-hl" width="' + W + '" height="' + H + '"></canvas><div class="sk-tip" style="display:none"></div></div>' +
-            '<aside class="sk-info"></aside></div>' +
-            '<div class="sk-chips"></div>' +
+            '<aside class="sk-side"><div class="sk-info"></div><div class="sk-chips"></div></aside></div>' +
             '<details class="sk-general"><summary>Οι γενικές λειτουργίες του σκελετού (από το βιβλίο)</summary><div class="sk-general-body">' +
             '<ul><li>Ο σκελετός συμβάλλει στην <strong>κίνηση</strong>, <strong>προστατεύει</strong>, <strong>υποστηρίζει</strong> και <strong>διατηρεί το σχήμα</strong> του σώματος.</li>' +
             '<li>Λειτουργεί ως <strong>αποθήκη του ασβεστίου</strong>, που είναι απαραίτητο στον οργανισμό μας.</li>' +
