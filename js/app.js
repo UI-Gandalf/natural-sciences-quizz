@@ -1149,10 +1149,26 @@ function triggerMathTypeset(container) {
    CRITICAL: NO EMOJI AS ICON ON QUIZ SUBPAGE! Clean Academic Header
    ========================================================================== */
 // Options of the "jump to question" dropdown: plain text, numbering removed, long stems shortened
+/* LaTeX-ish question text -> plain text for the jump dropdown (V_{	ext{πηγ}} -> Vπηγ, \Omega -> Ω ...) */
+function plainFromMath(str) {
+    let s = String(str).replace(/<[^>]*>/g, '');
+    const map = [['\\Omega', 'Ω'], ['\\Delta', 'Δ'], ['\\mu', 'μ'], ['\\pi', 'π'], ['\\cdot', '·'], ['\\times', '×'], ['\\approx', '≈'], ['\\implies', '⇒'], ['\\rightarrow', '→'], ['\\to', '→']];
+    map.forEach(m => { s = s.split(m[0]).join(m[1]); });
+    let prev = null;
+    while (prev !== s) {
+        prev = s;
+        s = s.replace(/\\(?:text|mathrm|mathbf|textbf)\{([^{}]*)\}/g, '$1')
+             .replace(/_\{([^{}]*)\}/g, '$1').replace(/\^\{([^{}]*)\}/g, '$1')
+             .replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, '($1)/($2)');
+    }
+    s = s.replace(/_([A-Za-z0-9])/g, '$1').replace(/\\[ ,;:!]/g, ' ').replace(/\$/g, '').replace(/[{}]/g, '');
+    return s.replace(/\s+/g, ' ').trim();
+}
+
 function quizJumpOptionsHtml(quiz) {
     const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     return quiz.questions.map((qq, i) => {
-        const plain = String(qq.q).replace(/^\s*\d+\.\s*/, '').replace(/<[^>]*>/g, '');
+        const plain = plainFromMath(String(qq.q).replace(/^\s*\d+\.\s*/, ''));
         const short = plain.length > 80 ? plain.slice(0, 80).trim() + '…' : plain;
         return `<option value="${i}">${i + 1}. ${esc(short)}</option>`;
     }).join('');
@@ -2466,7 +2482,7 @@ function selectCascadingStepOption(stepIdx, optIdx) {
                 feedbackEl.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Έχετε άλλη 1 προσπάθεια. Συμβουλευτείτε την <strong>Υπόδειξη (💡)</strong> παρακάτω και δοκιμάστε ξανά!`;
                 showToast('💡 Ξεκλειδώθηκε η υπόδειξη για το βήμα!');
             } else {
-                feedbackEl.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Έχετε άλλη 1 προσπάθεια. Δοκιμάστε ξανά!`;
+                feedbackEl.innerHTML = `<strong>✗ Μη σωστή επιλογή.</strong> Έχετε άλλη 1 προσπάθεια. ${step && step.advisor ? 'Διαβάστε το σχόλιο ή ζητήστε συμβουλή από τον <strong>Συμβουλάτορα (🤖)</strong> και δοκιμάστε ξανά!' : 'Δοκιμάστε ξανά!'}`;
                 showToast('⚠️ Μη σωστή επιλογή! Δοκιμάστε ξανά.');
             }
             feedbackEl.innerHTML += advisorWrongHtml(step, optIdx);
