@@ -2363,10 +2363,12 @@ function stepFigureHtml(step, stepIdx) {
     (f.items || []).forEach(it => {
         if (it.wire) svg += `<path d="${it.wire}" fill="none" stroke="${col}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>`;
         (it.ends || []).forEach(e => { svg += `<circle cx="${e[0]}" cy="${e[1]}" r="6" fill="${col}"/>`; });
+        if (it.cross) { const c = it.cross; svg += `<path d="M${c[0] - c[2]},${c[1] - (c[3] || c[2])} L${c[0] + c[2]},${c[1] + (c[3] || c[2])} M${c[0] + c[2]},${c[1] - (c[3] || c[2])} L${c[0] - c[2]},${c[1] + (c[3] || c[2])}" fill="none" stroke="${col}" stroke-width="6" stroke-linecap="round"/>`; }
+        if (it.voltmeter) svg += `<circle cx="${it.voltmeter[0]}" cy="${it.voltmeter[1]}" r="17" fill="#ffffff" stroke="${col}" stroke-width="4"/><text x="${it.voltmeter[0]}" y="${it.voltmeter[1] + 8}" text-anchor="middle" font-size="22" font-weight="700" font-family="serif" fill="${col}">V</text>`;
         if (it.ammeter) svg += `<circle cx="${it.ammeter[0]}" cy="${it.ammeter[1]}" r="17" fill="#ffffff" stroke="${col}" stroke-width="4"/><text x="${it.ammeter[0]}" y="${it.ammeter[1] + 8}" text-anchor="middle" font-size="22" font-weight="700" font-family="serif" fill="${col}">A</text>`;
     });
     return `<div class="step-fig-wrap">
-        <button type="button" class="step-fig-btn" id="step-fig-btn-${stepIdx}" onclick="toggleStepFigure(${stepIdx})">🔌 Δείξε το σχήμα με το καλώδιο</button>
+        <button type="button" class="step-fig-btn" id="step-fig-btn-${stepIdx}" onclick="toggleStepFigure(${stepIdx})">🔌 Δείξε το κύκλωμα του ερωτήματος</button>
         <div class="step-fig" id="step-fig-${stepIdx}" hidden>
             <div class="step-fig-img"><img src="${f.img}" alt="Σχήμα κυκλώματος με το επιπλέον καλώδιο"><svg viewBox="0 0 ${f.w} ${f.h}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${svg}</svg></div>
             <div class="step-fig-cap">${f.caption || ''}</div>
@@ -2379,7 +2381,7 @@ function toggleStepFigure(stepIdx) {
     const btn = document.getElementById('step-fig-btn-' + stepIdx);
     if (!box || !btn) return;
     box.hidden = !box.hidden;
-    btn.textContent = box.hidden ? '🔌 Δείξε το σχήμα με το καλώδιο' : '🔌 Απόκρυψη σχήματος';
+    btn.textContent = box.hidden ? '🔌 Δείξε το κύκλωμα του ερωτήματος' : '🔌 Απόκρυψη κυκλώματος';
 }
 
 /* ---------- Advisor (Συμβουλάτορας): progressive tips for the step-by-step exercises ---------- */
