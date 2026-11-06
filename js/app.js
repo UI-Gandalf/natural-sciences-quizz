@@ -254,7 +254,7 @@ function updateBreadcrumbs() {
             } else if (AppState.currentSubjectTab === 'theory') {
                 html += `<a class="crumb-item" onclick="switchSubjectTab('quizzes')">${subConf.emoji} ${subConf.name}</a>`;
                 html += `<span class="crumb-sep">/</span>`;
-                html += `<span class="crumb-active">📖 Συμπυκνωμένος οδηγός μελέτης και πρωτόκολλο επίλυσης ασκήσεων (βασισμένος στον έντυπο οδηγό που σας έχει δοθεί)</span>`;
+                html += `<span class="crumb-active">📖 Συμπυκνωμένος οδηγός μελέτης</span>`;
             } else if (AppState.currentSubjectTab === 'exam_solutions') {
                 html += `<a class="crumb-item" onclick="switchSubjectTab('quizzes')">${subConf.emoji} ${subConf.name}</a>`;
                 html += `<span class="crumb-sep">/</span>`;
