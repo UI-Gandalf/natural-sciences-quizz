@@ -10590,3 +10590,15 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 [data-theme="light"] .bga-body h4 { color: #0369a1; }
 [data-theme="light"] .bga-ins-h { color: #b45309; }
 [data-theme="light"] .bga-nav a { color: #fff; }
+
+.ph-lab { padding: 14px 16px; background: var(--card-bg); }
+.ph-ctrl { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px 18px; margin-bottom: 12px; }
+.ph-ctrl label { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-weight: 800; align-items: center; }
+.ph-ctrl input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: #10b981; }
+.ph-ctrl b { color: #6ee7b7; font-weight: 800; }
+[data-theme="light"] .ph-ctrl b { color: #047857; }
+.ph-out { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.ph-bar { height: 22px; border-radius: 11px; background: rgba(148, 163, 184, 0.3); overflow: hidden; }
+.ph-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #f59e0b, #10b981); transition: width 0.2s; }
+.ph-txt { line-height: 1.5; }
+.ph-graph { width: 100%; max-width: 520px; border-radius: 10px; border: 1px solid var(--card-border); }
