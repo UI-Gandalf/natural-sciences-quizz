@@ -10575,3 +10575,9 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .cg-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; font-weight: 700; }
 .cg-pick select { flex: 1 1 280px; max-width: 560px; padding: 10px 14px; border-radius: 12px; border: 2px solid var(--card-border); background: var(--card-bg); color: var(--text-primary, inherit); font: inherit; font-weight: 700; cursor: pointer; }
 .cg-pick select:focus { outline: 2px solid #38bdf8; outline-offset: 2px; }
+
+/* readable header over the busy subject backdrop (guide / topics pages) */
+.bga-head { padding: 14px 18px; border-radius: 14px; background: rgba(8, 15, 30, 0.82); border: 1px solid var(--card-border); }
+.bga-head p { color: #e2e8f0; }
+[data-theme="light"] .bga-head { background: rgba(255, 255, 255, 0.9); }
+[data-theme="light"] .bga-head p { color: #334155; }
