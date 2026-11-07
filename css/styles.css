@@ -10635,3 +10635,8 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .by-card p { margin: 0 0 8px; line-height: 1.55; }
 .by-approx { font-size: 0.88rem; color: #fbbf24; }
 [data-theme="light"] .by-approx { color: #b45309; }
+.by-period { margin: 12px 0 6px; font-weight: 800; font-size: 0.88rem; color: #fbbf24; }
+[data-theme="light"] .by-period { color: #b45309; }
+.by-shp { display: inline-flex; align-items: center; gap: 5px; }
+.by-foot { margin: 0; font-size: 0.88rem; color: #cbd5e1; padding: 8px 12px; border-radius: 10px; background: rgba(8, 15, 30, 0.82); }
+[data-theme="light"] .by-foot { color: #334155; background: rgba(255, 255, 255, 0.92); }
