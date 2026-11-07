@@ -10556,3 +10556,15 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 
 .bg-svg { width: 100%; height: auto; display: block; }
 .bg-alert { border-left-color: #dc2626; background: rgba(220, 38, 38, 0.15); border: 2px solid #dc2626; }
+
+.bg-check { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; margin: 12px 0; }
+.bg-item { display: grid; grid-template-columns: auto auto 1fr; align-items: start; gap: 10px; padding: 12px 14px; border-radius: 14px; background: var(--card-bg); border: 2px solid var(--card-border); cursor: pointer; }
+.bg-item.done { border-color: #10b981; background: rgba(16, 185, 129, 0.14); }
+.bg-item input { width: 20px; height: 20px; margin-top: 4px; accent-color: #10b981; cursor: pointer; }
+.bg-ico { font-size: 1.8rem; line-height: 1; }
+.bg-txt { display: flex; flex-direction: column; gap: 4px; line-height: 1.45; }
+.bg-txt em { font-size: 0.86rem; color: #fbbf24; font-style: normal; }
+[data-theme="light"] .bg-txt em { color: #b45309; }
+.bg-prog { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 6px 0 12px; }
+.bg-prog-bar { flex: 1 1 200px; height: 12px; border-radius: 6px; background: rgba(148, 163, 184, 0.3); overflow: hidden; }
+.bg-prog-bar i { display: block; height: 100%; width: 0; background: #10b981; transition: width 0.3s; }
