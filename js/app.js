@@ -432,7 +432,7 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span>Συνοπτικός οδηγός ύλης</span>
                 </button>
                 ` : ''}
-                ${(isBioB || isBioG || subjectKey === 'chemistry') ? `
+                ${(isBioB || subjectKey === 'chemistry') ? `
                 <button class="subject-tab-btn ${currentTab === 'topics' ? 'active' : ''}" id="tab-btn-topics" onclick="switchSubjectTab('topics')">
                     <span class="tab-icon">🧩</span>
                     <span>Βαθιά εστίαση & ερμηνεία</span>
@@ -724,7 +724,7 @@ function renderQuizSelection(classKey, subjectKey) {
             <div id="joints3d-mount"></div>
         </div>
         ` : ''}
-        ${(isBioB || isBioG || subjectKey === 'chemistry') ? `
+        ${(isBioB || subjectKey === 'chemistry') ? `
         <!-- BIOLOGY Β / Γ: SPECIAL TOPICS -->
         <div class="tab-panel" id="tab-panel-topics" style="display: ${currentTab === 'topics' ? 'block' : 'none'};">
             <div id="topics-mount"></div>
@@ -871,7 +871,7 @@ function renderJoints3dView() {
 
 function renderTopicsView() {
     const mount = document.getElementById('topics-mount');
-    const g = AppState.currentSubject === 'chemistry' ? window.ChemGTopics : (AppState.currentClass === 'Β' ? window.BioBTopics : window.BioGTopics);
+    const g = AppState.currentSubject === 'chemistry' ? window.ChemGTopics : window.BioBTopics;
     if (mount && g) g.render(mount);
 }
 

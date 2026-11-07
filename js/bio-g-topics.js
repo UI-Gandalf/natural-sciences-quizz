@@ -3,7 +3,7 @@
    Topic 1: stings of bees and wasps (venom, myths about ammonia / urine, first aid).
    SUPPLEMENTARY material (outside the school book, not examined); it connects with the book (proteins, enzymes,
    lipids / cell membranes) and with the Chemistry notion of neutralisation. The diagrams are schematic drawings.
-   window.BioGTopics.render(mountElement)
+   window.BioGTopics.sections / wire(root): used by the Chemistry Γ topics tab (js/chem-g-topics.js)
    ========================================================================== */
 (function () {
     'use strict';
@@ -354,21 +354,21 @@
 
     function ol(items) { return '<ol class="bga-list">' + items.map(i => '<li>' + i + '</li>').join('') + '</ol>'; }
 
-    function render(mount) {
-        const root = K.renderPage(mount, {
-            title: '🐝 Βαθιά εστίαση & ερμηνεία',
-            intro: 'Θέματα που συνδέουν τη Βιολογία και τη Χημεία με την καθημερινή ζωή. Τα θέματα αυτά είναι <strong>συμπληρωματικά</strong> και δεν αποτελούν εξεταστέα ύλη.</p><div class="bg-disclaimer"><strong>Οι πληροφορίες σε όλη αυτή την καρτέλα (τσιμπήματα, φαρμακείο εξοχής, αναφυλαξία, αδρεναλίνη) είναι μόνο για ενημέρωση και σε καμία περίπτωση δεν αποτελούν ιατρικές οδηγίες. Όποιος έχει τέτοιο πρόβλημα πρέπει οπωσδήποτε να συμβουλευτεί τον γιατρό του.</strong></div><p style="display:none">',
-            sections: [
-                { id: 'bg1', icon: '🐝', title: '1. Τσιμπήματα μέλισσας και σφήκας: μύθοι και πρώτες βοήθειες', nav: 'Τσιμπήματα μέλισσας και σφήκας', sub: 'δηλητήριο · μύθος της αμμωνίας και των ούρων · πρώτες βοήθειες', body: S1, open: true },
-                { id: 'bg2', icon: '🧰', title: '2. Το φαρμακείο εξοχής για τσιμπήματα (πρακτικός οδηγός)', nav: 'Φαρμακείο εξοχής', sub: 'τι βάζουμε στο κιτ και γιατί', body: S2 + S2b + S2c },
-                { id: 'bg3', icon: '💉', title: '3. Αναφυλαξία και αδρεναλίνη: πώς λειτουργεί', nav: 'Αναφυλαξία και αδρεναλίνη', sub: 'τι συμβαίνει στο σώμα · πώς δρα η αδρεναλίνη · ο αυτόματος εγχυτής', body: S3 }
-            ]
-        });
+    const sections = [
+        { id: 'bg1', icon: '🐝', title: 'Τσιμπήματα μέλισσας και σφήκας: μύθοι και πρώτες βοήθειες', nav: 'Τσιμπήματα μέλισσας και σφήκας', sub: 'δηλητήριο · μύθος της αμμωνίας και των ούρων · πρώτες βοήθειες', body: S1 },
+        { id: 'bg2', icon: '🧰', title: 'Το φαρμακείο εξοχής για τσιμπήματα (πρακτικός οδηγός)', nav: 'Φαρμακείο εξοχής', sub: 'τι βάζουμε στο κιτ και γιατί', body: S2 + S2b + S2c },
+        { id: 'bg3', icon: '💉', title: 'Αναφυλαξία και αδρεναλίνη: πώς λειτουργεί', nav: 'Αναφυλαξία και αδρεναλίνη', sub: 'τι συμβαίνει στο σώμα · πώς δρα η αδρεναλίνη · ο αυτόματος εγχυτής', body: S3 }
+    ];
+
+    /* called after the page has been rendered (wires the interactive kit checklist) */
+    function wire(root) {
         const kit = root.querySelector('#bg-kit'), bar = root.querySelector('#bg-kit-bar'), txt = root.querySelector('#bg-kit-t');
+        if (!kit) return;
         const upd = () => { const n = kit.querySelectorAll('input:checked').length; bar.style.width = (100 * n / KIT.length) + '%'; txt.textContent = n + ' από ' + KIT.length + ' ετοιμάστηκαν'; kit.querySelectorAll('.bg-item').forEach(l => l.classList.toggle('done', l.querySelector('input').checked)); };
         kit.addEventListener('change', upd);
         root.querySelector('#bg-kit-reset').addEventListener('click', () => { kit.querySelectorAll('input').forEach(i => { i.checked = false; }); upd(); });
     }
 
-    window.BioGTopics = { render };
+    /* The topics are shown in the Chemistry Γ "Βαθιά εστίαση & ερμηνεία" tab (js/chem-g-topics.js) */
+    window.BioGTopics = { sections, wire };
 })();
