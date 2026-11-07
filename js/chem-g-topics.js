@@ -144,5 +144,24 @@
         if (window.BioGTopics && window.BioGTopics.wire) window.BioGTopics.wire(root);
     }
 
-    window.ChemGTopics = { render, renderInsects };
+    /* the tab: a drop-down menu chooses between the two independent topics */
+    const TOPICS = [
+        { key: 'lactic', label: '🏃 Αναερόβια αναπνοή και γαλακτικό οξύ', show: render },
+        { key: 'insects', label: '🐝 Τσιμπήματα εντόμων και αντιμετώπιση', show: renderInsects }
+    ];
+
+    function renderTab(mount) {
+        mount.innerHTML = '';
+        const root = document.createElement('div');
+        root.className = 'bga';
+        root.innerHTML = '<div class="bga-head"><h2>🧩 Βαθιά εστίαση & ερμηνεία</h2><p>Επιπλέον θέματα που συνδέουν τη Χημεία με την καθημερινή ζωή. Είναι <strong>συμπληρωματικά</strong> και <strong>δεν αποτελούν εξεταστέα ύλη</strong>.</p>' +
+            '<label class="cg-pick"><span>Επίλεξε θέμα:</span><select id="cg-topic">' + TOPICS.map(t => '<option value="' + t.key + '">' + t.label + '</option>').join('') + '</select></label></div><div id="cg-content"></div>';
+        mount.appendChild(root);
+        const sel = root.querySelector('#cg-topic'), content = root.querySelector('#cg-content');
+        const go = () => { const t = TOPICS.find(x => x.key === sel.value) || TOPICS[0]; t.show(content); };
+        sel.addEventListener('change', go);
+        go();
+    }
+
+    window.ChemGTopics = { render: renderTab };
 })();

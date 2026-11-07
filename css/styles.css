@@ -10571,3 +10571,7 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 
 .bg-disclaimer { margin: 6px 0 14px; padding: 14px 16px; border-radius: 12px; border: 3px solid #dc2626; background: #7f1d1d; color: #ffffff; font-size: 1.08rem; line-height: 1.5; text-align: center; }
 [data-theme="light"] .bg-disclaimer { color: #b91c1c; background: #fee2e2; }
+
+.cg-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; font-weight: 700; }
+.cg-pick select { flex: 1 1 280px; max-width: 560px; padding: 10px 14px; border-radius: 12px; border: 2px solid var(--card-border); background: var(--card-bg); color: var(--text-primary, inherit); font: inherit; font-weight: 700; cursor: pointer; }
+.cg-pick select:focus { outline: 2px solid #38bdf8; outline-offset: 2px; }
