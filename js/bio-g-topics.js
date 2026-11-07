@@ -370,5 +370,10 @@
     }
 
     /* The topics are shown in the Chemistry Γ "Βαθιά εστίαση & ερμηνεία" tab (js/chem-g-topics.js) */
-    window.BioGTopics = { sections, wire };
+    /* Biology Γ tab: temporarily without content (to be filled later) */
+    function render(mount) {
+        mount.innerHTML = '<div class="bga-head"><h2>🧩 Βαθιά εστίαση & ερμηνεία</h2><p>Η καρτέλα αυτή θα συμπληρωθεί με νέο περιεχόμενο σύντομα.</p></div>';
+    }
+
+    window.BioGTopics = { sections, wire, render };
 })();
