@@ -507,6 +507,12 @@ function renderQuizSelection(classKey, subjectKey) {
                 </button>
                 ` : ''}
                 ${subjectKey === 'chemistry' ? `
+                <button class="subject-tab-btn ${currentTab === 'insects' ? 'active' : ''}" id="tab-btn-insects" onclick="switchSubjectTab('insects')">
+                    <span class="tab-icon">🐝</span>
+                    <span>Τσιμπήματα εντόμων</span>
+                </button>
+                ` : ''}
+                ${subjectKey === 'chemistry' ? `
                 <button class="subject-tab-btn ${currentTab === 'neutral' ? 'active' : ''}" id="tab-btn-neutral" onclick="switchSubjectTab('neutral')">
                     <span class="tab-icon">🧪</span>
                     <span>Προσομοίωση εξουδετέρωσης</span>
@@ -737,6 +743,12 @@ function renderQuizSelection(classKey, subjectKey) {
         </div>
         ` : ''}
         ${subjectKey === 'chemistry' ? `
+        <!-- CHEMISTRY: INSECT STINGS -->
+        <div class="tab-panel" id="tab-panel-insects" style="display: ${currentTab === 'insects' ? 'block' : 'none'};">
+            <div id="insects-mount"></div>
+        </div>
+        ` : ''}
+        ${subjectKey === 'chemistry' ? `
         <!-- CHEMISTRY: NEUTRALISATION LAB -->
         <div class="tab-panel" id="tab-panel-neutral" style="display: ${currentTab === 'neutral' ? 'block' : 'none'};">
             <div id="neutral-mount"></div>
@@ -823,6 +835,9 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'topics') {
         renderTopicsView();
     }
+    if (currentTab === 'insects') {
+        renderInsectsView();
+    }
     if (currentTab === 'joints3d') {
         renderJoints3dView();
     }
@@ -873,6 +888,11 @@ function renderTopicsView() {
     const mount = document.getElementById('topics-mount');
     const g = AppState.currentSubject === 'chemistry' ? window.ChemGTopics : (AppState.currentClass === 'Β' ? window.BioBTopics : window.BioGTopics);
     if (mount && g) g.render(mount);
+}
+
+function renderInsectsView() {
+    const mount = document.getElementById('insects-mount');
+    if (mount && window.ChemGTopics) window.ChemGTopics.renderInsects(mount);
 }
 
 function renderSkeletonView() {
@@ -1102,6 +1122,18 @@ function switchSubjectTab(tabKey) {
             j3Panel.style.animation = 'fadeIn 0.3s ease';
             const jm = document.getElementById('joints3d-mount');
             if (jm && !jm.hasChildNodes()) renderJoints3dView();
+        }
+    }
+
+    const inBtn = document.getElementById('tab-btn-insects');
+    if (inBtn) inBtn.classList.toggle('active', tabKey === 'insects');
+    const inPanel = document.getElementById('tab-panel-insects');
+    if (inPanel) {
+        inPanel.style.display = tabKey === 'insects' ? 'block' : 'none';
+        if (tabKey === 'insects') {
+            inPanel.style.animation = 'fadeIn 0.3s ease';
+            const im = document.getElementById('insects-mount');
+            if (im && !im.hasChildNodes()) renderInsectsView();
         }
     }
 

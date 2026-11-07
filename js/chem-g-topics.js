@@ -120,22 +120,29 @@
             ul(['Το αίμα διατηρεί σταθερό pH (7,35–7,45) με τη βοήθεια <strong>ρυθμιστικών διαλυμάτων</strong>. Η έντονη πτώση του pH συμβαίνει κυρίως <strong>μέσα στον μυ</strong>, όχι σε όλο το σώμα.'])) +
         supp('Για συζήτηση', ul(['Γιατί η αναερόβια διαδικασία παρά τη χαμηλή της απόδοση είναι χρήσιμη σε ένα σπριντ;', 'Το γαλακτικό οξύ υπάρχει και στο γιαούρτι. Βακτήρια που ζυμώνουν τη γλυκόζη (λακτόζη) του γάλακτος το παράγουν με παρόμοια διαδικασία. Τι κοινό έχει με αυτό που γίνεται στον μυ;']));
 
-    const DISCLAIMER = '<div class="bg-disclaimer"><strong>Οι πληροφορίες σε αυτή την ενότητα (τσιμπήματα, φαρμακείο εξοχής, αναφυλαξία, αδρεναλίνη) είναι μόνο για ενημέρωση και σε καμία περίπτωση δεν αποτελούν ιατρικές οδηγίες. Όποιος έχει τέτοιο πρόβλημα πρέπει οπωσδήποτε να συμβουλευτεί τον γιατρό του.</strong></div>';
-
+    /* page 1: lactic acid (tab "Βαθιά εστίαση & ερμηνεία") */
     function render(mount) {
-        const bee = (window.BioGTopics && window.BioGTopics.sections) || [];
-        const nested = bee.map((b, i) => K.sec(b.id, b.icon, (i + 1) + '. ' + b.title, b.sub, b.body, i === 0)).join('');
-        const sections = [
-            { id: 'cg1', icon: '🏃', title: '1. Γαλακτικό οξύ και αναερόβια αναπνοή', nav: 'Γαλακτικό οξύ', sub: 'αερόβια και αναερόβια διάσπαση · γιατί «καίνε» οι μύες · τι γίνεται το γαλακτικό', body: S1, open: true },
-            { id: 'cg2', icon: '🐝', title: '2. Τσιμπήματα εντόμων και αντιμετώπιση', nav: 'Τσιμπήματα εντόμων', sub: 'τσιμπήματα μέλισσας και σφήκας · φαρμακείο εξοχής · αναφυλαξία και αδρεναλίνη', body: DISCLAIMER + nested, open: false }
-        ];
-        const root = K.renderPage(mount, {
+        K.renderPage(mount, {
             title: '🧩 Βαθιά εστίαση & ερμηνεία',
             intro: 'Θέματα που συνδέουν τη Χημεία με την καθημερινή ζωή και τη Βιολογία (οξέα, βάσεις, pH). Τα θέματα αυτά είναι <strong>συμπληρωματικά</strong> και δεν αποτελούν εξεταστέα ύλη.',
-            sections: sections
+            sections: [
+                { id: 'cg1', icon: '🏃', title: '1. Γαλακτικό οξύ και αναερόβια αναπνοή', nav: 'Γαλακτικό οξύ', sub: 'αερόβια και αναερόβια διάσπαση · γιατί «καίνε» οι μύες · τι γίνεται το γαλακτικό', body: S1, open: true }
+            ]
+        });
+    }
+
+    /* page 2: insect stings and how to deal with them (separate tab "Τσιμπήματα εντόμων") */
+    const DISCLAIMER = '<div class="bg-disclaimer"><strong>Οι πληροφορίες σε αυτή τη σελίδα (τσιμπήματα, φαρμακείο εξοχής, αναφυλαξία, αδρεναλίνη) είναι μόνο για ενημέρωση και σε καμία περίπτωση δεν αποτελούν ιατρικές οδηγίες. Όποιος έχει τέτοιο πρόβλημα πρέπει οπωσδήποτε να συμβουλευτεί τον γιατρό του.</strong></div>';
+
+    function renderInsects(mount) {
+        const bee = (window.BioGTopics && window.BioGTopics.sections) || [];
+        const root = K.renderPage(mount, {
+            title: '🐝 Τσιμπήματα εντόμων και αντιμετώπιση',
+            intro: 'Μύθοι και πρώτες βοήθειες στα τσιμπήματα εντόμων, με τη βοήθεια της Χημείας (οξέα, βάσεις, pH). Τα θέματα αυτά είναι <strong>συμπληρωματικά</strong> και δεν αποτελούν εξεταστέα ύλη.</p>' + DISCLAIMER + '<p style="display:none">',
+            sections: bee.map((b, i) => Object.assign({}, b, { title: (i + 1) + '. ' + b.title, open: i === 0 }))
         });
         if (window.BioGTopics && window.BioGTopics.wire) window.BioGTopics.wire(root);
     }
 
-    window.ChemGTopics = { render };
+    window.ChemGTopics = { render, renderInsects };
 })();
