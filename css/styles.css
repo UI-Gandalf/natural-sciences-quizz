@@ -10553,3 +10553,6 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 @media (max-width: 900px) { .bj-grid { grid-template-columns: 1fr; } .bj-side { max-height: none; } }
 
 .bj-callout { padding: 12px 14px; border-radius: 12px; border: 2px solid #f59e0b; background: rgba(245, 158, 11, 0.16); line-height: 1.55; font-size: 0.94rem; }
+
+.bg-svg { width: 100%; height: auto; display: block; }
+.bg-alert { border-left-color: #dc2626; background: rgba(220, 38, 38, 0.15); border: 2px solid #dc2626; }

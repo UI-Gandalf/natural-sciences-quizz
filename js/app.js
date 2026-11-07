@@ -432,7 +432,7 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span>Συνοπτικός οδηγός ύλης</span>
                 </button>
                 ` : ''}
-                ${isBioB ? `
+                ${(isBioB || isBioG) ? `
                 <button class="subject-tab-btn ${currentTab === 'topics' ? 'active' : ''}" id="tab-btn-topics" onclick="switchSubjectTab('topics')">
                     <span class="tab-icon">🧩</span>
                     <span>Βαθιά εστίαση & ερμηνεία</span>
@@ -724,8 +724,8 @@ function renderQuizSelection(classKey, subjectKey) {
             <div id="joints3d-mount"></div>
         </div>
         ` : ''}
-        ${isBioB ? `
-        <!-- BIOLOGY Β: SPECIAL TOPICS -->
+        ${(isBioB || isBioG) ? `
+        <!-- BIOLOGY Β / Γ: SPECIAL TOPICS -->
         <div class="tab-panel" id="tab-panel-topics" style="display: ${currentTab === 'topics' ? 'block' : 'none'};">
             <div id="topics-mount"></div>
         </div>
@@ -871,7 +871,8 @@ function renderJoints3dView() {
 
 function renderTopicsView() {
     const mount = document.getElementById('topics-mount');
-    if (mount && window.BioBTopics) window.BioBTopics.render(mount);
+    const g = AppState.currentClass === 'Β' ? window.BioBTopics : window.BioGTopics;
+    if (mount && g) g.render(mount);
 }
 
 function renderSkeletonView() {
