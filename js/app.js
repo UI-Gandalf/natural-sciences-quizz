@@ -506,6 +506,12 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span>Μάζα και Βάρος</span>
                 </button>
                 ` : ''}
+                ${subjectKey === 'geography' ? `
+                <button class="subject-tab-btn ${currentTab === 'byz' ? 'active' : ''}" id="tab-btn-byz" onclick="switchSubjectTab('byz')">
+                    <span class="tab-icon">🗺️</span>
+                    <span>Βυζαντινές μάχες στον χάρτη</span>
+                </button>
+                ` : ''}
                 ${subjectKey === 'chemistry' ? `
                 <button class="subject-tab-btn ${currentTab === 'neutral' ? 'active' : ''}" id="tab-btn-neutral" onclick="switchSubjectTab('neutral')">
                     <span class="tab-icon">🧪</span>
@@ -736,6 +742,12 @@ function renderQuizSelection(classKey, subjectKey) {
             <div id="skeleton-mount"></div>
         </div>
         ` : ''}
+        ${subjectKey === 'geography' ? `
+        <!-- GEOGRAPHY: BYZANTINE BATTLES MAP -->
+        <div class="tab-panel" id="tab-panel-byz" style="display: ${currentTab === 'byz' ? 'block' : 'none'};">
+            <div id="byz-mount"></div>
+        </div>
+        ` : ''}
         ${subjectKey === 'chemistry' ? `
         <!-- CHEMISTRY: NEUTRALISATION LAB -->
         <div class="tab-panel" id="tab-panel-neutral" style="display: ${currentTab === 'neutral' ? 'block' : 'none'};">
@@ -823,6 +835,9 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'topics') {
         renderTopicsView();
     }
+    if (currentTab === 'byz') {
+        renderByzView();
+    }
     if (currentTab === 'joints3d') {
         renderJoints3dView();
     }
@@ -873,6 +888,11 @@ function renderTopicsView() {
     const mount = document.getElementById('topics-mount');
     const g = AppState.currentSubject === 'chemistry' ? window.ChemGTopics : (AppState.currentClass === 'Β' ? window.BioBTopics : window.BioGTopics);
     if (mount && g) g.render(mount);
+}
+
+function renderByzView() {
+    const mount = document.getElementById('byz-mount');
+    if (mount && window.ByzMaps) window.ByzMaps.render(mount);
 }
 
 function renderSkeletonView() {
@@ -1102,6 +1122,18 @@ function switchSubjectTab(tabKey) {
             j3Panel.style.animation = 'fadeIn 0.3s ease';
             const jm = document.getElementById('joints3d-mount');
             if (jm && !jm.hasChildNodes()) renderJoints3dView();
+        }
+    }
+
+    const byBtn = document.getElementById('tab-btn-byz');
+    if (byBtn) byBtn.classList.toggle('active', tabKey === 'byz');
+    const byPanel = document.getElementById('tab-panel-byz');
+    if (byPanel) {
+        byPanel.style.display = tabKey === 'byz' ? 'block' : 'none';
+        if (tabKey === 'byz') {
+            byPanel.style.animation = 'fadeIn 0.3s ease';
+            const bm = document.getElementById('byz-mount');
+            if (bm && !bm.hasChildNodes()) renderByzView();
         }
     }
 
