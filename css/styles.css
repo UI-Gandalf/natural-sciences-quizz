@@ -10581,3 +10581,12 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .bga-head p { color: #e2e8f0; }
 [data-theme="light"] .bga-head { background: rgba(255, 255, 255, 0.9); }
 [data-theme="light"] .bga-head p { color: #334155; }
+
+/* tables always sit on a solid panel, so the text is readable over the page backdrop */
+.bga-tw, .bj-tw { background: rgba(8, 15, 30, 0.86); }
+[data-theme="light"] .bga-tw, [data-theme="light"] .bj-tw { background: rgba(255, 255, 255, 0.92); }
+
+/* light theme: darker headings inside the guides / topics so they stay readable on the pale panels */
+[data-theme="light"] .bga-body h4 { color: #0369a1; }
+[data-theme="light"] .bga-ins-h { color: #b45309; }
+[data-theme="light"] .bga-nav a { color: #fff; }
