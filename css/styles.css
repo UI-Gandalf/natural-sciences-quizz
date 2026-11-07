@@ -10569,5 +10569,5 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .bg-prog-bar { flex: 1 1 200px; height: 12px; border-radius: 6px; background: rgba(148, 163, 184, 0.3); overflow: hidden; }
 .bg-prog-bar i { display: block; height: 100%; width: 0; background: #10b981; transition: width 0.3s; }
 
-.bg-disclaimer { margin: 6px 0 14px; padding: 14px 16px; border-radius: 12px; border: 3px solid #dc2626; background: rgba(220, 38, 38, 0.14); color: #fca5a5; font-size: 1.08rem; line-height: 1.5; text-align: center; }
+.bg-disclaimer { margin: 6px 0 14px; padding: 14px 16px; border-radius: 12px; border: 3px solid #dc2626; background: #7f1d1d; color: #ffffff; font-size: 1.08rem; line-height: 1.5; text-align: center; }
 [data-theme="light"] .bg-disclaimer { color: #b91c1c; background: #fee2e2; }
