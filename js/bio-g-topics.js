@@ -370,9 +370,14 @@
     }
 
     /* The topics are shown in the Chemistry Γ "Βαθιά εστίαση & ερμηνεία" tab (js/chem-g-topics.js) */
-    /* Biology Γ tab: temporarily without content (to be filled later) */
+    /* Biology Γ tab "Βαθιά εστίαση & ερμηνεία": photosynthesis for now (more topics can be added later) */
     function render(mount) {
-        mount.innerHTML = '<div class="bga-head"><h2>🧩 Βαθιά εστίαση & ερμηνεία</h2><p>Η καρτέλα αυτή θα συμπληρωθεί με νέο περιεχόμενο σύντομα.</p></div>';
+        const root = K.renderPage(mount, {
+            title: '🧩 Βαθιά εστίαση & ερμηνεία',
+            intro: 'Επιπλέον θέματα για όσους θέλουν να πάνε πιο βαθιά. Είναι <strong>συμπληρωματικά</strong> και <strong>δεν αποτελούν εξεταστέα ύλη</strong>.',
+            sections: [window.BioPhoto.section(1)]
+        });
+        window.BioPhoto.init(root);
     }
 
     window.BioGTopics = { sections, wire, render };
