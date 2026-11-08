@@ -36,7 +36,7 @@ window.VasaPage = (function () {
         if (typeof VASA_LAND === 'undefined') return '';
         const L = VASA_LAND;
         const px = (lon, lat) => [(lon - L.lon0) / (L.lon1 - L.lon0) * L.w, (L.lat1 - lat) / (L.lat1 - L.lat0) * L.h];
-        const pts = [['Βόρεια Θάλασσα', 4.6, 56.9, 35, '#1d4ed8', 'start'], ['Κατεγάτο', 11.5, 57.0, 22, '#2563eb', 'start'], ['Νότια Βαλτική', 17.5, 55.3, 8, '#0891b2', 'middle'], ['Στοκχόλμη (εδώ βυθίστηκε το Vasa)', 18.4, 59.3, 6, '#b45309', 'start'], ['Κόλπος Βοθνίας', 21.5, 62.5, 4, '#7c3aed', 'start'], ['Κόλπος Φινλανδίας (ανατολικά)', 28.5, 60.0, 2, '#7c3aed', 'end']];
+        const pts = [['Βόρεια Θάλασσα', 4.6, 56.9, 35, '#1d4ed8', 'start'], ['Κάτεγατ', 11.5, 57.0, 22, '#2563eb', 'start'], ['Νότια Βαλτική', 17.5, 55.3, 8, '#0891b2', 'middle'], ['Στοκχόλμη (εδώ βυθίστηκε το Vasa)', 18.4, 59.3, 6, '#b45309', 'start'], ['Κόλπος Βοθνίας', 21.5, 62.5, 4, '#7c3aed', 'start'], ['Κόλπος Φινλανδίας (ανατολικά)', 28.5, 60.0, 2, '#7c3aed', 'end']];
         let s = '<svg viewBox="0 0 ' + L.w + ' ' + L.h + '" class="bg-svg" role="img" aria-label="Χάρτης της Βαλτικής με την αλατότητα"><rect width="' + L.w + '" height="' + L.h + '" fill="#bfe3f5"/>';
         L.land.forEach((d) => { s += '<path d="' + d + '" fill="#efe2bd" stroke="#b59f6b" stroke-width="1"/>'; });
         pts.forEach((p) => {
@@ -51,7 +51,7 @@ window.VasaPage = (function () {
 
     /* ------------------------------------------------ diagram 3: salinity bars and shipworm */
     function barsSvg() {
-        const items = [['Ωκεανός', 35, '#1d4ed8'], ['Βόρεια Θάλασσα', 33, '#2563eb'], ['Κατεγάτο', 22, '#0ea5e9'], ['Νότια Βαλτική', 8, '#06b6d4'], ['Στοκχόλμη', 6, '#b45309'], ['Κόλπος Βοθνίας', 4, '#7c3aed']];
+        const items = [['Ωκεανός', 35, '#1d4ed8'], ['Βόρεια Θάλασσα', 33, '#2563eb'], ['Κάτεγατ', 22, '#0ea5e9'], ['Νότια Βαλτική', 8, '#06b6d4'], ['Στοκχόλμη', 6, '#b45309'], ['Κόλπος Βοθνίας', 4, '#7c3aed']];
         const X = 190, W = 520, Y0 = 62, step = 38, mx = 36;
         const sx = (v) => X + v / mx * W;
         let s = '<svg viewBox="0 0 760 ' + (Y0 + items.length * step + 50) + '" class="bg-svg" role="img" aria-label="Αλατότητα σε διάφορα νερά και όριο για το ξυλοφάγο όστρακο"><rect width="760" height="' + (Y0 + items.length * step + 50) + '" fill="#f8fafc"/>';
