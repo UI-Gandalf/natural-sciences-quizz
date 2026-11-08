@@ -109,7 +109,7 @@ window.PhysGMicro = (function () {
         const CF = (L / 2) / T_FRONT;
         const ch = [];
         for (let i = 0; i < N; i++) { const s = i * L / N; const d = Math.min(Math.abs(s - S_BAT), L - Math.abs(s - S_BAT)); ch.push({ s0: s, t0: d / CF, off: 0, on: false }); }
-        let t = 0, running = false, closed = false, speedF = 2;
+        let t = 0, running = false, closed = false, speedF = 3;
         const sBulb = lens[0] / 2;
 
         function update(dt) {
@@ -160,7 +160,7 @@ window.PhysGMicro = (function () {
         }
         function updateUi() {
             const on = ch.filter((c) => c.on).length;
-            ui.clock.textContent = running ? fmt(Math.min(t, 99), 1) + ' ns' : '0,0 ns';
+            ui.clock.textContent = running ? fmt(Math.min(t, T_FRONT), 1) + ' ns' : '0,0 ns';
             ui.count.textContent = on + ' από ' + N;
             ui.msg.textContent = !running ? 'Πάτα «Κλείσιμο διακόπτη».' : (on === N ? 'Όλα τα φορτία έχουν ξεκινήσει μέσα σε ' + fmt(T_FRONT, 0) + ' ns (πέντε δισεκατομμυριοστά του δευτερολέπτου).' : 'Το «μέτωπο» της ώθησης προχωρά στο σύρμα και τα φορτία ξεκινούν καθώς φτάνει σε αυτά.');
         }
@@ -214,11 +214,11 @@ window.PhysGMicro = (function () {
             btn.addEventListener('click', () => { sw = !sw; current.setClosed(sw); refresh(); btn.innerHTML = 'Διακόπτης: <b>' + (sw ? 'κλειστός' : 'ανοιχτός') + '</b> (πάτα για ' + (sw ? 'άνοιγμα' : 'κλείσιμο') + ')'; btn.classList.toggle('closed', sw); });
         } else {
             body.innerHTML =
-                '<div class="pgm-note pgm-key">Όταν κλείνει ο διακόπτης, η «ώθηση» (το ηλεκτρικό πεδίο) διαδίδεται στο σύρμα με ταχύτητα <strong>κοντά σε αυτή του φωτός</strong>. Για να τη δεις, η κίνηση εμφανίζεται <strong>δισεκατομμύρια φορές πιο αργά</strong>: 1 δευτερόλεπτο στην οθόνη αντιστοιχεί σε <b id="pgm-scale">2 ns</b> (δισεκατομμυριοστά του δευτερολέπτου). Εδώ τα φορτία είναι τα συμβατικά θετικά.</div>' +
+                '<div class="pgm-note pgm-key">Όταν κλείνει ο διακόπτης, η «ώθηση» (το ηλεκτρικό πεδίο) διαδίδεται στο σύρμα με ταχύτητα <strong>κοντά σε αυτή του φωτός</strong>. Για να τη δεις, η κίνηση εμφανίζεται <strong>δισεκατομμύρια φορές πιο αργά</strong>: 1 δευτερόλεπτο στην οθόνη αντιστοιχεί σε 3 ns (δισεκατομμυριοστά του δευτερολέπτου). Εδώ τα φορτία είναι τα συμβατικά θετικά.</div>' +
                 '<canvas class="pgm-canvas" width="' + W + '" height="' + H + '"></canvas>' +
                 '<div class="pgm-ctrl"><button type="button" class="pgm-btn" id="pgm-close">Κλείσιμο διακόπτη</button><button type="button" class="pgm-btn pgm-sec" id="pgm-reset">Επανάληψη</button>' +
                 '<span class="pgm-meter">Χρόνος: <b id="pgm-clock"></b> · Φορτία που κινούνται: <b id="pgm-count"></b></span></div>' +
-                '<div class="pgm-ctrl"><span>Ταχύτητα:</span><button type="button" class="pgm-btn pgm-sec on" data-sp="2">×2 (πιο γρήγορα)</button><button type="button" class="pgm-btn pgm-sec" data-sp="1">×1</button><button type="button" class="pgm-btn pgm-sec" data-sp="0.4">πιο αργά</button><span class="pgm-msg" id="pgm-msg"></span></div>' +
+                '<div class="pgm-ctrl"><span class="pgm-msg" id="pgm-msg"></span></div>' +
                 '<ul class="pgm-list"><li>Τα γκρι φορτία είναι ακίνητα. Το κίτρινο «μέτωπο» ξεκινά από την πηγή και τρέχει προς τις δύο κατευθύνσεις του κυκλώματος. Κάθε φορτίο ξεκινά όταν το φτάσει.</li>' +
                 '<li>Μέσα σε ελάχιστα ns <strong>όλα τα φορτία του κυκλώματος έχουν ξεκινήσει σχεδόν ταυτόχρονα</strong>, γι’ αυτό ο λαμπτήρας ανάβει αμέσως.</li>' +
                 '<li class="pgm-small">Η μετακίνηση των φορτίων έχει μεγεθυνθεί πολύ ώστε να φαίνεται. Στην πραγματικότητα, στο ίδιο διάστημα τα φορτία δεν προλαβαίνουν να μετακινηθούν ούτε κατά ένα ελάχιστο κλάσμα του χιλιοστού.</li></ul>';
@@ -226,7 +226,6 @@ window.PhysGMicro = (function () {
             current = makeFront(canvas, ui);
             body.querySelector('#pgm-close').addEventListener('click', () => current.close());
             body.querySelector('#pgm-reset').addEventListener('click', () => current.reset());
-            body.querySelectorAll('[data-sp]').forEach((b) => b.addEventListener('click', () => { current.setSpeed(+b.dataset.sp); const sc = body.querySelector('#pgm-scale'); if (sc) sc.textContent = fmt(+b.dataset.sp, +b.dataset.sp % 1 ? 1 : 0) + ' ns'; body.querySelectorAll('[data-sp]').forEach((x) => x.classList.toggle('on', x === b)); }));
         }
         const loop = (now) => { if (!current) return; current.frame(now); raf = requestAnimationFrame(loop); };
         raf = requestAnimationFrame(loop);
