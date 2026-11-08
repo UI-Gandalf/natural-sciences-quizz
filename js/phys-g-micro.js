@@ -197,16 +197,21 @@ window.PhysGMicro = (function () {
             const canvas = body.querySelector('canvas'), ui = { disp: body.querySelector('#pgm-disp'), who: body.querySelector('#pgm-who') };
             current = makeMicro(canvas, ui);
             const NOTE = {
-                real: 'Αυτό που βλέπεις εδώ είναι αυτό που συμβαίνει <strong>στην πραγματικότητα</strong>: τα <strong>ηλεκτρόνια</strong> (αρνητικά φορτία) κινούνται <strong>αντίθετα</strong> από το ηλεκτρικό πεδίο και από τη συμβατική φορά του ρεύματος.',
-                conv: 'Εδώ βλέπεις τη <strong>συμβατική</strong> εικόνα: υποθέτουμε ότι κινούνται <strong>θετικά φορτία</strong>, που ωθούνται <strong>προς την κατεύθυνση του πεδίου</strong>. Η συμβατική φορά του ρεύματος είναι αυτή. Η πραγματική κίνηση των ηλεκτρονίων είναι αντίθετη.'
+                realOpen: '<strong>Ο διακόπτης είναι ανοιχτός: δεν υπάρχει ηλεκτρικό πεδίο στο σύρμα.</strong> Η «θάλασσα» των ελεύθερων <strong>ηλεκτρονίων</strong> κινείται τυχαία, χωρίς καμία προτιμώμενη κατεύθυνση, και τα ηλεκτρόνια χτυπούν συνεχώς στα σχεδόν ακίνητα άτομα του χαλκού. Πάτα «Κλείσιμο διακόπτη» για να δεις τι αλλάζει.',
+                convOpen: '<strong>Ο διακόπτης είναι ανοιχτός: δεν υπάρχει ηλεκτρικό πεδίο στο σύρμα.</strong> Στη συμβατική εικόνα φανταζόμαστε <strong>θετικά φορτία</strong>, που κινούνται τυχαία, χωρίς καμία προτιμώμενη κατεύθυνση, και χτυπούν στα άτομα του χαλκού. Πάτα «Κλείσιμο διακόπτη» για να δεις τι αλλάζει.',
+                realClosed: '<strong>Ο διακόπτης είναι κλειστός και εφαρμόζεται ηλεκτρικό πεδίο.</strong> Αυτό που βλέπεις είναι αυτό που συμβαίνει <strong>στην πραγματικότητα</strong>: τα <strong>ηλεκτρόνια</strong> (αρνητικά φορτία) ωθούνται <strong>αντίθετα</strong> από το πεδίο, δηλαδή αντίθετα από τη συμβατική φορά του ρεύματος. Συνεχίζουν να χτυπούν στα άτομα, αλλά τώρα έχουν και μια μικρή καθαρή κίνηση προς μία κατεύθυνση.',
+                convClosed: '<strong>Ο διακόπτης είναι κλειστός και εφαρμόζεται ηλεκτρικό πεδίο.</strong> Στη <strong>συμβατική</strong> εικόνα υποθέτουμε <strong>θετικά φορτία</strong>, που ωθούνται <strong>προς την κατεύθυνση του πεδίου</strong>. Αυτή είναι η συμβατική φορά του ρεύματος. Η πραγματική κίνηση των ηλεκτρονίων είναι αντίθετη.'
             };
-            const note = body.querySelector('#pgm-keynote'); note.innerHTML = NOTE.real;
+            const note = body.querySelector('#pgm-keynote');
+            let sw = false, md = 'real';
+            const refresh = () => { note.innerHTML = NOTE[md + (sw ? 'Closed' : 'Open')]; };
+            refresh();
             body.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => {
-                current.setMode(b.dataset.mode); note.innerHTML = NOTE[b.dataset.mode];
+                md = b.dataset.mode; current.setMode(md); refresh();
                 body.querySelectorAll('[data-mode]').forEach((x) => x.classList.toggle('on', x === b));
             }));
-            const btn = body.querySelector('#pgm-sw'); let closed = false;
-            btn.addEventListener('click', () => { closed = !closed; current.setClosed(closed); btn.innerHTML = 'Διακόπτης: <b>' + (closed ? 'κλειστός' : 'ανοιχτός') + '</b> (πάτα για ' + (closed ? 'άνοιγμα' : 'κλείσιμο') + ')'; btn.classList.toggle('closed', closed); });
+            const btn = body.querySelector('#pgm-sw');
+            btn.addEventListener('click', () => { sw = !sw; current.setClosed(sw); refresh(); btn.innerHTML = 'Διακόπτης: <b>' + (sw ? 'κλειστός' : 'ανοιχτός') + '</b> (πάτα για ' + (sw ? 'άνοιγμα' : 'κλείσιμο') + ')'; btn.classList.toggle('closed', sw); });
         } else {
             body.innerHTML =
                 '<div class="pgm-note pgm-key">Όταν κλείνει ο διακόπτης, η «ώθηση» (το ηλεκτρικό πεδίο) διαδίδεται στο σύρμα με ταχύτητα <strong>κοντά σε αυτή του φωτός</strong>. Για να τη δεις, η κίνηση εμφανίζεται <strong>δισεκατομμύρια φορές πιο αργά</strong>: 1 δευτερόλεπτο στην οθόνη αντιστοιχεί σε 1 ns (ένα δισεκατομμυριοστό του δευτερολέπτου). Εδώ τα φορτία είναι τα συμβατικά θετικά.</div>' +
