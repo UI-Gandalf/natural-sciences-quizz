@@ -150,6 +150,15 @@
                     ${labs}
                     <div class="c3d-label c3d-label-follow" id="c3d-lab-follow" style="display:none"></div>
                     <button type="button" class="c3d-exit" data-act="exit">← Έξοδος</button>
+                    <button type="button" class="c3d-info" data-act="info" id="c3d-info" aria-expanded="false">ℹ️ Λεπτομέρειες που δεν δείχνει η προσομοίωση</button>
+                    <div class="c3d-infopanel" id="c3d-infopanel" hidden>
+                        <button type="button" class="c3d-infox" data-act="info" aria-label="Κλείσιμο">✕</button>
+                        <strong>➕ Σημαντικές λεπτομέρειες που δεν δείχνει η προσομοίωση <span class="c3d-tag">συμπληρωματικό · εκτός βιβλίου · δεν ζητείται</span></strong>
+                        <p><b>Η πηγή δεν δίνει ρεύμα ούτε φορτία.</b> Τα φορτία υπάρχουν ήδη σε όλο το κύκλωμα, όπως το νερό μέσα σε έναν γεμάτο σωλήνα. Η πηγή τους προσφέρει <b>ενέργεια</b>, γι' αυτό κινούνται.</p>
+                        <p><b>Η κίνηση των φορτίων στο σύρμα είναι πολύ αργή</b> (της τάξης του χιλιοστού ανά δευτερόλεπτο ή και λιγότερο). Ο λαμπτήρας όμως ανάβει σχεδόν αμέσως, γιατί η «ώθηση» που ξεκινά από την πηγή (δηλαδή το ηλεκτρικό πεδίο, που εφαρμόζεται σε όλο το κύκλωμα) διαδίδεται στο σύρμα με ταχύτητα κοντά σε αυτή του φωτός. Έτσι όλα τα φορτία του σύρματος αρχίζουν να κινούνται σχεδόν ταυτόχρονα.</p>
+                        <p class="c3d-supp-note">Στην προσομοίωση τα φορτία φαίνονται να κινούνται γρήγορα για να είναι ορατά. Στην πραγματικότητα κινούνται πολύ πιο αργά.</p>
+                        <p class="c3d-supp-btns"><button type="button" class="c3d-vbtn" data-act="vis-micro">▶ Δες τι γίνεται μέσα στο καλώδιο</button><button type="button" class="c3d-vbtn" data-act="vis-front">▶ Δες πώς ξεκινούν όλα τα φορτία μαζί</button></p>
+                    </div>
                 </div>
                 <div class="c3d-study" id="c3d-study" style="display:none"></div>
                 <div class="c3d-side">
@@ -173,12 +182,6 @@
                     <div class="c3d-follow-panel c3d-equi-panel" id="c3d-equi-panel" hidden></div>
                     <div class="c3d-ohm" id="c3d-ohm"></div>
                 </div>
-            </div>
-            <div class="c3d-supp" id="c3d-supp"><strong>➕ Τι δεν δείχνει η κίνηση στην οθόνη <span class="c3d-tag">συμπληρωματικό · εκτός βιβλίου · δεν ζητείται</span></strong>
-                <p><b>Η πηγή δεν δίνει ρεύμα ούτε φορτία.</b> Τα φορτία υπάρχουν ήδη σε όλο το κύκλωμα, όπως το νερό μέσα σε έναν γεμάτο σωλήνα. Η πηγή τους προσφέρει <b>ενέργεια</b>, γι' αυτό κινούνται.</p>
-                <p><b>Η κίνηση των φορτίων στο σύρμα είναι πολύ αργή</b> (της τάξης του χιλιοστού ανά δευτερόλεπτο ή και λιγότερο). Ο λαμπτήρας όμως ανάβει σχεδόν αμέσως, γιατί η «ώθηση» που ξεκινά από την πηγή (δηλαδή το ηλεκτρικό πεδίο, που εφαρμόζεται σε όλο το κύκλωμα) διαδίδεται στο σύρμα με ταχύτητα κοντά σε αυτή του φωτός. Έτσι όλα τα φορτία του σύρματος αρχίζουν να κινούνται σχεδόν ταυτόχρονα.</p>
-                <p class="c3d-supp-note">Στην προσομοίωση τα φορτία φαίνονται να κινούνται γρήγορα για να είναι ορατά. Στην πραγματικότητα κινούνται πολύ πιο αργά.</p>
-                <p class="c3d-supp-btns"><button type="button" class="c3d-vbtn" data-act="vis-micro">▶ Δες τι γίνεται μέσα στο καλώδιο</button><button type="button" class="c3d-vbtn" data-act="vis-front">▶ Δες πώς ξεκινούν όλα τα φορτία μαζί</button></p>
             </div>
         </div>`;
             mount.addEventListener('change', (e) => {
@@ -207,6 +210,7 @@
                 else if (act === 'pause') { state.paused = !state.paused; refreshUi(); }
                 else if (act === 'speed') { state.speed = parseFloat(b.dataset.speed); refreshUi(); }
                 else if (act === 'fs') toggleFullscreen(mount);
+                else if (act === 'info') { const pn = q('c3d-infopanel'), bt = q('c3d-info'); if (pn) { pn.hidden = !pn.hidden; if (bt) bt.setAttribute('aria-expanded', String(!pn.hidden)); } }
                 else if (act === 'vis-micro' || act === 'vis-front') { if (window.PhysGMicro) window.PhysGMicro.open(act === 'vis-front' ? 'front' : 'micro'); }
                 else if (act === 'study') { if (state.follow && state.closed) setStudy(true); }
                 else if (act === 'study-exit') setStudy(false);

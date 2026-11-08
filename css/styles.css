@@ -10683,3 +10683,23 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 [data-theme="light"] .pgm-tab { background: #e2e8f0; }
 [data-theme="light"] .pgm-btn.pgm-sec { background: #e2e8f0; color: #0f172a; }
 [data-theme="light"] .pgm-msg { color: #92400e; }
+
+/* overlay with the important details, opened from the button at the top of the 3D stage */
+.c3d-info { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 4; max-width: calc(100% - 330px); padding: 7px 14px; border-radius: 999px; border: 2px solid #f59e0b; background: rgba(15, 23, 42, 0.9); color: #fde68a; font: inherit; font-size: 0.85rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5); }
+.c3d-info:hover { background: rgba(245, 158, 11, 0.3); }
+@media (max-width: 860px) { .c3d-info { max-width: calc(100% - 20px); top: 48px; font-size: 0.78rem; } }
+.c3d-infopanel { position: absolute; left: 14px; right: 14px; top: 56px; bottom: 14px; z-index: 6; overflow: auto; padding: 16px 18px; border-radius: 14px; background: rgba(8, 15, 30, 0.96); border: 2px solid #f59e0b; color: #e2e8f0; line-height: 1.55; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); }
+.c3d-infopanel[hidden] { display: none; }
+.c3d-infopanel p { margin: 10px 0 0; }
+.c3d-infox { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; border-radius: 50%; border: none; background: #dc2626; color: #fff; font-weight: 900; cursor: pointer; }
+.c3d-infopanel .c3d-tag { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: rgba(245, 158, 11, 0.25); color: #fbbf24; font-size: 0.78rem; font-weight: 800; }
+.c3d-infopanel .c3d-supp-note { font-size: 0.88rem; color: #cbd5e1; }
+.c3d-infopanel strong { display: block; padding-right: 36px; }
+[data-theme="light"] .c3d-infopanel { background: rgba(255, 255, 255, 0.97); color: #1e293b; }
+[data-theme="light"] .c3d-infopanel .c3d-tag { color: #b45309; }
+[data-theme="light"] .c3d-infopanel .c3d-supp-note { color: #475569; }
+.c3d-flash { top: 54px !important; }
+
+.c3d-info { max-width: none; white-space: nowrap; font-size: 0.8rem; padding: 5px 12px; top: 8px; }
+.c3d-infopanel { bottom: auto; max-height: calc(100% - 70px); }
+@media (max-width: 860px) { .c3d-info { white-space: normal; max-width: calc(100% - 20px); top: 46px; } }

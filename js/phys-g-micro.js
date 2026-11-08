@@ -215,7 +215,7 @@ window.PhysGMicro = (function () {
         overlay.innerHTML = '<div class="pgm-panel" role="dialog" aria-modal="true" aria-label="Οπτικοποίηση κίνησης των φορτίων">' +
             '<div class="pgm-top"><div class="pgm-tabs"><button type="button" class="pgm-tab" data-kind="micro">① Μέσα στο καλώδιο</button><button type="button" class="pgm-tab" data-kind="front">② Σε όλο το κύκλωμα</button></div>' +
             '<span class="pgm-tag">συμπληρωματικό · εκτός βιβλίου · δεν ζητείται</span><button type="button" class="pgm-x" aria-label="Κλείσιμο">✕</button></div><div class="pgm-body"></div></div>';
-        document.body.appendChild(overlay);
+        (document.fullscreenElement || document.body).appendChild(overlay);
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay || e.target.closest('.pgm-x')) close();
             const t = e.target.closest('.pgm-tab'); if (t) show(t.dataset.kind);
