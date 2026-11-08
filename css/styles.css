@@ -10640,3 +10640,12 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .by-shp { display: inline-flex; align-items: center; gap: 5px; }
 .by-foot { margin: 0; font-size: 0.88rem; color: #cbd5e1; padding: 8px 12px; border-radius: 10px; background: rgba(8, 15, 30, 0.82); }
 [data-theme="light"] .by-foot { color: #334155; background: rgba(255, 255, 255, 0.92); }
+
+.c3d-supp { margin-top: 14px; padding: 12px 16px; border-radius: 14px; border-left: 5px solid #f59e0b; background: rgba(8, 15, 30, 0.86); color: #e2e8f0; line-height: 1.55; }
+.c3d-supp p { margin: 8px 0 0; }
+.c3d-supp .c3d-tag { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: rgba(245, 158, 11, 0.25); color: #fbbf24; font-size: 0.78rem; font-weight: 800; }
+.c3d-supp .c3d-supp-note { font-size: 0.88rem; color: #cbd5e1; }
+[data-theme="light"] .c3d-supp { background: rgba(255, 255, 255, 0.94); color: #1e293b; }
+[data-theme="light"] .c3d-supp .c3d-tag { color: #b45309; }
+[data-theme="light"] .c3d-supp .c3d-supp-note { color: #475569; }
+.c3d-wrap:fullscreen .c3d-supp { display: none; }
