@@ -109,7 +109,7 @@ window.PhysGMicro = (function () {
         const CF = (L / 2) / T_FRONT;
         const ch = [];
         for (let i = 0; i < N; i++) { const s = i * L / N; const d = Math.min(Math.abs(s - S_BAT), L - Math.abs(s - S_BAT)); ch.push({ s0: s, t0: d / CF, off: 0, on: false }); }
-        let t = 0, running = false, closed = false, speedF = 3;
+        let t = 0, running = false, closed = false, speedF = 5;
         const sBulb = lens[0] / 2;
 
         function update(dt) {
@@ -214,7 +214,7 @@ window.PhysGMicro = (function () {
             btn.addEventListener('click', () => { sw = !sw; current.setClosed(sw); refresh(); btn.innerHTML = 'Διακόπτης: <b>' + (sw ? 'κλειστός' : 'ανοιχτός') + '</b> (πάτα για ' + (sw ? 'άνοιγμα' : 'κλείσιμο') + ')'; btn.classList.toggle('closed', sw); });
         } else {
             body.innerHTML =
-                '<div class="pgm-note pgm-key">Όταν κλείνει ο διακόπτης, η «ώθηση» (το ηλεκτρικό πεδίο) διαδίδεται στο σύρμα με ταχύτητα <strong>κοντά σε αυτή του φωτός</strong>. Για να τη δεις, η κίνηση εμφανίζεται <strong>δισεκατομμύρια φορές πιο αργά</strong>: 1 δευτερόλεπτο στην οθόνη αντιστοιχεί σε 3 ns (δισεκατομμυριοστά του δευτερολέπτου). Εδώ τα φορτία είναι τα συμβατικά θετικά.</div>' +
+                '<div class="pgm-note pgm-key">Όταν κλείνει ο διακόπτης, η «ώθηση» (το ηλεκτρικό πεδίο) διαδίδεται στο σύρμα με ταχύτητα <strong>κοντά σε αυτή του φωτός</strong>. Για να τη δεις, η κίνηση εμφανίζεται <strong>δισεκατομμύρια φορές πιο αργά</strong>: 1 δευτερόλεπτο στην οθόνη αντιστοιχεί σε 5 ns (δισεκατομμυριοστά του δευτερολέπτου). Εδώ τα φορτία είναι τα συμβατικά θετικά.</div>' +
                 '<canvas class="pgm-canvas" width="' + W + '" height="' + H + '"></canvas>' +
                 '<div class="pgm-ctrl"><button type="button" class="pgm-btn" id="pgm-close">Κλείσιμο διακόπτη</button><button type="button" class="pgm-btn pgm-sec" id="pgm-reset">Επανάληψη</button>' +
                 '<span class="pgm-meter">Χρόνος: <b id="pgm-clock"></b> · Φορτία που κινούνται: <b id="pgm-count"></b></span></div>' +
