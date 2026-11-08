@@ -10703,3 +10703,9 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .c3d-info { max-width: none; white-space: nowrap; font-size: 0.8rem; padding: 5px 12px; top: 8px; }
 .c3d-infopanel { bottom: auto; max-height: calc(100% - 70px); }
 @media (max-width: 860px) { .c3d-info { white-space: normal; max-width: calc(100% - 20px); top: 46px; } }
+
+/* gravitational analogy page in full screen */
+.ga-wrap:fullscreen { max-width: none; width: 100vw; height: 100vh; overflow: auto; box-sizing: border-box; padding: 56px 20px 24px; background: #0b1220; color: #e2e8f0; }
+.ga-exit { display: none; }
+.ga-wrap:fullscreen .ga-exit { display: block; position: fixed; top: 10px; left: 10px; z-index: 5; cursor: pointer; border-radius: 8px; border: 1px solid rgba(248, 113, 113, 0.6); background: rgba(15, 23, 42, 0.9); color: #fecaca; padding: 6px 12px; font: inherit; font-size: 0.85rem; }
+.sim-fullscreen-modal:fullscreen { width: 100vw; height: 100vh; }

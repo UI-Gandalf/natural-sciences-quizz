@@ -1199,7 +1199,48 @@ function switchSubjectTab(tabKey) {
     if (tabKey === 'quizzes' && quizzesPanel) quizzesPanel.style.animation = 'fadeIn 0.3s ease';
 
     updateBreadcrumbs();
+    enterTabFullscreen(tabKey);
 }
+
+/* ==========================================================================
+   Physics Γ: the four simulations (3D simple circuit, 3D two resistors in series, gravitational analogy, circuit lab)
+   open automatically in full screen. The tab button click is the user gesture the browser needs. If the browser
+   cannot do it (or refuses), the simulation just stays in the page. Leaving full screen goes back to the quizzes.
+   ========================================================================== */
+const FS_TABS = ['intro3d', 'series3d', 'analogy', 'simulation'];
+function enterTabFullscreen(tabKey) {
+    if (!FS_TABS.includes(tabKey) || AppState.currentSubject !== 'physics') return;
+    if (!(document.fullscreenEnabled || document.webkitFullscreenEnabled)) return;
+    let target = null;
+    if (tabKey === 'simulation') {
+        if (window.CircuitSimulation && typeof window.CircuitSimulation.openFullscreenModal === 'function') {
+            try { window.CircuitSimulation.openFullscreenModal(); } catch (e) { /* keep inline */ }
+        }
+        target = document.getElementById('sim-fullscreen-modal');
+    } else if (tabKey === 'analogy') {
+        target = document.querySelector('#analogy-mount .ga-wrap');
+        if (target && !target.querySelector('.ga-exit')) {
+            const bt = document.createElement('button');
+            bt.type = 'button'; bt.className = 'ga-exit'; bt.textContent = '← Έξοδος';
+            bt.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else switchSubjectTab('quizzes'); });
+            target.insertBefore(bt, target.firstChild);
+        }
+    } else {
+        target = document.querySelector('#' + tabKey + '-mount .c3d-wrap');
+    }
+    if (!target) return;
+    const req = target.requestFullscreen || target.webkitRequestFullscreen;
+    if (!req) return;
+    try { const r = req.call(target); if (r && r.catch) r.catch(() => {}); } catch (e) { /* stay inline */ }
+}
+function onFullscreenExitReturn() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) return;
+    if (!FS_TABS.includes(AppState.currentSubjectTab) || AppState.currentSubject !== 'physics') return;
+    if (window.CircuitSimulation && typeof window.CircuitSimulation.closeFullscreenModal === 'function') window.CircuitSimulation.closeFullscreenModal();
+    switchSubjectTab('quizzes');
+}
+document.addEventListener('fullscreenchange', onFullscreenExitReturn);
+document.addEventListener('webkitfullscreenchange', onFullscreenExitReturn);
 
 /* ==========================================================================
    Mathematical & Physical Formulas Typography Engine (LaTeX-Flavored)

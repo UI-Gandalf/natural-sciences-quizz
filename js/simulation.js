@@ -4224,6 +4224,7 @@ window.CircuitSimulation = (function() {
             if (normalMount && document.body.contains(normalMount)) {
                 render(normalMount);
             }
+            if (document.fullscreenElement && document.exitFullscreen) { document.exitFullscreen().catch(() => {}); }
         }
     };
 })();
