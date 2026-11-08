@@ -19,8 +19,12 @@ window.PhysGMicro = (function () {
     function makeMicro(canvas, ui) {
         const ctx = canvas.getContext('2d');
         const ions = [];
-        for (let r = 0; r < 5; r++) for (let c = 0; c < 13; c++) ions.push({ x: 32 + c * 58 + (r % 2 ? 29 : 0), y: 42 + r * 54, ph: Math.random() * 6.28 });
-        const R_ION = 12, R_E = 5, VTH = 150, ACC = 330;
+        for (let r = 0; r < 5; r++) for (let c = 0; c < 14; c++) {
+            const jx = Math.sin(r * 12.9898 + c * 78.233) * 43758.5453, jy = Math.sin(r * 39.346 + c * 11.135) * 24634.6345;   // fixed pseudo-random offsets
+            ions.push({ x: 28 + c * 56 + (r % 2 ? 28 : 0) + ((jx - Math.floor(jx)) - 0.5) * 22, y: 44 + r * 54 + ((jy - Math.floor(jy)) - 0.5) * 22, ph: Math.random() * 6.28 });
+        }
+        const R_ION = 14, R_E = 5, VTH = 150, ACC = 170;
+        let mode = 'real';                                           // 'real' (electrons) or 'conv' (imaginary positive charges)
         const els = [];
         const place = () => { for (let k = 0; k < 400; k++) { const x = rnd(8, W - 8), y = rnd(14, H - 14); if (ions.every((i) => Math.hypot(i.x - x, i.y - y) > R_ION + R_E + 3)) return [x, y]; } return [10, 10]; };
         for (let k = 0; k < 30; k++) { const p = place(), a = rnd(0, 6.283); els.push({ x: p[0], y: p[1], vx: VTH * Math.cos(a), vy: VTH * Math.sin(a), ux: 0 }); }
@@ -31,7 +35,8 @@ window.PhysGMicro = (function () {
         function step(dt) {
             time += dt;
             for (const e of els) {
-                if (closed) e.vx -= ACC * dt;                  // electrons are pushed opposite to the field
+                if (closed) e.vx += (mode === 'real' ? -ACC : ACC) * dt;   // electrons are pushed opposite to the field, positive charges along it
+                const sp = Math.hypot(e.vx, e.vy); if (sp > 2.6 * VTH) { e.vx *= 2.6 * VTH / sp; e.vy *= 2.6 * VTH / sp; }
                 const nx = e.x + e.vx * dt, ny = e.y + e.vy * dt;
                 e.ux += e.vx * dt;
                 e.x = nx; e.y = ny;
@@ -55,15 +60,17 @@ window.PhysGMicro = (function () {
             for (const i of ions) {
                 const ix = i.x + Math.sin(time * 9 + i.ph) * 1.6, iy = i.y + Math.cos(time * 8 + i.ph) * 1.6;
                 ctx.beginPath(); ctx.arc(ix, iy, R_ION, 0, 6.283); ctx.fillStyle = '#c2713a'; ctx.fill(); ctx.strokeStyle = '#7c2d12'; ctx.lineWidth = 2; ctx.stroke();
-                ctx.fillStyle = '#fff7ed'; ctx.font = '700 15px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('+', ix, iy + 5);
+                if (mode === 'real') { ctx.fillStyle = '#fff7ed'; ctx.font = '700 15px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('+', ix, iy + 5); }
             }
             // trail of the highlighted electron
             ctx.strokeStyle = '#fde047'; ctx.lineWidth = 2.5; ctx.beginPath(); let pen = false;
             for (const p of trail) { if (!p) { pen = false; continue; } if (!pen) { ctx.moveTo(p[0], p[1]); pen = true; } else ctx.lineTo(p[0], p[1]); }
             ctx.stroke();
             els.forEach((e, k) => {
-                ctx.beginPath(); ctx.arc(e.x, e.y, R_E + (k === 0 ? 2 : 0), 0, 6.283); ctx.fillStyle = '#38bdf8'; ctx.fill();
-                ctx.strokeStyle = k === 0 ? '#fde047' : '#0c4a6e'; ctx.lineWidth = k === 0 ? 3 : 1.5; ctx.stroke();
+                const rr = (mode === 'real' ? R_E : 6) + (k === 0 ? 2 : 0);
+                ctx.beginPath(); ctx.arc(e.x, e.y, rr, 0, 6.283); ctx.fillStyle = mode === 'real' ? '#38bdf8' : '#ef4444'; ctx.fill();
+                ctx.strokeStyle = k === 0 ? '#fde047' : (mode === 'real' ? '#0c4a6e' : '#fff'); ctx.lineWidth = k === 0 ? 3 : 1.5; ctx.stroke();
+                if (mode !== 'real') { ctx.fillStyle = '#fff'; ctx.font = '800 10px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('+', e.x, e.y + 3.5); }
             });
             if (closed) {
                 ctx.fillStyle = 'rgba(250,204,21,0.95)'; ctx.fillRect(250, 18, 260, 8); ctx.beginPath(); ctx.moveTo(510, 10); ctx.lineTo(534, 22); ctx.lineTo(510, 34); ctx.closePath(); ctx.fill();
@@ -73,6 +80,7 @@ window.PhysGMicro = (function () {
         function updateUi() {
             const m = els.reduce((s, e) => s + e.ux, 0) / els.length;
             ui.disp.textContent = fmt(Math.abs(m), 0) + ' px ' + (Math.abs(m) < 8 ? '(περίπου μηδέν)' : (m < 0 ? 'προς τα αριστερά' : 'προς τα δεξιά'));
+            ui.who.textContent = mode === 'real' ? 'ηλεκτρονίων' : 'θετικών φορτίων';
         }
         function reset() { els.forEach((e) => { e.ux = 0; }); trail = []; }
         let last = 0;
@@ -83,6 +91,7 @@ window.PhysGMicro = (function () {
                 draw(); updateUi();
             },
             setClosed(c) { closed = c; reset(); },
+            setMode(m) { mode = m; reset(); },
             setSpeed(f) { speedF = f; }
         };
     }
@@ -177,15 +186,25 @@ window.PhysGMicro = (function () {
         overlay.querySelectorAll('.pgm-tab').forEach((b) => b.classList.toggle('on', b.dataset.kind === kind));
         if (kind === 'micro') {
             body.innerHTML =
-                '<div class="pgm-note pgm-key">Αυτό που βλέπεις εδώ είναι αυτό που συμβαίνει <strong>στην πραγματικότητα</strong>: τα ηλεκτρόνια (αρνητικά φορτία) κινούνται προς την αντίθετη κατεύθυνση από τη συμβατική φορά του ρεύματος. Μπορείς να το σκεφτείς και σαν <strong>θετικά φορτία που κινούνται προς την αντίθετη κατεύθυνση</strong>.</div>' +
+                '<div class="pgm-ctrl pgm-mode"><span>Δες το:</span><button type="button" class="pgm-btn pgm-sec on" data-mode="real">(i) στην πραγματικότητα</button><button type="button" class="pgm-btn pgm-sec" data-mode="conv">(ii) συμβατικά, με θετικά φορτία</button></div>' +
+                '<div class="pgm-note pgm-key" id="pgm-keynote"></div>' +
                 '<canvas class="pgm-canvas" width="' + W + '" height="' + H + '"></canvas>' +
                 '<div class="pgm-ctrl"><button type="button" class="pgm-btn" id="pgm-sw">Διακόπτης: <b>ανοιχτός</b> (πάτα για κλείσιμο)</button>' +
-                '<span class="pgm-meter">Μέση μετατόπιση των ηλεκτρονίων: <b id="pgm-disp"></b></span></div>' +
-                '<ul class="pgm-list"><li><strong style="color:#fbbf24">Ανοιχτός διακόπτης:</strong> τα ηλεκτρόνια κινούνται γρήγορα προς όλες τις κατευθύνσεις και χτυπούν στα σχεδόν ακίνητα άτομα του χαλκού. Συνολικά δεν πηγαίνουν προς κάποια κατεύθυνση.</li>' +
-                '<li><strong style="color:#fbbf24">Κλειστός διακόπτης:</strong> το ηλεκτρικό πεδίο τα σπρώχνει όλα προς την ίδια κατεύθυνση. Εξακολουθούν να συγκρούονται συνεχώς, αλλά αποκτούν μια μικρή καθαρή κίνηση προς τα αριστερά (αντίθετα από το πεδίο).</li>' +
-                '<li class="pgm-small">Στην πραγματικότητα αυτή η καθαρή κίνηση (ολίσθηση) είναι <strong>πολύ μικρότερη</strong> από την τυχαία ταχύτητα. Εδώ έχει μεγεθυνθεί πολύ ώστε να φαίνεται. Το κίτρινο ίχνος δείχνει τη διαδρομή ενός ηλεκτρονίου.</li></ul>';
-            const canvas = body.querySelector('canvas'), ui = { disp: body.querySelector('#pgm-disp') };
+                '<span class="pgm-meter">Μέση μετατόπιση των <span id="pgm-who">ηλεκτρονίων</span>: <b id="pgm-disp"></b></span></div>' +
+                '<ul class="pgm-list"><li><strong style="color:#fbbf24">Ανοιχτός διακόπτης:</strong> τα ελεύθερα φορτία κινούνται γρήγορα προς όλες τις κατευθύνσεις και χτυπούν στα σχεδόν ακίνητα άτομα του χαλκού. Συνολικά δεν πηγαίνουν προς κάποια κατεύθυνση.</li>' +
+                '<li><strong style="color:#fbbf24">Κλειστός διακόπτης:</strong> το ηλεκτρικό πεδίο ωθεί όλα τα φορτία προς την ίδια κατεύθυνση. Εξακολουθούν να συγκρούονται συνεχώς, αλλά αποκτούν μια μικρή καθαρή κίνηση προς τη μία πλευρά.</li>' +
+                '<li class="pgm-small">Στην πραγματικότητα αυτή η καθαρή κίνηση (ολίσθηση) είναι <strong>πολύ μικρότερη</strong> από την τυχαία ταχύτητα. Εδώ έχει μεγεθυνθεί πολύ ώστε να φαίνεται. Το κίτρινο ίχνος δείχνει τη διαδρομή ενός φορτίου.</li></ul>';
+            const canvas = body.querySelector('canvas'), ui = { disp: body.querySelector('#pgm-disp'), who: body.querySelector('#pgm-who') };
             current = makeMicro(canvas, ui);
+            const NOTE = {
+                real: 'Αυτό που βλέπεις εδώ είναι αυτό που συμβαίνει <strong>στην πραγματικότητα</strong>: τα <strong>ηλεκτρόνια</strong> (αρνητικά φορτία) κινούνται <strong>αντίθετα</strong> από το ηλεκτρικό πεδίο και από τη συμβατική φορά του ρεύματος.',
+                conv: 'Εδώ βλέπεις τη <strong>συμβατική</strong> εικόνα: υποθέτουμε ότι κινούνται <strong>θετικά φορτία</strong>, που ωθούνται <strong>προς την κατεύθυνση του πεδίου</strong>. Η συμβατική φορά του ρεύματος είναι αυτή. Η πραγματική κίνηση των ηλεκτρονίων είναι αντίθετη.'
+            };
+            const note = body.querySelector('#pgm-keynote'); note.innerHTML = NOTE.real;
+            body.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => {
+                current.setMode(b.dataset.mode); note.innerHTML = NOTE[b.dataset.mode];
+                body.querySelectorAll('[data-mode]').forEach((x) => x.classList.toggle('on', x === b));
+            }));
             const btn = body.querySelector('#pgm-sw'); let closed = false;
             btn.addEventListener('click', () => { closed = !closed; current.setClosed(closed); btn.innerHTML = 'Διακόπτης: <b>' + (closed ? 'κλειστός' : 'ανοιχτός') + '</b> (πάτα για ' + (closed ? 'άνοιγμα' : 'κλείσιμο') + ')'; btn.classList.toggle('closed', closed); });
         } else {
@@ -214,7 +233,7 @@ window.PhysGMicro = (function () {
         overlay.className = 'pgm-overlay';
         overlay.innerHTML = '<div class="pgm-panel" role="dialog" aria-modal="true" aria-label="Οπτικοποίηση κίνησης των φορτίων">' +
             '<div class="pgm-top"><div class="pgm-tabs"><button type="button" class="pgm-tab" data-kind="micro">① Μέσα στο καλώδιο</button><button type="button" class="pgm-tab" data-kind="front">② Σε όλο το κύκλωμα</button></div>' +
-            '<span class="pgm-tag">συμπληρωματικό · εκτός βιβλίου · δεν ζητείται</span><button type="button" class="pgm-x" aria-label="Κλείσιμο">✕</button></div><div class="pgm-body"></div></div>';
+            '<button type="button" class="pgm-x" aria-label="Κλείσιμο">✕</button></div><div class="pgm-body"></div></div>';
         (document.fullscreenElement || document.body).appendChild(overlay);
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay || e.target.closest('.pgm-x')) close();
