@@ -287,14 +287,7 @@
             resetView();
             refreshUi();
         }
-        function flashBanner() {
-            const st = q('c3d-stage'); if (!st) return;
-            const old = st.querySelector('.c3d-flash'); if (old) old.remove();
-            const d = document.createElement('div'); d.className = 'c3d-flash';
-            d.innerHTML = '⚡ Όλα τα φορτία του κυκλώματος αρχίζουν να κινούνται <b>σχεδόν ταυτόχρονα!</b> <button type="button" data-act="vis-front">▶ Δες γιατί</button>';
-            st.appendChild(d); setTimeout(() => { if (d.parentNode) d.remove(); }, 6000);
-        }
-        function setClosed(on) { state.closed = on; if (!on) setStudy(false); else flashBanner(); refreshUi(); restartStudyIfOpen(); }
+        function setClosed(on) { state.closed = on; if (!on) setStudy(false); refreshUi(); restartStudyIfOpen(); }
         function changeV(d) { state.V = Math.min(24, Math.max(1, state.V + d)); refreshUi(); restartStudyIfOpen(); }
         function changeR(i, d) { state.R[i] = Math.min(50, Math.max(1, state.R[i] + d)); refreshUi(); restartStudyIfOpen(); }
         function restartStudyIfOpen() { if (state.study) { if (app && app.resetFollow) app.resetFollow(); buildStudy(); } }
