@@ -178,6 +178,7 @@
                 <p><b>Η πηγή δεν δίνει ρεύμα ούτε φορτία.</b> Τα φορτία υπάρχουν ήδη σε όλο το κύκλωμα, όπως το νερό μέσα σε έναν γεμάτο σωλήνα. Η πηγή τους προσφέρει <b>ενέργεια</b>, γι' αυτό κινούνται.</p>
                 <p><b>Η κίνηση των φορτίων στο σύρμα είναι πολύ αργή</b> (της τάξης του χιλιοστού ανά δευτερόλεπτο ή και λιγότερο). Ο λαμπτήρας όμως ανάβει σχεδόν αμέσως, γιατί η «ώθηση» που ξεκινά από την πηγή (δηλαδή το ηλεκτρικό πεδίο, που εφαρμόζεται σε όλο το κύκλωμα) διαδίδεται στο σύρμα με ταχύτητα κοντά σε αυτή του φωτός. Έτσι όλα τα φορτία του σύρματος αρχίζουν να κινούνται σχεδόν ταυτόχρονα.</p>
                 <p class="c3d-supp-note">Στην προσομοίωση τα φορτία φαίνονται να κινούνται γρήγορα για να είναι ορατά. Στην πραγματικότητα κινούνται πολύ πιο αργά.</p>
+                <p class="c3d-supp-btns"><button type="button" class="c3d-vbtn" data-act="vis-micro">▶ Δες τι γίνεται μέσα στο καλώδιο</button><button type="button" class="c3d-vbtn" data-act="vis-front">▶ Δες πώς ξεκινούν όλα τα φορτία μαζί</button></p>
             </div>
         </div>`;
             mount.addEventListener('change', (e) => {
@@ -206,6 +207,7 @@
                 else if (act === 'pause') { state.paused = !state.paused; refreshUi(); }
                 else if (act === 'speed') { state.speed = parseFloat(b.dataset.speed); refreshUi(); }
                 else if (act === 'fs') toggleFullscreen(mount);
+                else if (act === 'vis-micro' || act === 'vis-front') { if (window.PhysGMicro) window.PhysGMicro.open(act === 'vis-front' ? 'front' : 'micro'); }
                 else if (act === 'study') { if (state.follow && state.closed) setStudy(true); }
                 else if (act === 'study-exit') setStudy(false);
                 else if (act === 'exit') {
@@ -235,7 +237,14 @@
             resetView();
             refreshUi();
         }
-        function setClosed(on) { state.closed = on; if (!on) setStudy(false); refreshUi(); restartStudyIfOpen(); }
+        function flashBanner() {
+            const st = q('c3d-stage'); if (!st) return;
+            const old = st.querySelector('.c3d-flash'); if (old) old.remove();
+            const d = document.createElement('div'); d.className = 'c3d-flash';
+            d.innerHTML = '⚡ Όλα τα φορτία του κυκλώματος αρχίζουν να κινούνται <b>σχεδόν ταυτόχρονα!</b> <button type="button" data-act="vis-front">▶ Δες γιατί</button>';
+            st.appendChild(d); setTimeout(() => { if (d.parentNode) d.remove(); }, 6000);
+        }
+        function setClosed(on) { state.closed = on; if (!on) setStudy(false); else flashBanner(); refreshUi(); restartStudyIfOpen(); }
         function changeV(d) { state.V = Math.min(24, Math.max(1, state.V + d)); refreshUi(); restartStudyIfOpen(); }
         function changeR(i, d) { state.R[i] = Math.min(50, Math.max(1, state.R[i] + d)); refreshUi(); restartStudyIfOpen(); }
         function restartStudyIfOpen() { if (state.study) { if (app && app.resetFollow) app.resetFollow(); buildStudy(); } }
