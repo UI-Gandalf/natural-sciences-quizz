@@ -103,9 +103,9 @@
                             <label><input type="radio" name="c3d-mode" value="equi"> Ισοδυναμικά τμήματα</label>
                         </fieldset>
                         <fieldset class="c3d-modes" id="c3d-branchbox" hidden>
-                            <legend>Από ποιον κλάδο περνά το φορτίο</legend>
-                            <label><input type="radio" name="c3d-branch" value="0" checked> Κλάδος του R<sub>1</sub></label>
-                            <label><input type="radio" name="c3d-branch" value="1"> Κλάδος του R<sub>2</sub></label>
+                            <legend>Το φορτίο περνά από τον</legend>
+                            <label><input type="radio" name="c3d-branch" value="0" checked> λαμπτήρα 1 (<span id="c3d-bl0"></span>)</label>
+                            <label><input type="radio" name="c3d-branch" value="1"> λαμπτήρα 2 (<span id="c3d-bl1"></span>)</label>
                         </fieldset>
                         <fieldset class="c3d-modes c3d-shorts" id="c3d-shorts">
                             <legend>Βραχυκύκλωμα</legend>
@@ -233,7 +233,7 @@
         function refreshUi() {
             const root = q('c3d-ohm'); if (!root) return;
             q('c3d-vval').textContent = state.V + ' V';
-            state.R.forEach((r, i) => { q('c3d-rval' + i).textContent = r + ' Ω'; });
+            state.R.forEach((r, i) => { q('c3d-rval' + i).textContent = r + ' Ω'; const bl = q('c3d-bl' + i); if (bl) bl.textContent = 'R' + (i + 1) + ' = ' + r + ' Ω'; });
             q('c3d-pause').textContent = state.paused ? '▶ Συνέχεια κίνησης' : '⏸ Παύση κίνησης';
             M.querySelectorAll('#c3d-speeds button').forEach((b) => b.classList.toggle('c3d-on', parseFloat(b.dataset.speed) === state.speed));
             q('c3d-toggle').textContent = state.closed ? 'Άνοιγμα διακόπτη' : 'Κλείσιμο διακόπτη';
@@ -245,6 +245,7 @@
             q('c3d-branchbox').hidden = state.mode !== 'follow';
             M.querySelectorAll('input[name="c3d-mode"]').forEach((r) => { r.checked = r.value === state.mode; });
             updateShortWarn();
+            root.classList.toggle('c3d-ohm-short', !!state.short);
             root.innerHTML = ohmHtml();
             if (window.renderMath) window.renderMath(root);
             updateFollowPanel();
@@ -268,7 +269,7 @@
             const note = state.closed
                 ? 'Στον λαμπτήρα ' + sub(k) + ' (' + LET[4] + '→' + LET[5] + ') το δυναμικό πέφτει κατά ' + fv(V) + ' V (= I·R = ' + fmt(e.Ib[k], 2) + ' A · ' + state.R[k] + ' Ω). Ο άλλος κλάδος έχει την ίδια πτώση, γιατί συνδέεται στους ίδιους δύο κόμβους. Μέσα στην πηγή (' + LET[7] + '→' + LET[0] + ') το φορτίο «ανεβαίνει» ξανά κατά ' + V + ' V.'
                 : 'Κλείστε τον διακόπτη για να ξεκινήσει το φορτίο τη διαδρομή του.';
-            el.innerHTML = '<div class="c3d-ohm-title">Δυναμικό κατά μήκος της διαδρομής (κλάδος ' + sub(k) + ')</div>' +
+            el.innerHTML = '<div class="c3d-ohm-title">Δυναμικό κατά μήκος της διαδρομής (μέσω του λαμπτήρα ' + sub(k) + ')</div>' +
                 '<svg viewBox="0 0 320 168" class="c3d-graph" role="img" aria-label="Γράφημα δυναμικού">' +
                 '<line x1="34" y1="' + gy(0) + '" x2="308" y2="' + gy(0) + '" class="c3d-g-axis"/><line x1="34" y1="22" x2="34" y2="' + gy(0) + '" class="c3d-g-axis"/>' +
                 '<text x="38" y="16" class="c3d-g-cap">δυναμικό V (αρνητικός πόλος = 0 V)</text><text x="308" y="158" class="c3d-g-cap" text-anchor="end">διαδρομή του φορτίου →</text>' +

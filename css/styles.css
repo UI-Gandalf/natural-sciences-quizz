@@ -10756,3 +10756,7 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
     .sim-fullscreen-mount .sim-workspace-grid { grid-template-columns: 280px minmax(0, 1fr); gap: 12px; }
     .sim-fullscreen-mount .sim-controls-panel { padding: 16px; }
 }
+
+/* the explanations of the short circuits are long sentences: smaller type in the Ohm panel */
+.c3d-ohm-short .c3d-step { font-size: 0.92em; line-height: 1.5; }
+.c3d-ohm-short .c3d-ohm-note { font-size: 0.9em; }

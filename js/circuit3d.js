@@ -310,6 +310,7 @@
             const lockOff = q('c3d-lock-off'); if (lockOff) lockOff.hidden = !shortOff;
             const lockNote = q('c3d-lock-note'); if (lockNote) lockNote.hidden = !state.short;
             updateShortWarn();
+            root.classList.toggle('c3d-ohm-short', !!state.short);
             if (state.short) {
                 root.innerHTML = shortOhmHtml();
             } else if (state.closed) {
