@@ -10717,3 +10717,15 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 @keyframes c3dinfopulse { 0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.8), 0 8px 26px rgba(0, 0, 0, 0.6); } 100% { box-shadow: 0 0 0 18px rgba(251, 191, 36, 0), 0 8px 26px rgba(0, 0, 0, 0.6); } }
 .c3d-infopanel { top: 78px; max-height: calc(100% - 92px); }
 @media (max-width: 860px) { .c3d-info { top: 52px; font-size: 0.9rem; padding: 8px 14px; } .c3d-infopanel { top: 104px; max-height: calc(100% - 118px); } }
+
+/* short circuits (two-resistor 3D circuit) */
+.c3d-shorts { margin-top: 10px; }
+.c3d-modes input:disabled + * , .c3d-modes label:has(input:disabled) { opacity: 0.45; cursor: not-allowed; }
+.c3d-lock-note { margin: 4px 0 0; font-size: 0.82rem; color: #fbbf24; }
+.c3d-shortwarn { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 5; max-width: 92%; padding: 8px 16px; border-radius: 12px; background: rgba(250, 204, 21, 0.95); color: #1c1917; font: 700 0.92rem/1.35 'Segoe UI', Arial, sans-serif; text-align: center; box-shadow: 0 6px 22px rgba(0, 0, 0, 0.55); }
+.c3d-shortwarn[hidden] { display: none; }
+.c3d-shortwarn.c3d-sw-danger { background: #dc2626; color: #fff; animation: c3dwarn 0.9s ease-in-out infinite alternate; }
+@keyframes c3dwarn { from { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.9), 0 6px 22px rgba(0, 0, 0, 0.55); } to { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0), 0 6px 22px rgba(0, 0, 0, 0.55); } }
+.c3d-ohm-note.c3d-danger { color: #fecaca; font-weight: 700; }
+[data-theme="light"] .c3d-ohm-note.c3d-danger { color: #b91c1c; }
+[data-theme="light"] .c3d-lock-note { color: #b45309; }

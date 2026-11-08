@@ -86,9 +86,27 @@
         const bulbName = (i) => (multi ? 'λαμπτήρα ' + sub(i) : 'λαμπτήρα');
         const bulbTitle = (i) => (multi ? 'Λαμπτήρας ' + sub(i) : 'Λαμπτήρας');
 
-        const state = { V: 12, R: cfg.R.slice(), closed: false, selected: null, follow: false, equi: false, speed: 0.5, paused: false, study: false };
+        const state = { V: 12, R: cfg.R.slice(), closed: false, selected: null, follow: false, equi: false, speed: 0.5, paused: false, study: false, short: null };
         const sumR = () => state.R.reduce((a, b) => a + b, 0);
         const currentI = () => (state.closed ? state.V / sumR() : 0);
+        /* Short circuits (only in the two-resistor circuit; ideal wires of 0 Ω, ideal source):
+           r1 / r2   a wire across one resistor (partial short): that resistor carries no current, V = 0
+           both      a wire across both resistors: R_total = 0, the current of the source is (theoretically) infinite while the switch is closed
+           source    a wire across the poles of the source: the source is shorted even with the switch open */
+        function elec() {
+            const k = state.short, c = state.closed, V = state.V;
+            const e = { I: 0, inf: false, Ib: state.R.map(() => 0), Vb: state.R.map(() => 0), Vsw: c ? 0 : V, Isw: 0, Iw: 0 };
+            if (!k) { const I = currentI(); e.I = I; e.Isw = I; e.Ib = state.R.map(() => I); e.Vb = state.R.map((r) => I * r); return e; }
+            if (k === 'r1' || k === 'r2') {
+                const j = k === 'r1' ? 1 : 0;
+                if (c) { const I = V / state.R[j]; e.I = I; e.Isw = I; e.Iw = I; e.Ib[j] = I; e.Vb[j] = V; }
+                return e;
+            }
+            if (k === 'both') { if (c) { e.inf = true; e.I = Infinity; e.Isw = Infinity; e.Iw = Infinity; } return e; }
+            e.inf = true; e.I = Infinity; e.Iw = Infinity; e.Vsw = 0;          // 'source'
+            return e;
+        }
+        const dI = (x) => (x === Infinity ? '→ ∞' : fmt(x, 2));
         // potential (in V) after each bulb, measured from the - pole; level 0 is the + pole
         function levels() {
             const out = [state.V];
@@ -149,6 +167,8 @@
                     <button type="button" class="c3d-fs" data-act="fs" id="c3d-fs" title="Πλήρης οθόνη">⛶ Πλήρης οθόνη</button>
                     ${labs}
                     <div class="c3d-label c3d-label-follow" id="c3d-lab-follow" style="display:none"></div>
+                    <div class="c3d-label" id="c3d-lab-short" style="display:none"></div>
+                    <div class="c3d-shortwarn" id="c3d-shortwarn" hidden></div>
                     <button type="button" class="c3d-exit" data-act="exit">← Έξοδος</button>
                     <button type="button" class="c3d-info" data-act="info" id="c3d-info" aria-expanded="false">ℹ️ Σημαντικές λεπτομέρειες (μικρόκοσμος) που δεν αποτυπώνονται στην προσομοίωση</button>
                     <div class="c3d-infopanel" id="c3d-infopanel" hidden>
@@ -172,6 +192,15 @@
                             <label><input type="radio" name="c3d-mode" value="follow"> Παρακολούθηση θετικού φορτίου</label>
                             <label><input type="radio" name="c3d-mode" value="equi"> Ισοδυναμικά τμήματα</label>
                         </fieldset>
+                        ${multi ? `<fieldset class="c3d-modes c3d-shorts">
+                            <legend>Βραχυκύκλωμα (απλή παρατήρηση)</legend>
+                            <label><input type="radio" name="c3d-short" value="none" checked> Κανονικό κύκλωμα</label>
+                            <label><input type="radio" name="c3d-short" value="r1"> Μερικό: καλώδιο γύρω από τον R<sub>1</sub></label>
+                            <label><input type="radio" name="c3d-short" value="r2"> Μερικό: καλώδιο γύρω από τον R<sub>2</sub></label>
+                            <label><input type="radio" name="c3d-short" value="both"> Ολικό: καλώδιο γύρω από τους δύο αντιστάτες</label>
+                            <label><input type="radio" name="c3d-short" value="source"> Βραχυκύκλωμα πηγής: καλώδιο στους πόλους της πηγής</label>
+                            <p class="c3d-lock-note" id="c3d-lock-note" hidden>Οι άλλες λειτουργίες προβολής είναι κλειδωμένες όσο μελετάς βραχυκύκλωμα.</p>
+                        </fieldset>` : ''}
                         <div class="c3d-row c3d-speed-row"><span>Ταχύτητα κίνησης</span>
                             <span class="c3d-pair" id="c3d-speeds"><button type="button" data-act="speed" data-speed="0.5">0,5×</button><button type="button" data-act="speed" data-speed="1">1×</button><button type="button" data-act="speed" data-speed="2">2×</button></span></div>
                         <button type="button" data-act="pause" id="c3d-pause" class="c3d-sub-btn">⏸ Παύση κίνησης</button>
@@ -185,6 +214,18 @@
             </div>
         </div>`;
             mount.addEventListener('change', (e) => {
+                if (e.target && e.target.name === 'c3d-short') {
+                    state.short = e.target.value === 'none' ? null : e.target.value;
+                    if (state.short) {
+                        // a short circuit is studied in the plain view: the other modes are locked
+                        state.follow = false; state.equi = false; setStudy(false);
+                        const std = mount.querySelector('input[name="c3d-mode"][value="standard"]');
+                        if (std) std.checked = true;
+                    }
+                    if (app && app.setShort) app.setShort(state.short);
+                    refreshUi();
+                    return;
+                }
                 if (e.target && e.target.name === 'c3d-mode') {
                     // the three modes are mutually exclusive; the switch can be open or closed in each of them
                     const wasFollow = state.follow;
@@ -234,7 +275,8 @@
         // full reset: open switch, default V and R, standard mode, normal speed, camera back at its start
         function restartAll(mount) {
             state.V = 12; state.R = cfg.R.slice(); state.closed = false; state.selected = null;
-            state.follow = false; state.equi = false; state.speed = 0.5; state.paused = false;
+            state.follow = false; state.equi = false; state.speed = 0.5; state.paused = false; state.short = null;
+            if (app && app.setShort) app.setShort(null);
             setStudy(false);
             const std = mount.querySelector('input[name="c3d-mode"][value="standard"]');
             if (std) std.checked = true;
@@ -263,7 +305,13 @@
             q('c3d-toggle').textContent = state.closed ? 'Άνοιγμα διακόπτη' : 'Κλείσιμο διακόπτη';
             q('c3d-viewbtn').style.display = state.study ? 'none' : '';
             const I = currentI();
-            if (state.closed) {
+            M.querySelectorAll('input[name="c3d-mode"]').forEach((r) => { r.disabled = !!state.short; });
+            M.querySelectorAll('input[name="c3d-short"]').forEach((r) => { r.checked = r.value === (state.short || 'none'); });
+            const lockNote = q('c3d-lock-note'); if (lockNote) lockNote.hidden = !state.short;
+            updateShortWarn();
+            if (state.short) {
+                root.innerHTML = shortOhmHtml();
+            } else if (state.closed) {
                 if (!multi) {
                     root.innerHTML = `
                 <div class="c3d-ohm-title">Νόμος του Ohm</div>
@@ -292,6 +340,45 @@
             if (window.renderMath) window.renderMath(root);
             updateFollowPanel();
             updateEquiPanel();
+        }
+
+        function shortOhmHtml() {
+            const k = state.short, c = state.closed, V = state.V, R = state.R, e = elec();
+            const title = k === 'source' ? 'Βραχυκύκλωμα της πηγής' : k === 'both' ? 'Ολικό βραχυκύκλωμα (γύρω από τους δύο αντιστάτες)' : 'Μερικό βραχυκύκλωμα του αντιστάτη R<sub>' + (k === 'r1' ? 1 : 2) + '</sub>';
+            const head = '<div class="c3d-ohm-title">' + title + '</div>';
+            if (k === 'r1' || k === 'r2') {
+                const s = k === 'r1' ? 1 : 2, j = k === 'r1' ? 2 : 1;
+                if (!c) return head + '<p class="c3d-ohm-note" style="--d:0">Το καλώδιο γύρω από τον $R_' + s + '$ έχει αντίσταση $0\\ \\Omega$. Ο διακόπτης είναι ανοιχτός, άρα $I = 0\\ \\text{A}$. Κλείστε τον για να δείτε τι αλλάζει.</p>';
+                const before = V / (R[0] + R[1]);
+                return head +
+                    '<div class="c3d-step" style="--d:0">Το ρεύμα περνά από το καλώδιο ($0\\ \\Omega$) και <b>όχι</b> από τον $R_' + s + '$: $V_' + s + ' = 0\\ \\text{V}$.</div>' +
+                    '<div class="c3d-step" style="--d:1">$R_{\\text{ολ}} = R_' + j + ' = ' + R[j - 1] + '\\ \\Omega$</div>' +
+                    '<div class="c3d-step c3d-step-last" style="--d:2">$I = \\dfrac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\dfrac{' + V + '\\ \\text{V}}{' + R[j - 1] + '\\ \\Omega} = ' + fmtTex(e.I, 2) + '\\ \\text{A}$</div>' +
+                    '<div class="c3d-step" style="--d:3">$V_' + j + ' = I \\cdot R_' + j + ' = ' + fmtTex(e.I, 2) + '\\ \\text{A} \\cdot ' + R[j - 1] + '\\ \\Omega = ' + fmtTex(V, 1) + '\\ \\text{V} = V_{\\text{πηγ}}$</div>' +
+                    '<p class="c3d-ohm-note" style="--d:4">Χωρίς το καλώδιο το ρεύμα θα ήταν $' + fmtTex(before, 2) + '\\ \\text{A}$. Τώρα είναι μεγαλύτερο, γιατί η αντίσταση του κυκλώματος μειώθηκε. Ο λαμπτήρας ' + j + ' φωτοβολεί περισσότερο και ο λαμπτήρας ' + s + ' σβήνει.</p>';
+            }
+            if (k === 'both') {
+                if (!c) return head + '<p class="c3d-ohm-note" style="--d:0">Το καλώδιο ενώνει τα δύο άκρα της σειράς των αντιστατών. Ο διακόπτης είναι ανοιχτός, άρα $I = 0\\ \\text{A}$. Κλείστε τον για να δείτε τι αλλάζει.</p>';
+                return head +
+                    '<div class="c3d-step" style="--d:0">Οι δύο αντιστάτες βραχυκυκλώνονται από ιδανικό καλώδιο: $R_{\\text{ολ}} = 0\\ \\Omega$.</div>' +
+                    '<div class="c3d-step c3d-step-last" style="--d:1">$I = \\dfrac{V_{\\text{πηγ}}}{R_{\\text{ολ}}} = \\dfrac{' + V + '\\ \\text{V}}{0\\ \\Omega} \\to \\infty$</div>' +
+                    '<div class="c3d-step" style="--d:2">$V_1 = V_2 = 0\\ \\text{V}$ και $I_1 = I_2 = 0\\ \\text{A}$: οι λαμπτήρες δεν ανάβουν.</div>' +
+                    '<p class="c3d-ohm-note c3d-danger" style="--d:3">⚠️ Το ρεύμα γίνεται πάρα πολύ μεγάλο (θεωρητικά άπειρο). Στην πράξη τα καλώδια και η πηγή θερμαίνονται επικίνδυνα. Ο διακόπτης είναι ο μόνος που μπορεί να το διακόψει.</p>';
+            }
+            return head +
+                '<div class="c3d-step" style="--d:0">Το καλώδιο ενώνει <b>απευθείας τους δύο πόλους της πηγής</b>: $R = 0\\ \\Omega$.</div>' +
+                '<div class="c3d-step c3d-step-last" style="--d:1">$I = \\dfrac{V_{\\text{πηγ}}}{0\\ \\Omega} \\to \\infty$ <b>ακόμη και με ' + (c ? 'κλειστό' : 'ανοιχτό') + ' διακόπτη</b></div>' +
+                '<div class="c3d-step" style="--d:2">Στους αντιστάτες: $V_1 = V_2 = 0\\ \\text{V}$ και $I_1 = I_2 = 0\\ \\text{A}$.</div>' +
+                '<p class="c3d-ohm-note c3d-danger" style="--d:3">⚠️ Ο διακόπτης δεν προστατεύει: το καλώδιο βρίσκεται παράλληλα με την πηγή και παρακάμπτει όλο το υπόλοιπο κύκλωμα.</p>';
+        }
+        function updateShortWarn() {
+            const w = q('c3d-shortwarn'); if (!w) return;
+            const k = state.short;
+            if (!k) { w.hidden = true; return; }
+            const e = elec();
+            if (e.inf) { w.hidden = false; w.className = 'c3d-shortwarn c3d-sw-danger'; w.innerHTML = '⚠️ <b>ΒΡΑΧΥΚΥΚΛΩΜΑ</b>: το ρεύμα είναι πάρα πολύ μεγάλο (θεωρητικά άπειρο). Κίνδυνος θέρμανσης και καταστροφής!'; }
+            else if (k === 'both') { w.hidden = false; w.className = 'c3d-shortwarn'; w.innerHTML = 'Ολικό βραχυκύκλωμα: κλείστε τον διακόπτη για να δείτε το ρεύμα.'; }
+            else { w.hidden = false; w.className = 'c3d-shortwarn'; w.innerHTML = state.closed ? 'Ο αντιστάτης R<sub>' + (k === 'r1' ? 1 : 2) + '</sub> είναι βραχυκυκλωμένος: το ρεύμα περνά από το καλώδιο.' : 'Μερικό βραχυκύκλωμα στον R<sub>' + (k === 'r1' ? 1 : 2) + '</sub>: κλείστε τον διακόπτη.'; }
         }
 
         /* ------------------------------------------------ graph (small, side panel) */
@@ -803,7 +890,52 @@
             markers.visible = false;
             scene.add(markers);
 
-            return { renderer, scene, camera, pickables, lever, bulbs, charges, arrows, posAt, total, closingLen, stage, follower, fMat, markers, equi, eqCol };
+            // ---- short circuits: a red bypass wire and the matching route of the moving charges (two-resistor circuit only)
+            const makePath = (arr) => {
+                const lens = arr.map((a, i) => a.distanceTo(arr[(i + 1) % arr.length]));
+                const tot = lens.reduce((a, b) => a + b, 0);
+                const at = (s) => {
+                    let t = ((s % tot) + tot) % tot;
+                    for (let i = 0; i < arr.length; i++) {
+                        if (t <= lens[i]) { const a = arr[i], b = arr[(i + 1) % arr.length]; return { p: a.clone().lerp(b, t / lens[i]), inside: i === arr.length - 1, tangent: b.clone().sub(a).normalize() }; }
+                        t -= lens[i];
+                    }
+                    return { p: arr[0].clone(), inside: false, tangent: new THREE.Vector3(1, 0, 0) };
+                };
+                return { total: tot, at };
+            };
+            const route = { none: { total, at: posAt } };
+            const shortWires = {};
+            const bypassMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, emissive: 0x9f1239, emissiveIntensity: 0.55, metalness: 0.3, roughness: 0.4 });
+            const ZD = -1.6, ZS = 4.5;                                       // the bypass wires run on the side nearer to the camera
+            if (multi) {
+                const bxo = (i) => bulbX[i] + 0.55, bxi = (i) => bulbX[i] - 0.55;
+                const mainWith = (x1, x2) => [pts(BATTERY_X, 3), pts(4, 3), pts(4, -3), pts(x1, -3), pts(x1, ZD), pts(x2, ZD), pts(x2, -3), pts(-4, -3), pts(-4, 3), pts(-BATTERY_X, 3)];
+                const defs = {
+                    r1: [pts(bxo(0), -3), pts(bxo(0), ZD), pts(bxi(0), ZD), pts(bxi(0), -3)],
+                    r2: [pts(bxo(1), -3), pts(bxo(1), ZD), pts(bxi(1), ZD), pts(bxi(1), -3)],
+                    both: [pts(bxo(0), -3), pts(bxo(0), ZD), pts(bxi(1), ZD), pts(bxi(1), -3)],
+                    source: [pts(BATTERY_X, 3), pts(BATTERY_X, ZS), pts(-BATTERY_X, ZS), pts(-BATTERY_X, 3)]
+                };
+                route.r1 = makePath(mainWith(bxo(0), bxi(0)));
+                route.r2 = makePath(mainWith(bxo(1), bxi(1)));
+                route.both = makePath(mainWith(bxo(0), bxi(1)));
+                route.source = makePath(defs.source);
+                Object.keys(defs).forEach((k) => {
+                    const g = new THREE.Group(), d = defs[k];
+                    for (let i = 0; i < d.length - 1; i++) g.add(cylinderBetween(d[i], d[i + 1], 0.07, bypassMat));
+                    d.forEach((pt) => { const sph = new THREE.Mesh(new THREE.SphereGeometry(0.16, 14, 14), bypassMat); sph.position.copy(pt); g.add(sph); });
+                    g.visible = false; scene.add(g); shortWires[k] = g;
+                });
+            }
+            const o = { renderer, scene, camera, pickables, lever, bulbs, charges, arrows, posAt, total, closingLen, stage, follower, fMat, markers, equi, eqCol, route: route.none };
+            o.setShort = (k) => {
+                o.route = route[k || 'none'] || route.none;
+                Object.keys(shortWires).forEach((key) => { shortWires[key].visible = key === k; });
+                charges.children.forEach((m, i) => { m.userData.s = (i * o.route.total) / charges.children.length; });
+            };
+            o.shortMid = { r1: [(bulbX[0] + 0) , ZD], r2: [bulbX[multi ? 1 : 0], ZD], both: [multi ? (bulbX[0] + bulbX[1]) / 2 : 0, ZD], source: [2.9, ZS + 0.4] };
+            return o;
         }
 
         /* ------------------------------------------------------ camera control */
@@ -967,9 +1099,10 @@
                 o.lever.rotation.x = leverAngle;
 
                 // bulb brightness (one bulb: from the current as before; two bulbs in series: from the power, so the bigger resistance shines more)
-                const I = currentI();
+                const E = elec();
+                const I = E.I;
                 o.bulbs.forEach((bb, i) => {
-                    const targetB = state.closed ? (multi ? Math.min(1, Math.pow(I * I * state.R[i] / 4, 0.6)) : Math.min(1, Math.pow(I / 2, 0.7))) : 0;
+                    const targetB = state.closed || state.short === 'source' ? (multi ? Math.min(1, Math.pow(E.Ib[i] * E.Ib[i] * state.R[i] / 4, 0.6)) : Math.min(1, Math.pow(I / 2, 0.7))) : 0;
                     bb.b += (targetB - bb.b) * (1 - Math.exp(-dt * 5));
                     bb.glassMat.emissiveIntensity = bb.b * 3.0;
                     bb.glassMat.opacity = 0.55 + bb.b * 0.3;
@@ -982,12 +1115,13 @@
                 // moving charges and arrows (suspended while the equipotential view is on)
                 const speed = Math.min(6, 0.6 + 1.2 * I);
                 const simDt = state.paused ? 0 : dt * state.speed;      // pause / speed apply to the charges only, the camera stays interactive
-                o.charges.visible = state.closed && !state.follow && !state.equi;
+                const flows = state.closed || state.short === 'source';
+                o.charges.visible = flows && !state.follow && !state.equi;
                 o.arrows.visible = state.closed && !state.equi;
                 if (o.charges.visible) {
                     o.charges.children.forEach((m) => {
                         m.userData.s += speed * simDt;
-                        const info = o.posAt(m.userData.s);
+                        const info = o.route.at(m.userData.s);
                         m.position.copy(info.p);
                         m.visible = !info.inside;
                     });
@@ -1112,15 +1246,15 @@
                     }
                 }
 
-                const vSw = state.closed ? 0 : state.V;
+                const vSw = E.Vsw;
                 const card = (title, rows) => '<div class="c3d-lt">' + title + '</div><div class="c3d-lg">' + rows.join('') + '</div>';
                 const html = {
-                    battery: card('Μπαταρία', [row('V', state.V, 'V'), row('I', fmt(I, 2), 'A')]),
-                    switch: card(state.closed ? 'Διακόπτης (κλειστός)' : 'Διακόπτης (ανοιχτός)', [row('V', fmt(vSw, 1), 'V'), row('I', fmt(I, 2), 'A')])
+                    battery: card('Μπαταρία', [row('V', state.V, 'V'), row('I', dI(I), 'A')]),
+                    switch: card(state.closed ? 'Διακόπτης (κλειστός)' : 'Διακόπτης (ανοιχτός)', [row('V', fmt(vSw, 1), 'V'), row('I', dI(E.Isw), 'A')])
                 };
                 const anchor = { battery: [0, H + 1.4, 3], switch: [4, H + 1.1, 0] };
                 bulbX.forEach((bx, i) => {
-                    html['bulb' + i] = card(bulbTitle(i), [row('R', state.R[i], 'Ω'), row('V', fmt(I * state.R[i], 1), 'V'), row('I', fmt(I, 2), 'A')]);
+                    html['bulb' + i] = card(bulbTitle(i), [row('R', state.R[i], 'Ω'), row('V', fmt(E.Vb[i], 1), 'V'), row('I', dI(E.Ib[i]), 'A')]);
                     anchor['bulb' + i] = [bx, H + 2.6, -3];
                 });
                 Object.keys(labs).forEach((key) => {
@@ -1128,6 +1262,17 @@
                     labs[key].classList.toggle('c3d-label-active', state.selected === key);
                     project(anchor[key][0], anchor[key][1], anchor[key][2], labs[key]);
                 });
+
+                // label of the short-circuit wire
+                const labShort = mount.querySelector('#c3d-lab-short');
+                if (labShort) {
+                    if (state.short && o.shortMid[state.short]) {
+                        const hs = card('Καλώδιο βραχυκυκλώματος', [row('V', '0,0', 'V'), row('I', dI(E.Iw), 'A')]);
+                        if (labShort._html !== hs) { labShort._html = hs; labShort.innerHTML = hs; }
+                        const mpt = o.shortMid[state.short];
+                        project(mpt[0], H + 0.9, mpt[1], labShort);
+                    } else labShort.style.display = 'none';
+                }
 
                 if (stage.clientWidth) o.renderer.render(o.scene, o.camera);
             }
@@ -1148,6 +1293,7 @@
                 ensureThree().then(() => {
                     if (!mount.isConnected) return;
                     app = startApp(mount);
+                    if (app && app.setShort) app.setShort(state.short);
                     refreshUi();
                 }).catch(() => {
                     const stage = mount.querySelector('#c3d-stage');
