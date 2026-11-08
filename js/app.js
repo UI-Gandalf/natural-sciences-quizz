@@ -511,6 +511,10 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span class="tab-icon">🗺️</span>
                     <span>Βυζαντινές μάχες στον χάρτη</span>
                 </button>
+                <button class="subject-tab-btn ${currentTab === 'vasa' ? 'active' : ''}" id="tab-btn-vasa" onclick="switchSubjectTab('vasa')">
+                    <span class="tab-icon">⚓</span>
+                    <span>Το ναυάγιο του Vasa</span>
+                </button>
                 ` : ''}
                 ${subjectKey === 'chemistry' ? `
                 <button class="subject-tab-btn ${currentTab === 'neutral' ? 'active' : ''}" id="tab-btn-neutral" onclick="switchSubjectTab('neutral')">
@@ -744,6 +748,9 @@ function renderQuizSelection(classKey, subjectKey) {
         ` : ''}
         ${subjectKey === 'geography' ? `
         <!-- GEOGRAPHY: BYZANTINE BATTLES MAP -->
+        <div class="tab-panel" id="tab-panel-vasa" style="display: ${currentTab === 'vasa' ? 'block' : 'none'};">
+            <div id="vasa-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-byz" style="display: ${currentTab === 'byz' ? 'block' : 'none'};">
             <div id="byz-mount"></div>
         </div>
@@ -838,6 +845,9 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'byz') {
         renderByzView();
     }
+    if (currentTab === 'vasa') {
+        renderVasaView();
+    }
     if (currentTab === 'joints3d') {
         renderJoints3dView();
     }
@@ -888,6 +898,11 @@ function renderTopicsView() {
     const mount = document.getElementById('topics-mount');
     const g = AppState.currentSubject === 'chemistry' ? window.ChemGTopics : (AppState.currentClass === 'Β' ? window.BioBTopics : (AppState.currentClass === 'Α' ? window.BioATopics : window.BioGTopics));
     if (mount && g) g.render(mount);
+}
+
+function renderVasaView() {
+    const mount = document.getElementById('vasa-mount');
+    if (mount && window.VasaPage) window.VasaPage.render(mount);
 }
 
 function renderByzView() {
@@ -1122,6 +1137,18 @@ function switchSubjectTab(tabKey) {
             j3Panel.style.animation = 'fadeIn 0.3s ease';
             const jm = document.getElementById('joints3d-mount');
             if (jm && !jm.hasChildNodes()) renderJoints3dView();
+        }
+    }
+
+    const vsBtn = document.getElementById('tab-btn-vasa');
+    if (vsBtn) vsBtn.classList.toggle('active', tabKey === 'vasa');
+    const vsPanel = document.getElementById('tab-panel-vasa');
+    if (vsPanel) {
+        vsPanel.style.display = tabKey === 'vasa' ? 'block' : 'none';
+        if (tabKey === 'vasa') {
+            vsPanel.style.animation = 'fadeIn 0.3s ease';
+            const vm = document.getElementById('vasa-mount');
+            if (vm && !vm.hasChildNodes()) renderVasaView();
         }
     }
 

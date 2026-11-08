@@ -10760,3 +10760,13 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 /* the explanations of the short circuits are long sentences: smaller type in the Ohm panel */
 .c3d-ohm-short .c3d-step { font-size: 0.92em; line-height: 1.5; }
 .c3d-ohm-short .c3d-ohm-note { font-size: 0.9em; }
+
+/* Vasa page */
+.vs-fig { margin: 12px 0; border-radius: 14px; overflow: hidden; border: 1px solid var(--card-border); background: rgba(8, 15, 30, 0.86); }
+.vs-fig img { display: block; width: 100%; max-height: 520px; object-fit: cover; }
+.vs-fig figcaption { padding: 8px 14px; font-size: 0.9rem; line-height: 1.45; }
+.vs-credit { display: block; font-size: 0.8rem; opacity: 0.8; margin-top: 2px; }
+.vs-fig a { color: #7dd3fc; }
+[data-theme="light"] .vs-fig { background: rgba(255, 255, 255, 0.94); }
+[data-theme="light"] .vs-fig a { color: #0369a1; }
+.vs-map svg { display: block; width: 100%; height: auto; }
