@@ -10770,3 +10770,11 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 [data-theme="light"] .vs-fig { background: rgba(255, 255, 255, 0.94); }
 [data-theme="light"] .vs-fig a { color: #0369a1; }
 .vs-map svg { display: block; width: 100%; height: auto; }
+
+/* home page: what this site is for */
+.home-about { max-width: 900px; margin: 0 auto 22px; padding: 16px 22px; border-radius: 16px; background: rgba(8, 15, 30, 0.8); border: 1px solid var(--card-border); text-align: left; }
+.home-about h2 { margin: 0 0 8px; font-size: 1.08rem; color: #fbbf24; }
+.home-about ol { margin: 0; padding-left: 22px; line-height: 1.6; }
+.home-about li { margin: 4px 0; }
+[data-theme="light"] .home-about { background: rgba(255, 255, 255, 0.92); }
+[data-theme="light"] .home-about h2 { color: #b45309; }
