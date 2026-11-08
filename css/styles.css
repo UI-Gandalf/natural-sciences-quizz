@@ -10733,3 +10733,16 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .c3d-lock-off { color: #fca5a5; }
 
 .c3d-m-bypass { stroke: #f43f5e !important; }
+
+/* Fullscreen circuit lab on wide screens: the lightbox is already narrowed for the docked panel, so the lab must not
+   reserve the panel's gutter a second time (it left a dead strip between the circuit and the numbers panel) */
+@media (min-width: 1870px) {
+    .sim-fullscreen-mount .sim-container { width: 100%; max-width: none; margin: 0; }
+}
+/* Fullscreen circuit lab: compact header (title and buttons on one row, no badge / intro text) to leave room for the circuit */
+@media (min-width: 1200px) {
+    .sim-fullscreen-mount .sim-header-card { padding: 12px 20px; }
+    .sim-fullscreen-mount .sim-header-top { flex-direction: row; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+    .sim-fullscreen-mount .sim-title-badge, .sim-fullscreen-mount .sim-subtitle { display: none; }
+    .sim-fullscreen-mount .sim-title { margin: 0; font-size: 1.35rem; }
+}
