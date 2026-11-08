@@ -508,19 +508,8 @@ function renderQuizSelection(classKey, subjectKey) {
                 ` : ''}
                 ${subjectKey === 'geography' ? `
                 <button class="subject-tab-btn ${currentTab === 'byz' ? 'active' : ''}" id="tab-btn-byz" onclick="switchSubjectTab('byz')">
-                    <span class="tab-icon">🗺️</span>
-                    <span class="tab-multiline">
-                        <span class="tab-line-main">Βυζάντιο &amp; Μεσόγειος</span>
-                        <span class="tab-line-sub">(σημαντικότερες σχετικές μάχες)</span>
-                    </span>
-                </button>
-                <button class="subject-tab-btn ${currentTab === 'vasa' ? 'active' : ''}" id="tab-btn-vasa" onclick="switchSubjectTab('vasa')">
-                    <span class="tab-icon">⚓</span>
-                    <span>Το ναυάγιο του Vasa</span>
-                </button>
-                <button class="subject-tab-btn ${currentTab === 'leningrad' ? 'active' : ''}" id="tab-btn-leningrad" onclick="switchSubjectTab('leningrad')">
-                    <span class="tab-icon">🕯️</span>
-                    <span>Η πολιορκία του Λένινγκραντ</span>
+                    <span class="tab-icon">🧩</span>
+                    <span>Επεκτάσεις</span>
                 </button>
                 ` : ''}
                 ${subjectKey === 'chemistry' ? `
@@ -755,12 +744,6 @@ function renderQuizSelection(classKey, subjectKey) {
         ` : ''}
         ${subjectKey === 'geography' ? `
         <!-- GEOGRAPHY: BYZANTINE BATTLES MAP -->
-        <div class="tab-panel" id="tab-panel-leningrad" style="display: ${currentTab === 'leningrad' ? 'block' : 'none'};">
-            <div id="leningrad-mount"></div>
-        </div>
-        <div class="tab-panel" id="tab-panel-vasa" style="display: ${currentTab === 'vasa' ? 'block' : 'none'};">
-            <div id="vasa-mount"></div>
-        </div>
         <div class="tab-panel" id="tab-panel-byz" style="display: ${currentTab === 'byz' ? 'block' : 'none'};">
             <div id="byz-mount"></div>
         </div>
@@ -855,12 +838,6 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'byz') {
         renderByzView();
     }
-    if (currentTab === 'vasa') {
-        renderVasaView();
-    }
-    if (currentTab === 'leningrad') {
-        renderLeningradView();
-    }
     if (currentTab === 'joints3d') {
         renderJoints3dView();
     }
@@ -913,19 +890,9 @@ function renderTopicsView() {
     if (mount && g) g.render(mount);
 }
 
-function renderLeningradView() {
-    const mount = document.getElementById('leningrad-mount');
-    if (mount && window.LeningradPage) window.LeningradPage.render(mount);
-}
-
-function renderVasaView() {
-    const mount = document.getElementById('vasa-mount');
-    if (mount && window.VasaPage) window.VasaPage.render(mount);
-}
-
 function renderByzView() {
     const mount = document.getElementById('byz-mount');
-    if (mount && window.ByzMaps) window.ByzMaps.render(mount);
+    if (mount && window.GeoExt) window.GeoExt.render(mount);
 }
 
 function renderSkeletonView() {
@@ -1155,30 +1122,6 @@ function switchSubjectTab(tabKey) {
             j3Panel.style.animation = 'fadeIn 0.3s ease';
             const jm = document.getElementById('joints3d-mount');
             if (jm && !jm.hasChildNodes()) renderJoints3dView();
-        }
-    }
-
-    const lnBtn = document.getElementById('tab-btn-leningrad');
-    if (lnBtn) lnBtn.classList.toggle('active', tabKey === 'leningrad');
-    const lnPanel = document.getElementById('tab-panel-leningrad');
-    if (lnPanel) {
-        lnPanel.style.display = tabKey === 'leningrad' ? 'block' : 'none';
-        if (tabKey === 'leningrad') {
-            lnPanel.style.animation = 'fadeIn 0.3s ease';
-            const lm = document.getElementById('leningrad-mount');
-            if (lm && !lm.hasChildNodes()) renderLeningradView();
-        }
-    }
-
-    const vsBtn = document.getElementById('tab-btn-vasa');
-    if (vsBtn) vsBtn.classList.toggle('active', tabKey === 'vasa');
-    const vsPanel = document.getElementById('tab-panel-vasa');
-    if (vsPanel) {
-        vsPanel.style.display = tabKey === 'vasa' ? 'block' : 'none';
-        if (tabKey === 'vasa') {
-            vsPanel.style.animation = 'fadeIn 0.3s ease';
-            const vm = document.getElementById('vasa-mount');
-            if (vm && !vm.hasChildNodes()) renderVasaView();
         }
     }
 

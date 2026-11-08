@@ -109,7 +109,7 @@ window.VasaPage = (function () {
 
     function render(mount) {
         K.renderPage(mount, {
-            title: '⚓ Το ναυάγιο του Vasa',
+            title: '⚓ Το ναυάγιο του Vasa (Βαλτική)',
             intro: 'Πώς ένα πλοίο του 1628 βρέθηκε σχεδόν ακέραιο, χάρη στη χαμηλή αλατότητα της Βαλτικής. Η σελίδα είναι <strong>συμπληρωματική</strong> και δεν αποτελεί εξεταστέα ύλη.',
             sections: [
                 { id: 'vs1', icon: '🚢', title: '1. Το πλοίο και η βύθισή του', nav: 'Η βύθιση', sub: 'ιστορικό υπόβαθρο · γιατί ανατράπηκε', body: S1, open: true },
