@@ -483,10 +483,6 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span class="tab-icon">💡</span>
                     <span>3D κύκλωμα με δύο αντιστάτες σε σειρά</span>
                 </button>
-                <button class="subject-tab-btn ${currentTab === 'par3d' ? 'active' : ''}" id="tab-btn-par3d" onclick="switchSubjectTab('par3d')">
-                    <span class="tab-icon">💡</span>
-                    <span>3D κύκλωμα με δύο αντιστάτες παράλληλα</span>
-                </button>
                 <button class="subject-tab-btn ${currentTab === 'analogy' ? 'active' : ''}" id="tab-btn-analogy" onclick="switchSubjectTab('analogy')">
                     <span class="tab-icon">🎢</span>
                     <span>Βαρυτικό ανάλογο: δύο αντιστάτες σε σειρά</span>
@@ -525,7 +521,7 @@ function renderQuizSelection(classKey, subjectKey) {
                 ${isPhysG ? `
                 <button class="subject-tab-btn ${currentTab === 'simulation' ? 'active' : ''}" id="tab-btn-simulation" onclick="switchSubjectTab('simulation')">
                     <span class="tab-icon">⚡</span>
-                    <span>Προσομοίωση</span>
+                    <span>2D πλήρης προσομοίωση</span>
                 </button>
                 <button class="subject-tab-btn ${currentTab === 'syllabus' ? 'active' : ''}" id="tab-btn-syllabus" onclick="switchSubjectTab('syllabus')" title="Υλη διαγωνίσματος (σχολικό βιβλίο)">
                     <span class="tab-icon">📚</span>
@@ -711,9 +707,6 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-series3d" style="display: ${currentTab === 'series3d' ? 'block' : 'none'};">
             <div id="series3d-mount"></div>
         </div>
-        <div class="tab-panel" id="tab-panel-par3d" style="display: ${currentTab === 'par3d' ? 'block' : 'none'};">
-            <div id="par3d-mount"></div>
-        </div>
         <!-- PHYSICS Γ: GRAVITATIONAL ANALOGY OF THE SERIES CIRCUIT -->
         <div class="tab-panel" id="tab-panel-analogy" style="display: ${currentTab === 'analogy' ? 'block' : 'none'};">
             <div id="analogy-mount"></div>
@@ -827,9 +820,6 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'series3d') {
         renderSeries3dView();
     }
-    if (currentTab === 'par3d') {
-        renderPar3dView();
-    }
     if (currentTab === 'analogy') {
         renderAnalogyView();
     }
@@ -882,11 +872,6 @@ function renderIntro3dView() {
 function renderAnalogyView() {
     const mount = document.getElementById('analogy-mount');
     if (mount && window.PhysGAnalogy) window.PhysGAnalogy.render(mount);
-}
-
-function renderPar3dView() {
-    const mount = document.getElementById('par3d-mount');
-    if (mount && window.Circuit3DParallel) window.Circuit3DParallel.render(mount);
 }
 
 function renderSeries3dView() {
@@ -1081,17 +1066,6 @@ function switchSubjectTab(tabKey) {
         }
     }
 
-    const p3Btn = document.getElementById('tab-btn-par3d');
-    if (p3Btn) p3Btn.classList.toggle('active', tabKey === 'par3d');
-    const p3Panel = document.getElementById('tab-panel-par3d');
-    if (p3Panel) {
-        p3Panel.style.display = tabKey === 'par3d' ? 'block' : 'none';
-        if (tabKey === 'par3d') {
-            p3Panel.style.animation = 'fadeIn 0.3s ease';
-            renderPar3dView();
-        }
-    }
-
     const s3Btn = document.getElementById('tab-btn-series3d');
     if (s3Btn) s3Btn.classList.toggle('active', tabKey === 'series3d');
     const s3Panel = document.getElementById('tab-panel-series3d');
@@ -1233,7 +1207,7 @@ function switchSubjectTab(tabKey) {
    open automatically in full screen. The tab button click is the user gesture the browser needs. If the browser
    cannot do it (or refuses), the simulation just stays in the page. Leaving full screen goes back to the quizzes.
    ========================================================================== */
-const FS_TABS = ['intro3d', 'series3d', 'par3d', 'analogy', 'simulation'];
+const FS_TABS = ['intro3d', 'series3d', 'analogy', 'simulation'];
 function enterTabFullscreen(tabKey) {
     if (!FS_TABS.includes(tabKey) || AppState.currentSubject !== 'physics') return;
     if (!(document.fullscreenEnabled || document.webkitFullscreenEnabled)) return;

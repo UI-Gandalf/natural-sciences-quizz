@@ -1350,7 +1350,6 @@
         return { render: render };
     }
 
-    window.__c3dHelpers = { ensureThree, textSprite, cylinderBetween, fmt, fmtTex, fv };       // shared with js/circuit3d-par.js
     window.Circuit3D = makeCircuit({
         bulbs: [0], R: [10],
         title: '3D εισαγωγή στο απλό ιδανικό κύκλωμα',
