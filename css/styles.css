@@ -10729,3 +10729,6 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .c3d-ohm-note.c3d-danger { color: #fecaca; font-weight: 700; }
 [data-theme="light"] .c3d-ohm-note.c3d-danger { color: #b91c1c; }
 [data-theme="light"] .c3d-lock-note { color: #b45309; }
+
+.c3d-shorts.c3d-off label { opacity: 0.4; cursor: not-allowed; }
+.c3d-lock-off { color: #fca5a5; }
