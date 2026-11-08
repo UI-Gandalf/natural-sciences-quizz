@@ -509,7 +509,10 @@ function renderQuizSelection(classKey, subjectKey) {
                 ${subjectKey === 'geography' ? `
                 <button class="subject-tab-btn ${currentTab === 'byz' ? 'active' : ''}" id="tab-btn-byz" onclick="switchSubjectTab('byz')">
                     <span class="tab-icon">🗺️</span>
-                    <span>Βυζαντινές μάχες στον χάρτη</span>
+                    <span class="tab-multiline">
+                        <span class="tab-line-main">Βυζάντιο &amp; Μεσόγειος</span>
+                        <span class="tab-line-sub">(σημαντικότερες σχετικές μάχες)</span>
+                    </span>
                 </button>
                 <button class="subject-tab-btn ${currentTab === 'vasa' ? 'active' : ''}" id="tab-btn-vasa" onclick="switchSubjectTab('vasa')">
                     <span class="tab-icon">⚓</span>

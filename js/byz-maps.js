@@ -113,7 +113,7 @@ window.ByzMaps = (function () {
         const L = BYZ_LAND;
         const px = (lon, lat) => [(lon - L.lon0) / (L.lon1 - L.lon0) * L.w, (L.lat1 - lat) / (L.lat1 - L.lat0) * L.h];
         mount.innerHTML = '<div class="by-wrap">' +
-            '<div class="by-head"><h2>🗺️ Βυζαντινές μάχες στον χάρτη</h2>' +
+            '<div class="by-head"><h2>🗺️ Βυζάντιο &amp; Μεσόγειος (σημαντικότερες σχετικές μάχες)</h2>' +
             '<p>Πάτησε ένα σημάδι στον χάρτη (ή ένα στοιχείο της λίστας) για να δεις τη χρονολογία, τον αυτοκράτορα, τους στρατηγούς, τον αντίπαλο και το αποτέλεσμα.</p>' +
             '<label class="cg-pick"><span>Επίλεξε χάρτη:</span><select id="by-sel"></select></label></div>' +
             '<div class="by-mapcard"><svg id="by-svg" class="by-svg" viewBox="0 0 ' + L.w + ' ' + L.h + '" role="img" aria-label="Χάρτης της Μεσογείου με τις μάχες"></svg>' +
