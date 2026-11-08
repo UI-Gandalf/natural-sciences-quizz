@@ -87,7 +87,9 @@
         const bulbTitle = (i) => (multi ? 'Λαμπτήρας ' + sub(i) : 'Λαμπτήρας');
 
         const state = { V: 12, R: cfg.R.slice(), closed: false, selected: null, follow: false, equi: false, speed: 0.5, paused: false, study: false, short: null };
-        const sumR = () => state.R.reduce((a, b) => a + b, 0);
+        const isShorted = (i) => (state.short === 'r1' && i === 0) || (state.short === 'r2' && i === 1);
+        const effR = (i) => (isShorted(i) ? 0 : state.R[i]);
+        const sumR = () => state.R.reduce((a, b, i) => a + effR(i), 0);
         const currentI = () => (state.closed ? state.V / sumR() : 0);
         /* Short circuits (only in the two-resistor circuit; ideal wires of 0 Ω, ideal source):
            r1 / r2   a wire across one resistor (partial short): that resistor carries no current, V = 0
@@ -112,7 +114,7 @@
             const out = [state.V];
             let acc = 0;
             const tot = sumR();
-            for (let i = 0; i < n; i++) { acc += state.R[i]; out.push(state.V * (1 - acc / tot)); }
+            for (let i = 0; i < n; i++) { acc += effR(i); out.push(state.V * (1 - acc / tot)); }
             return out;
         }
         function potAt(s) {
@@ -130,20 +132,22 @@
             if (s < PATH.pD) return 'Μέσα στον διακόπτη';
             if (s < PATH.pE[0]) return 'Στο καλώδιο, πριν τον ' + (multi ? 'λαμπτήρα 1' : 'λαμπτήρα');
             for (let i = 0; i < n; i++) {
-                if (s < PATH.pZ[i]) return 'Μέσα στον ' + bulbName(i);
+                if (s < PATH.pZ[i]) return isShorted(i) ? 'Στο καλώδιο παράκαμψης, γύρω από τον ' + bulbName(i) : 'Μέσα στον ' + bulbName(i);
                 if (i < n - 1 && s < PATH.pE[i + 1]) return 'Στο καλώδιο, ανάμεσα στους λαμπτήρες';
             }
             if (s < PATH.pB) return 'Στο καλώδιο, μετά τον ' + (multi ? 'λαμπτήρα ' + n : 'λαμπτήρα');
             return 'Μέσα στην πηγή';
         }
-        const CPNAMES = LET.map((l, i) => {
+        const cpName = (i) => {
+            const l = LET[i];
             if (i === 0) return l + ' · Θετικός πόλος (+)';
             if (i === 1) return l + ' · Είσοδος διακόπτη';
             if (i === 2) return l + ' · Έξοδος διακόπτη';
             if (i === LAST_CP) return l + ' · Αρνητικός πόλος (−)';
             const b = Math.floor((i - 3) / 2);
+            if (isShorted(b)) return l + ' · ' + ((i - 3) % 2 === 0 ? 'Είσοδος' : 'Έξοδος') + ' παράκαμψης (' + bulbName(b) + ')';
             return l + ' · ' + ((i - 3) % 2 === 0 ? 'Είσοδος ' : 'Έξοδος ') + bulbName(b);
-        });
+        };
 
         let app = null;
         let M = null;                                  // current mount
@@ -193,14 +197,14 @@
                             <label><input type="radio" name="c3d-mode" value="equi"> Ισοδυναμικά τμήματα</label>
                         </fieldset>
                         <fieldset class="c3d-modes c3d-shorts" id="c3d-shorts">
-                            <legend>Βραχυκύκλωμα (μόνο στην απλή παρατήρηση)</legend>
+                            <legend>Βραχυκύκλωμα</legend>
                             <label><input type="radio" name="c3d-short" value="none" checked> Κανονικό κύκλωμα</label>
                             ${multi ? `<label><input type="radio" name="c3d-short" value="r1"> Μερικό: καλώδιο γύρω από τον R<sub>1</sub></label>
                             <label><input type="radio" name="c3d-short" value="r2"> Μερικό: καλώδιο γύρω από τον R<sub>2</sub></label>
                             <label><input type="radio" name="c3d-short" value="both"> Ολικό: καλώδιο γύρω από τους δύο αντιστάτες</label>` : `<label><input type="radio" name="c3d-short" value="both"> Καλώδιο γύρω από τον λαμπτήρα (βραχυκύκλωμα λαμπτήρα)</label>`}
                             <label><input type="radio" name="c3d-short" value="source"> Βραχυκύκλωμα πηγής: καλώδιο στους πόλους της πηγής</label>
-                            <p class="c3d-lock-note" id="c3d-lock-note" hidden>Οι άλλες λειτουργίες προβολής είναι κλειδωμένες όσο μελετάς βραχυκύκλωμα.</p>
-                            <p class="c3d-lock-note c3d-lock-off" id="c3d-lock-off" hidden>Οι επιλογές βραχυκυκλώματος είναι απενεργοποιημένες στις λειτουργίες «Παρακολούθηση» και «Ισοδυναμικά». Επίλεξε «Απλή παρατήρηση».</p>
+                            <p class="c3d-lock-note" id="c3d-lock-note" hidden>Αν αλλάξεις λειτουργία προβολής, το κύκλωμα επανέρχεται στην αρχική κατάσταση (ανοιχτός διακόπτης, χωρίς βραχυκύκλωμα).</p>
+                            <p class="c3d-lock-note c3d-lock-off" id="c3d-lock-off" hidden>Στην «Παρακολούθηση» και στα «Ισοδυναμικά» είναι διαθέσιμα μόνο τα μερικά βραχυκυκλώματα. Για το ολικό και το βραχυκύκλωμα πηγής επίλεξε «Απλή παρατήρηση».</p>
                         </fieldset>
                         <div class="c3d-row c3d-speed-row"><span>Ταχύτητα κίνησης</span>
                             <span class="c3d-pair" id="c3d-speeds"><button type="button" data-act="speed" data-speed="0.5">0,5×</button><button type="button" data-act="speed" data-speed="1">1×</button><button type="button" data-act="speed" data-speed="2">2×</button></span></div>
@@ -217,17 +221,16 @@
             mount.addEventListener('change', (e) => {
                 if (e.target && e.target.name === 'c3d-short') {
                     state.short = e.target.value === 'none' ? null : e.target.value;
-                    if (state.short) {
-                        // a short circuit is studied in the plain view: the other modes are locked
-                        state.follow = false; state.equi = false; setStudy(false);
-                        const std = mount.querySelector('input[name="c3d-mode"][value="standard"]');
-                        if (std) std.checked = true;
-                    }
                     if (app && app.setShort) app.setShort(state.short);
+                    // in the following / equipotential views a new circuit starts the tour again
+                    if (app && app.resetFollow) app.resetFollow();
+                    if (state.study) buildStudy();
                     refreshUi();
                     return;
                 }
                 if (e.target && e.target.name === 'c3d-mode') {
+                    // changing the mode while a short circuit is active restores the starting situation (open switch, no short circuit, plain view)
+                    if (state.short) { restartAll(mount); return; }
                     // the three modes are mutually exclusive; the switch can be open or closed in each of them
                     const wasFollow = state.follow;
                     state.follow = e.target.value === 'follow';
@@ -306,10 +309,10 @@
             q('c3d-toggle').textContent = state.closed ? 'Άνοιγμα διακόπτη' : 'Κλείσιμο διακόπτη';
             q('c3d-viewbtn').style.display = state.study ? 'none' : '';
             const I = currentI();
-            M.querySelectorAll('input[name="c3d-mode"]').forEach((r) => { r.disabled = !!state.short; });
+            M.querySelectorAll('input[name="c3d-mode"]').forEach((r) => { r.disabled = false; });
             M.querySelectorAll('input[name="c3d-short"]').forEach((r) => { r.checked = r.value === (state.short || 'none'); });
-            const shortOff = state.follow || state.equi;
-            M.querySelectorAll('input[name="c3d-short"]').forEach((r) => { r.disabled = shortOff; });
+            const shortOff = state.follow || state.equi;          // in these views only the partial short circuits are available
+            M.querySelectorAll('input[name="c3d-short"]').forEach((r) => { r.disabled = shortOff && (r.value === 'both' || r.value === 'source'); });
             const sf = q('c3d-shorts'); if (sf) sf.classList.toggle('c3d-off', shortOff);
             const lockOff = q('c3d-lock-off'); if (lockOff) lockOff.hidden = !shortOff;
             const lockNote = q('c3d-lock-note'); if (lockNote) lockNote.hidden = !state.short;
@@ -422,12 +425,12 @@
             const dots = CPS.map((s, i) => circle(s, potAt(s + 0.0001 * (i === 0 ? 1 : 0)))).join('');
             const labels = labelPoints().map(([s, k, name]) => label(s, lev(k), name)).join('');
             const list = [['\u0391', 'θετικός πόλος (+)'], [LET[LAST_CP], 'αρνητικός πόλος (−)'], [LET[1], 'είσοδος διακόπτη'], [LET[2], 'έξοδος διακόπτη']];
-            for (let i = 0; i < n; i++) list.push([LET[3 + 2 * i], 'είσοδος ' + bulbName(i)], [LET[4 + 2 * i], 'έξοδος ' + bulbName(i)]);
+            for (let i = 0; i < n; i++) list.push([LET[3 + 2 * i], 'είσοδος ' + (isShorted(i) ? 'παράκαμψης (' + bulbName(i) + ')' : bulbName(i))], [LET[4 + 2 * i], 'έξοδος ' + (isShorted(i) ? 'παράκαμψης (' + bulbName(i) + ')' : bulbName(i))]);
             let note;
             if (!state.closed) note = 'Κλείστε τον διακόπτη για να ξεκινήσει το φορτίο τη διαδρομή του.';
             else {
                 note = '';
-                for (let i = 0; i < n; i++) note += (i ? ' ' : '') + 'Στον ' + bulbName(i) + ' (' + LET[3 + 2 * i] + '→' + LET[4 + 2 * i] + ') το δυναμικό πέφτει κατά ' + fv(I * state.R[i]) + ' V (= I·R).';
+                for (let i = 0; i < n; i++) if (isShorted(i)) note += (i ? ' ' : '') + 'Στην παράκαμψη του ' + bulbName(i) + ' (' + LET[3 + 2 * i] + '→' + LET[4 + 2 * i] + ') το δυναμικό δεν αλλάζει, γιατί το καλώδιο έχει αντίσταση 0 Ω (ΔV = I·0 = 0 V).'; else note += (i ? ' ' : '') + 'Στον ' + bulbName(i) + ' (' + LET[3 + 2 * i] + '→' + LET[4 + 2 * i] + ') το δυναμικό πέφτει κατά ' + fv(I * state.R[i]) + ' V (= I·R).';
                 note += ' Μέσα στην πηγή (' + LET[LAST_CP] + '→' + LET[0] + ') το φορτίο «ανεβαίνει» ξανά κατά ' + state.V + ' V.';
             }
             el.innerHTML = '<div class="c3d-ohm-title">Δυναμικό κατά μήκος της διαδρομής</div>' +
@@ -464,6 +467,13 @@
                     : '<p class="c3d-eq-line">' + sw('h') + '<b>' + state.V + ' V:</b> από τον θετικό πόλο (' + A + ') έως την πρώτη επαφή του ανοιχτού διακόπτη (' + G + ').</p>' +
                       '<p class="c3d-eq-line">' + sw('l') + '<b>0 V:</b> από τη δεύτερη επαφή του διακόπτη (' + D + '), μέσω του λαμπτήρα (χωρίς ρεύμα δεν υπάρχει πτώση τάσης) έως τον αρνητικό πόλο (' + B + ').</p>' +
                       '<p class="c3d-ohm-note" style="opacity:1;animation:none">Όλη η τάση της πηγής (' + state.V + ' V) εμφανίζεται στα άκρα του ανοιχτού διακόπτη.</p>';
+            } else if (state.short && state.closed) {
+                const [E1, Z1, E2, Z2] = [LET[3], LET[4], LET[5], LET[6]];
+                const sh1 = state.short === 'r1';
+                html += '<p class="c3d-eq-line">' + sw('h') + '<b>' + state.V + ' V:</b> από τον θετικό πόλο (' + A + ') μέσω του κλειστού διακόπτη (' + G + '→' + D + ') έως την είσοδο ' + (sh1 ? 'του λαμπτήρα 1 (' + E1 + '), τα δύο άκρα του λαμπτήρα 1 (' + E1 + ', ' + Z1 + '), το καλώδιο παράκαμψης και την είσοδο του λαμπτήρα 2 (' + E2 + ').' : 'του λαμπτήρα 1 (' + E1 + ').') + '</p>' +
+                    (sh1 ? '' : '<p class="c3d-eq-line">' + sw('l') + '<b>0 V:</b> από την έξοδο του λαμπτήρα 1 (' + Z1 + ') μέσω του καλωδίου, τα δύο άκρα του λαμπτήρα 2 (' + E2 + ', ' + Z2 + ') και το καλώδιο παράκαμψης έως τον αρνητικό πόλο (' + B + ').</p>') +
+                    (sh1 ? '<p class="c3d-eq-line">' + sw('l') + '<b>0 V:</b> από την έξοδο του λαμπτήρα 2 (' + Z2 + ') έως τον αρνητικό πόλο (' + B + ').</p>' : '') +
+                    '<p class="c3d-ohm-note" style="opacity:1;animation:none">Ο λαμπτήρας ' + (sh1 ? '1' : '2') + ' είναι βραχυκυκλωμένος: τα δύο άκρα του έχουν <b>το ίδιο δυναμικό</b> (είναι ισοδυναμικά), άρα δεν έχει τάση ούτε ρεύμα. Όλη η τάση της πηγής εμφανίζεται στον λαμπτήρα ' + (sh1 ? '2' : '1') + ' (' + (sh1 ? E2 + '→' + Z2 : E1 + '→' + Z1) + ') και στην πηγή (' + B + '→' + A + ') το δυναμικό μεταβάλλεται.</p>';
             } else {
                 const [E1, Z1, E2, Z2] = [LET[3], LET[4], LET[5], LET[6]];
                 html += state.closed
@@ -526,6 +536,10 @@
                 if (multi) s += '<text x="' + cx + '" y="' + (cy + r + 13) + '" class="c3d-m-sign" text-anchor="middle">R<tspan font-size="8" dy="2">' + sub(bulbX.indexOf(bx)) + '</tspan></text>';
             });
             s += line(prev, -3, -4, -3) + line(-4, -3, -4, 3);
+            if (state.short === 'r1' || state.short === 'r2') {
+                const k = state.short === 'r1' ? 0 : 1, xa = bulbX[k] + 0.55, xb = bulbX[k] - 0.55, zz = -1.6;
+                s += ['M' + mx(xa) + ',' + my(-3) + ' L' + mx(xa) + ',' + my(zz) + ' L' + mx(xb) + ',' + my(zz) + ' L' + mx(xb) + ',' + my(-3)].map((d) => '<path d="' + d + '" class="c3d-m-wire c3d-m-bypass" fill="none"/>').join('');
+            }
             // checkpoint letters
             const pos = [[BATTERY_X, 3, 0, -1], [4, 0.6, 1, 0], [4, -0.6, 1, 0]];
             bulbX.forEach((bx) => { pos.push([bx + 0.55, -3, 0, -1], [bx - 0.55, -3, 0, -1]); });
@@ -835,10 +849,11 @@
             const equi = [];
             const eqCol = { H: EQ_HI, M: EQ_MID, L: EQ_LO };
             const eqMat = (op) => new THREE.MeshBasicMaterial({ color: EQ_LO, transparent: true, opacity: op, depthWrite: false });
-            const eqTube = (a, b, open, closed, r) => {
+            const eqTube = (a, b, open, closed, r, meta) => {
                 const m = cylinderBetween(a, b, r || 0.17, eqMat(0.8));
-                m.visible = false; scene.add(m); equi.push({ m, open, closed });
+                m.visible = false; scene.add(m); equi.push(Object.assign({ m, open, closed }, meta || {}));
             };
+            const csAfter = { r1: 'H', r2: 'L' };                 // potential of the points between the two bulbs when R1 / R2 is short-circuited
             const midSide = multi ? 'M' : 'L';
             eqTube(pts(BATTERY_X, 3), pts(4, 3), 'H', 'H');
             eqTube(pts(4, 3), pts(4, 0.6), 'H', 'H');
@@ -848,9 +863,9 @@
             bulbX.forEach((bx, i) => {
                 const after = i === n - 1 ? 'L' : 'M';                 // potential after bulb i (closed switch)
                 const before = i === 0 ? 'H' : 'M';
-                eqTube(pts(bx + 0.55, -3), pts(bx + 0.3, -3), 'L', before);
-                eqTube(pts(bx - 0.3, -3), pts(bx - 0.55, -3), 'L', after);
-                if (i < n - 1) eqTube(pts(bx - 0.55, -3), pts(bulbX[i + 1] + 0.55, -3), 'L', 'M');
+                eqTube(pts(bx + 0.55, -3), pts(bx + 0.3, -3), 'L', before, 0, i === 1 ? { cs: csAfter } : null);
+                eqTube(pts(bx - 0.3, -3), pts(bx - 0.55, -3), 'L', after, 0, i === 0 && multi ? { cs: csAfter } : null);
+                if (i < n - 1) eqTube(pts(bx - 0.55, -3), pts(bulbX[i + 1] + 0.55, -3), 'L', 'M', 0, { cs: csAfter });
             });
             eqTube(pts(bulbX[n - 1] - 0.55, -3), pts(-4, -3), 'L', 'L');
             eqTube(pts(-4, -3), pts(-4, 3), 'L', 'L');
@@ -911,21 +926,24 @@
             };
             const route = { none: { total, at: posAt } };
             const shortWires = {};
+            const shortDefs = {};
             const bypassMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, emissive: 0x9f1239, emissiveIntensity: 0.55, metalness: 0.3, roughness: 0.4 });
             const ZD = -1.6, ZS = 4.5;                                       // the bypass wires run on the side nearer to the camera
             {
                 const bxo = (i) => bulbX[i] + 0.55, bxi = (i) => bulbX[i] - 0.55;
                 const mainWith = (x1, x2) => [pts(BATTERY_X, 3), pts(4, 3), pts(4, -3), pts(x1, -3), pts(x1, ZD), pts(x2, ZD), pts(x2, -3), pts(-4, -3), pts(-4, 3), pts(-BATTERY_X, 3)];
                 const last = n - 1;
-                const defs = {
+                const defs = shortDefs;
+                Object.assign(defs, {
                     both: [pts(bxo(0), -3), pts(bxo(0), ZD), pts(bxi(last), ZD), pts(bxi(last), -3)],
                     source: [pts(BATTERY_X, 3), pts(BATTERY_X, ZS), pts(-BATTERY_X, ZS), pts(-BATTERY_X, 3)]
-                };
+                });
                 route.both = makePath(mainWith(bxo(0), bxi(last)));
                 route.source = makePath(defs.source);
                 if (multi) {
                     defs.r1 = [pts(bxo(0), -3), pts(bxo(0), ZD), pts(bxi(0), ZD), pts(bxi(0), -3)];
                     defs.r2 = [pts(bxo(1), -3), pts(bxo(1), ZD), pts(bxi(1), ZD), pts(bxi(1), -3)];
+                    ['r1', 'r2'].forEach((kk) => { const d = defs[kk]; for (let i = 0; i < d.length - 1; i++) eqTube(d[i], d[i + 1], 'L', kk === 'r1' ? 'H' : 'L', 0.13, { only: kk }); });
                     route.r1 = makePath(mainWith(bxo(0), bxi(0)));
                     route.r2 = makePath(mainWith(bxo(1), bxi(1)));
                 }
@@ -937,6 +955,23 @@
                 });
             }
             const o = { renderer, scene, camera, pickables, lever, bulbs, charges, arrows, posAt, total, closingLen, stage, follower, fMat, markers, equi, eqCol, route: route.none };
+            // where the following charge is: on the main loop, or on the bypass wire while it is "inside" the shorted bulb
+            const polyAt = (arr, t) => {
+                const lens = []; let tot = 0;
+                for (let i = 0; i < arr.length - 1; i++) { const d = arr[i].distanceTo(arr[i + 1]); lens.push(d); tot += d; }
+                let u = Math.min(Math.max(t, 0), 1) * tot;
+                for (let i = 0; i < lens.length; i++) {
+                    if (u <= lens[i] || i === lens.length - 1) return { p: arr[i].clone().lerp(arr[i + 1], lens[i] ? Math.min(1, u / lens[i]) : 0), inside: false, tangent: arr[i + 1].clone().sub(arr[i]).normalize() };
+                    u -= lens[i];
+                }
+            };
+            o.followAt = (sv, kind) => {
+                if ((kind === 'r1' || kind === 'r2') && multi) {
+                    const k = kind === 'r1' ? 0 : 1;
+                    if (sv >= PATH.pE[k] && sv <= PATH.pZ[k]) return polyAt(shortDefs[kind], (sv - PATH.pE[k]) / (PATH.pZ[k] - PATH.pE[k]));
+                }
+                return posAt(sv);
+            };
             o.setShort = (k) => {
                 o.route = route[k || 'none'] || route.none;
                 Object.keys(shortWires).forEach((key) => { shortWires[key].visible = key === k; });
@@ -1145,20 +1180,21 @@
                 if (act) {
                     if (fs.dwell > 0) fs.dwell -= simDt;
                     else {
-                        fs.s += (inBulb(fs.s) >= 0 && fs.s < PATH.pZ[inBulb(fs.s)] ? 0.9 : 2.0) * simDt;
+                        const ib0 = inBulb(fs.s);
+                        fs.s += (ib0 >= 0 && !isShorted(ib0) && fs.s < PATH.pZ[ib0] ? 0.9 : 2.0) * simDt;
                         if (fs.next <= LAST_CP && fs.s >= CPS[fs.next]) {
                             fs.s = CPS[fs.next]; fs.cp = fs.next; fs.next++;
                             fs.dwell = (fs.cp >= 3 && fs.cp < LAST_CP) ? 3.2 : (fs.cp === LAST_CP ? 2.6 : 1.8);
                         } else if (fs.s >= PATH.total) { fs.s = 0; fs.cp = 0; fs.next = 1; fs.dwell = 1.8; }
                     }
                     const atCp = fs.dwell > 0;
-                    const info = o.posAt(fs.s);
+                    const info = o.followAt(fs.s, state.short);
                     o.follower.position.copy(info.p);
                     o.fMat.depthTest = !info.inside;
                     o.follower.scale.setScalar(atCp ? 1.25 * (1 + 0.08 * Math.sin(now / 160)) : 1);
                     const v = potAt(fs.s);
                     const bi = inBulb(fs.s);
-                    const zone = fs.s >= PATH.pB ? 'battery' : bi >= 0 ? 'bulb' : (fs.s >= PATH.pG && fs.s <= PATH.pD) ? 'switch' : (fs.s > 0 ? 'wire' : null);
+                    const zone = fs.s >= PATH.pB ? 'battery' : bi >= 0 ? (isShorted(bi) ? 'bypass' : 'bulb') : (fs.s >= PATH.pG && fs.s <= PATH.pD) ? 'switch' : (fs.s > 0 ? 'wire' : null);
                     const zeroDrop = '<div class="c3d-fo-eq"><i>ΔV</i> = <i>I</i> · <i>R</i> = ' + fmt(I, 2) + ' A · 0 Ω = <b>0 V</b></div>';
                     let ohm = '';
                     if (zone === 'wire') {
@@ -1167,6 +1203,10 @@
                     } else if (zone === 'switch') {
                         ohm = '<div class="c3d-fo">Ιδανικός διακόπτης</div>' + zeroDrop +
                             '<p class="c3d-fnote">Ο ιδανικός διακόπτης, όταν είναι κλειστός, δεν καταναλώνει ενέργεια (δεν προκαλεί πτώση τάσης), γιατί θεωρείται ότι δεν παρουσιάζει καμία αντίσταση στη διέλευση του ηλεκτρικού ρεύματος, δηλαδή έχει <i>R</i> = 0 Ω.</p>';
+                    } else if (zone === 'bypass') {
+                        const nm = ' ' + sub(bi);
+                        ohm = '<div class="c3d-fo">Καλώδιο παράκαμψης (γύρω από τον λαμπτήρα' + nm + ')</div>' + zeroDrop +
+                            '<p class="c3d-fnote">Το φορτίο ακολουθεί το καλώδιο, που δεν έχει αντίσταση, και όχι τον λαμπτήρα' + nm + '. Δεν υπάρχει πτώση δυναμικού. Ο λαμπτήρας' + nm + ' δεν διαρρέεται από ρεύμα και σβήνει.</p>';
                     } else if (zone === 'bulb') {
                         const Ri = state.R[bi];
                         const drop = I * Ri;
@@ -1181,7 +1221,7 @@
                             '<div class="c3d-fo-eq"><i>ΔV</i> = <i>V</i><sub>' + LET[0] + '</sub> − <i>V</i><sub>' + LET[LAST_CP] + '</sub> = ' + fv(state.V) + ' − 0 = <b>+' + fv(state.V) + ' V</b></div>' +
                             '<p class="c3d-fnote">Η πηγή, καταναλώνοντας δική της χημική ενέργεια, προσφέρει ηλεκτρική ενέργεια στα φορτία καθώς τα μεταφέρει από τον αρνητικό (χαμηλού δυναμικού) πόλο προς τον θετικό (υψηλού δυναμικού) πόλο.</p>';
                     }
-                    const fhtml = '<div class="c3d-fhead"><span class="c3d-fplus">+</span><span>' + (atCp ? CPNAMES[fs.cp] : regionName(fs.s)) + '</span></div>' +
+                    const fhtml = '<div class="c3d-fhead"><span class="c3d-fplus">+</span><span>' + (atCp ? cpName(fs.cp) : regionName(fs.s)) + '</span></div>' +
                         '<div class="c3d-fval"><i>V</i> = ' + fv(v) + ' V</div>' + ohm;
                     if (state.study) {
                         updateStudy(fs.s, v, info.p.x, info.p.z, fhtml, atCp ? fs.cp : Math.max(0, fs.next - 1));
@@ -1232,13 +1272,14 @@
 
                 // equipotential highlight
                 o.equi.forEach((e) => {
-                    const side = state.closed ? e.closed : e.open;
-                    e.m.visible = state.equi && !!side;
+                    let side = state.closed ? e.closed : e.open;
+                    if (state.closed && state.short && e.cs && e.cs[state.short]) side = e.cs[state.short];
+                    e.m.visible = state.equi && !!side && !(e.only && e.only !== state.short);
                     if (side) e.m.material.color.setHex(o.eqCol[side]);
                 });
                 const eqOn = state.equi && !state.study;
                 eqHiCard.style.display = eqLoCard.style.display = eqOn ? 'block' : 'none';
-                if (eqMidCard) eqMidCard.style.display = eqOn && state.closed ? 'block' : 'none';
+                if (eqMidCard) eqMidCard.style.display = eqOn && state.closed && !state.short ? 'block' : 'none';
                 if (eqOn) {
                     const Lv = levels();
                     const eqCard = (val) => '<div class="c3d-lt">Ισοδυναμικό τμήμα</div><div class="c3d-lg">' + row('V', val, 'V') + '</div>';

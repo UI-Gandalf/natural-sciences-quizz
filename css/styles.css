@@ -10732,3 +10732,5 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 
 .c3d-shorts.c3d-off label { opacity: 0.4; cursor: not-allowed; }
 .c3d-lock-off { color: #fca5a5; }
+
+.c3d-m-bypass { stroke: #f43f5e !important; }
