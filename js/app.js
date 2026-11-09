@@ -575,7 +575,9 @@ function renderQuizSelection(classKey, subjectKey) {
         // the kind of the quiz decides its colour and its label
         const qtypes = (quiz.questions || []).map((x) => x.type || 'mc');
         const allOf = (t) => qtypes.length > 0 && qtypes.every((x) => x === t);
-        const kind = allOf('matching') ? { k: 'match', t: '🔗 Αντιστοίχιση' }
+        const isTF = (quiz.questions || []).length > 0 && quiz.questions.every((x) => !x.type && x.options && x.options.length === 3 && /^α\)\s*Σωστό/.test(x.options[0]));
+        const kind = isTF ? { k: 'tf', t: '⚖️ Σωστό / Λάθος / Ανεπαρκές' }
+            : allOf('matching') ? { k: 'match', t: '🔗 Αντιστοίχιση' }
             : allOf('mapclick') ? { k: 'map', t: '🗺️ Κλικ στον χάρτη' }
             : allOf('cascading') ? { k: 'steps', t: '👣 Βήμα προς βήμα με συμβουλές' }
             : null;

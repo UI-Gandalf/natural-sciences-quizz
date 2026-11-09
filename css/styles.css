@@ -10831,3 +10831,4 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .quizzes-grid .qk-steps { --qk: #a78bfa; }
 .quizzes-grid .qk-chip { background: var(--qk); color: #0f172a !important; border-color: var(--qk) !important; font-weight: 800; }
 .quizzes-grid .glass-card[class*="qk-"] .card-btn-label { color: var(--qk); }
+.quizzes-grid .qk-tf { --qk: #fb7185; }
