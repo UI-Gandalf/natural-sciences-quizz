@@ -281,14 +281,6 @@ function renderClassSelection() {
     const container = document.getElementById('app-content');
     
     let html = `
-        <div class="view-header">
-            <div class="view-badge-chip">
-                <span>⚡</span>
-                <span>Γυμνάσιο Νέας Ερυθραίας - Φυσικές Επιστήμες</span>
-            </div>
-            <h1 class="view-title">Επιλέξτε Τάξη</h1>
-        </div>
-
         <div class="home-about">
             <h2>Ο χώρος αυτός φιλοξενεί υλικό που στοχεύει να βοηθήσει ουσιαστικά:</h2>
             <ol>
