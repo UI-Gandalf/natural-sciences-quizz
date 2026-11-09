@@ -28,7 +28,7 @@ window.ByzMaps = (function () {
 
     const MAPS = {
         m1: {
-            label: 'Χάρτης 1: 324–552 · Πρωτοβυζαντινή περίοδος και εποχή του Ιουστινιανού',
+            label: 'Χάρτης 1: 324–552 · Πρωτοβυζαντινή – Ιουστινιανός',
             intro: 'Από τον Κωνσταντίνο τον Μέγα ως τον Ιουστινιανό.',
             cp: [10, 4, 'start'],
             events: [
@@ -41,7 +41,7 @@ window.ByzMaps = (function () {
             ]
         },
         m2: {
-            label: 'Χάρτης 2: 626–1014 · Περσικοί και αραβικοί πόλεμοι, Μακεδονική εποχή',
+            label: 'Χάρτης 2: 626–1014 · Αραβικοί πόλεμοι – Μακεδονική εποχή',
             intro: 'Από την πολιορκία του 626 ως τον Βασίλειο Β΄ τον Βουλγαροκτόνο.',
             events: [
                 [28.95, 41.0, 8, -38, 'Πολιορκία της Κωνσταντινούπολης και Ναυμαχία του Κερατίου', '626', 'Ηράκλειος (απών στην Ανατολή)', 'Πατριάρχης Σέργιος, μάγιστρος Βώνος', 'Άβαροι, Σλάβοι και Πέρσες', WIN, 'Η πρώτη μεγάλη πολιορκία της Βασιλεύουσας. Η καταστροφή του σλαβικού στόλου των μονόξυλων στον Κεράτιο Κόλπο από τα βυζαντινά πλοία έκρινε τη σωτηρία της πόλης (ιστορική σύνδεση με τον Ακάθιστο Ύμνο).', SIEGE, false, P2],
@@ -71,7 +71,7 @@ window.ByzMaps = (function () {
             ]
         },
         m4: {
-            label: 'Χάρτης 4: 1205–1453 · Εξορία, Παλαιολόγοι, Οθωμανοί και η Άλωση',
+            label: 'Χάρτης 4: 1205–1453 · Παλαιολόγοι, Οθωμανοί, Άλωση',
             intro: 'Από την Αδριανούπολη του 1205 ως την Άλωση του 1453.',
             events: [
                 [26.56, 41.68, 22, -50, 'Μάχη της Αδριανούπολης', '1205', 'Βαλδουίνος Α΄ (αυτοκράτορας της Λατινικής Αυτοκρατορίας)', 'Βαλδουίνος Α΄ · Τσάρος Καλογιάννης (Βούλγαροι)', 'Λατινική Αυτοκρατορία εναντίον Βουλγάρων', OTH, 'Συντριβή των Σταυροφόρων ιπποτών. Ο Βαλδουίνος αιχμαλωτίστηκε και πέθανε στη φυλακή. Η ήττα εξασθένησε ανεπανόρθωτα το νεοσύστατο λατινικό κράτος και έδωσε στην Αυτοκρατορία της Νίκαιας τον χρόνο να οργανωθεί.', LAND, false, P6],
@@ -116,7 +116,7 @@ window.ByzMaps = (function () {
         mount.innerHTML = '<div class="by-wrap">' +
             '<div class="by-head"><h2>🗺️ Βυζάντιο &amp; Μεσόγειος (σημαντικότερες σχετικές μάχες)</h2>' +
             '<p>Πάτησε ένα σημάδι στον χάρτη (ή ένα στοιχείο της λίστας) για να δεις τη χρονολογία, τον αυτοκράτορα, τους στρατηγούς, τον αντίπαλο και το αποτέλεσμα.</p>' +
-            '<label class="cg-pick"><span>Επίλεξε χάρτη:</span><select id="by-sel"></select></label></div>' +
+            '<div class="cg-pick cg-pick-strong"><span class="cg-pick-t">👇 Υπάρχουν ' + Object.keys(MAPS).length + ' χάρτες: διάλεξε από το μενού</span><label class="cg-pick-sel"><select id="by-sel"></select></label><div class="cg-chips" id="by-chips"></div></div></div>' +
             '<div class="by-mapcard"><svg id="by-svg" class="by-svg" viewBox="0 0 ' + L.w + ' ' + L.h + '" role="img" aria-label="Χάρτης της Μεσογείου με τις μάχες"></svg>' +
             '<div class="by-legend"><span><i style="background:#16a34a"></i>νίκη των Βυζαντινών</span><span><i style="background:#dc2626"></i>βυζαντινή ήττα</span><span><i style="background:#64748b"></i>χωρίς βυζαντινή συμμετοχή</span>' +
             '<span class="by-shp"><svg viewBox="0 0 20 20" width="16" height="16"><circle cx="10" cy="10" r="8" fill="#475569"/></svg> μάχη</span>' +
@@ -125,7 +125,13 @@ window.ByzMaps = (function () {
             '<div class="by-below"><div class="by-list" id="by-list"></div><div class="by-card" id="by-card"></div></div>' +
             '<p class="by-foot">Οι θέσεις στον χάρτη είναι κατά προσέγγιση. Η ακριβής θέση των μαχών του Λαλακάοντος (863) και του Μυριοκεφάλου (1176) δεν είναι γνωστή ούτε στους ιστορικούς. Στον Χάρτη 4 οι θέσεις του Βαφέως, της Ποιμανηνού, της Αντιοχείας του Μαιάνδρου, του Πελεκάνου και του Έβρου είναι ιδιαίτερα προσεγγιστικές.</p></div>';
         const sel = mount.querySelector('#by-sel'), svg = mount.querySelector('#by-svg'), list = mount.querySelector('#by-list'), card = mount.querySelector('#by-card');
-        Object.keys(MAPS).forEach((k) => { const o = document.createElement('option'); o.value = k; o.textContent = MAPS[k].label; sel.appendChild(o); });
+        const chips = mount.querySelector('#by-chips');
+        Object.keys(MAPS).forEach((k) => {
+            const o = document.createElement('option'); o.value = k; o.textContent = MAPS[k].label; sel.appendChild(o);
+            const c = document.createElement('button'); c.type = 'button'; c.className = 'cg-chip'; c.dataset.k = k; c.textContent = MAPS[k].label.replace(/^Χάρτης (\d): /, '$1 · ').split(' · ').slice(0, 2).join(' · '); chips.appendChild(c);
+        });
+        const syncChips = () => chips.querySelectorAll('.cg-chip').forEach((c) => c.classList.toggle('on', c.dataset.k === sel.value));
+        chips.addEventListener('click', (e) => { const c = e.target.closest('.cg-chip'); if (c) { sel.value = c.dataset.k; sel.dispatchEvent(new Event('change')); } });
 
         function draw(key, selected) {
             const M = MAPS[key];
@@ -157,7 +163,8 @@ window.ByzMaps = (function () {
 
         let cur = 'm1', idx = 0;
         const show = () => draw(cur, idx);
-        sel.addEventListener('change', () => { cur = sel.value; idx = 0; show(); });
+        sel.addEventListener('change', () => { cur = sel.value; idx = 0; syncChips(); show(); });
+        syncChips();
         const pick = (t) => { const g = t.closest('.by-mk, .by-item'); if (g) { idx = +g.getAttribute('data-i'); show(); } };
         svg.addEventListener('click', (ev) => pick(ev.target));
         svg.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); pick(ev.target); } });
