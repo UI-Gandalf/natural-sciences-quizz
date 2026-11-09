@@ -10805,3 +10805,11 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .ph-pulse { animation: phpulse 0.7s ease-out; }
 @keyframes phpulse { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.75); } 100% { box-shadow: 0 0 0 16px rgba(245, 158, 11, 0); } }
 .ph-bar { height: 28px; border: 2px solid rgba(245, 158, 11, 0.7); }
+
+/* control -> figure links (js/ctl-emphasis.js) */
+.ce-hint { margin: 8px 0 4px; padding: 5px 12px; width: fit-content; max-width: 100%; border-radius: 10px; background: rgba(245, 158, 11, 0.18); border: 2px solid #f59e0b; color: #fbbf24; font-weight: 800; font-size: 0.9rem; }
+[data-theme="light"] .ce-hint { color: #92400e; }
+.ce-pulse { animation: cepulse 0.7s ease-out; }
+@keyframes cepulse { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.8); } 100% { box-shadow: 0 0 0 16px rgba(245, 158, 11, 0); } }
+.bj-side .bj-slider input[type=range], .bt-ctrl .bt-btn { outline: 0; }
+.bj-side .bj-slider { border-left: 4px solid #f59e0b; padding-left: 8px; }
