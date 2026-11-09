@@ -3893,6 +3893,7 @@ window.CircuitSimulation = (function() {
                 overlay.id = id;
                 overlay.className = 'sim-help-overlay';
                 overlay.onclick = (e) => { if (e.target === overlay) CircuitSimulation.closeHelp(); };
+                overlay.addEventListener('click', (e) => e.stopPropagation());     // inside the full-screen modal a click must not close the lab
                 overlay.innerHTML = `
                     <div class="sim-help-card" role="dialog" aria-modal="true" aria-labelledby="${id}-title">
                         <h3 id="${id}-title" class="sim-help-title">${doc.title}</h3>
@@ -3905,6 +3906,9 @@ window.CircuitSimulation = (function() {
                 document.body.appendChild(overlay);
                 document.addEventListener('keydown', helpEscHandler);
             }
+            // in full screen only the full-screen element (and what is inside it) is displayed, so the help must live inside it
+            const host = document.fullscreenElement || document.body;
+            if (overlay.parentNode !== host) host.appendChild(overlay);
             overlay.classList.add('is-open');
         },
 
