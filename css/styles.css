@@ -10795,3 +10795,13 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 [data-theme="light"] .home-offer-card .ho-tag { color: #fff; }
 .home-about { max-width: 1180px; }
 .home-offer-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* photosynthesis lab: make the link between the sliders and the readouts obvious */
+.ph-hint { font-weight: 800; text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; text-decoration-color: #f59e0b; color: #fbbf24; }
+[data-theme="light"] .ph-hint { color: #b45309; }
+.ph-watch { font-weight: 800; padding: 6px 12px; border-radius: 10px; background: rgba(245, 158, 11, 0.18); border: 2px solid #f59e0b; color: #fbbf24; width: fit-content; }
+[data-theme="light"] .ph-watch { color: #92400e; }
+.ph-out { padding: 10px; border-radius: 14px; border: 2px dashed rgba(245, 158, 11, 0.6); }
+.ph-pulse { animation: phpulse 0.7s ease-out; }
+@keyframes phpulse { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.75); } 100% { box-shadow: 0 0 0 16px rgba(245, 158, 11, 0); } }
+.ph-bar { height: 28px; border: 2px solid rgba(245, 158, 11, 0.7); }

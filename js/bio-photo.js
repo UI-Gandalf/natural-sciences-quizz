@@ -69,13 +69,13 @@
             ['🍃 Χλωροφύλλη', 'Δεσμεύει το φως.', 'Φύλλα με λιγότερη χλωροφύλλη (π.χ. κιτρινισμένα ή ποικιλόχρωμα) φωτοσυνθέτουν λιγότερο.']
         ], 'bga-plain') +
         '<h4>Δοκίμασε: ποιος παράγοντας «φρενάρει»;</h4>' +
-        '<p>Όταν η φωτοσύνθεση περιορίζεται από έναν μόνο παράγοντα, αυτός λέγεται <strong>περιοριστικός παράγοντας</strong>: όσο τον αυξάνεις, ανεβαίνει ο ρυθμός· όσο αλλάζεις τους άλλους, δεν αλλάζει σχεδόν τίποτα. Μετακίνησε τους δείκτες.</p>' +
+        '<p>Όταν η φωτοσύνθεση περιορίζεται από έναν μόνο παράγοντα, αυτός λέγεται <strong>περιοριστικός παράγοντας</strong>: όσο τον αυξάνεις, ανεβαίνει ο ρυθμός· όσο αλλάζεις τους άλλους, δεν αλλάζει σχεδόν τίποτα. <span class="ph-hint">Μετακίνησε τους δείκτες και παρακολούθησε τη μπάρα και το διάγραμμα που αλλάζουν.</span></p>' +
         '<div class="bt-stage ph-lab" id="ph-lab"><div class="ph-ctrl">' +
         '<label>☀️ Φως <input type="range" id="ph-L" min="0" max="100" value="30"><b id="ph-Lv"></b></label>' +
         '<label>🌫️ CO₂ <input type="range" id="ph-C" min="0" max="100" value="60"><b id="ph-Cv"></b></label>' +
         '<label>🌡️ Θερμοκρασία <input type="range" id="ph-T" min="0" max="45" value="25"><b id="ph-Tv"></b></label>' +
         '<label>💧 Νερό στο έδαφος <input type="range" id="ph-W" min="0" max="100" value="80"><b id="ph-Wv"></b></label>' +
-        '</div><div class="ph-out"><div class="ph-bar"><i id="ph-bar"></i></div><div id="ph-txt" class="ph-txt"></div><svg viewBox="0 0 420 210" class="ph-graph" id="ph-graph" role="img" aria-label="Ρυθμός φωτοσύνθεσης ανάλογα με το φως"></svg></div></div>' +
+        '</div><div class="ph-out"><div class="ph-watch">👀 Παρακολούθησε εδώ: ο ρυθμός της φωτοσύνθεσης</div><div class="ph-bar"><i id="ph-bar"></i></div><div id="ph-txt" class="ph-txt"></div><svg viewBox="0 0 420 210" class="ph-graph" id="ph-graph" role="img" aria-label="Ρυθμός φωτοσύνθεσης ανάλογα με το φως"></svg></div></div>' +
         '<p class="bga-note">Απλό μοντέλο για την κατανόηση, όχι πραγματικές μετρήσεις. Στην καμπύλη, το σημείο δείχνει την τρέχουσα τιμή του φωτός. Όταν η καμπύλη «ισιώνει», το φως δεν είναι πια ο περιοριστικός παράγοντας.</p>' +
         '<h4>Γιατί είναι σημαντική</h4>' +
         ul(['Δημιουργεί τη <strong>τροφή</strong> των φυτών και, μέσω της τροφικής αλυσίδας, των ζώων.',
@@ -96,6 +96,7 @@
             const L = +g('ph-L').value, C = +g('ph-C').value, T = +g('ph-T').value, W = +g('ph-W').value;
             g('ph-Lv').textContent = L + '%'; g('ph-Cv').textContent = C + '%'; g('ph-Tv').textContent = T + ' °C'; g('ph-Wv').textContent = W + '%';
             const m = model(L, C, T, W);
+            const out = root.querySelector('.ph-out'); if (out) { out.classList.remove('ph-pulse'); void out.offsetWidth; out.classList.add('ph-pulse'); }
             g('ph-bar').style.width = Math.round(m.rate * 100) + '%';
             const names = [['fL', 'το φως'], ['fC', 'το CO₂ (ή το νερό, που κλείνει τα στόμια)'], ['fT', 'η θερμοκρασία']];
             names.sort((a, b) => m[a[0]] - m[b[0]]);
