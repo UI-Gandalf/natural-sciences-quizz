@@ -10832,3 +10832,17 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .quizzes-grid .qk-chip { background: var(--qk); color: #0f172a !important; border-color: var(--qk) !important; font-weight: 800; }
 .quizzes-grid .glass-card[class*="qk-"] .card-btn-label { color: var(--qk); }
 .quizzes-grid .qk-tf { --qk: #fb7185; }
+
+/* topic drop-down: impossible to miss */
+.cg-pick-strong { display: block; margin-top: 14px; padding: 14px 16px; border-radius: 16px; border: 3px solid #f59e0b; background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(244, 114, 182, 0.12)); animation: cgglow 2.2s ease-in-out 3; }
+@keyframes cgglow { 0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); } 50% { box-shadow: 0 0 0 14px rgba(245, 158, 11, 0); } }
+.cg-pick-t { display: block; margin-bottom: 8px; font-size: 1.12rem; font-weight: 900; color: #fbbf24; }
+[data-theme="light"] .cg-pick-t { color: #92400e; }
+.cg-pick-sel { display: block; }
+.cg-pick-strong select { width: 100%; max-width: none; padding: 14px 44px 14px 16px; font-size: 1.12rem; font-weight: 800; border: 3px solid #fbbf24; border-radius: 14px; background-color: #111827; color: #f8fafc; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24'><path fill='%23fbbf24' d='M7 10l5 6 5-6z'/></svg>"); background-repeat: no-repeat; background-position: right 12px center; }
+[data-theme="light"] .cg-pick-strong select { background-color: #fff; color: #0f172a; }
+.cg-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.cg-chip { padding: 8px 14px; border-radius: 999px; border: 2px solid rgba(251, 191, 36, 0.7); background: rgba(15, 23, 42, 0.7); color: inherit; font: inherit; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+.cg-chip:hover { background: rgba(245, 158, 11, 0.3); }
+.cg-chip.on { background: #f59e0b; color: #1c1917; border-color: #f59e0b; }
+[data-theme="light"] .cg-chip { background: rgba(255, 255, 255, 0.85); }
