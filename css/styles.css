@@ -10778,3 +10778,20 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .home-about li { margin: 4px 0; }
 [data-theme="light"] .home-about { background: rgba(255, 255, 255, 0.92); }
 [data-theme="light"] .home-about h2 { color: #b45309; }
+
+/* home page: what is offered */
+.home-offer { margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(148, 163, 184, 0.3); }
+.home-offer-title { margin-bottom: 12px; text-align: center; font-size: 1.15rem; font-weight: 800; letter-spacing: 0.02em; background: linear-gradient(90deg, #34d399, #38bdf8, #a78bfa, #f472b6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.home-offer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.home-offer-card { position: relative; padding: 14px 14px 14px 16px; border-radius: 14px; background: rgba(148, 163, 184, 0.1); border: 1px solid rgba(148, 163, 184, 0.28); border-left: 5px solid var(--c); overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.home-offer-card:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35); }
+.home-offer-card::after { content: ""; position: absolute; right: -28px; top: -28px; width: 90px; height: 90px; border-radius: 50%; background: var(--c); opacity: 0.16; }
+.home-offer-card .ho-ico { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 12px; font-size: 1.5rem; background: color-mix(in srgb, var(--c) 25%, transparent); }
+.home-offer-card .ho-tag { float: right; margin-top: 2px; padding: 2px 9px; border-radius: 999px; font-size: 0.7rem; font-weight: 800; background: var(--c); color: #0f172a; }
+.home-offer-card .ho-tag.ho-some { background: transparent; color: var(--c); border: 1.5px solid var(--c); }
+.home-offer-card h3 { margin: 10px 0 4px; font-size: 1.02rem; }
+.home-offer-card p { margin: 0; font-size: 0.9rem; line-height: 1.5; opacity: 0.92; }
+[data-theme="light"] .home-offer-card { background: rgba(255, 255, 255, 0.7); }
+[data-theme="light"] .home-offer-card .ho-tag { color: #fff; }
+.home-about { max-width: 1180px; }
+.home-offer-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }

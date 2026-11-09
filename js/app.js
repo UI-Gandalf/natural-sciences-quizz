@@ -301,6 +301,16 @@ function renderClassSelection() {
                 <li><strong>Την αυτοαξιολόγηση</strong>, με δυνατότητα δοκιμών.</li>
                 <li><strong>Την επέκταση των ορίων της ύλης</strong> με σημαντικές προσθήκες από άλλους χώρους, άλλες επιστήμες και όψεις της πραγματικής ζωής.</li>
             </ol>
+            <div class="home-offer">
+                <div class="home-offer-title">Τι θα βρείτε στα μαθήματα</div>
+                <div class="home-offer-grid">
+                    <div class="home-offer-card" style="--c:#10b981"><span class="ho-ico">📘</span><span class="ho-tag">Σε κάθε μάθημα</span><h3>Δομημένη περιγραφή</h3><p>Αναλυτικότερη περιγραφή και ανάλυση των <strong>κεντρικών ιδεών και παραμέτρων</strong> της ύλης.</p></div>
+                    <div class="home-offer-card" style="--c:#38bdf8"><span class="ho-ico">📝</span><span class="ho-tag">Σε κάθε μάθημα</span><h3>Σειρά κουίζ</h3><p>Πολλαπλής επιλογής, <strong>αντιστοίχισης</strong> και <strong>σωστού / λάθους / έλλειψης ικανών δεδομένων</strong>.</p></div>
+                    <div class="home-offer-card" style="--c:#a78bfa"><span class="ho-ico">🧩</span><span class="ho-tag ho-some">Σε ορισμένα μαθήματα</span><h3>Οπτικά κουίζ και κλιμακωτά ερωτήματα</h3><p>Οπτικοποιημένες μορφές κουίζ και σειρές <strong>κλιμακωτών ερωτημάτων</strong> με επιλογή διαδοχικών συμβουλών.</p></div>
+                    <div class="home-offer-card" style="--c:#f59e0b"><span class="ho-ico">⚡</span><span class="ho-tag ho-some">Σε ορισμένα μαθήματα</span><h3>Προσομοιώσεις 2D / 3D</h3><p>Προσομοιώσεις των <strong>φυσικών φαινομένων</strong> που μελετώνται, σε δισδιάστατες και τρισδιάστατες εκδοχές.</p></div>
+                    <div class="home-offer-card" style="--c:#f472b6"><span class="ho-ico">🌍</span><span class="ho-tag ho-some">Σε ορισμένα μαθήματα</span><h3>Συμπληρωματικό υλικό</h3><p><strong>Μη εξεταζόμενο</strong> υλικό από συναφείς επιστήμες, που δείχνει τη σύνδεση της ύλης με τις <strong>καθημερινές εφαρμογές</strong> και τις όψεις της καθημερινότητας.</p></div>
+                </div>
+            </div>
         </div>
 
         <div class="classes-grid">
