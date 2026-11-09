@@ -116,7 +116,7 @@ window.ByzMaps = (function () {
         mount.innerHTML = '<div class="by-wrap">' +
             '<div class="by-head"><h2>🗺️ Βυζάντιο &amp; Μεσόγειος (σημαντικότερες σχετικές μάχες)</h2>' +
             '<p>Πάτησε ένα σημάδι στον χάρτη (ή ένα στοιχείο της λίστας) για να δεις τη χρονολογία, τον αυτοκράτορα, τους στρατηγούς, τον αντίπαλο και το αποτέλεσμα.</p>' +
-            '<div class="cg-pick cg-pick-strong"><span class="cg-pick-t">👇 Υπάρχουν ' + Object.keys(MAPS).length + ' χάρτες: διάλεξε από το μενού</span><label class="cg-pick-sel"><select id="by-sel"></select></label><div class="cg-chips" id="by-chips"></div></div></div>' +
+            '<div class="cg-pick cg-pick-strong cg-pick-sub"><span class="cg-pick-t">👇 Υπάρχουν ' + Object.keys(MAPS).length + ' χάρτες: διάλεξε από το μενού</span><label class="cg-pick-sel"><select id="by-sel"></select></label><div class="cg-chips" id="by-chips"></div></div></div>' +
             '<div class="by-mapcard"><svg id="by-svg" class="by-svg" viewBox="0 0 ' + L.w + ' ' + L.h + '" role="img" aria-label="Χάρτης της Μεσογείου με τις μάχες"></svg>' +
             '<div class="by-legend"><span><i style="background:#16a34a"></i>νίκη των Βυζαντινών</span><span><i style="background:#dc2626"></i>βυζαντινή ήττα</span><span><i style="background:#64748b"></i>χωρίς βυζαντινή συμμετοχή</span>' +
             '<span class="by-shp"><svg viewBox="0 0 20 20" width="16" height="16"><circle cx="10" cy="10" r="8" fill="#475569"/></svg> μάχη</span>' +
