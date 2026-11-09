@@ -572,13 +572,21 @@ function renderQuizSelection(classKey, subjectKey) {
 
         const savedScoreKey = `stem_quiz_score_${quiz.id}`;
         const savedScore = localStorage.getItem(savedScoreKey);
+        // the kind of the quiz decides its colour and its label
+        const qtypes = (quiz.questions || []).map((x) => x.type || 'mc');
+        const allOf = (t) => qtypes.length > 0 && qtypes.every((x) => x === t);
+        const kind = allOf('matching') ? { k: 'match', t: '🔗 Αντιστοίχιση' }
+            : allOf('mapclick') ? { k: 'map', t: '🗺️ Κλικ στον χάρτη' }
+            : allOf('cascading') ? { k: 'steps', t: '👣 Βήμα προς βήμα με συμβουλές' }
+            : null;
 
         html += `
-            <div class="glass-card theme-${sub.theme}" onclick="navigateTo('class/${classKey}/subject/${subjectKey}/quiz/${quiz.id}')">
+            <div class="glass-card theme-${sub.theme}${kind ? ' qk-' + kind.k : ''}" onclick="navigateTo('class/${classKey}/subject/${subjectKey}/quiz/${quiz.id}')">
                 <div class="card-ambient-glow"></div>
                 <div class="card-content-wrap">
                     <div class="card-top-meta">
                         <span class="card-badge">${quiz.badge}</span>
+                        ${kind ? `<span class="card-badge qk-chip">${kind.t}</span>` : ''}
                     </div>
                     <h3 class="card-title" style="font-size: 1.25rem; margin-top: 10px;">${quiz.title}</h3>
                     <p class="card-desc">${quiz.subtitle}</p>

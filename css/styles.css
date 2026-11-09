@@ -10815,3 +10815,19 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .bj-side .bj-slider { border-left: 4px solid #f59e0b; padding-left: 8px; }
 
 .sim-help-overlay { z-index: 100000; }
+
+/* quiz cards: more compact, and a distinct colour for the special kinds of quizzes */
+.quizzes-grid { gap: 16px; }
+.quizzes-grid .glass-card { padding: 18px 20px; }
+.quizzes-grid .card-title { font-size: 1.08rem !important; margin-top: 8px !important; margin-bottom: 6px; line-height: 1.25; }
+.quizzes-grid .card-desc { font-size: 0.86rem; line-height: 1.4; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.quizzes-grid .card-footer { padding-top: 10px; }
+.quizzes-grid .card-badge { font-size: 0.74rem; padding: 3px 9px; }
+.quizzes-grid .card-top-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.quizzes-grid .glass-card[class*="qk-"] { border-left: 6px solid var(--qk); background-image: linear-gradient(135deg, color-mix(in srgb, var(--qk) 18%, transparent), transparent 55%); }
+.quizzes-grid .glass-card[class*="qk-"]:hover { border-color: var(--qk); box-shadow: 0 10px 30px color-mix(in srgb, var(--qk) 35%, transparent); }
+.quizzes-grid .qk-match { --qk: #f59e0b; }
+.quizzes-grid .qk-map { --qk: #14b8a6; }
+.quizzes-grid .qk-steps { --qk: #a78bfa; }
+.quizzes-grid .qk-chip { background: var(--qk); color: #0f172a !important; border-color: var(--qk) !important; font-weight: 800; }
+.quizzes-grid .glass-card[class*="qk-"] .card-btn-label { color: var(--qk); }
