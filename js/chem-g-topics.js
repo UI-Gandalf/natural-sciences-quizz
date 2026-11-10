@@ -147,7 +147,8 @@
     /* the tab: a drop-down menu chooses between the two independent topics */
     const TOPICS = [
         { key: 'lactic', label: '🏃 Αναερόβια αναπνοή και γαλακτικό οξύ', show: render },
-        { key: 'insects', label: '🐝 Τσιμπήματα εντόμων και αντιμετώπιση', show: renderInsects }
+        { key: 'insects', label: '🐝 Τσιμπήματα εντόμων και αντιμετώπιση', show: renderInsects },
+        { key: 'hydro', label: '🌱 Υδροπονία και αεροπονία', show: (m) => { if (window.ChemHydro) window.ChemHydro.render(m); } }
     ];
 
     function renderTab(mount) {

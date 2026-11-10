@@ -10860,3 +10860,20 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .brand-title { line-height: 1.15; }
 .brand-sub { font-size: 0.74rem; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.02em; margin-top: 1px; }
 @media (max-width: 700px) { .brand-title { font-size: 0.95rem; } }
+
+/* hydroponics lab */
+.hy-lab { padding: 14px 16px; background: var(--card-bg); }
+.hy-ctl label { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-weight: 800; align-items: center; }
+.hy-ctl input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: #10b981; }
+.hy-ctl b { color: #6ee7b7; font-size: 1.2rem; }
+[data-theme="light"] .hy-ctl b { color: #047857; }
+.hy-scale { display: flex; margin-top: 4px; border-radius: 8px; overflow: hidden; }
+.hy-scale span { flex: 1; text-align: center; font-size: 0.78rem; font-weight: 800; color: #fff; padding: 2px 0; }
+.hy-bars { margin-top: 12px; display: grid; gap: 8px; }
+.hy-row { display: grid; grid-template-columns: 170px 1fr 70px; gap: 10px; align-items: center; font-size: 0.92rem; }
+.hy-name { font-weight: 700; }
+.hy-track { height: 16px; border-radius: 8px; background: rgba(148, 163, 184, 0.3); overflow: hidden; }
+.hy-track i { display: block; height: 100%; width: 0; transition: width 0.25s; border-radius: 8px; }
+.hy-row b { font-size: 0.82rem; }
+.hy-msg { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: rgba(148, 163, 184, 0.15); line-height: 1.5; }
+@media (max-width: 600px) { .hy-row { grid-template-columns: 110px 1fr 56px; font-size: 0.82rem; } }
