@@ -10877,3 +10877,5 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .hy-row b { font-size: 0.82rem; }
 .hy-msg { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: rgba(148, 163, 184, 0.15); line-height: 1.5; }
 @media (max-width: 600px) { .hy-row { grid-template-columns: 110px 1fr 56px; font-size: 0.82rem; } }
+
+.home-offer-card .ho-extra { margin-top: 8px; padding: 6px 10px; border-radius: 10px; background: rgba(56, 189, 248, 0.16); border: 1px dashed var(--c); font-weight: 600; }
