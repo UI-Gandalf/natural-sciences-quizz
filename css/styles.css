@@ -10931,3 +10931,12 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .ss-stage:fullscreen { display: flex; align-items: center; justify-content: center; width: 100vw; height: 100vh; border-radius: 0; }
 .ss-stage:fullscreen .ss-img { max-height: 100vh; height: 100vh; }
 @media (max-width: 600px) { .ss-nav { width: 38px; height: 52px; font-size: 2rem; } }
+
+/* Subject tab bar: solid background and visible button shapes (readable over the decorative page background) */
+.subject-tabs-container { background: rgba(8, 15, 30, 0.94); border: 1px solid rgba(148, 163, 184, 0.45); backdrop-filter: none; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45); padding: 10px 12px; gap: 8px 10px; border-radius: 26px; }
+.subject-tab-btn:not(.active) { background: rgba(148, 163, 184, 0.14); border: 1px solid rgba(148, 163, 184, 0.35); }
+.subject-tab-btn:hover:not(.active) { background: rgba(56, 189, 248, 0.25); border-color: #38bdf8; }
+:root[data-theme="light"] .subject-tabs-container { background: rgba(255, 255, 255, 0.97); border-color: #cbd5e1; box-shadow: 0 6px 20px rgba(15, 23, 42, 0.18); }
+:root[data-theme="light"] .subject-tab-btn:not(.active) { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; text-shadow: none; }
+:root[data-theme="light"] .subject-tab-btn:not(.active) .tab-line-sub { color: #334155; }
+:root[data-theme="light"] .subject-tab-btn:hover:not(.active) { background: #e0f2fe; border-color: #0284c7; }
