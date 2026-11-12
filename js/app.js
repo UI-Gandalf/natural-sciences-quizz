@@ -740,6 +740,9 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-survival" style="display: ${currentTab === 'survival' ? 'block' : 'none'};">
             <div id="survival-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-parallelvideo" style="display: ${currentTab === 'parallelvideo' ? 'block' : 'none'};">
+            <div id="parallelvideo-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-seriesvideo" style="display: ${currentTab === 'seriesvideo' ? 'block' : 'none'};">
             <div id="seriesvideo-mount"></div>
         </div>
@@ -861,6 +864,10 @@ function renderQuizSelection(classKey, subjectKey) {
     }
     if (currentTab === 'seriesvideo') {
         renderSeriesVideoView();
+    }
+    if (currentTab === 'parallelvideo') {
+        const m = document.getElementById('parallelvideo-mount');
+        if (m && window.SeriesVideo) window.SeriesVideo.renderParallel(m);
     }
     if (currentTab === 'survival') {
         const m = document.getElementById('survival-mount');
@@ -1045,7 +1052,8 @@ const PHYS_G_GROUPS = [
     { id: 'theory', icon: '📖', label: 'Θεωρία', items: [
         { tab: 'theory', label: 'Συνοπτικός οδηγός μελέτης και πρωτόκολλο επίλυσης' },
         { tab: 'survival', label: 'Οδηγός επιβίωσης (διαφάνειες)' },
-        { tab: 'seriesvideo', label: 'Βίντεο: κύκλωμα σειράς (ελληνικοί υπότιτλοι)' } ] },
+        { tab: 'seriesvideo', label: 'Βίντεο: κύκλωμα σειράς (ελληνικοί υπότιτλοι)' },
+        { tab: 'parallelvideo', label: 'Βίντεο: παράλληλο κύκλωμα (ελληνικοί υπότιτλοι)' } ] },
     { id: 'sim', icon: '⚡', label: 'Προσομοιώσεις', items: [
         { tab: 'intro3d', label: '3D εισαγωγή στο απλό ιδανικό κύκλωμα' },
         { tab: 'series3d', label: '3D κύκλωμα με δύο αντιστάτες σε σειρά' },
@@ -1186,6 +1194,15 @@ function switchSubjectTab(tabKey) {
         }
     }
 
+    const pvPanel = document.getElementById('tab-panel-parallelvideo');
+    if (pvPanel) {
+        pvPanel.style.display = tabKey === 'parallelvideo' ? 'block' : 'none';
+        if (tabKey === 'parallelvideo') {
+            pvPanel.style.animation = 'fadeIn 0.3s ease';
+            const pm = document.getElementById('parallelvideo-mount');
+            if (pm && !pm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderParallel(pm);
+        }
+    }
     const svBtn = document.getElementById('tab-btn-seriesvideo');
     if (svBtn) svBtn.classList.toggle('active', tabKey === 'seriesvideo');
     const svPanel = document.getElementById('tab-panel-seriesvideo');
@@ -1196,10 +1213,9 @@ function switchSubjectTab(tabKey) {
             const sm = document.getElementById('seriesvideo-mount');
             if (sm && !sm.hasChildNodes()) renderSeriesVideoView();
         } else {
-            const vv = document.getElementById('sv-video');
-            if (vv && !vv.paused) vv.pause();          // leaving the tab stops the video
         }
     }
+    document.querySelectorAll('video.sv-video').forEach((vv) => { const pan = vv.closest('.tab-panel'); if (pan && pan.style.display === 'none' && !vv.paused) vv.pause(); });   // a video in a hidden tab stops
 
     const s3Btn = document.getElementById('tab-btn-series3d');
     if (s3Btn) s3Btn.classList.toggle('active', tabKey === 'series3d');

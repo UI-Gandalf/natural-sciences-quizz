@@ -6,17 +6,20 @@
    ========================================================================== */
 window.SeriesVideo = (function () {
     'use strict';
-    const SRC = 'assets/video/series_circuit_masterclass.mp4';
-    const fmt = (s) => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+        const fmt = (s) => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 
-    function render(mount) {
-        const cues = window.SERIES_VIDEO_CUES || [];
+    const SERIES = { src: 'assets/video/series_circuit_masterclass.mp4', cues: () => window.SERIES_VIDEO_CUES || [], title: 'Κύκλωμα σε σειρά: επεξήγηση σε βίντεο', lead: 'πώς επιλύουμε ένα κύκλωμα <strong>σε σειρά</strong>', min: 5 };
+    const PARALLEL = { src: 'assets/video/parallel_circuit_masterclass.mp4', cues: () => window.PARALLEL_VIDEO_CUES || [], title: 'Παράλληλο κύκλωμα: επεξήγηση σε βίντεο', lead: 'πώς επιλύουμε ένα <strong>παράλληλο</strong> κύκλωμα', min: 5 };
+
+    function render(mount, cfg) {
+        cfg = cfg || SERIES;
+        const cues = cfg.cues();
         mount.innerHTML =
             '<div class="sv-wrap">' +
-            '<div class="sv-head"><h2>🎬 Κύκλωμα σε σειρά: επεξήγηση σε βίντεο</h2>' +
-            '<p>Ένα σύντομο βίντεο (περίπου 5 λεπτά) που εξηγεί <strong>βήμα προς βήμα</strong> πώς επιλύουμε ένα κύκλωμα σε σειρά. Το βίντεο είναι στα <strong>αγγλικά</strong>. Με το κουμπί <strong>«Υπότιτλοι»</strong> εμφανίζονται οι <strong>ελληνικοί υπότιτλοι</strong>.</p></div>' +
+            '<div class="sv-head"><h2>🎬 ' + cfg.title + '</h2>' +
+            '<p>Ένα σύντομο βίντεο (περίπου ' + cfg.min + ' λεπτά) που εξηγεί <strong>βήμα προς βήμα</strong> ' + cfg.lead + '. Το βίντεο είναι στα <strong>αγγλικά</strong>. Με το κουμπί <strong>«Υπότιτλοι»</strong> εμφανίζονται οι <strong>ελληνικοί υπότιτλοι</strong>.</p></div>' +
             '<div class="sv-player" id="sv-player">' +
-            '<video id="sv-video" class="sv-video" src="' + SRC + '" controls preload="metadata" playsinline controlslist="nodownload"></video>' +
+            '<video id="sv-video" class="sv-video" src="' + cfg.src + '" controls preload="metadata" playsinline controlslist="nodownload"></video>' +
             '<div class="sv-sub" id="sv-sub" aria-live="off"></div></div>' +
             '<div class="sv-bar"><button type="button" class="sv-btn on" id="sv-cc" aria-pressed="true">✅ Υπότιτλοι ελληνικά: ΕΜΦΑΝΙΖΟΝΤΑΙ <small>(πάτα για να κρυφτούν)</small></button>' +
             '<label class="sv-size">Μέγεθος γραμμάτων <select id="sv-fs"><option value="0.9">Μικρά</option><option value="1.15" selected>Κανονικά</option><option value="1.5">Μεγάλα</option></select></label>' +
@@ -54,5 +57,5 @@ window.SeriesVideo = (function () {
             if (i >= 0) { const e = tx.querySelector('.sv-line[data-i="' + i + '"]'); if (e) e.classList.add('now'); }
         });
     }
-    return { render };
+    return { render, renderParallel: (m) => render(m, PARALLEL) };
 })();
