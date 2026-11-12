@@ -552,10 +552,12 @@ function renderQuizSelection(classKey, subjectKey) {
                 </button>
                 ` : ''}
             </div>
+            ${isPhysG ? `<button type="button" class="phys-home-link" id="phys-home-link" style="display:${currentTab === 'quizzes' ? 'none' : 'inline-flex'}" onclick="switchSubjectTab('quizzes')">⬅ Κουίζ και λυμένο διαγώνισμα</button>` : ''}
         </div>
 
         <!-- TAB 1: QUIZZES PANEL -->
         <div class="tab-panel" id="tab-panel-quizzes" style="display: ${currentTab === 'quizzes' ? 'block' : 'none'};">
+            ${isPhysG ? '<h2 class="phys-home-title">📝 Κουίζ και λυμένο διαγώνισμα</h2>' : ''}
             <div class="quizzes-grid">
     `;
 
@@ -630,6 +632,25 @@ function renderQuizSelection(classKey, subjectKey) {
         `;
     });
 
+    if (isPhysG) {
+        html += `
+            <div class="glass-card theme-${sub.theme} qk-exam" onclick="switchSubjectTab('exam_solutions')">
+                <div class="card-ambient-glow"></div>
+                <div class="card-content-wrap">
+                    <div class="card-top-meta">
+                        <span class="card-badge">Λυμένο</span>
+                        <span class="card-badge qk-chip">📑 Λύσεις βήμα προς βήμα</span>
+                    </div>
+                    <h3 class="card-title" style="font-size: 1.25rem; margin-top: 10px;">Λυμένο ενδεικτικό διαγώνισμα</h3>
+                    <p class="card-desc">Επίλυση του ενδεικτικού διαγωνίσματος με ερμηνεία των βημάτων και τη συναφή θεωρία.</p>
+                    <div class="card-footer">
+                        <span style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Διαγώνισμα με λύσεις</span>
+                        <span class="card-btn-label">Άνοιγμα <span>➔</span></span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
     html += `
             </div>
         </div>
@@ -1045,10 +1066,6 @@ function renderSimulationView() {
 
 // ---- Physics Γ: the many tabs are collected in 4 pop-up menus ----
 const PHYS_G_GROUPS = [
-    { id: 'quiz', icon: '📝', label: 'Κουίζ', items: [
-        { tab: 'exam_solutions', label: 'Λυμένο ενδεικτικό διαγώνισμα' },
-        { tab: 'quizzes', label: 'Όλα τα κουίζ (κάρτες)' },
-        { quizzes: true } ] },
     { id: 'theory', icon: '📖', label: 'Θεωρία', items: [
         { tab: 'theory', label: 'Συνοπτικός οδηγός μελέτης και πρωτόκολλο επίλυσης' },
         { tab: 'survival', label: 'Οδηγός επιβίωσης (διαφάνειες)' },
@@ -1101,6 +1118,7 @@ function updateTabGroups(tabKey) {
 function switchSubjectTab(tabKey) {
     AppState.currentSubjectTab = tabKey;
     updateTabGroups(tabKey);
+    const hl = document.getElementById('phys-home-link'); if (hl) hl.style.display = tabKey === 'quizzes' ? 'none' : 'inline-flex';
     // Leaving the simulation (or arriving at it from anywhere else) means the next visit starts neutral
     if (tabKey !== 'simulation') AppState.simulationEntered = false;
     

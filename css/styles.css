@@ -10965,3 +10965,10 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
     .sg-menu { left: 8px; right: 8px; min-width: 0; max-width: none; }
     .sg-btn { padding: 9px 14px; font-size: 0.92rem; }
 }
+
+/* Physics Γ: quizzes + solved exam as the home view */
+.phys-home-title { margin: 6px 0 14px; font-size: 1.5rem; text-align: center; }
+.phys-home-link { display: inline-flex; align-items: center; gap: 8px; margin: 14px auto 0; padding: 9px 18px; border-radius: 999px; border: 2px solid #34d399; background: rgba(16, 185, 129, 0.22); color: inherit; font: inherit; font-weight: 800; cursor: pointer; }
+.phys-home-link:hover { background: rgba(16, 185, 129, 0.4); }
+.view-header { text-align: center; }
+.quizzes-grid .qk-exam { --qk: #38bdf8; }
