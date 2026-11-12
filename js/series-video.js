@@ -18,8 +18,8 @@ window.SeriesVideo = (function () {
             '<div class="sv-player" id="sv-player">' +
             '<video id="sv-video" class="sv-video" src="' + SRC + '" controls preload="metadata" playsinline controlslist="nodownload"></video>' +
             '<div class="sv-sub" id="sv-sub" aria-live="off"></div></div>' +
-            '<div class="sv-bar"><button type="button" class="sv-btn on" id="sv-cc" aria-pressed="true">💬 Υπότιτλοι (ελληνικά): ΕΝΕΡΓΟΙ</button>' +
-            '<button type="button" class="sv-btn on" id="sv-fit" aria-pressed="true" title="Προσαρμόζει τους υπότιτλους στη διάρκεια του βίντεο">⏱ Συγχρονισμός: ΠΡΟΣΑΡΜΟΣΜΕΝΟΣ</button>' +
+            '<div class="sv-bar"><button type="button" class="sv-btn on" id="sv-cc" aria-pressed="true">✅ Υπότιτλοι ελληνικά: ΕΜΦΑΝΙΖΟΝΤΑΙ <small>(πάτα για να κρυφτούν)</small></button>' +
+            '<button type="button" class="sv-btn on" id="sv-fit" aria-pressed="true" title="Προσαρμόζει τους υπότιτλους στη διάρκεια του βίντεο">⏱ Συγχρονισμός: προσαρμοσμένος στη διάρκεια</button>' +
             '<label class="sv-size">Μέγεθος γραμμάτων <select id="sv-fs"><option value="0.9">Μικρά</option><option value="1.15" selected>Κανονικά</option><option value="1.5">Μεγάλα</option></select></label>' +
             '<button type="button" class="sv-btn" id="sv-full">⛶ Πλήρης οθόνη</button>' +
             '<span class="sv-note">Αν το βίντεο δεν παίζει, δοκίμασε άλλον περιηγητή ή ξαναφόρτωσε τη σελίδα.</span></div>' +
@@ -40,10 +40,10 @@ window.SeriesVideo = (function () {
         v.addEventListener('timeupdate', show); v.addEventListener('seeked', show); v.addEventListener('play', show);
         cc.addEventListener('click', () => {
             on = !on; cc.classList.toggle('on', on); cc.setAttribute('aria-pressed', String(on));
-            cc.textContent = '💬 Υπότιτλοι (ελληνικά): ' + (on ? 'ΕΝΕΡΓΟΙ' : 'ΑΝΕΝΕΡΓΟΙ'); show();
+            cc.innerHTML = on ? '✅ Υπότιτλοι ελληνικά: ΕΜΦΑΝΙΖΟΝΤΑΙ <small>(πάτα για να κρυφτούν)</small>' : '🚫 Υπότιτλοι ελληνικά: ΚΡΥΦΤΟΙ <small>(πάτα για να εμφανιστούν)</small>'; show();
         });
         const fitBtn = mount.querySelector('#sv-fit');
-        fitBtn.addEventListener('click', () => { fit = !fit; fitBtn.classList.toggle('on', fit); fitBtn.setAttribute('aria-pressed', String(fit)); fitBtn.textContent = '⏱ Συγχρονισμός: ' + (fit ? 'ΠΡΟΣΑΡΜΟΣΜΕΝΟΣ' : 'ΟΠΩΣ ΤΟΥ ΑΡΧΕΙΟΥ'); show(); });
+        fitBtn.addEventListener('click', () => { fit = !fit; fitBtn.classList.toggle('on', fit); fitBtn.setAttribute('aria-pressed', String(fit)); fitBtn.textContent = '⏱ Συγχρονισμός: ' + (fit ? 'προσαρμοσμένος στη διάρκεια' : 'όπως στο αρχείο'); show(); });
         mount.querySelector('#sv-fs').addEventListener('change', (e) => { box.style.setProperty('--sv-fs', e.target.value); });
         box.style.setProperty('--sv-fs', '1.15');
         mount.querySelector('#sv-full').addEventListener('click', () => {

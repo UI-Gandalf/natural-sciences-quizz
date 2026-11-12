@@ -10909,3 +10909,5 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .sv-line.now { background: rgba(245, 158, 11, 0.28); border-color: #f59e0b; }
 .sv-line b { color: #fbbf24; margin-right: 6px; }
 [data-theme="light"] .sv-line b { color: #b45309; }
+.sv-btn small { display: block; font-weight: 600; opacity: 0.85; }
+.sv-sub { bottom: 70px; }
