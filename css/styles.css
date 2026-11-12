@@ -10879,3 +10879,33 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 @media (max-width: 600px) { .hy-row { grid-template-columns: 110px 1fr 56px; font-size: 0.82rem; } }
 
 .home-offer-card .ho-extra { margin-top: 8px; padding: 6px 10px; border-radius: 10px; background: rgba(56, 189, 248, 0.16); border: 1px dashed var(--c); font-weight: 600; }
+
+/* Physics Γ video with Greek subtitles */
+.sv-wrap { max-width: 980px; margin: 0 auto; }
+.sv-head { padding: 14px 18px; border-radius: 14px; background: rgba(8, 15, 30, 0.82); border: 1px solid var(--card-border); margin-bottom: 12px; }
+.sv-head h2 { margin: 0 0 6px; font-size: 1.4rem; }
+.sv-head p { margin: 0; color: #e2e8f0; line-height: 1.5; }
+[data-theme="light"] .sv-head { background: rgba(255, 255, 255, 0.92); }
+[data-theme="light"] .sv-head p { color: #334155; }
+.sv-player { position: relative; background: #000; border-radius: 14px; overflow: hidden; --sv-fs: 1.15; }
+.sv-video { display: block; width: 100%; max-height: 68vh; background: #000; }
+.sv-sub { display: none; position: absolute; left: 50%; bottom: 62px; transform: translateX(-50%); width: min(92%, 860px); text-align: center; padding: 6px 14px; border-radius: 8px; background: rgba(0, 0, 0, 0.78); color: #fff; font-weight: 700; font-size: calc(1rem * var(--sv-fs)); line-height: 1.4; pointer-events: none; text-shadow: 0 1px 3px #000; }
+.sv-player:fullscreen { display: flex; align-items: center; justify-content: center; width: 100vw; height: 100vh; border-radius: 0; }
+.sv-player:fullscreen .sv-video { max-height: 100vh; height: 100vh; }
+.sv-player:fullscreen .sv-sub { bottom: 78px; font-size: calc(1.5rem * var(--sv-fs)); }
+.sv-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 12px 0; padding: 10px 14px; border-radius: 12px; background: rgba(8, 15, 30, 0.82); border: 1px solid var(--card-border); }
+[data-theme="light"] .sv-bar { background: rgba(255, 255, 255, 0.92); }
+.sv-btn { padding: 9px 16px; border-radius: 999px; border: 2px solid #64748b; background: rgba(100, 116, 139, 0.2); color: inherit; font: inherit; font-weight: 800; cursor: pointer; }
+.sv-btn.on { border-color: #34d399; background: rgba(16, 185, 129, 0.25); }
+.sv-size { font-weight: 700; display: inline-flex; gap: 8px; align-items: center; }
+.sv-size select { padding: 6px 10px; border-radius: 8px; border: 2px solid var(--card-border); background: var(--card-bg); color: inherit; font: inherit; }
+.sv-note { font-size: 0.85rem; opacity: 0.8; }
+.sv-tx { border-radius: 12px; background: rgba(8, 15, 30, 0.82); border: 1px solid var(--card-border); padding: 10px 14px; }
+[data-theme="light"] .sv-tx { background: rgba(255, 255, 255, 0.92); }
+.sv-tx summary { cursor: pointer; font-weight: 800; }
+.sv-tx-body { margin-top: 8px; max-height: 340px; overflow: auto; display: grid; gap: 4px; }
+.sv-line { text-align: left; padding: 6px 10px; border-radius: 8px; border: 1px solid transparent; background: rgba(148, 163, 184, 0.1); color: inherit; font: inherit; cursor: pointer; line-height: 1.4; }
+.sv-line:hover { background: rgba(56, 189, 248, 0.2); }
+.sv-line.now { background: rgba(245, 158, 11, 0.28); border-color: #f59e0b; }
+.sv-line b { color: #fbbf24; margin-right: 6px; }
+[data-theme="light"] .sv-line b { color: #b45309; }

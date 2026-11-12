@@ -491,6 +491,13 @@ function renderQuizSelection(classKey, subjectKey) {
                     <span class="tab-icon">💡</span>
                     <span>3D κύκλωμα με δύο αντιστάτες σε σειρά</span>
                 </button>
+                <button class="subject-tab-btn ${currentTab === 'seriesvideo' ? 'active' : ''}" id="tab-btn-seriesvideo" onclick="switchSubjectTab('seriesvideo')">
+                    <span class="tab-icon">🎬</span>
+                    <span class="tab-multiline">
+                        <span class="tab-line-main">Κύκλωμα σειράς: επεξήγηση σε βίντεο</span>
+                        <span class="tab-line-sub">(με ελληνικούς υπότιτλους)</span>
+                    </span>
+                </button>
                 <button class="subject-tab-btn ${currentTab === 'analogy' ? 'active' : ''}" id="tab-btn-analogy" onclick="switchSubjectTab('analogy')">
                     <span class="tab-icon">🎢</span>
                     <span>Βαρυτικό ανάλογο: δύο αντιστάτες σε σειρά</span>
@@ -722,6 +729,9 @@ function renderQuizSelection(classKey, subjectKey) {
             <div id="intro3d-mount"></div>
         </div>
         <!-- PHYSICS Γ: 3D CIRCUIT WITH TWO RESISTORS IN SERIES -->
+        <div class="tab-panel" id="tab-panel-seriesvideo" style="display: ${currentTab === 'seriesvideo' ? 'block' : 'none'};">
+            <div id="seriesvideo-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-series3d" style="display: ${currentTab === 'series3d' ? 'block' : 'none'};">
             <div id="series3d-mount"></div>
         </div>
@@ -838,6 +848,9 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'series3d') {
         renderSeries3dView();
     }
+    if (currentTab === 'seriesvideo') {
+        renderSeriesVideoView();
+    }
     if (currentTab === 'analogy') {
         renderAnalogyView();
     }
@@ -890,6 +903,11 @@ function renderIntro3dView() {
 function renderAnalogyView() {
     const mount = document.getElementById('analogy-mount');
     if (mount && window.PhysGAnalogy) window.PhysGAnalogy.render(mount);
+}
+
+function renderSeriesVideoView() {
+    const mount = document.getElementById('seriesvideo-mount');
+    if (mount && window.SeriesVideo) window.SeriesVideo.render(mount);
 }
 
 function renderSeries3dView() {
@@ -1081,6 +1099,21 @@ function switchSubjectTab(tabKey) {
             anPanel.style.animation = 'fadeIn 0.3s ease';
             const am = document.getElementById('analogy-mount');
             if (am && !am.hasChildNodes()) renderAnalogyView();
+        }
+    }
+
+    const svBtn = document.getElementById('tab-btn-seriesvideo');
+    if (svBtn) svBtn.classList.toggle('active', tabKey === 'seriesvideo');
+    const svPanel = document.getElementById('tab-panel-seriesvideo');
+    if (svPanel) {
+        svPanel.style.display = tabKey === 'seriesvideo' ? 'block' : 'none';
+        if (tabKey === 'seriesvideo') {
+            svPanel.style.animation = 'fadeIn 0.3s ease';
+            const sm = document.getElementById('seriesvideo-mount');
+            if (sm && !sm.hasChildNodes()) renderSeriesVideoView();
+        } else {
+            const vv = document.getElementById('sv-video');
+            if (vv && !vv.paused) vv.pause();          // leaving the tab stops the video
         }
     }
 
