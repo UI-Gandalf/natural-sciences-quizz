@@ -9,7 +9,7 @@ window.SeriesVideo = (function () {
         const fmt = (s) => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 
     const SERIES = { src: 'assets/video/series_circuit_masterclass.mp4', cues: () => window.SERIES_VIDEO_CUES || [], title: 'Κύκλωμα σε σειρά: επεξήγηση σε βίντεο', lead: 'πώς επιλύουμε ένα κύκλωμα <strong>σε σειρά</strong>', min: 5 };
-    const PARALLEL = { src: 'assets/video/parallel_circuit_masterclass.mp4', cues: () => window.PARALLEL_VIDEO_CUES || [], title: 'Παράλληλο κύκλωμα: επεξήγηση σε βίντεο', lead: 'πώς επιλύουμε ένα <strong>παράλληλο</strong> κύκλωμα', min: 5 };
+    const PARALLEL = { src: 'assets/video/parallel_circuit_masterclass.mp4', cues: () => window.PARALLEL_VIDEO_CUES || [], title: 'Παράλληλο κύκλωμα: επεξήγηση σε βίντεο', notes: () => window.PARALLEL_VIDEO_NOTES || [], warn: 'Το βίντεο (φτιαγμένο από το NotebookLM) έχει <strong>λάθη</strong>: στο 1:28 λέει «4,8 Ω» αντί για 2 Ω, και από το 3:20 έως το 4:25 οι εικόνες δείχνουν κύκλωμα <strong>σε σειρά</strong>. Σε αυτά τα σημεία εμφανίζεται <strong>πορτοκαλί σημείωση διόρθωσης</strong> πάνω στο βίντεο.', lead: 'πώς επιλύουμε ένα <strong>παράλληλο</strong> κύκλωμα', min: 5 };
 
     function render(mount, cfg) {
         cfg = cfg || SERIES;
@@ -17,10 +17,10 @@ window.SeriesVideo = (function () {
         mount.innerHTML =
             '<div class="sv-wrap">' +
             '<div class="sv-head"><h2>🎬 ' + cfg.title + '</h2>' +
-            '<p>Ένα σύντομο βίντεο (περίπου ' + cfg.min + ' λεπτά) που εξηγεί <strong>βήμα προς βήμα</strong> ' + cfg.lead + '. Το βίντεο είναι στα <strong>αγγλικά</strong>. Με το κουμπί <strong>«Υπότιτλοι»</strong> εμφανίζονται οι <strong>ελληνικοί υπότιτλοι</strong>.</p></div>' +
+            '<p>Ένα σύντομο βίντεο (περίπου ' + cfg.min + ' λεπτά) που εξηγεί <strong>βήμα προς βήμα</strong> ' + cfg.lead + '. Το βίντεο είναι στα <strong>αγγλικά</strong>. Με το κουμπί <strong>«Υπότιτλοι»</strong> εμφανίζονται οι <strong>ελληνικοί υπότιτλοι</strong>.</p>' + (cfg.warn ? '<p class="sv-warn">⚠ ' + cfg.warn + '</p>' : '') + '</div>' +
             '<div class="sv-player" id="sv-player">' +
             '<video id="sv-video" class="sv-video" src="' + cfg.src + '" controls preload="metadata" playsinline controlslist="nodownload"></video>' +
-            '<div class="sv-sub" id="sv-sub" aria-live="off"></div></div>' +
+            '<div class="sv-sub" id="sv-sub" aria-live="off"></div><div class="sv-fix" id="sv-fix"></div></div>' +
             '<div class="sv-bar"><button type="button" class="sv-btn on" id="sv-cc" aria-pressed="true">✅ Υπότιτλοι ελληνικά: ΕΜΦΑΝΙΖΟΝΤΑΙ <small>(πάτα για να κρυφτούν)</small></button>' +
             '<label class="sv-size">Μέγεθος γραμμάτων <select id="sv-fs"><option value="0.9">Μικρά</option><option value="1.15" selected>Κανονικά</option><option value="1.5">Μεγάλα</option></select></label>' +
             '<button type="button" class="sv-btn" id="sv-full">⛶ Πλήρης οθόνη</button>' +
@@ -29,6 +29,9 @@ window.SeriesVideo = (function () {
             '</div>';
         const v = mount.querySelector('#sv-video'), sub = mount.querySelector('#sv-sub'), cc = mount.querySelector('#sv-cc'), box = mount.querySelector('#sv-player');
         let on = true;
+        const fix = mount.querySelector('#sv-fix'), notes = cfg.notes ? cfg.notes() : [];
+        const showFix = () => { const t = v.currentTime, n = notes.find((x) => t >= x[0] && t < x[1]); fix.textContent = n ? n[2] : ''; fix.style.display = n ? 'block' : 'none'; };
+        v.addEventListener('timeupdate', showFix); v.addEventListener('seeked', showFix);
         const show = () => {
             if (!on) { sub.textContent = ''; sub.style.display = 'none'; return; }
             const t = v.currentTime;

@@ -10972,3 +10972,6 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .phys-home-link:hover { background: rgba(16, 185, 129, 0.4); }
 .view-header { text-align: center; }
 .quizzes-grid .qk-exam { --qk: #38bdf8; }
+.sv-warn { margin-top: 8px !important; padding: 8px 12px; border-radius: 10px; background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; }
+.sv-fix { display: none; position: absolute; left: 50%; top: 10px; transform: translateX(-50%); width: min(94%, 880px); padding: 8px 14px; border-radius: 10px; background: rgba(120, 53, 15, 0.94); border: 2px solid #f59e0b; color: #fff; font-weight: 700; font-size: calc(0.95rem * var(--sv-fs)); line-height: 1.4; pointer-events: none; z-index: 2; }
+.sv-player:fullscreen .sv-fix { top: 18px; font-size: calc(1.25rem * var(--sv-fs)); }
