@@ -9,6 +9,7 @@ window.SeriesVideo = (function () {
         const fmt = (s) => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 
     const SERIES = { src: 'assets/video/series_circuit_masterclass.mp4', cues: () => window.SERIES_VIDEO_CUES || [], title: 'Κύκλωμα σε σειρά: επεξήγηση σε βίντεο', lead: 'πώς επιλύουμε ένα κύκλωμα <strong>σε σειρά</strong>', min: 5 };
+    const FAULTS = { src: 'assets/video/series_faults_shorts.mp4', cues: () => window.FAULTS_VIDEO_CUES || [], title: 'Κύκλωμα σε σειρά: βλάβες και βραχυκυκλώματα', lead: 'τι αλλάζει σε ένα κύκλωμα σε σειρά όταν <strong>καίγεται ένα στοιχείο</strong> ή όταν υπάρχει <strong>μερικό ή ολικό βραχυκύκλωμα</strong>', min: 6 };
     const PARALLEL = { src: 'assets/video/parallel_circuit_masterclass.mp4', cues: () => window.PARALLEL_VIDEO_CUES || [], title: 'Παράλληλο κύκλωμα: επεξήγηση σε βίντεο', notes: () => window.PARALLEL_VIDEO_NOTES || [], warn: 'Το βίντεο (φτιαγμένο από το NotebookLM) έχει <strong>λάθη</strong>: στο 1:28 λέει «4,8 Ω» αντί για 2 Ω, και από το 3:20 έως το 4:25 οι εικόνες δείχνουν κύκλωμα <strong>σε σειρά</strong>. Σε αυτά τα σημεία εμφανίζεται <strong>πορτοκαλί σημείωση διόρθωσης</strong> πάνω στο βίντεο.', lead: 'πώς επιλύουμε ένα <strong>παράλληλο</strong> κύκλωμα', min: 5 };
 
     function render(mount, cfg) {
@@ -60,5 +61,5 @@ window.SeriesVideo = (function () {
             if (i >= 0) { const e = tx.querySelector('.sv-line[data-i="' + i + '"]'); if (e) e.classList.add('now'); }
         });
     }
-    return { render, renderParallel: (m) => render(m, PARALLEL) };
+    return { render, renderParallel: (m) => render(m, PARALLEL), renderFaults: (m) => render(m, FAULTS) };
 })();

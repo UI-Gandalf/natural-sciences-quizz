@@ -761,6 +761,9 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-survival" style="display: ${currentTab === 'survival' ? 'block' : 'none'};">
             <div id="survival-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-faultsvideo" style="display: ${currentTab === 'faultsvideo' ? 'block' : 'none'};">
+            <div id="faultsvideo-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-parallelvideo" style="display: ${currentTab === 'parallelvideo' ? 'block' : 'none'};">
             <div id="parallelvideo-mount"></div>
         </div>
@@ -889,6 +892,10 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'parallelvideo') {
         const m = document.getElementById('parallelvideo-mount');
         if (m && window.SeriesVideo) window.SeriesVideo.renderParallel(m);
+    }
+    if (currentTab === 'faultsvideo') {
+        const m = document.getElementById('faultsvideo-mount');
+        if (m && window.SeriesVideo) window.SeriesVideo.renderFaults(m);
     }
     if (currentTab === 'survival') {
         const m = document.getElementById('survival-mount');
@@ -1070,6 +1077,7 @@ const PHYS_G_GROUPS = [
         { tab: 'theory', label: 'Συνοπτικός οδηγός μελέτης και πρωτόκολλο επίλυσης' },
         { tab: 'survival', label: 'Οδηγός επιβίωσης (διαφάνειες)' },
         { tab: 'seriesvideo', label: 'Βίντεο: κύκλωμα σειράς (ελληνικοί υπότιτλοι)' },
+        { tab: 'faultsvideo', label: 'Βίντεο: βλάβες και βραχυκυκλώματα σε σειρά (ελληνικοί υπότιτλοι)' },
         { tab: 'parallelvideo', label: 'Βίντεο: παράλληλο κύκλωμα (ελληνικοί υπότιτλοι)' } ] },
     { id: 'sim', icon: '⚡', label: 'Προσομοιώσεις', items: [
         { tab: 'intro3d', label: '3D εισαγωγή στο απλό ιδανικό κύκλωμα' },
@@ -1212,6 +1220,15 @@ function switchSubjectTab(tabKey) {
         }
     }
 
+    const fvPanel = document.getElementById('tab-panel-faultsvideo');
+    if (fvPanel) {
+        fvPanel.style.display = tabKey === 'faultsvideo' ? 'block' : 'none';
+        if (tabKey === 'faultsvideo') {
+            fvPanel.style.animation = 'fadeIn 0.3s ease';
+            const fm = document.getElementById('faultsvideo-mount');
+            if (fm && !fm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderFaults(fm);
+        }
+    }
     const pvPanel = document.getElementById('tab-panel-parallelvideo');
     if (pvPanel) {
         pvPanel.style.display = tabKey === 'parallelvideo' ? 'block' : 'none';
