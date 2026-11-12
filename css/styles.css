@@ -10911,3 +10911,23 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 [data-theme="light"] .sv-line b { color: #b45309; }
 .sv-btn small { display: block; font-weight: 600; opacity: 0.85; }
 .sv-sub { bottom: 70px; }
+
+/* Physics Γ: survival-guide slide show */
+.ss-wrap { max-width: 1000px; margin: 0 auto; }
+.ss-stage { position: relative; background: #020617; border-radius: 14px; overflow: hidden; outline: none; }
+.ss-stage:focus-visible { box-shadow: 0 0 0 3px #38bdf8; }
+.ss-img { display: block; width: 100%; height: auto; max-height: 72vh; object-fit: contain; margin: 0 auto; }
+.ss-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 64px; border: 0; border-radius: 12px; background: rgba(2, 6, 23, 0.6); color: #fff; font-size: 2.4rem; line-height: 1; cursor: pointer; }
+.ss-nav:hover { background: rgba(14, 116, 144, 0.9); }
+.ss-prev { left: 8px; } .ss-next { right: 8px; }
+.ss-prog { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: rgba(255, 255, 255, 0.15); }
+.ss-prog-bar { height: 100%; width: 0; background: #34d399; }
+.ss-count { font-weight: 800; min-width: 9.5em; text-align: center; }
+.ss-thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+.ss-th { position: relative; padding: 0; border: 3px solid transparent; border-radius: 8px; overflow: hidden; background: #000; cursor: pointer; }
+.ss-th img { display: block; width: 100%; height: auto; }
+.ss-th b { position: absolute; left: 4px; top: 4px; padding: 0 6px; border-radius: 6px; background: rgba(0, 0, 0, 0.75); color: #fbbf24; font-size: 0.8rem; }
+.ss-th.now { border-color: #f59e0b; }
+.ss-stage:fullscreen { display: flex; align-items: center; justify-content: center; width: 100vw; height: 100vh; border-radius: 0; }
+.ss-stage:fullscreen .ss-img { max-height: 100vh; height: 100vh; }
+@media (max-width: 600px) { .ss-nav { width: 38px; height: 52px; font-size: 2rem; } }

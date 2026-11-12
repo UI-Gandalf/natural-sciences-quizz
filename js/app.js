@@ -498,6 +498,13 @@ function renderQuizSelection(classKey, subjectKey) {
                         <span class="tab-line-sub">(με ελληνικούς υπότιτλους)</span>
                     </span>
                 </button>
+                <button class="subject-tab-btn ${currentTab === 'survival' ? 'active' : ''}" id="tab-btn-survival" onclick="switchSubjectTab('survival')">
+                    <span class="tab-icon">📊</span>
+                    <span class="tab-multiline">
+                        <span class="tab-line-main">Οδηγός επιβίωσης: κυκλώματα</span>
+                        <span class="tab-line-sub">(διαφάνειες · χειροκίνητα ή αυτόματα)</span>
+                    </span>
+                </button>
                 <button class="subject-tab-btn ${currentTab === 'analogy' ? 'active' : ''}" id="tab-btn-analogy" onclick="switchSubjectTab('analogy')">
                     <span class="tab-icon">🎢</span>
                     <span>Βαρυτικό ανάλογο: δύο αντιστάτες σε σειρά</span>
@@ -729,6 +736,9 @@ function renderQuizSelection(classKey, subjectKey) {
             <div id="intro3d-mount"></div>
         </div>
         <!-- PHYSICS Γ: 3D CIRCUIT WITH TWO RESISTORS IN SERIES -->
+        <div class="tab-panel" id="tab-panel-survival" style="display: ${currentTab === 'survival' ? 'block' : 'none'};">
+            <div id="survival-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-seriesvideo" style="display: ${currentTab === 'seriesvideo' ? 'block' : 'none'};">
             <div id="seriesvideo-mount"></div>
         </div>
@@ -850,6 +860,10 @@ function renderQuizSelection(classKey, subjectKey) {
     }
     if (currentTab === 'seriesvideo') {
         renderSeriesVideoView();
+    }
+    if (currentTab === 'survival') {
+        const m = document.getElementById('survival-mount');
+        if (m && window.SurvivalSlides) window.SurvivalSlides.render(m);
     }
     if (currentTab === 'analogy') {
         renderAnalogyView();
@@ -1099,6 +1113,20 @@ function switchSubjectTab(tabKey) {
             anPanel.style.animation = 'fadeIn 0.3s ease';
             const am = document.getElementById('analogy-mount');
             if (am && !am.hasChildNodes()) renderAnalogyView();
+        }
+    }
+
+    const suBtn = document.getElementById('tab-btn-survival');
+    if (suBtn) suBtn.classList.toggle('active', tabKey === 'survival');
+    const suPanel = document.getElementById('tab-panel-survival');
+    if (suPanel) {
+        suPanel.style.display = tabKey === 'survival' ? 'block' : 'none';
+        if (tabKey === 'survival') {
+            suPanel.style.animation = 'fadeIn 0.3s ease';
+            const um = document.getElementById('survival-mount');
+            if (um && !um.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(um);
+        } else if (window.SurvivalSlides) {
+            window.SurvivalSlides.stop();          // leaving the tab stops the automatic play
         }
     }
 
