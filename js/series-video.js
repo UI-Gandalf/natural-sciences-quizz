@@ -19,20 +19,16 @@ window.SeriesVideo = (function () {
             '<video id="sv-video" class="sv-video" src="' + SRC + '" controls preload="metadata" playsinline controlslist="nodownload"></video>' +
             '<div class="sv-sub" id="sv-sub" aria-live="off"></div></div>' +
             '<div class="sv-bar"><button type="button" class="sv-btn on" id="sv-cc" aria-pressed="true">✅ Υπότιτλοι ελληνικά: ΕΜΦΑΝΙΖΟΝΤΑΙ <small>(πάτα για να κρυφτούν)</small></button>' +
-            '<button type="button" class="sv-btn on" id="sv-fit" aria-pressed="true" title="Προσαρμόζει τους υπότιτλους στη διάρκεια του βίντεο">⏱ Συγχρονισμός: προσαρμοσμένος στη διάρκεια</button>' +
             '<label class="sv-size">Μέγεθος γραμμάτων <select id="sv-fs"><option value="0.9">Μικρά</option><option value="1.15" selected>Κανονικά</option><option value="1.5">Μεγάλα</option></select></label>' +
             '<button type="button" class="sv-btn" id="sv-full">⛶ Πλήρης οθόνη</button>' +
             '<span class="sv-note">Αν το βίντεο δεν παίζει, δοκίμασε άλλον περιηγητή ή ξαναφόρτωσε τη σελίδα.</span></div>' +
             '<details class="sv-tx"><summary>📄 Δες όλο το κείμενο των υποτίτλων (ελληνικά)</summary><div class="sv-tx-body" id="sv-tx-body"></div></details>' +
             '</div>';
         const v = mount.querySelector('#sv-video'), sub = mount.querySelector('#sv-sub'), cc = mount.querySelector('#sv-cc'), box = mount.querySelector('#sv-player');
-        let on = true, fit = true;
-        // the subtitle file ends later than the video: "fit" stretches the cue times to the real duration of the video
-        const lastEnd = cues.length ? cues[cues.length - 1][1] : 0;
-        const k = () => (fit && v.duration && lastEnd > v.duration ? lastEnd / v.duration : 1);
+        let on = true;
         const show = () => {
             if (!on) { sub.textContent = ''; sub.style.display = 'none'; return; }
-            const t = v.currentTime * k();
+            const t = v.currentTime;
             const c = cues.find((x) => t >= x[0] && t < x[1]);
             sub.textContent = c ? c[2] : '';
             sub.style.display = c ? 'block' : 'none';
@@ -42,8 +38,6 @@ window.SeriesVideo = (function () {
             on = !on; cc.classList.toggle('on', on); cc.setAttribute('aria-pressed', String(on));
             cc.innerHTML = on ? '✅ Υπότιτλοι ελληνικά: ΕΜΦΑΝΙΖΟΝΤΑΙ <small>(πάτα για να κρυφτούν)</small>' : '🚫 Υπότιτλοι ελληνικά: ΚΡΥΦΤΟΙ <small>(πάτα για να εμφανιστούν)</small>'; show();
         });
-        const fitBtn = mount.querySelector('#sv-fit');
-        fitBtn.addEventListener('click', () => { fit = !fit; fitBtn.classList.toggle('on', fit); fitBtn.setAttribute('aria-pressed', String(fit)); fitBtn.textContent = '⏱ Συγχρονισμός: ' + (fit ? 'προσαρμοσμένος στη διάρκεια' : 'όπως στο αρχείο'); show(); });
         mount.querySelector('#sv-fs').addEventListener('change', (e) => { box.style.setProperty('--sv-fs', e.target.value); });
         box.style.setProperty('--sv-fs', '1.15');
         mount.querySelector('#sv-full').addEventListener('click', () => {
@@ -53,9 +47,9 @@ window.SeriesVideo = (function () {
         // clickable transcript: a line jumps to its place in the video
         const tx = mount.querySelector('#sv-tx-body');
         tx.innerHTML = cues.map((c, i) => '<button type="button" class="sv-line" data-i="' + i + '"><b>' + fmt(c[0]) + '</b> ' + c[2] + '</button>').join('');
-        tx.addEventListener('click', (e) => { const b = e.target.closest('.sv-line'); if (!b) return; v.currentTime = (cues[+b.dataset.i][0] + 0.01) / k(); v.play().catch(() => {}); mount.querySelector('#sv-player').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+        tx.addEventListener('click', (e) => { const b = e.target.closest('.sv-line'); if (!b) return; v.currentTime = (cues[+b.dataset.i][0] + 0.01); v.play().catch(() => {}); mount.querySelector('#sv-player').scrollIntoView({ behavior: 'smooth', block: 'center' }); });
         v.addEventListener('timeupdate', () => {
-            const t = v.currentTime * k(), i = cues.findIndex((x) => t >= x[0] && t < x[1]);
+            const t = v.currentTime, i = cues.findIndex((x) => t >= x[0] && t < x[1]);
             tx.querySelectorAll('.sv-line.now').forEach((e) => e.classList.remove('now'));
             if (i >= 0) { const e = tx.querySelector('.sv-line[data-i="' + i + '"]'); if (e) e.classList.add('now'); }
         });
