@@ -429,7 +429,8 @@ function renderQuizSelection(classKey, subjectKey) {
             <h1 class="view-title">${sub.name} (${cls.name})</h1>
 
             <!-- Navigation Tabs: Quizzes vs Theory vs Exam Solutions vs Simulation -->
-            <div class="subject-tabs-container">
+            <div class="subject-tabs-container${isPhysG ? ' grouped' : ''}">
+                ${isPhysG ? physGroupsHtml(currentTab, classKey, subjectKey, activeQuizzes) : ''}
                 <button class="subject-tab-btn ${currentTab === 'quizzes' ? 'active' : ''}" id="tab-btn-quizzes" onclick="switchSubjectTab('quizzes')">
                     <span class="tab-icon">📝</span>
                     <span>Κουίζ Αξιολόγησης</span>
@@ -1035,8 +1036,63 @@ function renderSimulationView() {
     }
 }
 
+// ---- Physics Γ: the many tabs are collected in 4 pop-up menus ----
+const PHYS_G_GROUPS = [
+    { id: 'quiz', icon: '📝', label: 'Κουίζ', items: [
+        { tab: 'exam_solutions', label: 'Λυμένο ενδεικτικό διαγώνισμα' },
+        { tab: 'quizzes', label: 'Όλα τα κουίζ (κάρτες)' },
+        { quizzes: true } ] },
+    { id: 'theory', icon: '📖', label: 'Θεωρία', items: [
+        { tab: 'theory', label: 'Συνοπτικός οδηγός μελέτης και πρωτόκολλο επίλυσης' },
+        { tab: 'survival', label: 'Οδηγός επιβίωσης (διαφάνειες)' },
+        { tab: 'seriesvideo', label: 'Βίντεο: κύκλωμα σειράς (ελληνικοί υπότιτλοι)' } ] },
+    { id: 'sim', icon: '⚡', label: 'Προσομοιώσεις', items: [
+        { tab: 'intro3d', label: '3D εισαγωγή στο απλό ιδανικό κύκλωμα' },
+        { tab: 'series3d', label: '3D κύκλωμα με δύο αντιστάτες σε σειρά' },
+        { tab: 'analogy', label: 'Βαρυτικό ανάλογο: δύο αντιστάτες σε σειρά' },
+        { tab: 'simulation', label: '2D πλήρης προσομοίωση' } ] },
+    { id: 'syl', icon: '📚', label: 'Εξεταστέα ύλη (σχολικό βιβλίο)', items: [ { tab: 'syllabus', label: '' } ] }
+];
+function physGroupsHtml(currentTab, classKey, subjectKey, quizzes) {
+    return PHYS_G_GROUPS.map((g) => {
+        if (g.id === 'syl') {
+            return `<div class="sg-wrap"><button type="button" class="sg-btn${currentTab === 'syllabus' ? ' active' : ''}" data-group="syl" onclick="switchSubjectTab('syllabus')"><span class="tab-icon">${g.icon}</span><span>${g.label}</span></button></div>`;
+        }
+        const items = g.items.map((it) => {
+            if (it.quizzes) return quizzes.map((q) => `<button type="button" class="sg-item" data-quiz="${q.id}" onclick="closeTabMenus(); navigateTo('class/${classKey}/subject/${subjectKey}/quiz/${q.id}')">${q.title}</button>`).join('');
+            return `<button type="button" class="sg-item${currentTab === it.tab ? ' active' : ''}" data-tab="${it.tab}" onclick="closeTabMenus(); switchSubjectTab('${it.tab}')">${it.label}</button>`;
+        }).join('');
+        const act = g.items.find((it) => it.tab === currentTab);
+        return `<div class="sg-wrap"><button type="button" class="sg-btn${act ? ' active' : ''}" data-group="${g.id}" aria-haspopup="true" aria-expanded="false" onclick="toggleTabMenu(this, event)"><span class="tab-icon">${g.icon}</span><span class="sg-label">${g.label}</span><span class="sg-caret">▾</span></button><div class="sg-menu" role="menu">${items}</div></div>`;
+    }).join('');
+}
+function closeTabMenus() {
+    document.querySelectorAll('.sg-wrap.open').forEach((w) => { w.classList.remove('open'); const b = w.querySelector('.sg-btn'); if (b) b.setAttribute('aria-expanded', 'false'); });
+}
+function toggleTabMenu(btn, ev) {
+    if (ev) ev.stopPropagation();
+    const w = btn.closest('.sg-wrap'), was = w.classList.contains('open');
+    closeTabMenus();
+    if (!was) { w.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
+}
+document.addEventListener('click', (e) => { if (!e.target.closest('.sg-wrap')) closeTabMenus(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTabMenus(); });
+function updateTabGroups(tabKey) {
+    PHYS_G_GROUPS.forEach((g) => {
+        const btn = document.querySelector('.sg-btn[data-group="' + g.id + '"]');
+        if (!btn) return;
+        const hit = g.id === 'syl' ? tabKey === 'syllabus' : g.items.find((it) => it.tab === tabKey);
+        btn.classList.toggle('active', !!hit);
+        const lab = btn.querySelector('.sg-label');
+        if (lab) lab.textContent = g.label + (hit && hit.label ? ' · ' + hit.label.replace(/\s*\(.*$/, '') : '');
+        const w = btn.closest('.sg-wrap');
+        if (w) w.querySelectorAll('.sg-item[data-tab]').forEach((b) => b.classList.toggle('active', b.dataset.tab === tabKey));
+    });
+}
+
 function switchSubjectTab(tabKey) {
     AppState.currentSubjectTab = tabKey;
+    updateTabGroups(tabKey);
     // Leaving the simulation (or arriving at it from anywhere else) means the next visit starts neutral
     if (tabKey !== 'simulation') AppState.simulationEntered = false;
     
