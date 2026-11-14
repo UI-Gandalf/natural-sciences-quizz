@@ -761,6 +761,9 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-survival" style="display: ${currentTab === 'survival' ? 'block' : 'none'};">
             <div id="survival-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-duelists" style="display: ${currentTab === 'duelists' ? 'block' : 'none'};">
+            <div id="duelists-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-faultsvideo" style="display: ${currentTab === 'faultsvideo' ? 'block' : 'none'};">
             <div id="faultsvideo-mount"></div>
         </div>
@@ -896,6 +899,10 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'faultsvideo') {
         const m = document.getElementById('faultsvideo-mount');
         if (m && window.SeriesVideo) window.SeriesVideo.renderFaults(m);
+    }
+    if (currentTab === 'duelists') {
+        const m = document.getElementById('duelists-mount');
+        if (m && window.DuelistsEmbed) window.DuelistsEmbed.render(m);
     }
     if (currentTab === 'survival') {
         const m = document.getElementById('survival-mount');
@@ -1083,7 +1090,8 @@ const PHYS_G_GROUPS = [
         { tab: 'intro3d', label: '3D εισαγωγή στο απλό ιδανικό κύκλωμα' },
         { tab: 'series3d', label: '3D κύκλωμα με δύο αντιστάτες σε σειρά' },
         { tab: 'analogy', label: 'Βαρυτικό ανάλογο: δύο αντιστάτες σε σειρά' },
-        { tab: 'simulation', label: '2D πλήρης προσομοίωση' } ] },
+        { tab: 'simulation', label: '2D πλήρης προσομοίωση' },
+        { tab: 'duelists', label: 'Παιχνίδι: Circuit Duelists (κάρτες και αποστολές)' } ] },
     { id: 'syl', icon: '📚', label: 'Εξεταστέα ύλη (σχολικό βιβλίο)', items: [ { tab: 'syllabus', label: '' } ] }
 ];
 function physGroupsHtml(currentTab, classKey, subjectKey, quizzes) {
@@ -1220,6 +1228,15 @@ function switchSubjectTab(tabKey) {
         }
     }
 
+    const duPanel = document.getElementById('tab-panel-duelists');
+    if (duPanel) {
+        duPanel.style.display = tabKey === 'duelists' ? 'block' : 'none';
+        if (tabKey === 'duelists') {
+            duPanel.style.animation = 'fadeIn 0.3s ease';
+            const dm = document.getElementById('duelists-mount');
+            if (dm && !dm.hasChildNodes() && window.DuelistsEmbed) window.DuelistsEmbed.render(dm);
+        }
+    }
     const fvPanel = document.getElementById('tab-panel-faultsvideo');
     if (fvPanel) {
         fvPanel.style.display = tabKey === 'faultsvideo' ? 'block' : 'none';
