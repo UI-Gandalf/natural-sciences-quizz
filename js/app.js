@@ -1411,8 +1411,9 @@ function switchSubjectTab(tabKey) {
    cannot do it (or refuses), the simulation just stays in the page. Leaving full screen goes back to the quizzes.
    ========================================================================== */
 const FS_TABS = ['intro3d', 'series3d', 'analogy', 'simulation'];
+const fsApplies = (tabKey) => (AppState.currentSubject === 'physics' && FS_TABS.includes(tabKey)) || (AppState.currentSubject === 'chemistry' && tabKey === 'neutral');
 function enterTabFullscreen(tabKey) {
-    if (!FS_TABS.includes(tabKey) || AppState.currentSubject !== 'physics') return;
+    if (!fsApplies(tabKey)) return;
     if (!(document.fullscreenEnabled || document.webkitFullscreenEnabled)) return;
     let target = null;
     if (tabKey === 'simulation') {
@@ -1420,6 +1421,14 @@ function enterTabFullscreen(tabKey) {
             try { window.CircuitSimulation.openFullscreenModal(); } catch (e) { /* keep inline */ }
         }
         target = document.getElementById('sim-fullscreen-modal');
+    } else if (tabKey === 'neutral') {
+        target = document.querySelector('#neutral-mount .neut-wrap');
+        if (target && !target.querySelector('.neut-exit')) {
+            const bt = document.createElement('button');
+            bt.type = 'button'; bt.className = 'neut-exit'; bt.textContent = '← Έξοδος';
+            bt.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else switchSubjectTab('quizzes'); });
+            target.insertBefore(bt, target.firstChild);
+        }
     } else if (tabKey === 'analogy') {
         target = document.querySelector('#analogy-mount .ga-wrap');
         if (target && !target.querySelector('.ga-exit')) {
@@ -1438,7 +1447,7 @@ function enterTabFullscreen(tabKey) {
 }
 function onFullscreenExitReturn() {
     if (document.fullscreenElement || document.webkitFullscreenElement) return;
-    if (!FS_TABS.includes(AppState.currentSubjectTab) || AppState.currentSubject !== 'physics') return;
+    if (!fsApplies(AppState.currentSubjectTab)) return;
     if (window.CircuitSimulation && typeof window.CircuitSimulation.closeFullscreenModal === 'function') window.CircuitSimulation.closeFullscreenModal();
     switchSubjectTab('quizzes');
 }
