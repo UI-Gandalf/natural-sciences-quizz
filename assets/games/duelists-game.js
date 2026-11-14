@@ -305,6 +305,48 @@
   const _renderDeck = window.renderDeck;
   window.renderDeck = function () { _renderDeck.apply(this, arguments); markWon(); };
 
+
+  /* ---------- "Πώς παίζεται" ---------- */
+  const HELP = `<h3>🎮 Πώς παίζεται το «Αποστολές»</h3>
+    <p>Σε κάθε <b>γύρο</b> παίζεις <b>10 αποστολές</b> με τυχαίους αριθμούς. Ό,τι χρειάζεσαι για τους υπολογισμούς το βρίσκεις στις κάρτες και στον προσομοιωτή παρακάτω.</p>
+    <h4>Τα 4 είδη αποστολών</h4>
+    <ul>
+      <li><b>🧮 Πρόβλεψη:</b> σου δίνουμε ένα κύκλωμα (σειρά ή παράλληλο, μερικές φορές με βλάβη). Γράφεις τον αριθμό που ζητείται (π.χ. το ρεύμα) και πατάς «Έλεγχος» ή Enter. Δέχεται κόμμα ή τελεία και μικρή στρογγυλοποίηση. Έχεις <b>2 προσπάθειες</b>.</li>
+      <li><b>🔍 Διάγνωση βλάβης:</b> βλέπεις τις ενδείξεις των οργάνων και επιλέγεις ποια βλάβη υπάρχει (ανοικτός διακόπτης, καμένος αντιστάτης, βραχυκύκλωμα…). Έχεις <b>2 προσπάθειες</b>.</li>
+      <li><b>⚖️ Σωστό / Λάθος:</b> μία πρόταση, <b>μία μόνο</b> απάντηση.</li>
+      <li><b>🎛️ Ρύθμιση κυκλώματος:</b> κινείς τα ρυθμιστικά (Vπηγ, R₁, R₂) ώστε να πετύχεις τον στόχο (π.χ. Iολ = 2 A) και πατάς «Έλεγχος». Υπάρχουν πολλές σωστές λύσεις και <b>απεριόριστες προσπάθειες</b>.</li>
+    </ul>
+    <h4>Πόντοι</h4>
+    <ul>
+      <li>Πρόβλεψη και διάγνωση: <b>10</b> πόντοι με την πρώτη, <b>5</b> με τη δεύτερη προσπάθεια. Η «💡 Βοήθεια» στις προβλέψεις κοστίζει <b>−3</b>.</li>
+      <li>Σωστό / Λάθος: <b>5</b> πόντοι. Ρύθμιση κυκλώματος: <b>15</b> με την πρώτη προσπάθεια, <b>8</b> αργότερα.</li>
+      <li><b>Bonus σερί:</b> όσες περισσότερες σωστές στη σειρά, τόσο περισσότεροι επιπλέον πόντοι (έως +6 ανά αποστολή). Ένα λάθος μηδενίζει το σερί.</li>
+    </ul>
+    <h4>Βαθμίδες, αστέρια και κάρτες</h4>
+    <ul>
+      <li><b>Βαθμίδες</b> (με τους συνολικούς πόντους): Μαθητευόμενος 0 · Τεχνίτης 60 · Ηλεκτρολόγος 150 · Μηχανικός 300 · Αρχιμηχανικός 500.</li>
+      <li>Στο τέλος του γύρου παίρνεις <b>1 έως 3 αστέρια</b>, ανάλογα με το ποσοστό των βασικών πόντων.</li>
+      <li>Κάθε σωστή αποστολή <b>κατακτά</b> μια κάρτα της τράπουλας (χρυσό περίγραμμα και ★). Στόχος: να κατακτήσεις και τις 15.</li>
+    </ul>
+    <h4>Χρήσιμα</h4>
+    <ul>
+      <li>Μετά από κάθε αποστολή βλέπεις την πλήρη λύση βήμα προς βήμα και μπορείς να φορτώσεις το κύκλωμα στον προσομοιωτή («Δες το στον προσομοιωτή»).</li>
+      <li>Η πρόοδος (πόντοι, κάρτες, καλύτερος γύρος) <b>αποθηκεύεται σε αυτή τη συσκευή</b>. Αν αλλάξεις συσκευή ή καθαρίσεις τα δεδομένα του περιηγητή, ξεκινάς από την αρχή.</li>
+      <li>Μπορείς να γυρίσεις στην «📖 Ελεύθερη μελέτη» όποτε θέλεις, χωρίς να χάσεις την πρόοδο.</li>
+    </ul>`;
+  function showHelp() {
+    if ($('gm-help')) return;
+    const o = document.createElement('div'); o.id = 'gm-help'; o.className = 'gm-help';
+    o.innerHTML = '<div class="gm-help-box" role="dialog" aria-modal="true" aria-label="Πώς παίζεται"><button type="button" class="gm-help-x" aria-label="Κλείσιμο">✕</button>' + HELP + '<div class="gm-actions"><button type="button" class="gm-btn is-primary" id="gm-help-ok">Κατάλαβα, παίζουμε!</button></div></div>';
+    const close = () => { o.remove(); document.removeEventListener('keydown', esc); try { localStorage.setItem(KEY + '_help', '1'); } catch (e) { /* ignore */ } };
+    const esc = (e) => { if (e.key === 'Escape') close(); };
+    o.addEventListener('click', (e) => { if (e.target === o) close(); });
+    o.querySelector('.gm-help-x').addEventListener('click', close); o.querySelector('#gm-help-ok').addEventListener('click', close);
+    document.addEventListener('keydown', esc);
+    document.body.appendChild(o);
+    o.querySelector('#gm-help-ok').focus({ preventScroll: true });
+  }
+
   /* ---------- mode switch ---------- */
   function setMode(mode) {
     const game = mode === 'game';
@@ -316,14 +358,16 @@
   function init() {
     const head = document.querySelector('.masthead'); if (!head) return;
     const bar = document.createElement('div'); bar.className = 'mode-bar';
-    bar.innerHTML = '<span class="mode-label">Τρόπος χρήσης</span><button type="button" class="mode-btn" id="mode-free" aria-pressed="true">📖 Ελεύθερη μελέτη</button><button type="button" class="mode-btn is-game" id="mode-game" aria-pressed="false">🎮 Αποστολές (παιχνίδι)</button><span class="mode-note" id="mode-note"></span>';
+    bar.innerHTML = '<span class="mode-label">Τρόπος χρήσης</span><button type="button" class="mode-btn" id="mode-free" aria-pressed="true">📖 Ελεύθερη μελέτη</button><button type="button" class="mode-btn is-game" id="mode-game" aria-pressed="false">🎮 Αποστολές (παιχνίδι)</button><button type="button" class="mode-btn is-help" id="mode-help">❓ Πώς παίζεται</button><span class="mode-note" id="mode-note"></span>';
     head.after(bar);
     const sec = document.createElement('section'); sec.id = 'game-section'; sec.className = 'section-block';
-    sec.innerHTML = '<div class="section-header"><div><p class="kicker">ΤΡΟΠΟΣ ΠΑΙΧΝΙΔΙΟΥ • ΑΠΟΣΤΟΛΕΣ</p><h2>Αποστολές Κυκλωμάτων</h2><p class="section-sub">Κάθε γύρος έχει 10 αποστολές: προβλέψεις, διάγνωση βλαβών, σωστό/λάθος και ρύθμιση κυκλώματος. Σωστές απαντήσεις δίνουν πόντους, bonus σερί και κατακτούν κάρτες.</p></div></div><div id="game-body"></div>';
+    sec.innerHTML = '<div class="section-header"><div><p class="kicker">ΤΡΟΠΟΣ ΠΑΙΧΝΙΔΙΟΥ • ΑΠΟΣΤΟΛΕΣ</p><h2>Αποστολές Κυκλωμάτων</h2><p><button type="button" class="gm-btn" id="gm-help-btn">❓ Πώς παίζεται</button></p><p class="section-sub">Κάθε γύρος έχει 10 αποστολές: προβλέψεις, διάγνωση βλαβών, σωστό/λάθος και ρύθμιση κυκλώματος. Σωστές απαντήσεις δίνουν πόντους, bonus σερί και κατακτούν κάρτες.</p></div></div><div id="game-body"></div>';
     bar.after(sec);
     $('mode-free').addEventListener('click', () => setMode('free'));
-    $('mode-game').addEventListener('click', () => setMode('game'));
+    $('mode-game').addEventListener('click', () => { setMode('game'); let seen = false; try { seen = localStorage.getItem(KEY + '_help') === '1'; } catch (e) { /* ignore */ } if (!seen) showHelp(); });
+    $('mode-help').addEventListener('click', showHelp);
     setMode('free');
+    $('gm-help-btn').addEventListener('click', showHelp);
     markWon();
   }
   window.CircuitDuelistsGame = { state: () => ({ M, R, G }) };   // read-only peek, used for testing
