@@ -10988,3 +10988,6 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .neut-wrap:fullscreen { width: 100vw; height: 100vh; max-width: none; overflow: auto; box-sizing: border-box; padding: 56px 24px 24px; background: #0b1220; border-radius: 0; border: 0; }
 .neut-exit { display: none; }
 .neut-wrap:fullscreen .neut-exit { display: block; position: fixed; top: 10px; left: 10px; z-index: 5; cursor: pointer; border-radius: 8px; border: 1px solid rgba(248, 113, 113, 0.6); background: rgba(15, 23, 42, 0.9); color: #fecaca; padding: 6px 12px; font: inherit; font-size: 0.85rem; }
+.sg-item.is-locked { opacity: 0.55; cursor: not-allowed; border-style: dashed; }
+.sg-item.is-locked:hover { background: transparent; border-color: transparent; }
+.sg-item.is-locked small { display: block; font-weight: 500; }

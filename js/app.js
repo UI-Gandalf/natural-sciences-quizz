@@ -1091,7 +1091,7 @@ const PHYS_G_GROUPS = [
         { tab: 'series3d', label: '3D κύκλωμα με δύο αντιστάτες σε σειρά' },
         { tab: 'analogy', label: 'Βαρυτικό ανάλογο: δύο αντιστάτες σε σειρά' },
         { tab: 'simulation', label: '2D πλήρης προσομοίωση' },
-        { tab: 'duelists', label: 'Παιχνίδι: Circuit Duelists (κάρτες και αποστολές)' } ] },
+        { tab: 'duelists', label: 'Παιχνίδι: Circuit Duelists (κάρτες και αποστολές)', locked: true } ] },
     { id: 'syl', icon: '📚', label: 'Εξεταστέα ύλη (σχολικό βιβλίο)', items: [ { tab: 'syllabus', label: '' } ] }
 ];
 function physGroupsHtml(currentTab, classKey, subjectKey, quizzes) {
@@ -1101,6 +1101,7 @@ function physGroupsHtml(currentTab, classKey, subjectKey, quizzes) {
         }
         const items = g.items.map((it) => {
             if (it.quizzes) return quizzes.map((q) => `<button type="button" class="sg-item" data-quiz="${q.id}" onclick="closeTabMenus(); navigateTo('class/${classKey}/subject/${subjectKey}/quiz/${q.id}')">${q.title}</button>`).join('');
+            if (it.locked) return `<button type="button" class="sg-item is-locked" data-tab="${it.tab}" disabled aria-disabled="true" title="Θα είναι διαθέσιμο σύντομα">🔒 ${it.label} <small>(σύντομα διαθέσιμο)</small></button>`;
             return `<button type="button" class="sg-item${currentTab === it.tab ? ' active' : ''}" data-tab="${it.tab}" onclick="closeTabMenus(); switchSubjectTab('${it.tab}')">${it.label}</button>`;
         }).join('');
         const act = g.items.find((it) => it.tab === currentTab);
@@ -1132,6 +1133,7 @@ function updateTabGroups(tabKey) {
 }
 
 function switchSubjectTab(tabKey) {
+    if (PHYS_G_GROUPS.some((g) => g.items.some((it) => it.tab === tabKey && it.locked))) return;   // locked tabs (not released yet) cannot be opened
     AppState.currentSubjectTab = tabKey;
     updateTabGroups(tabKey);
     const hl = document.getElementById('phys-home-link'); if (hl) hl.style.display = tabKey === 'quizzes' ? 'none' : 'inline-flex';
