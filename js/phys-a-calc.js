@@ -28,7 +28,7 @@
 
     function render(mount, opt) {
         const cfg = CFG[opt.kind];
-        const st = { d: cfg.opts[1][0], set: 0 };
+        const st = { d: cfg.opts[0][0], set: 0, filled: false };
         let inputs = '';
         for (let i = 0; i < 10; i++) inputs += '<tr><td>' + (i + 1) + '</td><td><input class="pc-in" data-i="' + i + '" inputmode="decimal" autocomplete="off"></td></tr>';
         mount.innerHTML =
@@ -98,19 +98,29 @@
             const row = cfg.samples[st.d][st.set];
             const ins = root.querySelectorAll('.pc-in');
             row.forEach((v, i) => { ins[i].value = nf(v, st.d); });
+            st.filled = true;          // the table holds an unchanged example: a change of precision re-fills it
             update();
         }
 
-        root.addEventListener('input', e => { if (e.target.closest('.pc-in')) update(); });
+        root.addEventListener('input', e => { if (e.target.closest('.pc-in')) { st.filled = false; update(); } });
         root.addEventListener('change', e => {
-            if (e.target.id === 'pc-set') { st.set = +e.target.value; fillSample(); return; }
-            if (e.target.name === 'pc-d') { st.d = +e.target.value; placeholders(); root.querySelectorAll('.pc-in').forEach(i => { i.value = ''; }); update(); }
+            if (e.target.id === 'pc-set') {
+                // another example always starts with the coarsest instrument (whole numbers)
+                st.set = +e.target.value; st.d = cfg.opts[0][0];
+                const r0 = root.querySelector('input[name="pc-d"][value="' + st.d + '"]'); if (r0) r0.checked = true;
+                placeholders(); fillSample(); return;
+            }
+            if (e.target.name === 'pc-d') {
+                st.d = +e.target.value; placeholders();
+                if (st.filled) fillSample();      // the same example, now as read with the new precision
+                else { root.querySelectorAll('.pc-in').forEach(i => { i.value = ''; }); update(); }
+            }
         });
         root.addEventListener('click', e => {
             const b = e.target.closest('[data-act]');
             if (!b) return;
             if (b.dataset.act === 'back') opt.back();
-            else if (b.dataset.act === 'clear') { root.querySelectorAll('.pc-in').forEach(i => { i.value = ''; }); update(); }
+            else if (b.dataset.act === 'clear') { st.filled = false; root.querySelectorAll('.pc-in').forEach(i => { i.value = ''; }); update(); }
             else if (b.dataset.act === 'sample') fillSample();
         });
         placeholders();
