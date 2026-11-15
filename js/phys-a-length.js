@@ -31,14 +31,19 @@
     }
 
     function dotPlot(vals, mean) {
-        const lo = 118.6, hi = 119.6, W = 640, L = 30, R = W - 30;
+        // the axis follows the data: 0,1 cm of margin on both sides, ticks every 0,1 cm (0,2 cm for a wide spread)
+        const mnV = Math.min.apply(null, vals), mxV = Math.max.apply(null, vals);
+        let step = (Math.ceil(mxV * 10) / 10 - Math.floor(mnV * 10) / 10 + 0.2) <= 1.25 ? 0.1 : 0.2;
+        const lo = Math.round(Math.floor((Math.floor(mnV * 10) / 10 - 0.1) / step + 1e-9) * step * 10) / 10;
+        const hi = Math.round(Math.ceil((Math.ceil(mxV * 10) / 10 + 0.1) / step - 1e-9) * step * 10) / 10;
+        const W = 640, L = 30, R = W - 30;
         const cnt = {}; let mx = 1;
         vals.forEach(v => { const k = Math.round(v * 10); cnt[k] = (cnt[k] || 0) + 1; if (cnt[k] > mx) mx = cnt[k]; });
         const H = 80 + 22 * mx, y0 = H - 42;
         const X = v => L + (v - lo) / (hi - lo) * (R - L);
-        let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="pe-svg" role="img" aria-label="Οι 10 μετρήσεις του μήκους του θρανίου">';
+        let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="pe-svg" role="img" aria-label="Οι 10 μετρήσεις του μήκους">';
         s += '<line x1="' + L + '" y1="' + y0 + '" x2="' + R + '" y2="' + y0 + '" class="pe-axis"/>';
-        for (let k = 0; k <= 10; k++) { const v = lo + k * 0.1, x = X(v); s += '<line x1="' + x + '" y1="' + y0 + '" x2="' + x + '" y2="' + (y0 + 6) + '" class="pe-axis"/><text x="' + x + '" y="' + (y0 + 26) + '" text-anchor="middle" class="pe-tick">' + nf(v, 1) + '</text>'; }
+        for (let k = 0, nk = Math.round((hi - lo) / step); k <= nk; k++) { const v = lo + k * step, x = X(v); s += '<line x1="' + x + '" y1="' + y0 + '" x2="' + x + '" y2="' + (y0 + 6) + '" class="pe-axis"/><text x="' + x + '" y="' + (y0 + 26) + '" text-anchor="middle" class="pe-tick">' + nf(v, 1) + '</text>'; }
         const st = {};
         vals.forEach(v => { const k = Math.round(v * 10); st[k] = (st[k] || 0) + 1; s += '<circle cx="' + X(v) + '" cy="' + (y0 - 12 - (st[k] - 1) * 22) + '" r="9" class="pe-dot"/>'; });
         if (isFinite(mean)) s += '<line x1="' + X(mean) + '" y1="8" x2="' + X(mean) + '" y2="' + y0 + '" class="pe-mean"/><text x="' + (X(mean) + 6) + '" y="20" class="pe-meant">μέση τιμή ' + nf(mean, 2) + ' cm</text>';
