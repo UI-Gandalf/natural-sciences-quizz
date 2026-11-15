@@ -192,6 +192,7 @@
         function update() {
             const ok = val.every(isFinite);
             const sumEl = root.querySelector('#pl-sum'), steps = root.querySelector('#pl-steps'), res = root.querySelector('#pl-res'), outl = root.querySelector('#pl-outl');
+            const rb0 = root.querySelector('[data-act="reset-ex"]'); if (rb0 && !ok) { rb0.disabled = false; rb0.title = 'Επαναφέρει τις αρχικές τιμές αυτού του παραδείγματος'; }
             if (!ok) { sumEl.textContent = '–'; steps.innerHTML = '<div class="pa-msg bad">Συμπληρώστε και τις 10 μετρήσεις με αριθμούς.</div>'; res.textContent = '–'; outl.textContent = '–'; root.querySelector('#pl-plot').innerHTML = ''; return; }
             const sum = Math.round(val.reduce((a, b) => a + b, 0) * 10) / 10;
             const mean = sum / 10;
@@ -216,6 +217,9 @@
             root.querySelector('#pl-title').textContent = 'Το μήκος ' + SETS[cur].gen;
             root.querySelector('#pl-gen').textContent = SETS[cur].gen;
             root.querySelector('#pl-short').textContent = SETS[cur].short;
+            // "Αρχικές τιμές" is only useful after the student has changed something
+            const rb = root.querySelector('[data-act="reset-ex"]');
+            if (rb) { const mod = val.some((v, i) => v !== SETS[cur].vals[i]); rb.disabled = !mod; rb.title = mod ? 'Επαναφέρει τις αρχικές τιμές αυτού του παραδείγματος' : 'Δεν έχεις αλλάξει καμία τιμή ακόμα'; }
         }
 
         function loadSet(n) {
