@@ -429,12 +429,13 @@ function renderQuizSelection(classKey, subjectKey) {
             <h1 class="view-title">${sub.name} (${cls.name})</h1>
 
             <!-- Navigation Tabs: Quizzes vs Theory vs Exam Solutions vs Simulation -->
-            <div class="subject-tabs-container${isPhysG ? ' grouped' : ''}">
+            <div class="subject-tabs-container${isPhysG ? ' grouped' : ''}${isBioG ? ' grouped-bio' : ''}">
                 ${isPhysG ? physGroupsHtml(currentTab, classKey, subjectKey, activeQuizzes) : ''}
                 <button class="subject-tab-btn ${currentTab === 'quizzes' ? 'active' : ''}" id="tab-btn-quizzes" onclick="switchSubjectTab('quizzes')">
                     <span class="tab-icon">📝</span>
                     <span>Κουίζ Αξιολόγησης</span>
                 </button>
+                ${isBioG ? physGroupsHtml(currentTab, classKey, subjectKey, [], BIO_G_GROUPS) : ''}
                 ${(isBioA || isBioB || isBioG) ? `
                 <button class="subject-tab-btn ${currentTab === 'bioguide' ? 'active' : ''}" id="tab-btn-bioguide" onclick="switchSubjectTab('bioguide')">
                     <span class="tab-icon">📋</span>
@@ -786,6 +787,12 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-cell" style="display: ${currentTab === 'cell' ? 'block' : 'none'};">
             <div id="cell-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-cellinfo" style="display: ${currentTab === 'cellinfo' ? 'block' : 'none'};">
+            <div id="cellinfo-mount"></div>
+        </div>
+        <div class="tab-panel" id="tab-panel-cellvideo" style="display: ${currentTab === 'cellvideo' ? 'block' : 'none'};">
+            <div id="cellvideo-mount"></div>
+        </div>
         ` : ''}
         ${(isBioA || isBioB || isBioG) ? `
         <!-- BIOLOGY: CONCISE STUDY GUIDE -->
@@ -899,6 +906,14 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'faultsvideo') {
         const m = document.getElementById('faultsvideo-mount');
         if (m && window.SeriesVideo) window.SeriesVideo.renderFaults(m);
+    }
+    if (currentTab === 'cellinfo') {
+        const m = document.getElementById('cellinfo-mount');
+        if (m && window.CellInfographic) window.CellInfographic.render(m);
+    }
+    if (currentTab === 'cellvideo') {
+        const m = document.getElementById('cellvideo-mount');
+        if (m && window.SeriesVideo) window.SeriesVideo.renderCell(m);
     }
     if (currentTab === 'duelists') {
         const m = document.getElementById('duelists-mount');
@@ -1094,8 +1109,8 @@ const PHYS_G_GROUPS = [
         { tab: 'duelists', label: 'Παιχνίδι: Circuit Duelists (κάρτες και αποστολές)', locked: true } ] },
     { id: 'syl', icon: '📚', label: 'Εξεταστέα ύλη (σχολικό βιβλίο)', items: [ { tab: 'syllabus', label: '' } ] }
 ];
-function physGroupsHtml(currentTab, classKey, subjectKey, quizzes) {
-    return PHYS_G_GROUPS.map((g) => {
+function physGroupsHtml(currentTab, classKey, subjectKey, quizzes, groups) {
+    return (groups || PHYS_G_GROUPS).map((g) => {
         if (g.id === 'syl') {
             return `<div class="sg-wrap"><button type="button" class="sg-btn${currentTab === 'syllabus' ? ' active' : ''}" data-group="syl" onclick="switchSubjectTab('syllabus')"><span class="tab-icon">${g.icon}</span><span>${g.label}</span></button></div>`;
         }
@@ -1108,6 +1123,13 @@ function physGroupsHtml(currentTab, classKey, subjectKey, quizzes) {
         return `<div class="sg-wrap"><button type="button" class="sg-btn${act ? ' active' : ''}" data-group="${g.id}" aria-haspopup="true" aria-expanded="false" onclick="toggleTabMenu(this, event)"><span class="tab-icon">${g.icon}</span><span class="sg-label">${g.label}</span><span class="sg-caret">▾</span></button><div class="sg-menu" role="menu">${items}</div></div>`;
     }).join('');
 }
+const BIO_G_GROUPS = [
+    { id: 'biotheory', icon: '📖', label: 'Θεωρία', items: [
+        { tab: 'bioguide', label: 'Συνοπτικός οδηγός ύλης' },
+        { tab: 'cell', label: 'Εξερεύνηση κυττάρου' },
+        { tab: 'cellvideo', label: 'Βίντεο: αρχιτεκτονική κυττάρου (ελληνικοί υπότιτλοι)' },
+        { tab: 'cellinfo', label: 'Infographic: δομή ευκαρυωτικού κυττάρου' } ] }
+];
 function closeTabMenus() {
     document.querySelectorAll('.sg-wrap.open').forEach((w) => { w.classList.remove('open'); const b = w.querySelector('.sg-btn'); if (b) b.setAttribute('aria-expanded', 'false'); });
 }
@@ -1120,7 +1142,7 @@ function toggleTabMenu(btn, ev) {
 document.addEventListener('click', (e) => { if (!e.target.closest('.sg-wrap')) closeTabMenus(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTabMenus(); });
 function updateTabGroups(tabKey) {
-    PHYS_G_GROUPS.forEach((g) => {
+    PHYS_G_GROUPS.concat(BIO_G_GROUPS).forEach((g) => {
         const btn = document.querySelector('.sg-btn[data-group="' + g.id + '"]');
         if (!btn) return;
         const hit = g.id === 'syl' ? tabKey === 'syllabus' : g.items.find((it) => it.tab === tabKey);
@@ -1132,8 +1154,24 @@ function updateTabGroups(tabKey) {
     });
 }
 
+// Biology Γ: the guide and the cell explorer get a "full screen" button (the whole panel is shown full screen)
+function ensurePanelFsBar(tabKey) {
+    if (AppState.currentSubject !== 'biology' || !(tabKey === 'bioguide' || tabKey === 'cell')) return;
+    if (!document.querySelector('.subject-tabs-container.grouped-bio')) return;
+    const panel = document.getElementById('tab-panel-' + tabKey);
+    if (!panel || panel.querySelector(':scope > .fs-bar')) return;
+    const bar = document.createElement('div');
+    bar.className = 'fs-bar';
+    bar.innerHTML = '<button type="button" class="sv-btn fs-toggle">⛶ Πλήρης οθόνη <small>(Esc για έξοδο)</small></button>';
+    bar.querySelector('button').addEventListener('click', () => {
+        if (document.fullscreenElement) document.exitFullscreen();
+        else if (panel.requestFullscreen) panel.requestFullscreen().catch(() => {});
+    });
+    panel.insertBefore(bar, panel.firstChild);
+}
+
 function switchSubjectTab(tabKey) {
-    if (PHYS_G_GROUPS.some((g) => g.items.some((it) => it.tab === tabKey && it.locked))) return;   // locked tabs (not released yet) cannot be opened
+    if (PHYS_G_GROUPS.concat(BIO_G_GROUPS).some((g) => g.items.some((it) => it.tab === tabKey && it.locked))) return;   // locked tabs (not released yet) cannot be opened
     AppState.currentSubjectTab = tabKey;
     updateTabGroups(tabKey);
     const hl = document.getElementById('phys-home-link'); if (hl) hl.style.display = tabKey === 'quizzes' ? 'none' : 'inline-flex';
@@ -1230,6 +1268,24 @@ function switchSubjectTab(tabKey) {
         }
     }
 
+    const ciPanel = document.getElementById('tab-panel-cellinfo');
+    if (ciPanel) {
+        ciPanel.style.display = tabKey === 'cellinfo' ? 'block' : 'none';
+        if (tabKey === 'cellinfo') {
+            ciPanel.style.animation = 'fadeIn 0.3s ease';
+            const cim = document.getElementById('cellinfo-mount');
+            if (cim && !cim.hasChildNodes() && window.CellInfographic) window.CellInfographic.render(cim);
+        }
+    }
+    const cvPanel = document.getElementById('tab-panel-cellvideo');
+    if (cvPanel) {
+        cvPanel.style.display = tabKey === 'cellvideo' ? 'block' : 'none';
+        if (tabKey === 'cellvideo') {
+            cvPanel.style.animation = 'fadeIn 0.3s ease';
+            const cvm = document.getElementById('cellvideo-mount');
+            if (cvm && !cvm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderCell(cvm);
+        }
+    }
     const duPanel = document.getElementById('tab-panel-duelists');
     if (duPanel) {
         duPanel.style.display = tabKey === 'duelists' ? 'block' : 'none';
@@ -1404,6 +1460,7 @@ function switchSubjectTab(tabKey) {
     if (tabKey === 'quizzes' && quizzesPanel) quizzesPanel.style.animation = 'fadeIn 0.3s ease';
 
     updateBreadcrumbs();
+    ensurePanelFsBar(tabKey);
     enterTabFullscreen(tabKey);
 }
 

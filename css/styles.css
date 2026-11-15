@@ -10991,3 +10991,21 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .sg-item.is-locked { opacity: 0.55; cursor: not-allowed; border-style: dashed; }
 .sg-item.is-locked:hover { background: transparent; border-color: transparent; }
 .sg-item.is-locked small { display: block; font-weight: 500; }
+
+/* Biology Γ: infographic viewer */
+.ci-wrap { max-width: 1250px; }
+.ci-box { background: #0b1220; border-radius: 14px; overflow: auto; border: 1px solid var(--card-border); text-align: center; }
+.ci-img { display: block; width: 100%; height: auto; cursor: zoom-in; margin: 0 auto; }
+.ci-box.zoomed { max-height: 78vh; }
+.ci-box.zoomed .ci-img { width: 2752px; max-width: none; cursor: zoom-out; }
+.ci-box:fullscreen { width: 100vw; height: 100vh; border-radius: 0; display: flex; align-items: center; justify-content: center; }
+.ci-box:fullscreen .ci-img { width: auto; max-width: 100%; max-height: 100vh; object-fit: contain; }
+.ci-box:fullscreen.zoomed { display: block; }
+.ci-box:fullscreen.zoomed .ci-img { max-height: none; width: 2752px; max-width: none; }
+
+/* Biology Γ: grouped Theory menu + full-screen study panels */
+.subject-tabs-container.grouped-bio { position: relative; gap: 12px; }
+.subject-tabs-container.grouped-bio #tab-btn-bioguide, .subject-tabs-container.grouped-bio #tab-btn-cell { display: none; }
+.fs-bar { display: flex; justify-content: flex-end; margin: 0 0 10px; }
+.fs-bar .sv-btn small { font-weight: 500; opacity: 0.85; }
+.tab-panel:fullscreen { background: #0b1220; color: #e2e8f0; overflow: auto; width: 100vw; height: 100vh; box-sizing: border-box; padding: 14px 24px 24px; }

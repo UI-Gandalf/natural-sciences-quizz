@@ -10,6 +10,7 @@ window.SeriesVideo = (function () {
 
     const SERIES = { src: 'assets/video/series_circuit_masterclass.mp4', cues: () => window.SERIES_VIDEO_CUES || [], title: 'Κύκλωμα σε σειρά: επεξήγηση σε βίντεο', lead: 'πώς επιλύουμε ένα κύκλωμα <strong>σε σειρά</strong>', min: 5 };
     const FAULTS = { src: 'assets/video/series_faults_shorts.mp4', cues: () => window.FAULTS_VIDEO_CUES || [], title: 'Κύκλωμα σε σειρά: βλάβες και βραχυκυκλώματα', lead: 'τι αλλάζει σε ένα κύκλωμα σε σειρά όταν <strong>καίγεται ένα στοιχείο</strong> ή όταν υπάρχει <strong>μερικό ή ολικό βραχυκύκλωμα</strong>', min: 6 };
+    const CELL = { src: 'assets/video/cell_architecture.mp4', cues: () => window.CELL_VIDEO_CUES || [], title: 'Αρχιτεκτονική κυττάρου: επεξήγηση σε βίντεο', lead: 'πώς διαφέρουν το <strong>προκαρυωτικό</strong>, το <strong>φυτικό</strong> και το <strong>ζωικό</strong> κύτταρο και τι κάνει κάθε οργανίδιο', min: 8 };
     const PARALLEL = { src: 'assets/video/parallel_circuit_masterclass.mp4', cues: () => window.PARALLEL_VIDEO_CUES || [], title: 'Παράλληλο κύκλωμα: επεξήγηση σε βίντεο', lead: 'πώς λειτουργεί ένα <strong>παράλληλο</strong> κύκλωμα (τάση, ρεύμα, ανοικτός διακόπτης, βραχυκύκλωμα)', min: 6 };
 
     function render(mount, cfg) {
@@ -61,5 +62,5 @@ window.SeriesVideo = (function () {
             if (i >= 0) { const e = tx.querySelector('.sv-line[data-i="' + i + '"]'); if (e) e.classList.add('now'); }
         });
     }
-    return { render, renderParallel: (m) => render(m, PARALLEL), renderFaults: (m) => render(m, FAULTS) };
+    return { render, renderParallel: (m) => render(m, PARALLEL), renderFaults: (m) => render(m, FAULTS), renderCell: (m) => render(m, CELL) };
 })();
