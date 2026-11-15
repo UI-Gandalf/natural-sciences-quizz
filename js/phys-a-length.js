@@ -134,24 +134,35 @@
         '</div>';
     }
 
+    /* five fixed example series (instrument accuracy 0,1 cm): #1 is the desk used in the theory page */
+    const SETS = [
+        { gen: 'ενός θρανίου', short: 'θρανίου', vals: LEN.slice() },
+        { gen: 'μιας σχολικής τσάντας', short: 'σχολικής τσάντας', vals: [45.9, 45.3, 45.7, 45.1, 45.1, 45.7, 45.5, 45.0, 45.3, 45.0] },
+        { gen: 'ενός ραφιού βιβλιοθήκης', short: 'ραφιού βιβλιοθήκης', vals: [87.8, 87.5, 87.1, 88.0, 87.4, 87.4, 88.8, 87.1, 87.7, 87.6] },
+        { gen: 'ενός γραφείου', short: 'γραφείου', vals: [152.4, 152.3, 153.5, 152.6, 152.2, 153.0, 152.4, 152.0, 152.4, 152.3] },
+        { gen: 'ενός σχολικού βιβλίου', short: 'σχολικού βιβλίου', vals: [23.7, 23.9, 23.5, 23.9, 23.8, 23.8, 23.8, 23.8, 24.3, 23.5] }
+    ];
+
     /* ---------------------------------------------------------------- page 2 (numerical example) */
     function page2() {
         let rows = '';
         for (let i = 0; i < 10; i++) rows += '<tr><td>' + (i + 1) + '</td><td><input class="pe-in" data-i="' + i + '" value="' + nf(LEN[i], 1) + '" inputmode="decimal"></td></tr>';
+        const selOpts = SETS.map((x, n) => '<option value="' + n + '">Παράδειγμα #' + (n + 1) + ': ' + x.short + '</option>').join('');
+
         return '' +
         '<div class="pa-wrap">' +
         '<header class="pa-head"><div class="pa-kicker">Φυσική Α΄ Γυμνασίου · Μέτρηση μήκους · Απτό παράδειγμα</div>' +
-        '<h2>🔬 Το μήκος ενός θρανίου: από 10 μετρήσεις σε μία τιμή</h2>' +
-        '<p>Μέτρηση του μήκους ενός θρανίου με μετροταινία, 10 φορές. Δοκιμάστε να αλλάξετε τιμές και δείτε πώς αλλάζει το αποτέλεσμα.</p>' +
-        '<div class="pa-tools"><button type="button" class="pa-btn" data-act="back">⬅ Πίσω στη μέτρηση μήκους</button><button type="button" class="pa-btn" data-act="reset-ex">↺ Αρχικές τιμές</button></div></header>' +
+        '<h2>🔬 <span id="pl-title">Το μήκος ενός θρανίου</span>: από 10 μετρήσεις σε μία τιμή</h2>' +
+        '<p>Μέτρηση του μήκους <span id="pl-gen">ενός θρανίου</span> με μετροταινία, 10 φορές. Δοκιμάστε να αλλάξετε τιμές και δείτε πώς αλλάζει το αποτέλεσμα.</p>' +
+        '<div class="pa-tools"><button type="button" class="pa-btn" data-act="back">⬅ Πίσω στη μέτρηση μήκους</button><button type="button" class="pa-btn" data-act="reset-ex">↺ Αρχικές τιμές</button><label class="pa-setsel">Σειρά μετρήσεων: <select id="pl-set" aria-label="Επιλογή σειράς μετρήσεων">' + selOpts + '</select></label></div></header>' +
         '<section class="pa-card"><h3><span class="pa-num">1</span> Οι μετρήσεις</h3>' +
         '<div class="pm-tablewrap"><table class="pm-table pe-table"><thead><tr><th>Μέτρηση</th><th>Μήκος (cm)</th></tr></thead><tbody>' + rows + '<tr class="pe-sum"><td>Άθροισμα</td><td id="pl-sum">–</td></tr></tbody></table></div>' +
         '<p class="pa-small">Όλες οι μετρήσεις έχουν <strong>ένα δεκαδικό ψηφίο</strong> (ακρίβεια οργάνου 0,1 cm).</p></section>' +
-        '<section class="pa-card"><h3><span class="pa-num">2</span> Πώς πέφτουν οι μετρήσεις;</h3><p>Κάθε τελεία είναι μία μέτρηση· η κάθετη γραμμή είναι η μέση τιμή. Οι περισσότερες τιμές συγκεντρώνονται γύρω από το 118,7 – 119,0 cm.</p><div class="pe-plotbox" data-zoom="1" id="pl-plot"></div>' + HINT + '</section>' +
+        '<section class="pa-card"><h3><span class="pa-num">2</span> Πώς πέφτουν οι μετρήσεις;</h3><p>Κάθε τελεία είναι μία μέτρηση· η κάθετη γραμμή είναι η μέση τιμή. Οι περισσότερες τιμές συγκεντρώνονται γύρω από το <span id="pl-central">118,7 – 119,0</span> cm.</p><div class="pe-plotbox" data-zoom="1" id="pl-plot"></div>' + HINT + '</section>' +
         '<section class="pa-card"><h3><span class="pa-num">3</span> Ποια είναι η πιο πιθανή τιμή;</h3>' +
         '<p>Στη γλώσσα των μαθηματικών η πιθανότερη τιμή είναι η <strong>μέση τιμή</strong>.</p><div class="pe-steps" id="pl-steps"></div>' +
-        '<div class="pa-rule">Η μέτρηση ενός φυσικού μεγέθους με το ίδιο όργανο έχει πάντα τον ίδιο αριθμό δεκαδικών ψηφίων, τα οποία πρέπει να αναγράφονται, αφού καθορίζουν και την ακρίβεια της μέτρησης. Γι\' αυτό η τιμή 118,91 στρογγυλοποιείται σε <strong>ένα δεκαδικό ψηφίο</strong>, που είναι η ακρίβεια του οργάνου.</div>' +
-        '<div class="pa-two"><div class="pa-box pa-good"><h4>Η τιμή που γράφουμε</h4><p>Μήκος θρανίου = <strong id="pl-res">–</strong> cm. Χρησιμοποιούμε τα διεθνή σύμβολα των μονάδων (cm).</p></div>' +
+        '<div class="pa-rule">Η μέτρηση ενός φυσικού μεγέθους με το ίδιο όργανο έχει πάντα τον ίδιο αριθμό δεκαδικών ψηφίων, τα οποία πρέπει να αναγράφονται, αφού καθορίζουν και την ακρίβεια της μέτρησης. Γι\' αυτό η τιμή <span id="pl-mean2">118,91</span> στρογγυλοποιείται σε <strong>ένα δεκαδικό ψηφίο</strong>, που είναι η ακρίβεια του οργάνου.</div>' +
+        '<div class="pa-two"><div class="pa-box pa-good"><h4>Η τιμή που γράφουμε</h4><p>Μήκος <span id="pl-short">θρανίου</span> = <strong id="pl-res">–</strong> cm. Χρησιμοποιούμε τα διεθνή σύμβολα των μονάδων (cm).</p></div>' +
         '<div class="pa-box pa-warn"><h4>Παρατήρηση</h4><p id="pl-outl">–</p></div></div></section>' +
         '<div class="pa-tools"><button type="button" class="pa-btn" data-act="back">⬅ Πίσω στη μέτρηση μήκους</button></div></div>';
     }
@@ -169,6 +180,7 @@
     function renderExample(mount, back) {
         mount.innerHTML = page2();
         const root = mount.querySelector('.pa-wrap');
+        let cur = 0;
         const val = LEN.slice();
         const parse = v => { const x = parseFloat(String(v).trim().replace(',', '.')); return isFinite(x) ? x : NaN; };
 
@@ -187,11 +199,27 @@
             res.textContent = nf(final, 1);
             const mx = Math.max.apply(null, val), mn = Math.min.apply(null, val);
             const far = val.filter(v => Math.abs(v - mean) >= 0.4);
+            far.sort((x, y) => Math.abs(y - mean) - Math.abs(x - mean));   // mention the value that stands out most
             outl.textContent = far.length
                 ? 'Η τιμή ' + nf(far[0], 1) + ' cm απέχει αρκετά από τις υπόλοιπες. Μια τέτοια απόκλιση οφείλεται συνήθως σε κάποιο από τα λάθη μεθόδου ή ανάγνωσης, και η μέση τιμή τη «εξομαλύνει» χωρίς να την αφήνει να καθορίσει το αποτέλεσμα.'
                 : 'Οι μετρήσεις κυμαίνονται από ' + nf(mn, 1) + ' έως ' + nf(mx, 1) + ' cm: η μέση τιμή τις συνοψίζει.';
             root.querySelector('#pl-plot').innerHTML = dotPlot(val, mean);
+            const srt = val.slice().sort((a, b) => a - b), med = (srt[4] + srt[5]) / 2;
+            const core = val.filter(v => Math.abs(v - med) <= 0.3);
+            root.querySelector('#pl-central').textContent = nf(Math.min.apply(null, core), 1) + ' – ' + nf(Math.max.apply(null, core), 1);
+            root.querySelector('#pl-mean2').textContent = nf(mean, 2);
+            root.querySelector('#pl-title').textContent = 'Το μήκος ' + SETS[cur].gen;
+            root.querySelector('#pl-gen').textContent = SETS[cur].gen;
+            root.querySelector('#pl-short').textContent = SETS[cur].short;
         }
+
+        function loadSet(n) {
+            cur = n;
+            for (let i = 0; i < 10; i++) val[i] = SETS[n].vals[i];
+            root.querySelectorAll('.pe-in').forEach(inp => { inp.value = nf(SETS[n].vals[+inp.dataset.i], 1); });
+            update();
+        }
+        root.addEventListener('change', e => { if (e.target.id === 'pl-set') loadSet(+e.target.value); });
 
         root.addEventListener('input', e => {
             const t = e.target.closest('.pe-in');
@@ -206,9 +234,7 @@
             if (!b) return;
             if (b.dataset.act === 'back') back();
             else if (b.dataset.act === 'reset-ex') {
-                for (let i = 0; i < 10; i++) val[i] = LEN[i];
-                root.querySelectorAll('.pe-in').forEach(inp => { inp.value = nf(LEN[+inp.dataset.i], 1); });
-                update();
+                loadSet(cur);
             }
         });
         update();

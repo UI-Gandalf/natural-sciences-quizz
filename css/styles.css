@@ -11009,3 +11009,5 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .fs-bar { display: flex; justify-content: flex-end; margin: 0 0 10px; }
 .fs-bar .sv-btn small { font-weight: 500; opacity: 0.85; }
 .tab-panel:fullscreen { background: #0b1220; color: #e2e8f0; overflow: auto; width: 100vw; height: 100vh; box-sizing: border-box; padding: 14px 24px 24px; }
+.pa-setsel { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+.pa-setsel select { padding: 8px 12px; border-radius: 10px; border: 2px solid var(--card-border, #64748b); background: var(--card-bg, #0f172a); color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
