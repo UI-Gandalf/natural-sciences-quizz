@@ -11012,3 +11012,40 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .pa-setsel { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
 .pa-setsel select { padding: 8px 12px; border-radius: 10px; border: 2px solid var(--card-border, #64748b); background: var(--card-bg, #0f172a); color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
 .pa-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Biology Γ: 3D journey inside the cell */
+.cs-wrap { max-width: 1250px; }
+.cs-stage { position: relative; height: 74vh; min-height: 520px; border-radius: 14px; overflow: hidden; background: #0a3341; border: 1px solid var(--card-border); user-select: none; -webkit-user-select: none; touch-action: none; }
+.cs-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; }
+.cs-stage:fullscreen { height: 100vh; width: 100vw; border-radius: 0; }
+.cs-load { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #e0f7fa; font-weight: 700; font-size: 1.1rem; z-index: 5; text-align: center; padding: 20px; }
+.cs-top { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; flex-wrap: wrap; gap: 8px; z-index: 3; }
+.cs-seg { display: inline-flex; gap: 0; }
+.cs-seg .cs-btn:first-child { border-radius: 10px 0 0 10px; } .cs-seg .cs-btn:last-child { border-radius: 0 10px 10px 0; border-left: 0; }
+.cs-btn { padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(165, 243, 252, 0.6); background: rgba(6, 28, 38, 0.82); color: #e0f7fa; font: inherit; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
+.cs-btn:hover { background: rgba(14, 116, 144, 0.9); } .cs-btn.on { background: #0e7490; border-color: #67e8f9; }
+.cs-prog { position: absolute; top: 56px; left: 10px; z-index: 3; padding: 6px 12px; border-radius: 10px; background: rgba(6, 28, 38, 0.82); color: #e0f7fa; font-size: 0.88rem; border: 1px solid rgba(165, 243, 252, 0.35); }
+.cs-prog .bar { display: block; height: 5px; margin-top: 4px; border-radius: 3px; background: rgba(255, 255, 255, 0.18); } .cs-prog .bar i { display: block; height: 100%; border-radius: 3px; background: #34d399; }
+.cs-tip { position: absolute; top: 56px; left: 50%; transform: translateX(-50%); z-index: 4; padding: 8px 16px; border-radius: 999px; background: rgba(120, 53, 15, 0.95); color: #fff7ed; font-weight: 700; border: 2px solid #f59e0b; opacity: 0; pointer-events: none; transition: opacity 0.25s; max-width: 80%; text-align: center; }
+.cs-tip.on { opacity: 1; }
+.cs-list { position: absolute; left: 10px; top: 112px; bottom: 150px; width: 190px; overflow: auto; z-index: 3; padding: 8px; border-radius: 12px; background: rgba(6, 28, 38, 0.78); border: 1px solid rgba(165, 243, 252, 0.35); color: #e0f7fa; }
+.cs-list-h { font-weight: 800; margin-bottom: 6px; } .cs-list-h small { font-weight: 500; opacity: 0.8; }
+.cs-li { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 6px 8px; margin: 2px 0; border-radius: 8px; border: 1px solid transparent; background: rgba(255, 255, 255, 0.06); color: inherit; font: inherit; font-size: 0.84rem; cursor: pointer; }
+.cs-li:hover { background: rgba(103, 232, 249, 0.22); border-color: #67e8f9; } .cs-li.ok { background: rgba(16, 185, 129, 0.22); }
+.cs-li .dot, .cs-card h3 .dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; flex: none; margin-right: 6px; }
+.cs-list-n { font-size: 0.74rem; opacity: 0.75; margin-top: 6px; line-height: 1.35; }
+.cs-map { position: absolute; left: 10px; bottom: 10px; z-index: 3; width: 132px; height: 132px; border-radius: 12px; border: 1px solid rgba(165, 243, 252, 0.5); cursor: pointer; }
+.cs-card { display: none; position: absolute; right: 10px; top: 56px; width: min(360px, 46%); max-height: calc(100% - 140px); overflow: auto; z-index: 4; padding: 14px 16px; border-radius: 14px; background: rgba(6, 28, 38, 0.92); color: #e0f7fa; border: 1px solid #67e8f9; line-height: 1.5; font-size: 0.93rem; }
+.cs-card.on { display: block; } .cs-card h3 { margin: 0 24px 8px 0; font-size: 1.1rem; } .cs-card p { margin: 6px 0; } .cs-card .endo { padding: 6px 8px; border-radius: 8px; background: rgba(251, 191, 36, 0.16); }
+.cs-card .acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.cs-x { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 8px; border: 1px solid rgba(165, 243, 252, 0.5); background: transparent; color: #e0f7fa; cursor: pointer; }
+.cs-quest { display: none; position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); width: min(760px, 92%); z-index: 4; padding: 10px 14px; border-radius: 12px; background: rgba(76, 29, 149, 0.92); color: #f5f3ff; border: 2px solid #c4b5fd; line-height: 1.45; text-align: center; }
+.cs-quest.on { display: block; } .cs-quest .sc { display: inline-block; margin-left: 10px; padding: 1px 10px; border-radius: 999px; background: rgba(0, 0, 0, 0.3); font-weight: 700; } .cs-quest .cs-btn { margin-left: 8px; }
+.cs-pad { position: absolute; right: 10px; bottom: 10px; z-index: 3; display: none; grid-template-columns: repeat(2, 54px); gap: 8px; }
+.cs-pad button { height: 54px; border-radius: 14px; border: 1px solid rgba(165, 243, 252, 0.6); background: rgba(6, 28, 38, 0.82); color: #e0f7fa; font-size: 1.3rem; touch-action: none; }
+@media (pointer: coarse), (max-width: 760px) { .cs-pad { display: grid; } }
+.cs-hover { position: absolute; display: none; z-index: 4; pointer-events: none; padding: 4px 10px; border-radius: 8px; background: rgba(6, 28, 38, 0.92); color: #fef3c7; border: 1px solid #fbbf24; font-weight: 700; font-size: 0.85rem; }
+.cs-help { position: absolute; inset: 0; z-index: 8; display: flex; align-items: center; justify-content: center; padding: 14px; background: rgba(2, 12, 18, 0.78); }
+.cs-help .box { position: relative; width: min(640px, 100%); max-height: 100%; overflow: auto; padding: 18px 22px; border-radius: 14px; background: #0b2a36; color: #e0f7fa; border: 1px solid #67e8f9; line-height: 1.5; }
+.cs-help h3 { margin: 0 34px 8px 0; } .cs-help ul { margin: 0; padding-left: 20px; } .cs-help li { margin: 6px 0; } .cs-help .s { font-size: 0.82rem; opacity: 0.8; }
+@media (max-width: 760px) { .cs-list { width: 150px; top: 108px; bottom: 150px; } .cs-card { width: 58%; top: auto; bottom: 150px; max-height: 40%; } .cs-stage { height: 78vh; } }

@@ -787,6 +787,9 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-cell" style="display: ${currentTab === 'cell' ? 'block' : 'none'};">
             <div id="cell-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-cellswim" style="display: ${currentTab === 'cellswim' ? 'block' : 'none'};">
+            <div id="cellswim-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-cellinfo" style="display: ${currentTab === 'cellinfo' ? 'block' : 'none'};">
             <div id="cellinfo-mount"></div>
         </div>
@@ -906,6 +909,10 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'faultsvideo') {
         const m = document.getElementById('faultsvideo-mount');
         if (m && window.SeriesVideo) window.SeriesVideo.renderFaults(m);
+    }
+    if (currentTab === 'cellswim') {
+        const m = document.getElementById('cellswim-mount');
+        if (m && window.CellSwim) window.CellSwim.render(m);
     }
     if (currentTab === 'cellinfo') {
         const m = document.getElementById('cellinfo-mount');
@@ -1127,6 +1134,7 @@ const BIO_G_GROUPS = [
     { id: 'biotheory', icon: '📖', label: 'Θεωρία', items: [
         { tab: 'bioguide', label: 'Συνοπτικός οδηγός ύλης' },
         { tab: 'cell', label: 'Εξερεύνηση κυττάρου' },
+        { tab: 'cellswim', label: 'Κολύμπι μέσα στο κύτταρο (3D περιήγηση)' },
         { tab: 'cellvideo', label: 'Βίντεο: αρχιτεκτονική κυττάρου (ελληνικοί υπότιτλοι)' },
         { tab: 'cellinfo', label: 'Infographic: δομή ευκαρυωτικού κυττάρου' } ] }
 ];
@@ -1268,6 +1276,15 @@ function switchSubjectTab(tabKey) {
         }
     }
 
+    const csPanel = document.getElementById('tab-panel-cellswim');
+    if (csPanel) {
+        csPanel.style.display = tabKey === 'cellswim' ? 'block' : 'none';
+        if (tabKey === 'cellswim') {
+            csPanel.style.animation = 'fadeIn 0.3s ease';
+            const csm = document.getElementById('cellswim-mount');
+            if (csm && !csm.hasChildNodes() && window.CellSwim) window.CellSwim.render(csm);
+        }
+    }
     const ciPanel = document.getElementById('tab-panel-cellinfo');
     if (ciPanel) {
         ciPanel.style.display = tabKey === 'cellinfo' ? 'block' : 'none';
