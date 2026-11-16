@@ -65,6 +65,7 @@ window.CellSwim = (function () {
             '<canvas class="cs-map" id="cs-map" width="132" height="132" title="Χάρτης του κυττάρου (πάτησε για να πας κοντά)"></canvas>' +
             '<div class="cs-card" id="cs-card"></div>' +
             '<div class="cs-quest" id="cs-quest"></div>' +
+            '<div class="cs-quest cs-tourbar" id="cs-tourbar"></div>' +
             '<div class="cs-pad" id="cs-pad"><button type="button" data-k="fwd" aria-label="Μπροστά">▲</button><button type="button" data-k="back" aria-label="Πίσω">▼</button><button type="button" data-k="up" aria-label="Πάνω">⤒</button><button type="button" data-k="down" aria-label="Κάτω">⤓</button></div>' +
             '</div></div>';
         const stage = mount.querySelector('#cs-stage');
@@ -379,14 +380,24 @@ window.CellSwim = (function () {
         function startTour() {
             if (S.mode === 'nano') exitNano(true);
             stopQuest(); const ids = order().filter((i) => i !== 'cyto');
-            S.tour = { ids: ids, i: -1 }; $('#cs-tour').textContent = '■ Σταμάτα την ξενάγηση'; nextTour();
+            S.tour = { ids: ids, i: -1 }; $('#cs-tour').textContent = '■ Σταμάτα την ξενάγηση'; stepTour(1);
         }
-        function nextTour() {
-            const T = S.tour; if (!T) return; T.i++;
+        // the tour has its own bar at the bottom, so the "next" button is always there (also after you zoom, click another organelle or close the card)
+        function stepTour(d) {
+            const T = S.tour; if (!T) return;
+            T.i = Math.max(0, T.i + d);
             if (T.i >= T.ids.length) { stopTour(); toast('🏁 Τέλος ξενάγησης!'); return; }
-            const id = T.ids[T.i]; flyTo(id, () => { discover(id); const c = $('#cs-card'); if (!c.querySelector('.tour-n')) { const b = document.createElement('div'); b.className = 'acts'; b.innerHTML = '<button type="button" class="cs-btn tour-n" data-act="tournext">' + (T.i + 1 < T.ids.length ? 'Επόμενο ➜' : 'Τέλος 🏁') + '</button>'; c.appendChild(b); } });
+            S.fly = null;
+            const id = T.ids[T.i]; tourBar();
+            flyTo(id, () => { discover(id); });
         }
-        function stopTour() { S.tour = null; $('#cs-tour').textContent = '▶ Ξενάγηση'; }
+        function nextTour() { stepTour(1); }
+        function tourBar() {
+            const T = S.tour, b = $('#cs-tourbar'); if (!T) { b.classList.remove('on'); return; }
+            b.classList.add('on');
+            b.innerHTML = '<b>▶ Ξενάγηση ' + (T.i + 1) + ' / ' + T.ids.length + ':</b> ' + esc(ORG[T.ids[T.i]].name) + ' <button type="button" class="cs-btn" data-act="tourprev"' + (T.i === 0 ? ' disabled' : '') + '>◀ Προηγούμενο</button><button type="button" class="cs-btn" data-act="tournext">' + (T.i + 1 < T.ids.length ? 'Επόμενο ▶' : 'Τέλος 🏁') + '</button><button type="button" class="cs-btn" data-act="tourstop">■ Έξοδος</button>';
+        }
+        function stopTour() { S.tour = null; $('#cs-tour').textContent = '▶ Ξενάγηση'; $('#cs-tourbar').classList.remove('on'); }
 
         function stopQuest() { S.quest = null; $('#cs-quest').classList.remove('on'); $('#cs-mission').textContent = '🎯 Αποστολές'; }
         function startQuest() {
@@ -466,7 +477,7 @@ window.CellSwim = (function () {
             if (b.classList.contains('cs-li')) { const id = b.dataset.id; flyTo(id, () => { if (S.quest) { /* mission: do not reveal */ } else discover(id); }); return; }
             const act = b.dataset.act;
             if (act === 'nano') enterNano(); else if (act === 'exitnano') exitNano(); else if (act === 'go') flyTo(b.dataset.id);
-            else if (act === 'tournext') nextTour(); else if (act === 'questagain') startQuest(); else if (act === 'questend') stopQuest();
+            else if (act === 'tournext') nextTour(); else if (act === 'tourprev') stepTour(-1); else if (act === 'tourstop') { stopTour(); S.fly = null; } else if (act === 'questagain') startQuest(); else if (act === 'questend') stopQuest();
             else if (b.id === 'cs-tour') { if (S.tour) { stopTour(); S.fly = null; } else startTour(); }
             else if (b.id === 'cs-mission') { if (S.quest) stopQuest(); else startQuest(); }
             else if (b.id === 'cs-help') showHelp();
