@@ -876,5 +876,5 @@
         showIntro();
     }
 
-    window.CellExplorer = { render, content: { ORG, ORDER_ANIMAL, ORDER_PLANT, TESTS } };
+    window.CellExplorer = { render };
 })();
