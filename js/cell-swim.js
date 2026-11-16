@@ -313,7 +313,7 @@ window.CellSwim = (function () {
             const card = $('#cs-card');
             card.innerHTML = '<button type="button" class="cs-x" aria-label="Κλείσιμο">✕</button><h3><span class="dot" style="background:' + COLORS[id] + '"></span>' + (o.num ? o.num + '. ' : '') + esc(o.name) + '</h3>' +
                 '<p><b>Δομή:</b> ' + esc(o.structure) + '</p><p><b>Λειτουργία:</b> ' + esc(o.func) + '</p>' + (o.endo ? '<p class="endo">🏠 ' + esc(o.endo) + '</p>' : '') +
-                '<div class="acts">' + (id === 'membrane' ? '<button type="button" class="cs-btn" data-act="nano">🔬 Μεγέθυνση στη μεμβράνη</button>' : '') + (id !== 'cyto' ? '<button type="button" class="cs-btn" data-act="go" data-id="' + id + '">➜ Πλησίασε</button>' : '') + '</div>';
+                '<div class="acts">' + (id === 'membrane' ? '<button type="button" class="cs-btn" data-act="nano">🔬 Μεγέθυνση στη μεμβράνη</button>' : '') + '' + '</div>';
             card.classList.add('on');
         }
         function hideCard() { $('#cs-card').classList.remove('on'); }
