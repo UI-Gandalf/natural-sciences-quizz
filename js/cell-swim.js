@@ -387,7 +387,7 @@ window.CellSwim = (function () {
             const T = S.tour; if (!T) return;
             T.i = Math.max(0, T.i + d);
             if (T.i >= T.ids.length) { stopTour(); toast('🏁 Τέλος ξενάγησης!'); return; }
-            S.fly = null;
+            S.fly = null; hideCard();          // the previous organelle's card goes away; the new one opens on arrival
             const id = T.ids[T.i]; tourBar();
             flyTo(id, () => { discover(id); });
         }
