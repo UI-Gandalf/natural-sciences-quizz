@@ -11088,3 +11088,19 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .bj-mini-n { margin: 6px 0 0; font-size: 0.86rem; line-height: 1.5; }
 .bj-mini { table-layout: fixed; background: rgba(8, 15, 30, 0.85); color: #e2e8f0; }
 .bj-mini td, .bj-mini th { overflow-wrap: anywhere; }
+
+/* wrist / ankle notes and the side cards: opaque, high contrast (the page background is busy) */
+.bj-callout { background: #3b2410 !important; color: #fff7ed; border: 2px solid #fb923c; border-left-width: 8px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45); }
+.bj-callout strong { color: #fff; }
+.bj-side .bj-card { background: #0b1220; border-color: rgba(148, 163, 184, 0.55); color: #e2e8f0; }
+.bj-mini { font-size: 0.8rem; background: #0f172a !important; color: #f1f5f9 !important; }
+.bj-mini th { background: #155e75 !important; color: #fff; }
+.bj-mini th, .bj-mini td { padding: 4px 5px; overflow-wrap: normal; word-break: normal; hyphens: auto; }
+.bj-mini th:nth-child(1) { width: 31%; } .bj-mini th:nth-child(2) { width: 27%; } .bj-mini th:nth-child(3) { width: 42%; }
+.bj-mini-n { color: #ffedd5; }
+:root[data-theme="light"] .bj-callout { background: #fff1e6 !important; color: #431407; border-color: #ea580c; }
+:root[data-theme="light"] .bj-callout strong { color: #7c2d12; }
+:root[data-theme="light"] .bj-side .bj-card { background: #fff; color: #0f172a; }
+:root[data-theme="light"] .bj-mini { background: #fff !important; color: #0f172a !important; }
+:root[data-theme="light"] .bj-mini th { background: #bae6fd !important; color: #0c4a6e; }
+:root[data-theme="light"] .bj-mini-n { color: #431407; }
