@@ -56,17 +56,17 @@
             callout: '<strong>⚠️ Συχνή παρεξήγηση:</strong> πολλοί νομίζουν ότι ο αστράγαλος κάνει και το «στραμπούληγμα», δηλαδή γύρισμα του πέλματος προς τα πλάγια. Στην πραγματικότητα ο αστράγαλος κάνει <strong>μόνο</strong> το ανεβοκατέβασμα της μύτης (σαν μεντεσές). Το γύρισμα του πέλματος προς τα μέσα (<strong>αναστροφή</strong>) ή προς τα έξω (<strong>έξω στροφή</strong>) γίνεται σε μια άλλη άρθρωση ακριβώς από κάτω του, την <strong>υπαστραγαλική</strong> (ανάμεσα στον αστράγαλο και την πτέρνα). Γι’ αυτό το πόδι μπορεί να «γυρίσει» προς τα πλάγια ενώ ο μεντεσές του αστραγάλου δεν το επιτρέπει.<br><br>Στην κλινική γλώσσα, οι σύνθετες κινήσεις του ποδιού λέγονται και <strong>υπτιασμός</strong> και <strong>πρηνισμός</strong> του ποδιού (δεν έχουν σχέση με τον υπτιασμό και τον πρηνισμό της παλάμης).'
         },
         forearm: {
-            name: 'Στροφή του καρπού', type: 'στροφική (τροχοειδής) διάρθρωση: ακτινοωλενική', color: 0xe11d48, dofCount: 1,
+            name: 'Στροφή του καρπού', type: 'ακτινοωλενική (στροφική) + κερκιδοκαρπική (ελλειψοειδής)', color: 0xe11d48, dofCount: 3,
             desc: 'Η παλάμη γυρίζει (προς τα κάτω ή προς τα πάνω) επειδή το ένα οστό του αντιβραχίου, η <strong>κερκίδα (ακτίνα)</strong>, <strong>περιστρέφεται γύρω από την ωλένη</strong>. Οι δύο ακτινοωλενικές αρθρώσεις (στον αγκώνα και στον καρπό) το επιτρέπουν. Η κίνηση λέγεται <strong>πρηνισμός</strong> (παλάμη προς τα κάτω ή πίσω) και <strong>υπτιασμός</strong> (παλάμη προς τα πάνω ή μπροστά).',
-            range: 'έως περίπου 80°–90° προς κάθε κατεύθυνση',
-            dofs: [{ k: 'rot', label: 'Πρηνισμός – υπτιασμός', min: -90, max: 90, def: 0 }],
-            locks: ['Κάμψη και έκταση του καρπού (μπρος–πίσω)', 'Κίνηση της παλάμης προς τα πλάγια (προς τον αντίχειρα ή προς τον μικρό δάκτυλο)'],
+            range: 'πρηνισμός–υπτιασμός έως περίπου 90° · κάμψη περίπου 80°, έκταση περίπου 70° · πλάγια απόκλιση περίπου 20° (αντίχειρας) και 35° (μικρός δάκτυλος)',
+            dofs: [{ k: 'rot', label: 'Πρηνισμός – υπτιασμός (ακτινοωλενικές αρθρώσεις)', min: -90, max: 90, def: 0 }, { k: 'flex', label: 'Έκταση – κάμψη του καρπού (κερκιδοκαρπική)', min: -70, max: 80, def: 0 }, { k: 'dev', label: 'Πλάγια απόκλιση: αντίχειρας – μικρός δάκτυλος (κερκιδοκαρπική)', min: -20, max: 35, def: 0 }],
+            locks: ['Στροφή του καρπού γύρω από τον άξονα του αντιβραχίου: το κάνουν μόνο οι ακτινοωλενικές αρθρώσεις (πρηνισμός – υπτιασμός), όχι η κερκιδοκαρπική'],
             callout: '<strong>⚠️ Ο καρπός κινείται με περισσότερους τρόπους:</strong> όταν λέμε ότι «γυρίζει ο καρπός», συνήθως εννοούμε το γύρισμα της παλάμης προς τα κάτω ή προς τα πάνω. Όμως η παλάμη κινείται και με άλλους τρόπους, και αυτοί οι τρόποι γίνονται <strong>σε διαφορετικές αρθρώσεις</strong>:' +
                 '<table class="bj-mini"><thead><tr><th>Άρθρωση</th><th>Τύπος</th><th>Κινήσεις (άξονες)</th></tr></thead><tbody>' +
                 '<tr><td><strong>Ακτινοωλενικές</strong> (στον αγκώνα και στον καρπό)</td><td>στροφική (τροχοειδής)</td><td><strong>πρηνισμός</strong> και <strong>υπτιασμός</strong> (η κερκίδα στρέφεται γύρω από την ωλένη) · <strong>1 άξονας</strong></td></tr>' +
                 '<tr><td><strong>Κερκιδοκαρπική</strong> (ανάμεσα στην κερκίδα και τα οστά του καρπού)</td><td>ελλειψοειδής</td><td><strong>κάμψη – έκταση</strong> (μπρος–πίσω) και <strong>πλάγια απόκλιση</strong> (προς τον αντίχειρα ή προς τον μικρό δάκτυλο) · <strong>2 άξονες</strong></td></tr>' +
                 '</tbody></table>' +
-                '<p class="bj-mini-n">Ενδεικτικά εύρη: κάμψη έως περίπου 80°, έκταση έως περίπου 70°, πλάγια απόκλιση προς τον μικρό δάκτυλο περίπου 30°–40° και προς τον αντίχειρα περίπου 20°. Άρα το «γύρισμα» της παλάμης και οι κινήσεις του καρπού δεν είναι μία κίνηση, αλλά <strong>συνδυασμός</strong>: ο πρηνισμός και ο υπτιασμός μαζί με τις δύο κινήσεις της κερκιδοκαρπικής δίνουν συνολικά <strong>τρεις</strong> άξονες κίνησης στην παλάμη. Έτσι μοιάζει με τον αστράγαλο: το πώς «κινείται» ένα μέλος μπορεί να εξαρτάται από περισσότερες από μία αρθρώσεις. Το ρυθμιστικό παραπάνω δείχνει μόνο τον πρηνισμό και τον υπτιασμό.</p>'
+                '<p class="bj-mini-n">Ενδεικτικά εύρη: κάμψη έως περίπου 80°, έκταση έως περίπου 70°, πλάγια απόκλιση προς τον μικρό δάκτυλο περίπου 30°–40° και προς τον αντίχειρα περίπου 20°. Άρα το «γύρισμα» της παλάμης και οι κινήσεις του καρπού δεν είναι μία κίνηση, αλλά <strong>συνδυασμός</strong>: ο πρηνισμός και ο υπτιασμός μαζί με τις δύο κινήσεις της κερκιδοκαρπικής δίνουν συνολικά <strong>τρεις</strong> άξονες κίνησης στην παλάμη. Έτσι μοιάζει με τον αστράγαλο: το πώς «κινείται» ένα μέλος μπορεί να εξαρτάται από περισσότερες από μία αρθρώσεις. Τα τρία ρυθμιστικά δείχνουν και τις τρεις κινήσεις: το πρώτο ανήκει στις ακτινοωλενικές αρθρώσεις και τα δύο άλλα στην κερκιδοκαρπική.</p>'
         }
     };
     const ORDER = ['shoulder', 'elbow', 'knee', 'ankle', 'forearm'];
@@ -178,12 +178,13 @@
             const ulna = H.between(V(-0.3, 3.0, 0), V(-0.3, -0.2, 0), 0.2); g.add(ulna);
             const elbowBlock = new T.Mesh(new T.SphereGeometry(0.5, 20, 14), H.jointMat); elbowBlock.position.set(0, 3.2, 0); g.add(elbowBlock);
             const radius = new T.Group(); g.add(radius);
-            const hand = new T.Group(); hand.scale.set(1.35, 1.35, 1.35); g.add(hand);
+            const hand = new T.Group(); hand.scale.set(1.35, 1.35, 1.35); hand.rotation.order = 'YZX'; g.add(hand);
+            const hi = new T.Group(); hi.position.set(0, -0.2, 0); hand.add(hi);       // the hand hangs 0.2 below the wrist point, which is the pivot of the wrist joint
             const palm = new T.Mesh(new T.BoxGeometry(0.12, 1.0, 0.9), new T.MeshStandardMaterial({ color: 0xfda4af, roughness: 0.5 }));
-            palm.position.set(-0.3, -0.5, 0); hand.add(palm);                       // pink side = palm
-            const back = new T.Mesh(new T.BoxGeometry(0.28, 1.0, 0.9), H.jointMat); back.position.set(-0.06, -0.5, 0); hand.add(back);
-            const thumb = new T.Mesh(new T.CylinderGeometry(0.11, 0.11, 0.6, 12), H.jointMat); thumb.position.set(0, -0.2, 0.62); thumb.rotation.x = 0.5; hand.add(thumb);
-            const tipObj = new T.Object3D(); tipObj.position.set(0, -0.2, 1.0); hand.add(tipObj);
+            palm.position.set(-0.3, -0.5, 0); hi.add(palm);                       // pink side = palm
+            const back = new T.Mesh(new T.BoxGeometry(0.28, 1.0, 0.9), H.jointMat); back.position.set(-0.06, -0.5, 0); hi.add(back);
+            const thumb = new T.Mesh(new T.CylinderGeometry(0.11, 0.11, 0.6, 12), H.jointMat); thumb.position.set(0, -0.2, 0.62); thumb.rotation.x = 0.5; hi.add(thumb);
+            const tipObj = new T.Object3D(); tipObj.position.set(0, -0.2, 1.0); hi.add(tipObj);
             let radMesh = null;
             joints.forearm = {
                 group: g, tipObj,
@@ -194,13 +195,14 @@
                     if (radMesh) { radius.remove(radMesh); }
                     radMesh = H.between(V(0.25, 3.0, 0), wrist, 0.2);
                     radius.add(radMesh);
-                    hand.position.copy(wrist).add(V(0.3, -0.2, 0));
-                    hand.position.set(wrist.x, wrist.y - 0.2, wrist.z);
-                    hand.rotation.set(0, psi, 0);
+                    hand.position.set(wrist.x, wrist.y, wrist.z);
+                    // pronation / supination turns the whole hand (y); the wrist joint then bends in the frame of the hand:
+                    // flexion towards the palm (z), deviation towards the thumb / the little finger (x)
+                    hand.rotation.set((v.dev || 0) * D, psi, -(v.flex || 0) * D);
                 },
-                samples() { const o = []; for (let r = -90; r <= 90; r += 4) o.push({ rot: r }); return o; }
+                samples() { const o = []; for (let r = -90; r <= 90; r += 30) for (let f = -70; f <= 80; f += 30) for (let d = -20; d <= 35; d += 20) o.push({ rot: r, flex: f, dev: d }); return o; }
             };
-            joints.forearm.apply({ rot: 0 });
+            joints.forearm.apply({ rot: 0, flex: 0, dev: 0 });
         }
         Object.keys(joints).forEach(k => { joints[k].key = k; joints[k].meta = META[k]; joints[k].values = {}; META[k].dofs.forEach(d => { joints[k].values[d.k] = d.def; }); });
         return joints;
