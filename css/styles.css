@@ -11077,3 +11077,7 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 /* Chemistry: the video and the simulation live in one pop-up menu */
 .subject-tabs-container.grouped-chem { position: relative; gap: 12px; }
 .subject-tabs-container.grouped-chem #tab-btn-neutvideo, .subject-tabs-container.grouped-chem #tab-btn-neutral { display: none; }
+
+/* Biology B: guide + 3D joints + skeleton in one pop-up menu */
+.subject-tabs-container.grouped-biob { position: relative; gap: 12px; }
+.subject-tabs-container.grouped-biob #tab-btn-bioguide, .subject-tabs-container.grouped-biob #tab-btn-joints3d, .subject-tabs-container.grouped-biob #tab-btn-skeleton { display: none; }
