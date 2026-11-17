@@ -794,6 +794,9 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-cell" style="display: ${currentTab === 'cell' ? 'block' : 'none'};">
             <div id="cell-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-celldive" style="display: ${currentTab === 'celldive' ? 'block' : 'none'};">
+            <div id="celldive-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-cellinfo" style="display: ${currentTab === 'cellinfo' ? 'block' : 'none'};">
             <div id="cellinfo-mount"></div>
         </div>
@@ -920,6 +923,10 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'pendvideo') {
         const m = document.getElementById('pendvideo-mount');
         if (m && window.SeriesVideo) window.SeriesVideo.renderPendulum(m);
+    }
+    if (currentTab === 'celldive') {
+        const m = document.getElementById('celldive-mount');
+        if (m && window.CellDive) window.CellDive.render(m);
     }
     if (currentTab === 'cellinfo') {
         const m = document.getElementById('cellinfo-mount');
@@ -1141,6 +1148,7 @@ const BIO_G_GROUPS = [
     { id: 'biotheory', icon: '📖', label: 'Θεωρία', items: [
         { tab: 'bioguide', label: 'Συνοπτικός οδηγός ύλης' },
         { tab: 'cell', label: 'Εξερεύνηση κυττάρου' },
+        { tab: 'celldive', label: 'Κατάδυση στο κύτταρο (3D εξερεύνηση)' },
         { tab: 'cellvideo', label: 'Βίντεο: αρχιτεκτονική κυττάρου (ελληνικοί υπότιτλοι)' },
         { tab: 'cellinfo', label: 'Infographic: δομή ευκαρυωτικού κυττάρου' } ] }
 ];
@@ -1291,6 +1299,15 @@ function switchSubjectTab(tabKey) {
             pdPanel.style.animation = 'fadeIn 0.3s ease';
             const pdm = document.getElementById('pendvideo-mount');
             if (pdm && !pdm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderPendulum(pdm);
+        }
+    }
+    const cdPanel = document.getElementById('tab-panel-celldive');
+    if (cdPanel) {
+        cdPanel.style.display = tabKey === 'celldive' ? 'block' : 'none';
+        if (tabKey === 'celldive') {
+            cdPanel.style.animation = 'fadeIn 0.3s ease';
+            const cdm = document.getElementById('celldive-mount');
+            if (cdm && !cdm.hasChildNodes() && window.CellDive) window.CellDive.render(cdm);
         }
     }
     const ciPanel = document.getElementById('tab-panel-cellinfo');

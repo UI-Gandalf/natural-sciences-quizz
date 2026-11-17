@@ -11012,3 +11012,53 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .pa-setsel { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
 .pa-setsel select { padding: 8px 12px; border-radius: 10px; border: 2px solid var(--card-border, #64748b); background: var(--card-bg, #0f172a); color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
 .pa-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Biology Γ: "Κατάδυση στο κύτταρο" (3D exploration, one mode) */
+.cd-wrap { max-width: 1280px; }
+.cd-stage { position: relative; height: 76vh; min-height: 540px; border-radius: 14px; overflow: hidden; background: #0a3341; border: 1px solid var(--card-border); user-select: none; -webkit-user-select: none; }
+.cd-stage:fullscreen { height: 100vh; width: 100vw; border-radius: 0; }
+.cd-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+.cd-load { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; padding: 20px; text-align: center; color: #e0f7fa; font-weight: 700; font-size: 1.1rem; }
+.cd-top { position: absolute; top: 10px; left: 10px; right: 10px; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; pointer-events: none; }
+.cd-top > * { pointer-events: auto; }
+.cd-seg { display: inline-flex; }
+.cd-seg .cd-btn:first-child { border-radius: 10px 0 0 10px; } .cd-seg .cd-btn:last-child { border-radius: 0 10px 10px 0; border-left: 0; }
+.cd-btn { padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(165, 243, 252, 0.6); background: rgba(6, 28, 38, 0.85); color: #e0f7fa; font: inherit; font-weight: 700; font-size: 0.88rem; cursor: pointer; }
+.cd-btn:hover { background: rgba(14, 116, 144, 0.92); } .cd-btn.on { background: #0e7490; border-color: #67e8f9; }
+.cd-prog { margin-left: auto; padding: 7px 14px; border-radius: 999px; background: rgba(6, 28, 38, 0.85); color: #e0f7fa; font-size: 0.9rem; border: 1px solid rgba(165, 243, 252, 0.4); }
+.cd-prog b { color: #fde68a; }
+.cd-toast { position: absolute; top: 58px; left: 50%; transform: translateX(-50%); z-index: 5; max-width: 80%; padding: 8px 18px; border-radius: 999px; background: rgba(120, 53, 15, 0.96); color: #fff7ed; font-weight: 700; border: 2px solid #f59e0b; text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.cd-toast.on { opacity: 1; }
+.cd-list { position: absolute; left: 10px; top: 58px; width: 205px; max-height: calc(100% - 72px); overflow: auto; z-index: 3; padding: 8px; border-radius: 12px; background: rgba(6, 28, 38, 0.8); border: 1px solid rgba(165, 243, 252, 0.35); color: #e0f7fa; }
+.cd-list-h { font-weight: 800; margin: 2px 4px 6px; }
+.cd-li { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 6px 8px; margin: 2px 0; border-radius: 8px; border: 1px solid transparent; background: rgba(255, 255, 255, 0.06); color: inherit; font: inherit; font-size: 0.84rem; cursor: pointer; }
+.cd-li:hover { background: rgba(103, 232, 249, 0.2); border-color: #67e8f9; }
+.cd-li.ok { background: rgba(16, 185, 129, 0.2); } .cd-li.sel { border-color: #fbbf24; background: rgba(251, 191, 36, 0.2); }
+.cd-li .nm { flex: 1; } .cd-li .ct { font-size: 0.78rem; font-weight: 800; color: #fde68a; }
+.cd-li .dot, .cd-card h3 .dot { display: inline-block; flex: none; width: 11px; height: 11px; border-radius: 50%; }
+.cd-card h3 .dot { margin-right: 8px; }
+.cd-list-n { font-size: 0.74rem; opacity: 0.78; margin: 6px 4px 2px; line-height: 1.35; }
+.cd-card { display: none; position: absolute; right: 10px; top: 58px; width: min(370px, 44%); max-height: calc(100% - 72px); overflow: auto; z-index: 4; padding: 14px 16px; border-radius: 14px; background: rgba(6, 28, 38, 0.93); color: #e0f7fa; border: 1px solid #67e8f9; line-height: 1.5; font-size: 0.92rem; }
+.cd-card.on { display: block; }
+.cd-card h3 { margin: 0 30px 6px 0; font-size: 1.12rem; } .cd-card .star { color: #fbbf24; }
+.cd-card p { margin: 4px 0 8px; } .cd-card .how { font-size: 0.82rem; opacity: 0.85; }
+.cd-card .sec { margin-top: 10px; font-weight: 800; color: #a5f3fc; font-size: 0.86rem; letter-spacing: 0.02em; } .cd-card .sec small { font-weight: 600; color: #fde68a; }
+.cd-card .endo { padding: 6px 10px; border-radius: 8px; background: rgba(251, 191, 36, 0.14); font-size: 0.86rem; }
+.cd-part { display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left; margin: 4px 0; padding: 7px 10px; border-radius: 10px; border: 1px dashed rgba(165, 243, 252, 0.55); background: rgba(255, 255, 255, 0.05); color: inherit; font: inherit; font-size: 0.9rem; cursor: pointer; }
+.cd-part:hover { background: rgba(103, 232, 249, 0.16); }
+.cd-part.ok { border-style: solid; border-color: #34d399; background: rgba(16, 185, 129, 0.18); }
+.cd-part .ck { flex: none; width: 20px; font-weight: 800; color: #94a3b8; } .cd-part.ok .ck { color: #34d399; }
+.cd-part small { opacity: 0.9; }
+.cd-x { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(165, 243, 252, 0.5); background: rgba(6, 28, 38, 0.6); color: #e0f7fa; cursor: pointer; font-size: 0.95rem; }
+.cd-hover { display: none; position: absolute; z-index: 4; pointer-events: none; max-width: 210px; padding: 5px 10px; border-radius: 8px; background: rgba(6, 28, 38, 0.94); color: #fef3c7; border: 1px solid #fbbf24; font-size: 0.84rem; line-height: 1.3; }
+.cd-pad { position: absolute; right: 10px; bottom: 10px; z-index: 3; display: none; grid-template-columns: repeat(2, 56px); gap: 8px; }
+.cd-pad button { height: 56px; border-radius: 14px; border: 1px solid rgba(165, 243, 252, 0.6); background: rgba(6, 28, 38, 0.85); color: #e0f7fa; font-size: 1.3rem; touch-action: none; }
+@media (pointer: coarse), (max-width: 760px) { .cd-pad { display: grid; } }
+.cd-help { position: absolute; inset: 0; z-index: 8; display: flex; align-items: center; justify-content: center; padding: 14px; background: rgba(2, 12, 18, 0.8); }
+.cd-help .box { position: relative; width: min(660px, 100%); max-height: 100%; overflow: auto; padding: 18px 22px; border-radius: 14px; background: #0b2a36; color: #e0f7fa; border: 1px solid #67e8f9; line-height: 1.5; }
+.cd-help h3 { margin: 0 36px 8px 0; } .cd-help ol { margin: 0 0 8px; padding-left: 22px; } .cd-help li { margin: 6px 0; } .cd-help .s { font-size: 0.82rem; opacity: 0.8; }
+@media (max-width: 760px) {
+    .cd-list { width: 150px; font-size: 0.8rem; } .cd-prog { margin-left: 0; }
+    .cd-card { left: 10px; right: 10px; top: auto; bottom: 10px; width: auto; max-height: 46%; }
+    .cd-pad { bottom: auto; top: 58px; }
+}
