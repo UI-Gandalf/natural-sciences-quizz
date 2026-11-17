@@ -417,7 +417,7 @@ function renderQuizSelection(classKey, subjectKey) {
     const isBioA = subjectKey === 'biology' && classKey === 'Α';
     const isBioB = subjectKey === 'biology' && classKey === 'Β';
     const isBioG = subjectKey === 'biology' && (classKey === 'Γ' || (classKey && classKey.startsWith('Γ')));
-    if (subjectKey === 'physics' && !isPhysG && !(isPhysA && (currentTab === 'time' || currentTab === 'mass' || currentTab === 'length' || currentTab === 'pendvideo' || currentTab === 'measvideo' || currentTab === 'massinfo')) && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
+    if (subjectKey === 'physics' && !isPhysG && !(isPhysA && (currentTab === 'time' || currentTab === 'mass' || currentTab === 'length' || currentTab === 'pendvideo' || currentTab === 'measvideo' || currentTab === 'massinfo' || currentTab === 'massgeo')) && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
 
     let html = `
         <button class="back-btn" onclick="navigateTo('class/${classKey}')">
@@ -866,6 +866,9 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-pendvideo" style="display: ${currentTab === 'pendvideo' ? 'block' : 'none'};">
             <div id="pendvideo-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-massgeo" style="display: ${currentTab === 'massgeo' ? 'block' : 'none'};">
+            <div id="massgeo-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-massinfo" style="display: ${currentTab === 'massinfo' ? 'block' : 'none'};">
             <div id="massinfo-mount"></div>
         </div>
@@ -947,6 +950,10 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'faultsvideo') {
         const m = document.getElementById('faultsvideo-mount');
         if (m && window.SeriesVideo) window.SeriesVideo.renderFaults(m);
+    }
+    if (currentTab === 'massgeo') {
+        const m = document.getElementById('massgeo-mount');
+        if (m && window.SeriesVideo) window.SeriesVideo.renderMassGeo(m);
     }
     if (currentTab === 'massinfo') {
         const m = document.getElementById('massinfo-mount');
@@ -1210,7 +1217,8 @@ const PHYS_A_GROUPS = [
         { tab: 'time', label: 'Μέτρηση χρόνου: κρίσιμα σημεία' },
         { tab: 'pendvideo', label: 'Βίντεο: μέτρηση της περιόδου εκκρεμούς (ελληνικοί υπότιτλοι)' },
         { tab: 'mass', label: 'Μάζα και Βάρος' },
-        { tab: 'massinfo', label: 'Infographic: μάζα και βάρος' } ] }
+        { tab: 'massinfo', label: 'Infographic: μάζα και βάρος' },
+        { tab: 'massgeo', label: 'Βίντεο: γεωγραφικές συντεταγμένες, μάζα και βάρος (ελληνικοί υπότιτλοι)' } ] }
 ];
 const BIO_A_GROUPS = [
     { id: 'bioatheory', icon: '📖', label: 'Θεωρία', items: [
@@ -1358,6 +1366,15 @@ function switchSubjectTab(tabKey) {
         }
     }
 
+    const mgPanel = document.getElementById('tab-panel-massgeo');
+    if (mgPanel) {
+        mgPanel.style.display = tabKey === 'massgeo' ? 'block' : 'none';
+        if (tabKey === 'massgeo') {
+            mgPanel.style.animation = 'fadeIn 0.3s ease';
+            const mgm = document.getElementById('massgeo-mount');
+            if (mgm && !mgm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderMassGeo(mgm);
+        }
+    }
     const miPanel = document.getElementById('tab-panel-massinfo');
     if (miPanel) {
         miPanel.style.display = tabKey === 'massinfo' ? 'block' : 'none';
