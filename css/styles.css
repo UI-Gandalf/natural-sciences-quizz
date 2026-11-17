@@ -11073,3 +11073,11 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 :root[data-theme="light"] .supp-note { background: #fff1e6; color: #7c2d12; border-color: #ea580c; }
 :root[data-theme="light"] .supp-note strong { color: #7c2d12; text-decoration-color: #ea580c; }
 :root[data-theme="light"] .bt-supp { background: #fff7ed; }
+
+/* numbered pop-up menu items */
+.sg-item { display: flex; align-items: flex-start; gap: 10px; }
+.sg-n { flex: none; width: 24px; height: 24px; margin-top: 1px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #0e7490; color: #fff; font-size: 0.8rem; font-weight: 800; }
+.sg-item.active .sg-n { background: #059669; }
+.sg-item.is-locked .sg-n { background: #64748b; }
+.sg-t { flex: 1; }
+:root[data-theme="light"] .sg-n { background: #0369a1; }

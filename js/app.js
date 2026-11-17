@@ -1163,10 +1163,12 @@ function physGroupsHtml(currentTab, classKey, subjectKey, quizzes, groups) {
         if (g.id === 'syl') {
             return `<div class="sg-wrap"><button type="button" class="sg-btn${currentTab === 'syllabus' ? ' active' : ''}" data-group="syl" onclick="switchSubjectTab('syllabus')"><span class="tab-icon">${g.icon}</span><span>${g.label}</span></button></div>`;
         }
+        let nItem = 0;
         const items = g.items.map((it) => {
+            const num = it.quizzes ? '' : '<span class="sg-n">' + (++nItem) + '</span>';
             if (it.quizzes) return quizzes.map((q) => `<button type="button" class="sg-item" data-quiz="${q.id}" onclick="closeTabMenus(); navigateTo('class/${classKey}/subject/${subjectKey}/quiz/${q.id}')">${q.title}</button>`).join('');
-            if (it.locked) return `<button type="button" class="sg-item is-locked" data-tab="${it.tab}" disabled aria-disabled="true" title="Θα είναι διαθέσιμο σύντομα">🔒 ${it.label} <small>(σύντομα διαθέσιμο)</small></button>`;
-            return `<button type="button" class="sg-item${currentTab === it.tab ? ' active' : ''}" data-tab="${it.tab}" onclick="closeTabMenus(); switchSubjectTab('${it.tab}')">${it.label}</button>`;
+            if (it.locked) return `<button type="button" class="sg-item is-locked" data-tab="${it.tab}" disabled aria-disabled="true" title="Θα είναι διαθέσιμο σύντομα">${num}<span class="sg-t">🔒 ${it.label} <small>(σύντομα διαθέσιμο)</small></span></button>`;
+            return `<button type="button" class="sg-item${currentTab === it.tab ? ' active' : ''}" data-tab="${it.tab}" onclick="closeTabMenus(); switchSubjectTab('${it.tab}')">${num}<span class="sg-t">${it.label}</span></button>`;
         }).join('');
         const act = g.items.find((it) => it.tab === currentTab);
         return `<div class="sg-wrap"><button type="button" class="sg-btn${act ? ' active' : ''}" data-group="${g.id}" aria-haspopup="true" aria-expanded="false" onclick="toggleTabMenu(this, event)"><span class="tab-icon">${g.icon}</span><span class="sg-label">${g.label}</span><span class="sg-caret">▾</span></button><div class="sg-menu" role="menu">${items}</div></div>`;
