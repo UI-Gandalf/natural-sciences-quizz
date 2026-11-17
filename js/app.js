@@ -417,7 +417,7 @@ function renderQuizSelection(classKey, subjectKey) {
     const isBioA = subjectKey === 'biology' && classKey === 'Α';
     const isBioB = subjectKey === 'biology' && classKey === 'Β';
     const isBioG = subjectKey === 'biology' && (classKey === 'Γ' || (classKey && classKey.startsWith('Γ')));
-    if (subjectKey === 'physics' && !isPhysG && !(isPhysA && (currentTab === 'time' || currentTab === 'mass' || currentTab === 'length' || currentTab === 'pendvideo')) && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
+    if (subjectKey === 'physics' && !isPhysG && !(isPhysA && (currentTab === 'time' || currentTab === 'mass' || currentTab === 'length' || currentTab === 'pendvideo' || currentTab === 'measvideo')) && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
 
     let html = `
         <button class="back-btn" onclick="navigateTo('class/${classKey}')">
@@ -529,6 +529,13 @@ function renderQuizSelection(classKey, subjectKey) {
                 <button class="subject-tab-btn ${currentTab === 'length' ? 'active' : ''}" id="tab-btn-length" onclick="switchSubjectTab('length')">
                     <span class="tab-icon">📏</span>
                     <span>Μέτρηση μήκους</span>
+                </button>
+                <button class="subject-tab-btn ${currentTab === 'measvideo' ? 'active' : ''}" id="tab-btn-measvideo" onclick="switchSubjectTab('measvideo')">
+                    <span class="tab-icon">🎬</span>
+                    <span class="tab-multiline">
+                        <span class="tab-line-main">Βίντεο: μέτρηση μήκους και σφάλματα</span>
+                        <span class="tab-line-sub">(με ελληνικούς υπότιτλους)</span>
+                    </span>
                 </button>
                 ` : ''}
                 ${isPhysA ? `
@@ -848,6 +855,9 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-pendvideo" style="display: ${currentTab === 'pendvideo' ? 'block' : 'none'};">
             <div id="pendvideo-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-measvideo" style="display: ${currentTab === 'measvideo' ? 'block' : 'none'};">
+            <div id="measvideo-mount"></div>
+        </div>
         ` : ''}
         ${isPhysA ? `
         <!-- PHYSICS Α: LENGTH MEASUREMENT -->
@@ -919,6 +929,10 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'faultsvideo') {
         const m = document.getElementById('faultsvideo-mount');
         if (m && window.SeriesVideo) window.SeriesVideo.renderFaults(m);
+    }
+    if (currentTab === 'measvideo') {
+        const m = document.getElementById('measvideo-mount');
+        if (m && window.SeriesVideo) window.SeriesVideo.renderMeasure(m);
     }
     if (currentTab === 'pendvideo') {
         const m = document.getElementById('pendvideo-mount');
@@ -1290,6 +1304,17 @@ function switchSubjectTab(tabKey) {
         }
     }
 
+    const mvBtn = document.getElementById('tab-btn-measvideo');
+    if (mvBtn) mvBtn.classList.toggle('active', tabKey === 'measvideo');
+    const mvPanel = document.getElementById('tab-panel-measvideo');
+    if (mvPanel) {
+        mvPanel.style.display = tabKey === 'measvideo' ? 'block' : 'none';
+        if (tabKey === 'measvideo') {
+            mvPanel.style.animation = 'fadeIn 0.3s ease';
+            const mvm = document.getElementById('measvideo-mount');
+            if (mvm && !mvm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderMeasure(mvm);
+        }
+    }
     const pdBtn = document.getElementById('tab-btn-pendvideo');
     if (pdBtn) pdBtn.classList.toggle('active', tabKey === 'pendvideo');
     const pdPanel = document.getElementById('tab-panel-pendvideo');

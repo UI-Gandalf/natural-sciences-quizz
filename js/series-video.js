@@ -12,6 +12,7 @@ window.SeriesVideo = (function () {
     const FAULTS = { src: 'assets/video/series_faults_shorts.mp4', cues: () => window.FAULTS_VIDEO_CUES || [], title: 'Κύκλωμα σε σειρά: βλάβες και βραχυκυκλώματα', lead: 'τι αλλάζει σε ένα κύκλωμα σε σειρά όταν <strong>καίγεται ένα στοιχείο</strong> ή όταν υπάρχει <strong>μερικό ή ολικό βραχυκύκλωμα</strong>', min: 6 };
     const CELL = { src: 'assets/video/cell_architecture.mp4', cues: () => window.CELL_VIDEO_CUES || [], title: 'Αρχιτεκτονική κυττάρου: επεξήγηση σε βίντεο', lead: 'πώς διαφέρουν το <strong>προκαρυωτικό</strong>, το <strong>φυτικό</strong> και το <strong>ζωικό</strong> κύτταρο και τι κάνει κάθε οργανίδιο', min: 8 };
     const PENDULUM = { src: 'assets/video/pendulum_experiment.mp4', cues: () => window.PENDULUM_VIDEO_CUES || [], title: 'Μέτρηση της περιόδου του εκκρεμούς: ακρίβεια και σφάλμα', lead: 'πώς μετράμε την <strong>περίοδο ενός εκκρεμούς</strong> με αναλογικό ρολόι και ψηφιακό χρονόμετρο, και πώς γράφουμε το αποτέλεσμα με τη σωστή <strong>ακρίβεια</strong>', min: 5 };
+    const MEASURE = { src: 'assets/video/measurement_science.mp4', cues: () => window.MEASUREMENT_VIDEO_CUES || [], title: 'Μέτρηση μήκους: λεπτομέρειες, σφάλματα και μέση τιμή', lead: 'πώς μετράμε σωστά το <strong>μήκος</strong> με μετροταινία: τα όρια του οργάνου, οι <strong>πέντε παγίδες</strong> (μηδενική γραμμή, παραλληλία, αρχική ένδειξη, σφάλμα παράλλαξης) και η στρογγυλοποίηση της μέσης τιμής', min: 5 };
     const PARALLEL = { src: 'assets/video/parallel_circuit_masterclass.mp4', cues: () => window.PARALLEL_VIDEO_CUES || [], title: 'Παράλληλο κύκλωμα: επεξήγηση σε βίντεο', lead: 'πώς λειτουργεί ένα <strong>παράλληλο</strong> κύκλωμα (τάση, ρεύμα, ανοικτός διακόπτης, βραχυκύκλωμα)', min: 6 };
 
     function render(mount, cfg) {
@@ -63,5 +64,5 @@ window.SeriesVideo = (function () {
             if (i >= 0) { const e = tx.querySelector('.sv-line[data-i="' + i + '"]'); if (e) e.classList.add('now'); }
         });
     }
-    return { render, renderParallel: (m) => render(m, PARALLEL), renderFaults: (m) => render(m, FAULTS), renderCell: (m) => render(m, CELL), renderPendulum: (m) => render(m, PENDULUM) };
+    return { render, renderParallel: (m) => render(m, PARALLEL), renderFaults: (m) => render(m, FAULTS), renderCell: (m) => render(m, CELL), renderPendulum: (m) => render(m, PENDULUM), renderMeasure: (m) => render(m, MEASURE) };
 })();
