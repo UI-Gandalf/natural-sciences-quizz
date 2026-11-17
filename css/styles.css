@@ -11081,3 +11081,10 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 /* Biology B: guide + 3D joints + skeleton in one pop-up menu */
 .subject-tabs-container.grouped-biob { position: relative; gap: 12px; }
 .subject-tabs-container.grouped-biob #tab-btn-bioguide, .subject-tabs-container.grouped-biob #tab-btn-joints3d, .subject-tabs-container.grouped-biob #tab-btn-skeleton { display: none; }
+
+.bj-mini { width: 100%; margin: 8px 0; border-collapse: collapse; font-size: 0.85rem; }
+.bj-mini th, .bj-mini td { padding: 5px 7px; border: 1px solid rgba(148, 163, 184, 0.4); text-align: left; vertical-align: top; }
+.bj-mini th { background: rgba(14, 116, 144, 0.35); }
+.bj-mini-n { margin: 6px 0 0; font-size: 0.86rem; line-height: 1.5; }
+.bj-mini { table-layout: fixed; background: rgba(8, 15, 30, 0.85); color: #e2e8f0; }
+.bj-mini td, .bj-mini th { overflow-wrap: anywhere; }
