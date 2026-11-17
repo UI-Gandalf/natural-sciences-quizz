@@ -1511,9 +1511,15 @@ function switchSubjectTab(tabKey) {
             tpPanel.style.animation = 'fadeIn 0.3s ease';
             const tm = document.getElementById('topics-mount');
             if (tm && !tm.hasChildNodes()) renderTopicsView();
-            if (AppState.pendingTopic) {
+            {
+                // opened from the menu: show ONLY that topic (the page header stays, the other topics and the chip bar are hidden)
                 const pt = AppState.pendingTopic; AppState.pendingTopic = null;
-                setTimeout(() => { document.querySelectorAll('#topics-mount details.bga-sec').forEach((d) => { if (d.id !== 'bga-' + pt) d.open = false; }); const lnk = document.querySelector('#topics-mount .bga-nav a[data-go="' + pt + '"]'); if (lnk) lnk.click(); }, 80);
+                const bga = document.querySelector('#topics-mount .bga');
+                if (bga) {
+                    bga.classList.toggle('solo', !!pt);
+                    bga.querySelectorAll('details.bga-sec').forEach((d) => { const on = !!pt && d.id === 'bga-' + pt; d.classList.toggle('solo-on', on); if (pt) d.open = on; });
+                    if (pt) { const d = bga.querySelector('#bga-' + pt); if (d) setTimeout(() => d.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); }
+                }
             }
         }
     }

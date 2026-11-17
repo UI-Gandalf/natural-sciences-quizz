@@ -11113,3 +11113,7 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 
 .subject-tabs-container.grouped-bioa { position: relative; gap: 12px; }
 .subject-tabs-container.grouped-bioa #tab-btn-bioguide, .subject-tabs-container.grouped-bioa #tab-btn-cell { display: none; }
+
+/* a topic opened from the menu is shown alone */
+.bga.solo .bga-nav { display: none; }
+.bga.solo details.bga-sec:not(.solo-on) { display: none; }
