@@ -1154,6 +1154,7 @@ const PHYS_G_GROUPS = [
     { id: 'syl', icon: '📚', label: 'Εξεταστέα ύλη (σχολικό βιβλίο)', items: [ { tab: 'syllabus', label: '' } ] }
 ];
 function physGroupsHtml(currentTab, classKey, subjectKey, quizzes, groups) {
+    const cur = (currentTab === 'topics' && AppState.topicSel) ? 'topics:' + AppState.topicSel : currentTab;
     return (groups || PHYS_G_GROUPS).map((g) => {
         if (g.id === 'syl') {
             return `<div class="sg-wrap"><button type="button" class="sg-btn${currentTab === 'syllabus' ? ' active' : ''}" data-group="syl" onclick="switchSubjectTab('syllabus')"><span class="tab-icon">${g.icon}</span><span>${g.label}</span></button></div>`;
@@ -1163,9 +1164,9 @@ function physGroupsHtml(currentTab, classKey, subjectKey, quizzes, groups) {
             const num = it.quizzes ? '' : '<span class="sg-n">' + (++nItem) + '</span>';
             if (it.quizzes) return quizzes.map((q) => `<button type="button" class="sg-item" data-quiz="${q.id}" onclick="closeTabMenus(); navigateTo('class/${classKey}/subject/${subjectKey}/quiz/${q.id}')">${q.title}</button>`).join('');
             if (it.locked) return `<button type="button" class="sg-item is-locked" data-tab="${it.tab}" disabled aria-disabled="true" title="Θα είναι διαθέσιμο σύντομα">${num}<span class="sg-t">🔒 ${it.label} <small>(σύντομα διαθέσιμο)</small></span></button>`;
-            return `<button type="button" class="sg-item${currentTab === it.tab ? ' active' : ''}" data-tab="${it.tab}" onclick="closeTabMenus(); switchSubjectTab('${it.tab}')">${num}<span class="sg-t">${it.label}</span></button>`;
+            return `<button type="button" class="sg-item${cur === it.tab ? ' active' : ''}" data-tab="${it.tab}" onclick="closeTabMenus(); switchSubjectTab('${it.tab}')">${num}<span class="sg-t">${it.label}</span></button>`;
         }).join('');
-        const act = g.items.find((it) => it.tab === currentTab);
+        const act = g.items.find((it) => it.tab === cur);
         return `<div class="sg-wrap"><button type="button" class="sg-btn${act ? ' active' : ''}" data-group="${g.id}" aria-haspopup="true" aria-expanded="false" onclick="toggleTabMenu(this, event)"><span class="tab-icon">${g.icon}</span><span class="sg-label">${g.label}</span><span class="sg-caret">▾</span></button><div class="sg-menu" role="menu">${items}</div></div>`;
     }).join('');
 }
@@ -1185,8 +1186,14 @@ const CHEM_G_GROUPS = [
 const BIO_B_GROUPS = [
     { id: 'biobtheory', icon: '📖', label: 'Θεωρία', items: [
         { tab: 'bioguide', label: 'Συνοπτικός οδηγός ύλης' },
+        { tab: 'skeleton', label: 'Ερειστικό σύστημα (διαδραστικός σκελετός)' },
+        { tab: 'topics:bt1', label: 'Υδροστατικός σκελετός' },
+        { tab: 'topics:bt2', label: 'Αρθρόποδα και έκδυση' },
+        { tab: 'topics:bt3', label: 'Εξωσκελετός' },
+        { tab: 'topics:bt5', label: 'Αεροδυναμικό / υδροδυναμικό' },
+        { tab: 'topics:bt4', label: 'Αρθρώσεις' },
         { tab: 'joints3d', label: 'Αρθρώσεις σε 3D' },
-        { tab: 'skeleton', label: 'Ερειστικό σύστημα (διαδραστικός σκελετός)' } ] }
+        { tab: 'topics:bt6', label: 'Ο κόκκυγας' } ] }
 ];
 const PHYS_A_GROUPS = [
     { id: 'physa', icon: '📖', label: 'Θεωρία / Πειράματα', items: [
@@ -1237,9 +1244,12 @@ function ensurePanelFsBar(tabKey) {
 }
 
 function switchSubjectTab(tabKey) {
+    // 'topics:bt3' = the deep-focus page opened at its topic bt3 (used by the Biology B menu)
+    if (typeof tabKey === 'string' && tabKey.indexOf('topics:') === 0) { AppState.topicSel = tabKey.slice(7); AppState.pendingTopic = AppState.topicSel; tabKey = 'topics'; }
+    else if (tabKey !== 'topics') AppState.topicSel = null;
     if (PHYS_G_GROUPS.concat(BIO_G_GROUPS, BIO_B_GROUPS, CHEM_G_GROUPS, PHYS_A_GROUPS).some((g) => g.items.some((it) => it.tab === tabKey && it.locked))) return;   // locked tabs (not released yet) cannot be opened
     AppState.currentSubjectTab = tabKey;
-    updateTabGroups(tabKey);
+    updateTabGroups(tabKey === 'topics' && AppState.topicSel ? 'topics:' + AppState.topicSel : tabKey);
     const hl = document.getElementById('phys-home-link'); if (hl) hl.style.display = tabKey === 'quizzes' ? 'none' : 'inline-flex';
     // Leaving the simulation (or arriving at it from anywhere else) means the next visit starts neutral
     if (tabKey !== 'simulation') AppState.simulationEntered = false;
@@ -1495,6 +1505,10 @@ function switchSubjectTab(tabKey) {
             tpPanel.style.animation = 'fadeIn 0.3s ease';
             const tm = document.getElementById('topics-mount');
             if (tm && !tm.hasChildNodes()) renderTopicsView();
+            if (AppState.pendingTopic) {
+                const pt = AppState.pendingTopic; AppState.pendingTopic = null;
+                setTimeout(() => { document.querySelectorAll('#topics-mount details.bga-sec').forEach((d) => { if (d.id !== 'bga-' + pt) d.open = false; }); const lnk = document.querySelector('#topics-mount .bga-nav a[data-go="' + pt + '"]'); if (lnk) lnk.click(); }, 80);
+            }
         }
     }
 
