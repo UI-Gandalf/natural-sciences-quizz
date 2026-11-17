@@ -354,7 +354,7 @@ window.CellDive = (function () {
             $('#cd-list').innerHTML = '<div class="cd-list-h">Τι υπάρχει εδώ μέσα;</div>' + ids.map((id) => {
                 const o = ORG[id], f = pr.found[id], n = o.parts.length, k = o.parts.filter((p) => seenOf(id)[p[0]]).length;
                 return '<button type="button" class="cd-li' + (f ? ' ok' : '') + (S.sel === id ? ' sel' : '') + '" data-id="' + id + '"><span class="dot" style="background:' + (f ? o.color : '#64748b') + '"></span><span class="nm">' + (f ? esc(o.name) : '; ; ;') + '</span>' + (f && n ? '<span class="ct">' + (k === n ? '★' : k + '/' + n) + '</span>' : '') + '</button>';
-            }).join('') + '<div class="cd-list-n">Πάτησε ένα όνομα για να πας εκεί. Αν είναι ακόμα «; ; ;», θα στραφείς προς το μέρος του.</div>';
+            }).join('') + '<div class="cd-list-n">Πάτησε ένα όνομα για να πας εκεί. Αν είναι ακόμα «; ; ;», θα στραφείς προς το μέρος του και θα αναβοσβήσει.</div>';
             const card = $('#cd-card'), id = S.sel;
             if (!id) { card.classList.remove('on'); card.innerHTML = ''; return; }
             const o = ORG[id], sn = seenOf(id);
@@ -498,7 +498,7 @@ window.CellDive = (function () {
                 const id = b.dataset.id;
                 if (P().found[id]) { select(id, null, { face: true }); if (id === 'cyto') toast('Το κυτταρόπλασμα είναι παντού γύρω σου.'); }
                 else if (id === 'cyto') toast('💡 Κοίτα τον «άδειο» χώρο ανάμεσα στα οργανίδια και πάτησε εκεί.');
-                else { S.fly = null; S.turn = lookAngles(S.pos, nearestCenter(id, S.pos)); toast('🧭 Κοίτα μπροστά σου: κολύμπησε προς τα εκεί και πάτησε πάνω του.'); }
+                else { S.fly = null; S.turn = lookAngles(S.pos, nearestCenter(id, S.pos)); pulse(id, null); toast('🧭 Κοίτα μπροστά σου: αυτό που αναβοσβήνει. Κολύμπησε προς τα εκεί και πάτησε πάνω του.'); }
                 return;
             }
             if (b.classList.contains('cd-part')) { const id = S.sel; if (!id) return; pulse(id, b.dataset.part); if (!seenOf(id)[b.dataset.part]) toast('👀 Αναβοσβήνει: βρες το και πάτησε πάνω του.'); return; }
