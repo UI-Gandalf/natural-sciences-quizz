@@ -11110,3 +11110,6 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .subject-tabs-container.grouped-physa #tab-btn-time, .subject-tabs-container.grouped-physa #tab-btn-pendvideo, .subject-tabs-container.grouped-physa #tab-btn-length, .subject-tabs-container.grouped-physa #tab-btn-measvideo, .subject-tabs-container.grouped-physa #tab-btn-mass { display: none; }
 
 .subject-tabs-container.grouped-biob #tab-btn-topics { display: none; }
+
+.subject-tabs-container.grouped-bioa { position: relative; gap: 12px; }
+.subject-tabs-container.grouped-bioa #tab-btn-bioguide, .subject-tabs-container.grouped-bioa #tab-btn-cell { display: none; }
