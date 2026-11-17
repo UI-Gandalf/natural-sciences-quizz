@@ -11062,3 +11062,14 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
     .cd-card { left: 10px; right: 10px; top: auto; bottom: 10px; width: auto; max-height: 46%; }
     .cd-pad { bottom: auto; top: 58px; }
 }
+
+/* "supplementary - not examinable" notes: strong, orange, impossible to miss */
+.supp-note { display: block; margin: 10px 0 4px; padding: 9px 14px; border-radius: 10px; border: 2px solid #fb923c; border-left-width: 8px; background: rgba(234, 88, 12, 0.3); color: #ffedd5; font-weight: 800; font-size: 1.02rem; line-height: 1.4; }
+.supp-note strong { color: #fff; text-decoration: underline; text-decoration-color: #fdba74; text-underline-offset: 3px; }
+.bt-tag { padding: 3px 12px; font-size: 0.8rem; font-weight: 800; background: #ea580c; color: #fff; border: 1px solid #fdba74; letter-spacing: 0.01em; }
+.bt-supp { border-left-width: 8px; border-left-color: #ea580c; background: rgba(234, 88, 12, 0.16); }
+.c3d-supp { border-left-width: 8px; border-left-color: #ea580c; }
+.c3d-supp .c3d-tag { background: #ea580c; color: #fff; font-weight: 800; border: 1px solid #fdba74; }
+:root[data-theme="light"] .supp-note { background: #fff1e6; color: #7c2d12; border-color: #ea580c; }
+:root[data-theme="light"] .supp-note strong { color: #7c2d12; text-decoration-color: #ea580c; }
+:root[data-theme="light"] .bt-supp { background: #fff7ed; }

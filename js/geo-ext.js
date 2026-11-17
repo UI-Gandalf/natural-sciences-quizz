@@ -13,7 +13,7 @@ window.GeoExt = (function () {
         mount.innerHTML = '';
         const root = document.createElement('div');
         root.className = 'bga';
-        root.innerHTML = '<div class="bga-head"><h2>🧩 Επεκτάσεις</h2><p>Επιπλέον θέματα Γεωγραφίας και Ιστορίας. Είναι <strong>συμπληρωματικά</strong> και <strong>δεν αποτελούν εξεταστέα ύλη</strong>.</p>' +
+        root.innerHTML = '<div class="bga-head"><h2>🧩 Επεκτάσεις</h2><p>Επιπλέον θέματα Γεωγραφίας και Ιστορίας. <span class="supp-note">⚠ Είναι <strong>συμπληρωματικά</strong> και <strong>δεν αποτελούν εξεταστέα ύλη</strong>.</span></p>' +
             '<div class="cg-pick cg-pick-strong"><span class="cg-pick-t">👇 Υπάρχουν ' + TOPICS.length + ' θέματα: διάλεξε από το μενού</span><label class="cg-pick-sel"><select id="ge-topic">' + TOPICS.map((t) => '<option value="' + t.key + '"' + (t.key === current ? ' selected' : '') + '>' + t.label + '</option>').join('') + '</select></label>' +
             '<div class="cg-chips" id="ge-chips">' + TOPICS.map((t) => '<button type="button" class="cg-chip" data-k="' + t.key + '">' + t.label + '</button>').join('') + '</div></div></div><div id="ge-content"></div>';
         mount.appendChild(root);

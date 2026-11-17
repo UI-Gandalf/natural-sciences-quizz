@@ -138,7 +138,7 @@
         const bee = (window.BioGTopics && window.BioGTopics.sections) || [];
         const root = K.renderPage(mount, {
             title: '🐝 Τσιμπήματα εντόμων και αντιμετώπιση',
-            intro: 'Μύθοι και πρώτες βοήθειες στα τσιμπήματα εντόμων, με τη βοήθεια της Χημείας (οξέα, βάσεις, pH). Τα θέματα αυτά είναι <strong>συμπληρωματικά</strong> και δεν αποτελούν εξεταστέα ύλη.</p>' + DISCLAIMER + '<p style="display:none">',
+            intro: 'Μύθοι και πρώτες βοήθειες στα τσιμπήματα εντόμων, με τη βοήθεια της Χημείας (οξέα, βάσεις, pH). <span class="supp-note">⚠ Τα θέματα αυτά είναι <strong>συμπληρωματικά</strong> και <strong>δεν αποτελούν εξεταστέα ύλη</strong>.</span></p>' + DISCLAIMER + '<p style="display:none">',
             sections: bee.map((b, i) => Object.assign({}, b, { title: (i + 1) + '. ' + b.title, open: i === 0 }))
         });
         if (window.BioGTopics && window.BioGTopics.wire) window.BioGTopics.wire(root);
@@ -155,7 +155,7 @@
         mount.innerHTML = '';
         const root = document.createElement('div');
         root.className = 'bga';
-        root.innerHTML = '<div class="bga-head"><h2>🧩 Βαθιά εστίαση & ερμηνεία</h2><p>Επιπλέον θέματα που συνδέουν τη Χημεία με την καθημερινή ζωή. Είναι <strong>συμπληρωματικά</strong> και <strong>δεν αποτελούν εξεταστέα ύλη</strong>.</p>' +
+        root.innerHTML = '<div class="bga-head"><h2>🧩 Βαθιά εστίαση & ερμηνεία</h2><p>Επιπλέον θέματα που συνδέουν τη Χημεία με την καθημερινή ζωή. <span class="supp-note">⚠ Είναι <strong>συμπληρωματικά</strong> και <strong>δεν αποτελούν εξεταστέα ύλη</strong>.</span></p>' +
             '<div class="cg-pick cg-pick-strong"><span class="cg-pick-t">👇 Υπάρχουν ' + TOPICS.length + ' θέματα: διάλεξε από το μενού</span><label class="cg-pick-sel"><select id="cg-topic">' + TOPICS.map(t => '<option value="' + t.key + '">' + t.label + '</option>').join('') + '</select></label>' +
             '<div class="cg-chips">' + TOPICS.map(t => '<button type="button" class="cg-chip" data-k="' + t.key + '">' + t.label + '</button>').join('') + '</div></div></div><div id="cg-content"></div>';
         mount.appendChild(root);

@@ -374,7 +374,7 @@
     function render(mount) {
         const root = K.renderPage(mount, {
             title: '🧩 Βαθιά εστίαση & ερμηνεία',
-            intro: 'Επιπλέον θέματα για όσους θέλουν να πάνε πιο βαθιά. Είναι <strong>συμπληρωματικά</strong> και <strong>δεν αποτελούν εξεταστέα ύλη</strong>.',
+            intro: 'Επιπλέον θέματα για όσους θέλουν να πάνε πιο βαθιά. <span class="supp-note">⚠ Είναι <strong>συμπληρωματικά</strong> και <strong>δεν αποτελούν εξεταστέα ύλη</strong>.</span>',
             sections: [window.BioPhoto.section(1)]
         });
         window.BioPhoto.init(root);
