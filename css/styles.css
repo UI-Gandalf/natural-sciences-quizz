@@ -11104,3 +11104,7 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 :root[data-theme="light"] .bj-mini { background: #fff !important; color: #0f172a !important; }
 :root[data-theme="light"] .bj-mini th { background: #bae6fd !important; color: #0c4a6e; }
 :root[data-theme="light"] .bj-mini-n { color: #431407; }
+
+/* Physics A: length, time and mass pages and videos in one pop-up menu */
+.subject-tabs-container.grouped-physa { position: relative; gap: 12px; }
+.subject-tabs-container.grouped-physa #tab-btn-time, .subject-tabs-container.grouped-physa #tab-btn-pendvideo, .subject-tabs-container.grouped-physa #tab-btn-length, .subject-tabs-container.grouped-physa #tab-btn-measvideo, .subject-tabs-container.grouped-physa #tab-btn-mass { display: none; }

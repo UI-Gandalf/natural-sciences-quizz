@@ -429,7 +429,7 @@ function renderQuizSelection(classKey, subjectKey) {
             <h1 class="view-title">${sub.name} (${cls.name})</h1>
 
             <!-- Navigation Tabs: Quizzes vs Theory vs Exam Solutions vs Simulation -->
-            <div class="subject-tabs-container${isPhysG ? ' grouped' : ''}${isBioG ? ' grouped-bio' : ''}${subjectKey === 'chemistry' ? ' grouped-chem' : ''}${isBioB ? ' grouped-biob' : ''}">
+            <div class="subject-tabs-container${isPhysG ? ' grouped' : ''}${isBioG ? ' grouped-bio' : ''}${subjectKey === 'chemistry' ? ' grouped-chem' : ''}${isBioB ? ' grouped-biob' : ''}${isPhysA ? ' grouped-physa' : ''}">
                 ${isPhysG ? physGroupsHtml(currentTab, classKey, subjectKey, activeQuizzes) : ''}
                 <button class="subject-tab-btn ${currentTab === 'quizzes' ? 'active' : ''}" id="tab-btn-quizzes" onclick="switchSubjectTab('quizzes')">
                     <span class="tab-icon">📝</span>
@@ -437,6 +437,7 @@ function renderQuizSelection(classKey, subjectKey) {
                 </button>
                 ${isBioG ? physGroupsHtml(currentTab, classKey, subjectKey, [], BIO_G_GROUPS) : ''}
                 ${isBioB ? physGroupsHtml(currentTab, classKey, subjectKey, [], BIO_B_GROUPS) : ''}
+                ${isPhysA ? physGroupsHtml(currentTab, classKey, subjectKey, [], PHYS_A_GROUPS) : ''}
                 ${subjectKey === 'chemistry' ? physGroupsHtml(currentTab, classKey, subjectKey, [], CHEM_G_GROUPS) : ''}
                 ${(isBioA || isBioB || isBioG) ? `
                 <button class="subject-tab-btn ${currentTab === 'bioguide' ? 'active' : ''}" id="tab-btn-bioguide" onclick="switchSubjectTab('bioguide')">
@@ -1187,6 +1188,14 @@ const BIO_B_GROUPS = [
         { tab: 'joints3d', label: 'Αρθρώσεις σε 3D' },
         { tab: 'skeleton', label: 'Ερειστικό σύστημα (διαδραστικός σκελετός)' } ] }
 ];
+const PHYS_A_GROUPS = [
+    { id: 'physa', icon: '📖', label: 'Θεωρία / Πειράματα', items: [
+        { tab: 'length', label: 'Μέτρηση μήκους' },
+        { tab: 'measvideo', label: 'Βίντεο: μέτρηση μήκους και σφάλματα (ελληνικοί υπότιτλοι)' },
+        { tab: 'time', label: 'Μέτρηση χρόνου: κρίσιμα σημεία' },
+        { tab: 'pendvideo', label: 'Βίντεο: μέτρηση της περιόδου εκκρεμούς (ελληνικοί υπότιτλοι)' },
+        { tab: 'mass', label: 'Μάζα και Βάρος' } ] }
+];
 function closeTabMenus() {
     document.querySelectorAll('.sg-wrap.open').forEach((w) => { w.classList.remove('open'); const b = w.querySelector('.sg-btn'); if (b) b.setAttribute('aria-expanded', 'false'); });
 }
@@ -1199,7 +1208,7 @@ function toggleTabMenu(btn, ev) {
 document.addEventListener('click', (e) => { if (!e.target.closest('.sg-wrap')) closeTabMenus(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTabMenus(); });
 function updateTabGroups(tabKey) {
-    PHYS_G_GROUPS.concat(BIO_G_GROUPS, BIO_B_GROUPS, CHEM_G_GROUPS).forEach((g) => {
+    PHYS_G_GROUPS.concat(BIO_G_GROUPS, BIO_B_GROUPS, CHEM_G_GROUPS, PHYS_A_GROUPS).forEach((g) => {
         const btn = document.querySelector('.sg-btn[data-group="' + g.id + '"]');
         if (!btn) return;
         const hit = g.id === 'syl' ? tabKey === 'syllabus' : g.items.find((it) => it.tab === tabKey);
@@ -1228,7 +1237,7 @@ function ensurePanelFsBar(tabKey) {
 }
 
 function switchSubjectTab(tabKey) {
-    if (PHYS_G_GROUPS.concat(BIO_G_GROUPS, BIO_B_GROUPS, CHEM_G_GROUPS).some((g) => g.items.some((it) => it.tab === tabKey && it.locked))) return;   // locked tabs (not released yet) cannot be opened
+    if (PHYS_G_GROUPS.concat(BIO_G_GROUPS, BIO_B_GROUPS, CHEM_G_GROUPS, PHYS_A_GROUPS).some((g) => g.items.some((it) => it.tab === tabKey && it.locked))) return;   // locked tabs (not released yet) cannot be opened
     AppState.currentSubjectTab = tabKey;
     updateTabGroups(tabKey);
     const hl = document.getElementById('phys-home-link'); if (hl) hl.style.display = tabKey === 'quizzes' ? 'none' : 'inline-flex';
