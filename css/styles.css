@@ -11081,3 +11081,7 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .sg-item.is-locked .sg-n { background: #64748b; }
 .sg-t { flex: 1; }
 :root[data-theme="light"] .sg-n { background: #0369a1; }
+
+/* Chemistry: the video and the simulation live in one pop-up menu */
+.subject-tabs-container.grouped-chem { position: relative; gap: 12px; }
+.subject-tabs-container.grouped-chem #tab-btn-neutvideo, .subject-tabs-container.grouped-chem #tab-btn-neutral { display: none; }

@@ -429,13 +429,14 @@ function renderQuizSelection(classKey, subjectKey) {
             <h1 class="view-title">${sub.name} (${cls.name})</h1>
 
             <!-- Navigation Tabs: Quizzes vs Theory vs Exam Solutions vs Simulation -->
-            <div class="subject-tabs-container${isPhysG ? ' grouped' : ''}${isBioG ? ' grouped-bio' : ''}">
+            <div class="subject-tabs-container${isPhysG ? ' grouped' : ''}${isBioG ? ' grouped-bio' : ''}${subjectKey === 'chemistry' ? ' grouped-chem' : ''}">
                 ${isPhysG ? physGroupsHtml(currentTab, classKey, subjectKey, activeQuizzes) : ''}
                 <button class="subject-tab-btn ${currentTab === 'quizzes' ? 'active' : ''}" id="tab-btn-quizzes" onclick="switchSubjectTab('quizzes')">
                     <span class="tab-icon">📝</span>
                     <span>Κουίζ Αξιολόγησης</span>
                 </button>
                 ${isBioG ? physGroupsHtml(currentTab, classKey, subjectKey, [], BIO_G_GROUPS) : ''}
+                ${subjectKey === 'chemistry' ? physGroupsHtml(currentTab, classKey, subjectKey, [], CHEM_G_GROUPS) : ''}
                 ${(isBioA || isBioB || isBioG) ? `
                 <button class="subject-tab-btn ${currentTab === 'bioguide' ? 'active' : ''}" id="tab-btn-bioguide" onclick="switchSubjectTab('bioguide')">
                     <span class="tab-icon">📋</span>
@@ -1182,6 +1183,11 @@ const BIO_G_GROUPS = [
         { tab: 'cellvideo', label: 'Βίντεο: αρχιτεκτονική κυττάρου (ελληνικοί υπότιτλοι)' },
         { tab: 'cellinfo', label: 'Infographic: δομή ευκαρυωτικού κυττάρου' } ] }
 ];
+const CHEM_G_GROUPS = [
+    { id: 'chemneut', icon: '🧪', label: 'Εξουδετέρωση', items: [
+        { tab: 'neutvideo', label: 'Βίντεο: εξουδετέρωση οξέος – βάσης (ελληνικοί υπότιτλοι)' },
+        { tab: 'neutral', label: 'Προσομοίωση εξουδετέρωσης' } ] }
+];
 function closeTabMenus() {
     document.querySelectorAll('.sg-wrap.open').forEach((w) => { w.classList.remove('open'); const b = w.querySelector('.sg-btn'); if (b) b.setAttribute('aria-expanded', 'false'); });
 }
@@ -1194,7 +1200,7 @@ function toggleTabMenu(btn, ev) {
 document.addEventListener('click', (e) => { if (!e.target.closest('.sg-wrap')) closeTabMenus(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTabMenus(); });
 function updateTabGroups(tabKey) {
-    PHYS_G_GROUPS.concat(BIO_G_GROUPS).forEach((g) => {
+    PHYS_G_GROUPS.concat(BIO_G_GROUPS, CHEM_G_GROUPS).forEach((g) => {
         const btn = document.querySelector('.sg-btn[data-group="' + g.id + '"]');
         if (!btn) return;
         const hit = g.id === 'syl' ? tabKey === 'syllabus' : g.items.find((it) => it.tab === tabKey);
@@ -1223,7 +1229,7 @@ function ensurePanelFsBar(tabKey) {
 }
 
 function switchSubjectTab(tabKey) {
-    if (PHYS_G_GROUPS.concat(BIO_G_GROUPS).some((g) => g.items.some((it) => it.tab === tabKey && it.locked))) return;   // locked tabs (not released yet) cannot be opened
+    if (PHYS_G_GROUPS.concat(BIO_G_GROUPS, CHEM_G_GROUPS).some((g) => g.items.some((it) => it.tab === tabKey && it.locked))) return;   // locked tabs (not released yet) cannot be opened
     AppState.currentSubjectTab = tabKey;
     updateTabGroups(tabKey);
     const hl = document.getElementById('phys-home-link'); if (hl) hl.style.display = tabKey === 'quizzes' ? 'none' : 'inline-flex';
