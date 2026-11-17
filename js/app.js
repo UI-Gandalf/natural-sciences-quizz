@@ -417,7 +417,7 @@ function renderQuizSelection(classKey, subjectKey) {
     const isBioA = subjectKey === 'biology' && classKey === 'Α';
     const isBioB = subjectKey === 'biology' && classKey === 'Β';
     const isBioG = subjectKey === 'biology' && (classKey === 'Γ' || (classKey && classKey.startsWith('Γ')));
-    if (subjectKey === 'physics' && !isPhysG && !(isPhysA && (currentTab === 'time' || currentTab === 'mass' || currentTab === 'length' || currentTab === 'pendvideo' || currentTab === 'measvideo')) && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
+    if (subjectKey === 'physics' && !isPhysG && !(isPhysA && (currentTab === 'time' || currentTab === 'mass' || currentTab === 'length' || currentTab === 'pendvideo' || currentTab === 'measvideo' || currentTab === 'massinfo')) && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
 
     let html = `
         <button class="back-btn" onclick="navigateTo('class/${classKey}')">
@@ -866,6 +866,9 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-pendvideo" style="display: ${currentTab === 'pendvideo' ? 'block' : 'none'};">
             <div id="pendvideo-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-massinfo" style="display: ${currentTab === 'massinfo' ? 'block' : 'none'};">
+            <div id="massinfo-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-measvideo" style="display: ${currentTab === 'measvideo' ? 'block' : 'none'};">
             <div id="measvideo-mount"></div>
         </div>
@@ -944,6 +947,10 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'faultsvideo') {
         const m = document.getElementById('faultsvideo-mount');
         if (m && window.SeriesVideo) window.SeriesVideo.renderFaults(m);
+    }
+    if (currentTab === 'massinfo') {
+        const m = document.getElementById('massinfo-mount');
+        if (m && window.CellInfographic) window.CellInfographic.renderMassWeight(m);
     }
     if (currentTab === 'measvideo') {
         const m = document.getElementById('measvideo-mount');
@@ -1202,7 +1209,8 @@ const PHYS_A_GROUPS = [
         { tab: 'measvideo', label: 'Βίντεο: μέτρηση μήκους και σφάλματα (ελληνικοί υπότιτλοι)' },
         { tab: 'time', label: 'Μέτρηση χρόνου: κρίσιμα σημεία' },
         { tab: 'pendvideo', label: 'Βίντεο: μέτρηση της περιόδου εκκρεμούς (ελληνικοί υπότιτλοι)' },
-        { tab: 'mass', label: 'Μάζα και Βάρος' } ] }
+        { tab: 'mass', label: 'Μάζα και Βάρος' },
+        { tab: 'massinfo', label: 'Infographic: μάζα και βάρος' } ] }
 ];
 const BIO_A_GROUPS = [
     { id: 'bioatheory', icon: '📖', label: 'Θεωρία', items: [
@@ -1350,6 +1358,15 @@ function switchSubjectTab(tabKey) {
         }
     }
 
+    const miPanel = document.getElementById('tab-panel-massinfo');
+    if (miPanel) {
+        miPanel.style.display = tabKey === 'massinfo' ? 'block' : 'none';
+        if (tabKey === 'massinfo') {
+            miPanel.style.animation = 'fadeIn 0.3s ease';
+            const mim = document.getElementById('massinfo-mount');
+            if (mim && !mim.hasChildNodes() && window.CellInfographic) window.CellInfographic.renderMassWeight(mim);
+        }
+    }
     const mvBtn = document.getElementById('tab-btn-measvideo');
     if (mvBtn) mvBtn.classList.toggle('active', tabKey === 'measvideo');
     const mvPanel = document.getElementById('tab-panel-measvideo');
