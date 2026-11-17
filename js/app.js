@@ -551,6 +551,13 @@ function renderQuizSelection(classKey, subjectKey) {
                 </button>
                 ` : ''}
                 ${subjectKey === 'chemistry' ? `
+                <button class="subject-tab-btn ${currentTab === 'neutvideo' ? 'active' : ''}" id="tab-btn-neutvideo" onclick="switchSubjectTab('neutvideo')">
+                    <span class="tab-icon">🎬</span>
+                    <span class="tab-multiline">
+                        <span class="tab-line-main">Βίντεο: εξουδετέρωση οξέος – βάσης</span>
+                        <span class="tab-line-sub">(με ελληνικούς υπότιτλους)</span>
+                    </span>
+                </button>
                 <button class="subject-tab-btn ${currentTab === 'neutral' ? 'active' : ''}" id="tab-btn-neutral" onclick="switchSubjectTab('neutral')">
                     <span class="tab-icon">🧪</span>
                     <span>Προσομοίωση εξουδετέρωσης</span>
@@ -846,6 +853,9 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-neutral" style="display: ${currentTab === 'neutral' ? 'block' : 'none'};">
             <div id="neutral-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-neutvideo" style="display: ${currentTab === 'neutvideo' ? 'block' : 'none'};">
+            <div id="neutvideo-mount"></div>
+        </div>
         ` : ''}
         ${isPhysA ? `
         <!-- PHYSICS Α: TIME MEASUREMENT, CRITICAL POINTS -->
@@ -910,6 +920,10 @@ function renderQuizSelection(classKey, subjectKey) {
         }
     }
 
+    if (currentTab === 'neutvideo' && subjectKey === 'chemistry') {
+        const m = document.getElementById('neutvideo-mount');
+        if (m && window.SeriesVideo) window.SeriesVideo.renderNeutral(m);
+    }
     if (currentTab === 'neutral' && subjectKey === 'chemistry') {
         renderNeutralView();
     }
@@ -1513,6 +1527,17 @@ function switchSubjectTab(tabKey) {
         }
     }
 
+    const nvBtn = document.getElementById('tab-btn-neutvideo');
+    if (nvBtn) nvBtn.classList.toggle('active', tabKey === 'neutvideo');
+    const nvPanel = document.getElementById('tab-panel-neutvideo');
+    if (nvPanel) {
+        nvPanel.style.display = tabKey === 'neutvideo' ? 'block' : 'none';
+        if (tabKey === 'neutvideo') {
+            nvPanel.style.animation = 'fadeIn 0.3s ease';
+            const nvm = document.getElementById('neutvideo-mount');
+            if (nvm && !nvm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderNeutral(nvm);
+        }
+    }
     const neutBtn = document.getElementById('tab-btn-neutral');
     if (neutBtn) neutBtn.classList.toggle('active', tabKey === 'neutral');
     const neutPanel = document.getElementById('tab-panel-neutral');
