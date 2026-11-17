@@ -285,7 +285,7 @@ window.CellDive = (function () {
             item('ribosome', null, 6);
             const pts = [];
             while (pts.length < 100) { const p = new THREE.Vector3(rr(-R[0], R[0]) * 0.9, rr(-R[1], R[1]) * 0.9, rr(-R[2], R[2]) * 0.9); if (inside(p, 0.78) && p.distanceTo(new THREE.Vector3().fromArray(L.nucleus)) > 16) pts.push(p); }
-            const im = new THREE.InstancedMesh(new THREE.SphereGeometry(0.62, 8, 6), M(0x607d8b), pts.length);
+            const im = new THREE.InstancedMesh(new THREE.SphereGeometry(0.44, 12, 9), M(0x607d8b), pts.length);
             pts.forEach((p, i) => { dummy.rotation.set(0, 0, 0); dummy.position.copy(p); dummy.updateMatrix(); im.setMatrixAt(i, dummy.matrix); });
             add(g, im, 'ribosome', 'free');
             // a few "meeting points" for the list: the densest places near the start
