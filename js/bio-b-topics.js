@@ -491,6 +491,7 @@
                     legend(cx, [['#a16207', 'σκελετός (εξωτερικό περίβλημα)'], ['#f87171', 'μύες (μέσα στο περίβλημα)'], ['#fde68a', 'εσωτερικά όργανα']]);
             }
             svg.innerHTML = s;
+            root.querySelectorAll('#bt-skel-c .bt-btn').forEach(b => b.classList.toggle('on', b.dataset.act === mode));      // the chosen button stays highlighted
         };
         draw('both');
         root.querySelector('#bt-skel-c').addEventListener('click', e => { if (e.target.dataset.act) draw(e.target.dataset.act); });

@@ -11123,3 +11123,5 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .au-box { padding: 16px; border-radius: 14px; background: rgba(8, 15, 30, 0.9); border: 1px solid var(--card-border); }
 .au-el { display: block; width: 100%; }
 .au-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 12px; }
+
+.bt-btn.on { background: #10b981; color: #fff; border-color: #34d399; box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.45); }
