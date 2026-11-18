@@ -11125,3 +11125,6 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .au-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 12px; }
 
 .bt-btn.on { background: #10b981; color: #fff; border-color: #34d399; box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.45); }
+
+@keyframes btSwap { from { opacity: 0.15; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+.bt-swap { animation: btSwap 0.45s ease; }

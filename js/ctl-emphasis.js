@@ -8,7 +8,8 @@
     'use strict';
     /* [controls selector, how to find the figure from the controls, label text, optional exclude selector] */
     const RULES = [
-        ['.bt-ctrl', (c) => c.closest('.bt-stage'), '👆 Πάτησε ένα κουμπί και παρακολούθησε το σχήμα να αλλάζει', '#bt-worm-c, #bt-medusa-c'],
+        ['#bt-skel-c', (c) => c.closest('.bt-stage'), '👆 Πάτησε ένα κουμπί για να δεις ποια διατομή (ή και τις δύο) θα εμφανιστεί'],
+        ['.bt-ctrl', (c) => c.closest('.bt-stage'), '👆 Πάτησε ένα κουμπί και παρακολούθησε το σχήμα να αλλάζει', '#bt-worm-c, #bt-medusa-c, #bt-skel-c'],
         ['.cell-toolbar', (c) => c.parentElement && c.parentElement.querySelector('.cell-stage'), '👆 Διάλεξε τι θα φαίνεται και παρακολούθησε το σχήμα'],
         ['.neut-controls', (c) => c.closest('.neut-grid'), '👆 Πρόσθεσε οξύ και παρακολούθησε το ποτήρι, το pH και την καμπύλη'],
         ['.ga-pick', (c) => c.parentElement && c.parentElement.querySelector('.ga-fig'), '👆 Διάλεξε τιμές και παρακολούθησε το σχήμα να αλλάζει'],

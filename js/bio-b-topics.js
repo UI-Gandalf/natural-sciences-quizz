@@ -491,6 +491,7 @@
                     legend(cx, [['#a16207', 'σκελετός (εξωτερικό περίβλημα)'], ['#f87171', 'μύες (μέσα στο περίβλημα)'], ['#fde68a', 'εσωτερικά όργανα']]);
             }
             svg.innerHTML = s;
+            svg.classList.remove('bt-swap'); void svg.getBoundingClientRect(); svg.classList.add('bt-swap');           // a short fade, so that the change is noticed
             root.querySelectorAll('#bt-skel-c .bt-btn').forEach(b => b.classList.toggle('on', b.dataset.act === mode));      // the chosen button stays highlighted
         };
         draw('both');
