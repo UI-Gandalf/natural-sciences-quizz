@@ -11117,3 +11117,9 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 /* a topic opened from the menu is shown alone */
 .bga.solo .bga-nav { display: none; }
 .bga.solo details.bga-sec:not(.solo-on) { display: none; }
+
+/* Physics A: audio tab */
+.au-wrap { max-width: 900px; }
+.au-box { padding: 16px; border-radius: 14px; background: rgba(8, 15, 30, 0.9); border: 1px solid var(--card-border); }
+.au-el { display: block; width: 100%; }
+.au-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 12px; }
