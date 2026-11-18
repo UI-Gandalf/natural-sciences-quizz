@@ -1208,12 +1208,13 @@ const CHEM_G_GROUPS = [
 const BIO_B_GROUPS = [
     { id: 'biobtheory', icon: '📖', label: 'Θεωρία', items: [
         { tab: 'bioguide', label: 'Συνοπτικός οδηγός ύλης' },
-        { tab: 'skeleton', label: 'Ερειστικό σύστημα (διαδραστικός σκελετός)' },
         { tab: 'topics:bt1', label: 'Υδροστατικός σκελετός' },
         { tab: 'topics:bt2', label: 'Αρθρόποδα και έκδυση' },
         { tab: 'topics:bt3', label: 'Εξωσκελετός' },
+        { tab: 'topics:bt4', label: 'Αρθρώσεις' } ] },
+    { id: 'biobdeep', icon: '🧩', label: 'Βαθιά εστίαση και ερμηνεία', items: [
+        { tab: 'skeleton', label: 'Ερειστικό σύστημα (διαδραστικός σκελετός)' },
         { tab: 'topics:bt5', label: 'Αεροδυναμικό / υδροδυναμικό' },
-        { tab: 'topics:bt4', label: 'Αρθρώσεις' },
         { tab: 'joints3d', label: 'Αρθρώσεις σε 3D' },
         { tab: 'topics:bt6', label: 'Ο κόκκυγας' } ] }
 ];
