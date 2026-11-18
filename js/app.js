@@ -839,6 +839,12 @@ function renderQuizSelection(classKey, subjectKey) {
         ` : ''}
         ${isBioB ? `
         <!-- BIOLOGY Β: INTERACTIVE SKELETON (book page 104) -->
+        <div class="tab-panel" id="tab-panel-supportpod" style="display: ${currentTab === 'supportpod' ? 'block' : 'none'};">
+            <div id="supportpod-mount"></div>
+        </div>
+        <div class="tab-panel" id="tab-panel-supportvid" style="display: ${currentTab === 'supportvid' ? 'block' : 'none'};">
+            <div id="supportvid-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-skeleton" style="display: ${currentTab === 'skeleton' ? 'block' : 'none'};">
             <div id="skeleton-mount"></div>
         </div>
@@ -973,6 +979,14 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'pendvideo') {
         const m = document.getElementById('pendvideo-mount');
         if (m && window.SeriesVideo) window.SeriesVideo.renderPendulum(m);
+    }
+    if (currentTab === 'supportpod') {
+        const m = document.getElementById('supportpod-mount');
+        if (m && window.AudioTab) window.AudioTab.renderSupport(m);
+    }
+    if (currentTab === 'supportvid') {
+        const m = document.getElementById('supportvid-mount');
+        if (m && window.SeriesVideo) window.SeriesVideo.renderSupport(m);
     }
     if (currentTab === 'celldive') {
         const m = document.getElementById('celldive-mount');
@@ -1211,7 +1225,9 @@ const BIO_B_GROUPS = [
         { tab: 'topics:bt1', label: 'Υδροστατικός σκελετός' },
         { tab: 'topics:bt2', label: 'Αρθρόποδα και έκδυση' },
         { tab: 'topics:bt3', label: 'Εξωσκελετός' },
-        { tab: 'topics:bt4', label: 'Αρθρώσεις' } ] },
+        { tab: 'topics:bt4', label: 'Αρθρώσεις' },
+        { tab: 'supportpod', label: 'Στήριξη & Κίνηση (podcast)' },
+        { tab: 'supportvid', label: 'Στήριξη & Κίνηση (video)' } ] },
     { id: 'biobdeep', icon: '🧩', label: 'Βαθιά εστίαση και ερμηνεία', note: '⚠ Τα θέματα αυτού του μενού δεν αποτελούν εξεταστέα ύλη.', items: [
         { tab: 'skeleton', label: 'Ερειστικό σύστημα (διαδραστικός σκελετός)' },
         { tab: 'topics:bt5', label: 'Αεροδυναμικό / υδροδυναμικό' },
@@ -1252,7 +1268,7 @@ function updateTabGroups(tabKey) {
         const hit = g.id === 'syl' ? tabKey === 'syllabus' : g.items.find((it) => it.tab === tabKey);
         btn.classList.toggle('active', !!hit);
         const lab = btn.querySelector('.sg-label');
-        if (lab) lab.textContent = g.label + (hit && hit.label ? ' · ' + hit.label.replace(/\s*\(.*$/, '') : '');
+        if (lab) lab.textContent = g.label + (hit && hit.label ? ' · ' + hit.label.replace(/\s*\((?!podcast|video).*$/, '') : '');
         const w = btn.closest('.sg-wrap');
         if (w) w.querySelectorAll('.sg-item[data-tab]').forEach((b) => b.classList.toggle('active', b.dataset.tab === tabKey));
     });
@@ -1437,6 +1453,26 @@ function switchSubjectTab(tabKey) {
             if (pdm && !pdm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderPendulum(pdm);
         }
     }
+    const spPanel = document.getElementById('tab-panel-supportpod');
+    if (spPanel) {
+        spPanel.style.display = tabKey === 'supportpod' ? 'block' : 'none';
+        if (tabKey === 'supportpod') {
+            spPanel.style.animation = 'fadeIn 0.3s ease';
+            const spm = document.getElementById('supportpod-mount');
+            if (spm && !spm.hasChildNodes() && window.AudioTab) window.AudioTab.renderSupport(spm);
+        }
+    }
+    const svPanel2 = document.getElementById('tab-panel-supportvid');
+    if (svPanel2) {
+        svPanel2.style.display = tabKey === 'supportvid' ? 'block' : 'none';
+        if (tabKey === 'supportvid') {
+            svPanel2.style.animation = 'fadeIn 0.3s ease';
+            const svm = document.getElementById('supportvid-mount');
+            if (svm && !svm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderSupport(svm);
+        }
+    }
+    // the audio or the video of a hidden tab stops
+    document.querySelectorAll('#supportpod-mount audio, #supportvid-mount video').forEach((m) => { const pan = m.closest('.tab-panel'); if (pan && pan.style.display === 'none' && !m.paused) m.pause(); });
     const cdPanel = document.getElementById('tab-panel-celldive');
     if (cdPanel) {
         cdPanel.style.display = tabKey === 'celldive' ? 'block' : 'none';

@@ -3,6 +3,7 @@ window.AudioTab = (function () {
     'use strict';
     const ACC = { src: 'assets/video/accuracy_vs_reliability.mp3', title: '🎧 Ακρίβεια εναντίον αξιοπιστίας στις μετρήσεις',
         text: 'Μια συζήτηση (περίπου 17 λεπτά, στα ελληνικά) για τη <strong>διαφορά ανάμεσα στην ακρίβεια και στην αξιοπιστία</strong> μιας μέτρησης, με αφορμή τη μέτρηση της περιόδου ενός εκκρεμούς. <strong>Ακρίβεια</strong>: πόσο κοντά στην πραγματική τιμή μπορεί να μετρήσει το όργανο. <strong>Αξιοπιστία</strong>: πόσο σταθερά και συνεπή είναι τα αποτελέσματα όταν επαναλαμβάνουμε την ίδια μέτρηση.' };
+    const SUPPORT = { src: 'assets/video/support_motion_podcast.m4a', title: '🎧 Στήριξη και κίνηση (podcast)', text: 'Μια συζήτηση (περίπου 20 λεπτά, στα ελληνικά) με μια γενική παρουσίαση της <strong>στήριξης και της κίνησης</strong> στους οργανισμούς.' };
     function render(mount, cfg) {
         mount.innerHTML =
             '<div class="sv-wrap au-wrap">' +
@@ -16,5 +17,5 @@ window.AudioTab = (function () {
         mount.querySelector('#au-back').addEventListener('click', () => { a.currentTime = Math.max(0, a.currentTime - 15); });
         mount.querySelector('#au-fwd').addEventListener('click', () => { a.currentTime = Math.min(a.duration || 1e9, a.currentTime + 15); });
     }
-    return { renderAccuracy: (m) => render(m, ACC) };
+    return { renderAccuracy: (m) => render(m, ACC), renderSupport: (m) => render(m, SUPPORT) };
 })();
