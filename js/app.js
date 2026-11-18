@@ -842,6 +842,12 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-supportpod" style="display: ${currentTab === 'supportpod' ? 'block' : 'none'};">
             <div id="supportpod-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-engvideo" style="display: ${currentTab === 'engvideo' ? 'block' : 'none'};">
+            <div id="engvideo-mount"></div>
+        </div>
+        <div class="tab-panel" id="tab-panel-musvideo" style="display: ${currentTab === 'musvideo' ? 'block' : 'none'};">
+            <div id="musvideo-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-skeleton" style="display: ${currentTab === 'skeleton' ? 'block' : 'none'};">
             <div id="skeleton-mount"></div>
         </div>
@@ -980,6 +986,14 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'supportpod') {
         const m = document.getElementById('supportpod-mount');
         if (m && window.AudioTab) window.AudioTab.renderSupport(m);
+    }
+    if (currentTab === 'engvideo') {
+        const m = document.getElementById('engvideo-mount');
+        if (m && window.SeriesVideo) window.SeriesVideo.renderEngineer(m);
+    }
+    if (currentTab === 'musvideo') {
+        const m = document.getElementById('musvideo-mount');
+        if (m && window.SeriesVideo) window.SeriesVideo.renderMusculo(m);
     }
     if (currentTab === 'celldive') {
         const m = document.getElementById('celldive-mount');
@@ -1219,7 +1233,9 @@ const BIO_B_GROUPS = [
         { tab: 'topics:bt2', label: 'Αρθρόποδα και έκδυση' },
         { tab: 'topics:bt3', label: 'Εξωσκελετός' },
         { tab: 'topics:bt4', label: 'Αρθρώσεις' },
-        { tab: 'supportpod', label: 'Στήριξη & Κίνηση (podcast)' } ] },
+        { tab: 'supportpod', label: 'Στήριξη & Κίνηση (podcast)' },
+        { tab: 'engvideo', label: 'Εσωτερικός και εξωτερικός σκελετός (video)' },
+        { tab: 'musvideo', label: 'Το μυοσκελετικό σύστημα (video)' } ] },
     { id: 'biobdeep', icon: '🧩', label: 'Βαθιά εστίαση και ερμηνεία', note: '⚠ Τα θέματα αυτού του μενού δεν αποτελούν εξεταστέα ύλη.', items: [
         { tab: 'skeleton', label: 'Ερειστικό σύστημα (διαδραστικός σκελετός)' },
         { tab: 'topics:bt5', label: 'Αεροδυναμικό / υδροδυναμικό' },
@@ -1454,6 +1470,25 @@ function switchSubjectTab(tabKey) {
             if (spm && !spm.hasChildNodes() && window.AudioTab) window.AudioTab.renderSupport(spm);
         }
     }
+    const evPanel = document.getElementById('tab-panel-engvideo');
+    if (evPanel) {
+        evPanel.style.display = tabKey === 'engvideo' ? 'block' : 'none';
+        if (tabKey === 'engvideo') {
+            evPanel.style.animation = 'fadeIn 0.3s ease';
+            const evm = document.getElementById('engvideo-mount');
+            if (evm && !evm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderEngineer(evm);
+        }
+    }
+    const musPanel = document.getElementById('tab-panel-musvideo');
+    if (musPanel) {
+        musPanel.style.display = tabKey === 'musvideo' ? 'block' : 'none';
+        if (tabKey === 'musvideo') {
+            musPanel.style.animation = 'fadeIn 0.3s ease';
+            const mvm = document.getElementById('musvideo-mount');
+            if (mvm && !mvm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderMusculo(mvm);
+        }
+    }
+    document.querySelectorAll('#engvideo-mount video, #musvideo-mount video').forEach((m) => { const pan = m.closest('.tab-panel'); if (pan && pan.style.display === 'none' && !m.paused) m.pause(); });
     // the audio of a hidden tab stops
     document.querySelectorAll('#supportpod-mount audio').forEach((m) => { const pan = m.closest('.tab-panel'); if (pan && pan.style.display === 'none' && !m.paused) m.pause(); });
     const cdPanel = document.getElementById('tab-panel-celldive');
