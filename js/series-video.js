@@ -15,7 +15,6 @@ window.SeriesVideo = (function () {
     const MEASURE = { src: 'assets/video/measurement_science.mp4', cues: () => window.MEASUREMENT_VIDEO_CUES || [], title: 'Μέτρηση μήκους: λεπτομέρειες, σφάλματα και μέση τιμή', lead: 'πώς μετράμε σωστά το <strong>μήκος</strong> με μετροταινία: τα όρια του οργάνου, οι <strong>πέντε παγίδες</strong> (μηδενική γραμμή, παραλληλία, αρχική ένδειξη, σφάλμα παράλλαξης) και η στρογγυλοποίηση της μέσης τιμής', min: 5 };
     const NEUTRAL = { src: 'assets/video/neutralization.mp4', cues: () => window.NEUTRALIZATION_VIDEO_CUES || [], title: 'Εξουδετέρωση: τι συμβαίνει στα ιόντα', lead: 'τι είναι η <strong>εξουδετέρωση</strong>: πώς τα ιόντα <strong>H⁺</strong> και <strong>OH⁻</strong> σχηματίζουν νερό, πότε το διάλυμα μένει όξινο ή βασικό, πού καταλήγει το τελικό <strong>pH</strong> και πώς σχηματίζεται το <strong>άλας</strong>', min: 5 };
     const MASSGEO = { src: 'assets/video/mass_geography.mp4', cues: () => window.MASSGEO_VIDEO_CUES || [], title: 'Γεωγραφικό πλάτος και μήκος: επηρεάζουν τη μάζα και το βάρος;', lead: 'γιατί η <strong>μάζα</strong> ενός σώματος μένει σταθερή όπου κι αν πάει, ενώ το <strong>βάρος</strong> του αλλάζει όταν μεταβάλλεται το <strong>γεωγραφικό πλάτος</strong> (κίνηση πάνω σε μεσημβρινό) και όχι όταν κινείται πάνω σε παράλληλο', min: 6 };
-    const SUPPORT = { src: 'assets/video/support_motion_video.mp4', greek: true, title: 'Στήριξη και κίνηση: ο χάρτης της Βιολογίας', intro: 'Ένα βίντεο (περίπου 6,5 λεπτά, στα <strong>ελληνικά</strong>) με μια γενική εικόνα της στήριξης και της κίνησης: από τους μονοκύτταρους οργανισμούς και τα φυτά, μέχρι τα ζώα και τον άνθρωπο.' };
     const PARALLEL = { src: 'assets/video/parallel_circuit_masterclass.mp4', cues: () => window.PARALLEL_VIDEO_CUES || [], title: 'Παράλληλο κύκλωμα: επεξήγηση σε βίντεο', lead: 'πώς λειτουργεί ένα <strong>παράλληλο</strong> κύκλωμα (τάση, ρεύμα, ανοικτός διακόπτης, βραχυκύκλωμα)', min: 6 };
 
     function render(mount, cfg) {
@@ -74,5 +73,5 @@ window.SeriesVideo = (function () {
             if (i >= 0) { const e = tx.querySelector('.sv-line[data-i="' + i + '"]'); if (e) e.classList.add('now'); }
         });
     }
-    return { render, renderParallel: (m) => render(m, PARALLEL), renderFaults: (m) => render(m, FAULTS), renderCell: (m) => render(m, CELL), renderPendulum: (m) => render(m, PENDULUM), renderMeasure: (m) => render(m, MEASURE), renderNeutral: (m) => render(m, NEUTRAL), renderMassGeo: (m) => render(m, MASSGEO), renderSupport: (m) => render(m, SUPPORT) };
+    return { render, renderParallel: (m) => render(m, PARALLEL), renderFaults: (m) => render(m, FAULTS), renderCell: (m) => render(m, CELL), renderPendulum: (m) => render(m, PENDULUM), renderMeasure: (m) => render(m, MEASURE), renderNeutral: (m) => render(m, NEUTRAL), renderMassGeo: (m) => render(m, MASSGEO) };
 })();

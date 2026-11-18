@@ -842,9 +842,6 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-supportpod" style="display: ${currentTab === 'supportpod' ? 'block' : 'none'};">
             <div id="supportpod-mount"></div>
         </div>
-        <div class="tab-panel" id="tab-panel-supportvid" style="display: ${currentTab === 'supportvid' ? 'block' : 'none'};">
-            <div id="supportvid-mount"></div>
-        </div>
         <div class="tab-panel" id="tab-panel-skeleton" style="display: ${currentTab === 'skeleton' ? 'block' : 'none'};">
             <div id="skeleton-mount"></div>
         </div>
@@ -983,10 +980,6 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'supportpod') {
         const m = document.getElementById('supportpod-mount');
         if (m && window.AudioTab) window.AudioTab.renderSupport(m);
-    }
-    if (currentTab === 'supportvid') {
-        const m = document.getElementById('supportvid-mount');
-        if (m && window.SeriesVideo) window.SeriesVideo.renderSupport(m);
     }
     if (currentTab === 'celldive') {
         const m = document.getElementById('celldive-mount');
@@ -1226,8 +1219,7 @@ const BIO_B_GROUPS = [
         { tab: 'topics:bt2', label: 'Αρθρόποδα και έκδυση' },
         { tab: 'topics:bt3', label: 'Εξωσκελετός' },
         { tab: 'topics:bt4', label: 'Αρθρώσεις' },
-        { tab: 'supportpod', label: 'Στήριξη & Κίνηση (podcast)' },
-        { tab: 'supportvid', label: 'Στήριξη & Κίνηση (video)' } ] },
+        { tab: 'supportpod', label: 'Στήριξη & Κίνηση (podcast)' } ] },
     { id: 'biobdeep', icon: '🧩', label: 'Βαθιά εστίαση και ερμηνεία', note: '⚠ Τα θέματα αυτού του μενού δεν αποτελούν εξεταστέα ύλη.', items: [
         { tab: 'skeleton', label: 'Ερειστικό σύστημα (διαδραστικός σκελετός)' },
         { tab: 'topics:bt5', label: 'Αεροδυναμικό / υδροδυναμικό' },
@@ -1462,17 +1454,8 @@ function switchSubjectTab(tabKey) {
             if (spm && !spm.hasChildNodes() && window.AudioTab) window.AudioTab.renderSupport(spm);
         }
     }
-    const svPanel2 = document.getElementById('tab-panel-supportvid');
-    if (svPanel2) {
-        svPanel2.style.display = tabKey === 'supportvid' ? 'block' : 'none';
-        if (tabKey === 'supportvid') {
-            svPanel2.style.animation = 'fadeIn 0.3s ease';
-            const svm = document.getElementById('supportvid-mount');
-            if (svm && !svm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderSupport(svm);
-        }
-    }
-    // the audio or the video of a hidden tab stops
-    document.querySelectorAll('#supportpod-mount audio, #supportvid-mount video').forEach((m) => { const pan = m.closest('.tab-panel'); if (pan && pan.style.display === 'none' && !m.paused) m.pause(); });
+    // the audio of a hidden tab stops
+    document.querySelectorAll('#supportpod-mount audio').forEach((m) => { const pan = m.closest('.tab-panel'); if (pan && pan.style.display === 'none' && !m.paused) m.pause(); });
     const cdPanel = document.getElementById('tab-panel-celldive');
     if (cdPanel) {
         cdPanel.style.display = tabKey === 'celldive' ? 'block' : 'none';
