@@ -1189,7 +1189,7 @@ function physGroupsHtml(currentTab, classKey, subjectKey, quizzes, groups) {
             return `<button type="button" class="sg-item${cur === it.tab ? ' active' : ''}" data-tab="${it.tab}" onclick="closeTabMenus(); switchSubjectTab('${it.tab}')">${num}<span class="sg-t">${it.label}</span></button>`;
         }).join('');
         const act = g.items.find((it) => it.tab === cur);
-        return `<div class="sg-wrap"><button type="button" class="sg-btn${act ? ' active' : ''}" data-group="${g.id}" aria-haspopup="true" aria-expanded="false" onclick="toggleTabMenu(this, event)"><span class="tab-icon">${g.icon}</span><span class="sg-label">${g.label}</span><span class="sg-caret">▾</span></button><div class="sg-menu" role="menu">${items}</div></div>`;
+        return `<div class="sg-wrap"><button type="button" class="sg-btn${act ? ' active' : ''}" data-group="${g.id}" aria-haspopup="true" aria-expanded="false" onclick="toggleTabMenu(this, event)"><span class="tab-icon">${g.icon}</span><span class="sg-label">${g.label}</span><span class="sg-caret">▾</span></button><div class="sg-menu" role="menu">${g.note ? '<div class="sg-note">' + g.note + '</div>' : ''}${items}</div></div>`;
     }).join('');
 }
 const BIO_G_GROUPS = [
@@ -1212,7 +1212,7 @@ const BIO_B_GROUPS = [
         { tab: 'topics:bt2', label: 'Αρθρόποδα και έκδυση' },
         { tab: 'topics:bt3', label: 'Εξωσκελετός' },
         { tab: 'topics:bt4', label: 'Αρθρώσεις' } ] },
-    { id: 'biobdeep', icon: '🧩', label: 'Βαθιά εστίαση και ερμηνεία', items: [
+    { id: 'biobdeep', icon: '🧩', label: 'Βαθιά εστίαση και ερμηνεία', note: '⚠ Τα θέματα αυτού του μενού δεν αποτελούν εξεταστέα ύλη.', items: [
         { tab: 'skeleton', label: 'Ερειστικό σύστημα (διαδραστικός σκελετός)' },
         { tab: 'topics:bt5', label: 'Αεροδυναμικό / υδροδυναμικό' },
         { tab: 'joints3d', label: 'Αρθρώσεις σε 3D' },
@@ -1272,6 +1272,17 @@ function ensurePanelFsBar(tabKey) {
         else if (panel.requestFullscreen) panel.requestFullscreen().catch(() => {});
     });
     panel.insertBefore(bar, panel.firstChild);
+}
+
+// Biology B 'Βαθιά εστίαση και ερμηνεία' pages: a strong "not examinable" note at the top
+const DEEP_NOTE_HTML = '<div class="supp-note deep-note">⚠ <strong>Το θέμα αυτό δεν αποτελεί εξεταστέα ύλη.</strong> Έχει προστεθεί για καλύτερη κατανόηση.</div>';
+function ensureDeepNote(tabKey) {
+    document.querySelectorAll('.deep-note').forEach((e) => e.remove());
+    if (AppState.currentSubject !== 'biology' || AppState.currentClass !== 'Β') return;
+    let host = null;
+    if (tabKey === 'skeleton') host = document.getElementById('tab-panel-skeleton');
+    else if (tabKey === 'topics' && (AppState.topicSel === 'bt5' || AppState.topicSel === 'bt6')) host = document.querySelector('#topics-mount .bga-head');
+    if (host) host.insertAdjacentHTML(tabKey === 'topics' ? 'afterend' : 'afterbegin', DEEP_NOTE_HTML);
 }
 
 function switchSubjectTab(tabKey) {
@@ -1640,6 +1651,7 @@ function switchSubjectTab(tabKey) {
 
     updateBreadcrumbs();
     ensurePanelFsBar(tabKey);
+    setTimeout(() => ensureDeepNote(tabKey), 120);
     enterTabFullscreen(tabKey);
 }
 
