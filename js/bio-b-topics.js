@@ -451,7 +451,7 @@
     function initMolt(root) {
         const host = root.querySelector('#bt-molt'); if (!host) return;
         const P = [
-            ['1. Ο εξωσκελετός ταιριάζει στο ζώο', '<g transform="translate(0,0)">' + animalShape(0.86, 0.9) + '</g>'],
+            ['1. Το ζώο χωράει ακριβώς μέσα στον εξωσκελετό του', '<g transform="translate(0,0)">' + animalShape(0.86, 0.9) + '</g>'],
             ['2. Το ζώο αναπτύσσεται', '<g>' + animalShape(1.0, 0.9) + '<path d="M60,50 l8,-8 l6,10 l8,-9 M150,48 l8,-9 l5,10" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/></g>'],
             ['3. Ο παλιός εξωσκελετός αποβάλλεται', '<g><g transform="translate(-42,4) scale(0.85)" opacity="0.9">' + animalShape(0, 0.9, { ghost: true, thin: true }) + '</g><g transform="translate(40,0)">' + animalShape(1.0, 0, {}) + '</g></g>'],
             ['4. Δημιουργείται νέος εξωσκελετός', '<g><g transform="translate(-52,10) scale(0.72)" opacity="0.7">' + animalShape(0, 0.9, { ghost: true, thin: true }) + '</g><g transform="translate(20,0)">' + animalShape(1.0, 1.1, {}) + '</g></g>']
