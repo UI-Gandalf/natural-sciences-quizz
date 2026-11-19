@@ -5,18 +5,22 @@
    ========================================================================== */
 window.SurvivalSlides = (function () {
     'use strict';
-    const N = 14;
-    const src = (i) => 'assets/images/survival/s' + String(i + 1).padStart(2, '0') + '.jpg';
+    const SETS = {
+        survival: { n: 14, dir: 'survival/s', title: 'Οδηγός επιβίωσης: ηλεκτρικά κυκλώματα', intro: '14 διαφάνειες για τη <strong>σειρά</strong>, τα <strong>παράλληλα</strong> και το <strong>βραχυκύκλωμα</strong>.' },
+        bioarch: { n: 15, dir: 'bioarch/b', title: 'Στήριξη & Κίνηση: η αρχιτεκτονική της ζωής', intro: '15 διαφάνειες για τη <strong>στήριξη</strong> και την <strong>κίνηση</strong>: από τους μονοκύτταρους οργανισμούς και τα φυτά, μέχρι τα ζώα και το ανθρώπινο μυοσκελετικό σύστημα.' }
+    };
+    let N = 14, src = (i) => 'assets/images/survival/s' + String(i + 1).padStart(2, '0') + '.jpg';
     let timer = null;
     function stop() { if (timer) { clearInterval(timer); timer = null; } const b = document.getElementById('ss-play'); if (b) { b.classList.remove('on'); b.innerHTML = '▶ Αυτόματη αναπαραγωγή'; } }
 
-    function render(mount) {
+    function render(mount, key) {
         stop();
+        const set = SETS[key || 'survival']; N = set.n; src = (i) => 'assets/images/' + set.dir + String(i + 1).padStart(2, '0') + '.jpg';
         let cur = 0;
         mount.innerHTML =
             '<div class="ss-wrap">' +
-            '<div class="sv-head"><h2>📊 Οδηγός επιβίωσης: ηλεκτρικά κυκλώματα</h2>' +
-            '<p>14 διαφάνειες για τη <strong>σειρά</strong>, τα <strong>παράλληλα</strong> και το <strong>βραχυκύκλωμα</strong>. Μπορείς να τις προχωράς <strong>μόνος/η σου</strong> (κουμπιά, βέλη του πληκτρολογίου, σύρσιμο με το δάχτυλο ή κλικ στις μικρογραφίες) ή να τις αφήσεις να παίζουν <strong>αυτόματα</strong>.</p></div>' +
+            '<div class="sv-head"><h2>📊 ' + set.title + '</h2>' +
+            '<p>' + set.intro + ' Μπορείς να τις προχωράς <strong>μόνος/η σου</strong> (κουμπιά, βέλη του πληκτρολογίου, σύρσιμο με το δάχτυλο ή κλικ στις μικρογραφίες) ή να τις αφήσεις να παίζουν <strong>αυτόματα</strong>.</p></div>' +
             '<div class="ss-stage" id="ss-stage" tabindex="0">' +
             '<img id="ss-img" class="ss-img" alt="Διαφάνεια 1" src="' + src(0) + '">' +
             '<button type="button" class="ss-nav ss-prev" id="ss-prev" aria-label="Προηγούμενη διαφάνεια">‹</button>' +

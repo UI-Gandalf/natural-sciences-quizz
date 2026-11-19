@@ -848,6 +848,9 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-musvideo" style="display: ${currentTab === 'musvideo' ? 'block' : 'none'};">
             <div id="musvideo-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-bioarch" style="display: ${currentTab === 'bioarch' ? 'block' : 'none'};">
+            <div id="bioarch-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-skeleton" style="display: ${currentTab === 'skeleton' ? 'block' : 'none'};">
             <div id="skeleton-mount"></div>
         </div>
@@ -994,6 +997,10 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'musvideo') {
         const m = document.getElementById('musvideo-mount');
         if (m && window.SeriesVideo) window.SeriesVideo.renderMusculo(m);
+    }
+    if (currentTab === 'bioarch') {
+        const m = document.getElementById('bioarch-mount');
+        if (m && window.SurvivalSlides) window.SurvivalSlides.render(m, 'bioarch');
     }
     if (currentTab === 'celldive') {
         const m = document.getElementById('celldive-mount');
@@ -1229,6 +1236,7 @@ const CHEM_G_GROUPS = [
 const BIO_B_GROUPS = [
     { id: 'biobtheory', icon: '📖', label: 'Θεωρία', items: [
         { tab: 'bioguide', label: 'Συνοπτικός οδηγός ύλης' },
+        { tab: 'bioarch', label: 'Στήριξη & Κίνηση: αρχιτεκτονική της ζωής (διαφάνειες)' },
         { tab: 'topics:bt1', label: 'Υδροστατικός σκελετός' },
         { tab: 'topics:bt2', label: 'Αρθρόποδα και έκδυση' },
         { tab: 'topics:bt3', label: 'Εξωσκελετός' },
@@ -1486,6 +1494,17 @@ function switchSubjectTab(tabKey) {
             musPanel.style.animation = 'fadeIn 0.3s ease';
             const mvm = document.getElementById('musvideo-mount');
             if (mvm && !mvm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderMusculo(mvm);
+        }
+    }
+    const baPanel = document.getElementById('tab-panel-bioarch');
+    if (baPanel) {
+        baPanel.style.display = tabKey === 'bioarch' ? 'block' : 'none';
+        if (tabKey === 'bioarch') {
+            baPanel.style.animation = 'fadeIn 0.3s ease';
+            const bam = document.getElementById('bioarch-mount');
+            if (bam && !bam.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(bam, 'bioarch');
+        } else if (window.SurvivalSlides && baPanel.querySelector('.ss-wrap') && !document.getElementById('tab-panel-survival')) {
+            window.SurvivalSlides.stop();
         }
     }
     document.querySelectorAll('#engvideo-mount video, #musvideo-mount video').forEach((m) => { const pan = m.closest('.tab-panel'); if (pan && pan.style.display === 'none' && !m.paused) m.pause(); });
