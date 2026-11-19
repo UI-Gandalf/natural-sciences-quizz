@@ -68,6 +68,9 @@
         box('bga-key', '🔑 Έκδυση', '<p>Πολλές φορές, κατά τη διάρκεια της ανάπτυξης του ζώου, ο εξωσκελετός <strong>αποβάλλεται</strong> και <strong>δημιουργείται νέος</strong>. Το φαινόμενο αυτό ονομάζεται <strong>έκδυση</strong>.</p>') +
         '<div class="bt-stage"><div class="bt-steps" id="bt-molt"></div>' + ctrl('bt-molt-c', [['prev', '◀ Προηγούμενο'], ['play', '▶ Αυτόματα'], ['next', 'Επόμενο ▶']]) + '</div>' +
         figs([fig('molt.png', 'Ο εξωσκελετός που αποβλήθηκε κατά την έκδυση.')]) +
+        '<h4>Η έκδυση στην πράξη: ένα τζιτζίκι</h4>' +
+        '<div class="bt-yt"><iframe src="https://www.youtube-nocookie.com/embed/A8wcGY9XZyU?rel=0" title="Η έκδυση ενός τζιτζικιού (επιταχυμένο βίντεο)" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>' +
+        '<p class="bga-note">⏩ <strong>Το βίντεο είναι επιταχυμένο (timelapse).</strong> Στην πραγματικότητα η έκδυση γίνεται πολύ πιο αργά. Το βίντεο παίζει από το YouTube (κανάλι Stuffinabox) και χρειάζεται σύνδεση στο διαδίκτυο.</p>' +
         supp('Γιατί γίνεται έκδυση;', '<p>Ο εξωσκελετός είναι σκληρός και δεν μεγαλώνει μαζί με το ζώο. Όταν το ζώο μεγαλώσει, «στενεύει» μέσα στον παλιό του εξωσκελετό. Τότε αυτός αποβάλλεται και σχηματίζεται καινούριος, μεγαλύτερος.</p>');
 
     /* ------------------------------------------------------------ 3. exoskeleton */

@@ -11193,3 +11193,7 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 :root[data-theme="light"] .gd-ix { background: #fff; }
 :root[data-theme="light"] .gd-card h4 small, :root[data-theme="light"] .gd-top { color: #475569; }
 :root[data-theme="light"] .gd-stage:fullscreen { background: #fff; }
+
+/* Biology B: embedded YouTube video (16:9) */
+.bt-yt { position: relative; width: 100%; max-width: 760px; aspect-ratio: 16 / 9; margin: 8px 0; border-radius: 12px; overflow: hidden; background: #000; }
+.bt-yt iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
