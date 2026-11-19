@@ -870,6 +870,9 @@ function renderQuizSelection(classKey, subjectKey) {
         ` : ''}
         ${subjectKey === 'chemistry' ? `
         <!-- CHEMISTRY: NEUTRALISATION LAB -->
+        <div class="tab-panel" id="tab-panel-chemslides" style="display: ${currentTab === 'chemslides' ? 'block' : 'none'};">
+            <div id="chemslides-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-neutral" style="display: ${currentTab === 'neutral' ? 'block' : 'none'};">
             <div id="neutral-mount"></div>
         </div>
@@ -1016,6 +1019,10 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'geomosaic') {
         const m = document.getElementById('geomosaic-mount');
         if (m && window.SurvivalSlides) window.SurvivalSlides.render(m, 'geomosaic');
+    }
+    if (currentTab === 'chemslides' && subjectKey === 'chemistry') {
+        const m = document.getElementById('chemslides-mount');
+        if (m && window.SurvivalSlides) window.SurvivalSlides.render(m, 'chemacid');
     }
     if (currentTab === 'celldive') {
         const m = document.getElementById('celldive-mount');
@@ -1244,7 +1251,8 @@ const BIO_G_GROUPS = [
         { tab: 'cellinfo', label: 'Infographic: δομή ευκαρυωτικού κυττάρου' } ] }
 ];
 const CHEM_G_GROUPS = [
-    { id: 'chemneut', icon: '🧪', label: 'Εξουδετέρωση', items: [
+    { id: 'chemneut', icon: '📖', label: 'Θεωρία', items: [
+        { tab: 'chemslides', label: 'Οξέα, βάσεις και εξουδετέρωση (διαφάνειες)' },
         { tab: 'neutvideo', label: 'Βίντεο: εξουδετέρωση οξέος – βάσης (ελληνικοί υπότιτλοι)' },
         { tab: 'neutral', label: 'Προσομοίωση εξουδετέρωσης' } ] }
 ];
@@ -1533,6 +1541,17 @@ function switchSubjectTab(tabKey) {
             const gmm = document.getElementById('geomosaic-mount');
             if (gmm && !gmm.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(gmm, 'geomosaic');
         } else if (window.SurvivalSlides && gmPanel.querySelector('.ss-wrap')) {
+            window.SurvivalSlides.stop();
+        }
+    }
+    const csPanel = document.getElementById('tab-panel-chemslides');
+    if (csPanel) {
+        csPanel.style.display = tabKey === 'chemslides' ? 'block' : 'none';
+        if (tabKey === 'chemslides') {
+            csPanel.style.animation = 'fadeIn 0.3s ease';
+            const csm = document.getElementById('chemslides-mount');
+            if (csm && !csm.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(csm, 'chemacid');
+        } else if (window.SurvivalSlides && csPanel.querySelector('.ss-wrap')) {
             window.SurvivalSlides.stop();
         }
     }
