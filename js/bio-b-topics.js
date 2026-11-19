@@ -71,6 +71,9 @@
         '<h4>Η έκδυση στην πράξη: ένα τζιτζίκι</h4>' +
         '<div class="bt-yt"><button type="button" class="bt-yt-face" data-yt="A8wcGY9XZyU" aria-label="Αναπαραγωγή του βίντεο με την έκδυση του τζιτζικιού"><img src="https://i.ytimg.com/vi/A8wcGY9XZyU/hqdefault.jpg" alt="" loading="lazy"><span class="bt-yt-play">▶</span><span class="bt-yt-cap">Πάτησε για αναπαραγωγή</span></button></div>' +
         '<p class="bga-note">⏩ <strong>Το βίντεο είναι επιταχυμένο (timelapse).</strong> Στην πραγματικότητα η έκδυση γίνεται πολύ πιο αργά. Το βίντεο παίζει από το YouTube (κανάλι Stuffinabox) και χρειάζεται σύνδεση στο διαδίκτυο. Αν δεν εμφανιστεί ή δείξει μήνυμα σφάλματος, <a href="https://www.youtube.com/watch?v=A8wcGY9XZyU" target="_blank" rel="noopener">άνοιξέ το απευθείας στο YouTube</a>.</p>' +
+        '<h4>Η έκδυση μιας ταραντούλας</h4>' +
+        '<div class="bt-yt"><button type="button" class="bt-yt-face" data-yt="XVv4FpFdaMg" aria-label="Αναπαραγωγή του βίντεο με την έκδυση της ταραντούλας"><img src="https://i.ytimg.com/vi/XVv4FpFdaMg/hqdefault.jpg" alt="" loading="lazy"><span class="bt-yt-play">▶</span><span class="bt-yt-cap">Πάτησε για αναπαραγωγή</span></button></div>' +
+        '<p class="bga-note">⏩ <strong>Και αυτό το βίντεο είναι επιταχυμένο (time lapse).</strong> Στην πραγματικότητα η έκδυση γίνεται πολύ πιο αργά. Το βίντεο παίζει από το YouTube (κανάλι bugsnstuff) και χρειάζεται σύνδεση στο διαδίκτυο. Αν δεν εμφανιστεί ή δείξει μήνυμα σφάλματος, <a href="https://www.youtube.com/watch?v=XVv4FpFdaMg" target="_blank" rel="noopener">άνοιξέ το απευθείας στο YouTube</a>.</p>' +
         supp('Γιατί γίνεται έκδυση;', '<p>Ο εξωσκελετός είναι σκληρός και δεν μεγαλώνει μαζί με το ζώο. Όταν το ζώο μεγαλώσει, «στενεύει» μέσα στον παλιό του εξωσκελετό. Τότε αυτός αποβάλλεται και σχηματίζεται καινούριος, μεγαλύτερος.</p>');
 
     /* ------------------------------------------------------------ 3. exoskeleton */
@@ -787,7 +790,7 @@
         if (!f) return;
         const box = f.parentNode, id = f.dataset.yt;
         const origin = /^https?:/.test(location.protocol) ? '&origin=' + encodeURIComponent(location.origin) : '';
-        box.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + id + '?rel=0&autoplay=1' + origin + '" title="Η έκδυση ενός τζιτζικιού (επιταχυμένο βίντεο)" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+        box.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + id + '?rel=0&autoplay=1' + origin + '" title="Επιταχυμένο βίντεο έκδυσης" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
     });
     window.BioBTopics = { render };
 })();
