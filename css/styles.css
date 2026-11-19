@@ -11203,3 +11203,10 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .bt-yt-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 76px; height: 52px; border-radius: 14px; background: #ef4444; color: #fff; font-size: 1.7rem; line-height: 52px; text-align: center; }
 .bt-yt-face:hover .bt-yt-play, .bt-yt-face:focus-visible .bt-yt-play { background: #dc2626; }
 .bt-yt-cap { position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; color: #fff; font-weight: 800; text-shadow: 0 1px 4px #000; }
+
+/* slideshow: slides marked "ΕΚΤΟΣ ΥΛΗΣ" */
+.ss-out { padding: 7px 14px; background: #b91c1c; color: #fff; font-weight: 900; letter-spacing: 0.04em; text-align: center; border-bottom: 3px solid #fecaca; }
+.ss-out[hidden] { display: none; }
+.ss-out small { font-weight: 700; letter-spacing: 0; margin-left: 6px; opacity: 0.95; }
+.ss-th-out { border-color: #ef4444; }
+.ss-th-tag { position: absolute; left: 0; right: 0; bottom: 0; padding: 1px 0; background: #b91c1c; color: #fff; font-style: normal; font-weight: 900; font-size: 0.68rem; text-align: center; }
