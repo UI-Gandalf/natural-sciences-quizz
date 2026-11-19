@@ -11197,3 +11197,9 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 /* Biology B: embedded YouTube video (16:9) */
 .bt-yt { position: relative; width: 100%; max-width: 760px; aspect-ratio: 16 / 9; margin: 8px 0; border-radius: 12px; overflow: hidden; background: #000; }
 .bt-yt iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+.bt-yt-face { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: #000; cursor: pointer; }
+.bt-yt-face img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; display: block; }
+.bt-yt-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 76px; height: 52px; border-radius: 14px; background: #ef4444; color: #fff; font-size: 1.7rem; line-height: 52px; text-align: center; }
+.bt-yt-face:hover .bt-yt-play, .bt-yt-face:focus-visible .bt-yt-play { background: #dc2626; }
+.bt-yt-cap { position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; color: #fff; font-weight: 800; text-shadow: 0 1px 4px #000; }

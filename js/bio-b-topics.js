@@ -69,8 +69,8 @@
         '<div class="bt-stage"><div class="bt-steps" id="bt-molt"></div>' + ctrl('bt-molt-c', [['prev', '◀ Προηγούμενο'], ['play', '▶ Αυτόματα'], ['next', 'Επόμενο ▶']]) + '</div>' +
         figs([fig('molt.png', 'Ο εξωσκελετός που αποβλήθηκε κατά την έκδυση.')]) +
         '<h4>Η έκδυση στην πράξη: ένα τζιτζίκι</h4>' +
-        '<div class="bt-yt"><iframe src="https://www.youtube-nocookie.com/embed/A8wcGY9XZyU?rel=0" title="Η έκδυση ενός τζιτζικιού (επιταχυμένο βίντεο)" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>' +
-        '<p class="bga-note">⏩ <strong>Το βίντεο είναι επιταχυμένο (timelapse).</strong> Στην πραγματικότητα η έκδυση γίνεται πολύ πιο αργά. Το βίντεο παίζει από το YouTube (κανάλι Stuffinabox) και χρειάζεται σύνδεση στο διαδίκτυο.</p>' +
+        '<div class="bt-yt"><button type="button" class="bt-yt-face" data-yt="A8wcGY9XZyU" aria-label="Αναπαραγωγή του βίντεο με την έκδυση του τζιτζικιού"><img src="https://i.ytimg.com/vi/A8wcGY9XZyU/hqdefault.jpg" alt="" loading="lazy"><span class="bt-yt-play">▶</span><span class="bt-yt-cap">Πάτησε για αναπαραγωγή</span></button></div>' +
+        '<p class="bga-note">⏩ <strong>Το βίντεο είναι επιταχυμένο (timelapse).</strong> Στην πραγματικότητα η έκδυση γίνεται πολύ πιο αργά. Το βίντεο παίζει από το YouTube (κανάλι Stuffinabox) και χρειάζεται σύνδεση στο διαδίκτυο. Αν δεν εμφανιστεί ή δείξει μήνυμα σφάλματος, <a href="https://www.youtube.com/watch?v=A8wcGY9XZyU" target="_blank" rel="noopener">άνοιξέ το απευθείας στο YouTube</a>.</p>' +
         supp('Γιατί γίνεται έκδυση;', '<p>Ο εξωσκελετός είναι σκληρός και δεν μεγαλώνει μαζί με το ζώο. Όταν το ζώο μεγαλώσει, «στενεύει» μέσα στον παλιό του εξωσκελετό. Τότε αυτός αποβάλλεται και σχηματίζεται καινούριος, μεγαλύτερος.</p>');
 
     /* ------------------------------------------------------------ 3. exoskeleton */
@@ -781,5 +781,13 @@
         });
     }
 
+    // the YouTube video is loaded only when the student presses play (no player, and no error message, before that)
+    document.addEventListener('click', (e) => {
+        const f = e.target.closest && e.target.closest('.bt-yt-face');
+        if (!f) return;
+        const box = f.parentNode, id = f.dataset.yt;
+        const origin = /^https?:/.test(location.protocol) ? '&origin=' + encodeURIComponent(location.origin) : '';
+        box.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + id + '?rel=0&autoplay=1' + origin + '" title="Η έκδυση ενός τζιτζικιού (επιταχυμένο βίντεο)" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+    });
     window.BioBTopics = { render };
 })();
