@@ -11132,3 +11132,64 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .sg-note { margin: 2px 2px 8px; padding: 8px 10px; border-radius: 10px; border: 2px solid #fb923c; background: rgba(234, 88, 12, 0.3); color: #ffedd5; font-weight: 800; font-size: 0.88rem; line-height: 1.35; }
 :root[data-theme="light"] .sg-note { background: #fff1e6; color: #7c2d12; }
 .deep-note { margin-bottom: 12px; }
+
+/* Geography B: "Θεωρία" menu and the syllabus presentation (geo-deck.js) */
+.subject-tabs-container.grouped-geo { position: relative; gap: 12px; }
+.gd-wrap { max-width: 1040px; margin: 0 auto; }
+.gd-stage { position: relative; padding: 18px 18px 26px; border-radius: 14px; background: rgba(8, 15, 30, 0.94); border: 1px solid var(--card-border); color: #e2e8f0; outline: none; min-height: 380px; }
+.gd-stage:focus-visible { box-shadow: 0 0 0 3px #38bdf8; }
+.gd-stage:fullscreen { overflow-y: auto; border-radius: 0; padding: 28px 6vw 36px; background: #0b1220; }
+.gd-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; font-size: 0.85rem; color: #94a3b8; font-weight: 700; }
+.gd-no { padding: 2px 10px; border-radius: 999px; background: #0e7490; color: #fff; }
+.gd-title { margin: 4px 0 12px; font-size: 1.5rem; line-height: 1.25; color: #f8fafc; }
+.gd-body.gd-in { animation: gdIn 0.35s ease; }
+@keyframes gdIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.gd-lead { margin: 0 0 12px; font-size: 1.02rem; line-height: 1.55; }
+.gd-note { margin: 12px 0 0; padding: 9px 12px; border-left: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.12); border-radius: 0 8px 8px 0; line-height: 1.5; }
+.gd-h { margin: 14px 0 8px; font-size: 1rem; color: #fbbf24; }
+.gd-grid { display: grid; gap: 12px; margin: 10px 0; }
+.gd-c2 { grid-template-columns: repeat(2, 1fr); } .gd-c3 { grid-template-columns: repeat(3, 1fr); } .gd-c4 { grid-template-columns: repeat(4, 1fr); }
+.gd-card { padding: 12px 14px; border-radius: 12px; background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(148, 163, 184, 0.35); border-top-width: 4px; line-height: 1.5; }
+.gd-card h4 { margin: 0 0 8px; font-size: 1rem; color: #f8fafc; }
+.gd-card h4 small { font-weight: 600; color: #94a3b8; }
+.gd-card p { margin: 0 0 8px; }
+.gd-a { border-top-color: #38bdf8; } .gd-b { border-top-color: #34d399; } .gd-c { border-top-color: #fbbf24; } .gd-d { border-top-color: #f87171; }
+.gd-list { margin: 0; padding-left: 1.2em; } .gd-list li { margin: 3px 0; }
+.gd-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.gd-chip { padding: 3px 10px; border-radius: 999px; background: rgba(14, 116, 144, 0.55); border: 1px solid rgba(125, 211, 252, 0.5); color: #f0f9ff; font-weight: 700; font-size: 0.92rem; }
+.gd-chain { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 8px 0; }
+.gd-step { flex: 1 1 150px; padding: 9px 12px; border-radius: 10px; background: rgba(14, 116, 144, 0.35); border: 1px solid rgba(125, 211, 252, 0.45); line-height: 1.4; font-weight: 600; }
+.gd-arr { align-self: center; color: #fbbf24; font-weight: 900; }
+.gd-stat { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 12px; background: rgba(14, 116, 144, 0.3); border: 1px solid rgba(125, 211, 252, 0.4); text-align: center; }
+.gd-stat b { font-size: 1.5rem; color: #fbbf24; line-height: 1.15; }
+.gd-stat span { font-size: 0.9rem; line-height: 1.35; }
+.gd-tw { overflow-x: auto; margin: 8px 0; }
+.gd-tab { width: 100%; border-collapse: collapse; min-width: 520px; }
+.gd-tab th, .gd-tab td { padding: 8px 10px; border: 1px solid rgba(148, 163, 184, 0.4); text-align: left; vertical-align: top; line-height: 1.45; }
+.gd-tab thead th { background: #155e75; color: #fff; }
+.gd-tab tbody th { background: rgba(30, 41, 59, 0.9); color: #fbbf24; width: 22%; }
+.gd-port { min-width: 0; } .gd-port tbody th { width: auto; }
+.gd-states tbody th { width: 14%; }
+.gd-sum { min-width: 640px; }
+.gd-tag { padding: 2px 10px; border-radius: 999px; font-weight: 800; font-size: 0.88rem; }
+.gd-nat { background: rgba(16, 185, 129, 0.3); border: 1px solid #34d399; } .gd-man { background: rgba(245, 158, 11, 0.3); border: 1px solid #fbbf24; }
+.gd-rank { margin: 6px 0 8px; padding-left: 1.5em; font-weight: 800; } .gd-rank li { margin: 3px 0; }
+.gd-cause { margin: 0; padding-left: 1.1em; } .gd-cause li { margin: 6px 0; list-style: none; }
+.gd-index { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px; margin-top: 12px; }
+.gd-ix { text-align: left; padding: 7px 10px; border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.4); background: rgba(8, 15, 30, 0.85); color: inherit; font: inherit; font-size: 0.9rem; cursor: pointer; line-height: 1.3; }
+.gd-ix b { display: inline-block; min-width: 1.6em; padding: 0 5px; margin-right: 4px; border-radius: 6px; background: #0e7490; color: #fff; text-align: center; }
+.gd-ix:hover { border-color: #38bdf8; } .gd-ix.now { border-color: #f59e0b; background: rgba(245, 158, 11, 0.18); }
+.sv-btn:disabled { opacity: 0.4; cursor: default; }
+@media (max-width: 760px) { .gd-c2, .gd-c3, .gd-c4 { grid-template-columns: 1fr; } .gd-title { font-size: 1.25rem; } .gd-arr { transform: rotate(90deg); } }
+:root[data-theme="light"] .gd-stage { background: #ffffff; color: #0f172a; }
+:root[data-theme="light"] .gd-title, :root[data-theme="light"] .gd-card h4 { color: #0f172a; }
+:root[data-theme="light"] .gd-card { background: #f8fafc; border-color: #cbd5e1; }
+:root[data-theme="light"] .gd-chip { background: #e0f2fe; color: #0c4a6e; border-color: #7dd3fc; }
+:root[data-theme="light"] .gd-step, :root[data-theme="light"] .gd-stat { background: #e0f2fe; border-color: #7dd3fc; color: #0f172a; }
+:root[data-theme="light"] .gd-stat b, :root[data-theme="light"] .gd-h, :root[data-theme="light"] .gd-tab tbody th { color: #9a3412; }
+:root[data-theme="light"] .gd-tab tbody th { background: #fff7ed; }
+:root[data-theme="light"] .gd-tab th, :root[data-theme="light"] .gd-tab td { border-color: #cbd5e1; }
+:root[data-theme="light"] .gd-note { background: #e0f2fe; }
+:root[data-theme="light"] .gd-ix { background: #fff; }
+:root[data-theme="light"] .gd-card h4 small, :root[data-theme="light"] .gd-top { color: #475569; }
+:root[data-theme="light"] .gd-stage:fullscreen { background: #fff; }

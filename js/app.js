@@ -429,7 +429,7 @@ function renderQuizSelection(classKey, subjectKey) {
             <h1 class="view-title">${sub.name} (${cls.name})</h1>
 
             <!-- Navigation Tabs: Quizzes vs Theory vs Exam Solutions vs Simulation -->
-            <div class="subject-tabs-container${isPhysG ? ' grouped' : ''}${isBioG ? ' grouped-bio' : ''}${subjectKey === 'chemistry' ? ' grouped-chem' : ''}${isBioB ? ' grouped-biob' : ''}${isPhysA ? ' grouped-physa' : ''}${isBioA ? ' grouped-bioa' : ''}">
+            <div class="subject-tabs-container${isPhysG ? ' grouped' : ''}${isBioG ? ' grouped-bio' : ''}${subjectKey === 'chemistry' ? ' grouped-chem' : ''}${isBioB ? ' grouped-biob' : ''}${isPhysA ? ' grouped-physa' : ''}${isBioA ? ' grouped-bioa' : ''}${subjectKey === 'geography' ? ' grouped-geo' : ''}">
                 ${isPhysG ? physGroupsHtml(currentTab, classKey, subjectKey, activeQuizzes) : ''}
                 <button class="subject-tab-btn ${currentTab === 'quizzes' ? 'active' : ''}" id="tab-btn-quizzes" onclick="switchSubjectTab('quizzes')">
                     <span class="tab-icon">📝</span>
@@ -440,6 +440,7 @@ function renderQuizSelection(classKey, subjectKey) {
                 ${isPhysA ? physGroupsHtml(currentTab, classKey, subjectKey, [], PHYS_A_GROUPS) : ''}
                 ${isBioA ? physGroupsHtml(currentTab, classKey, subjectKey, [], BIO_A_GROUPS) : ''}
                 ${subjectKey === 'chemistry' ? physGroupsHtml(currentTab, classKey, subjectKey, [], CHEM_G_GROUPS) : ''}
+                ${subjectKey === 'geography' ? physGroupsHtml(currentTab, classKey, subjectKey, [], GEO_GROUPS) : ''}
                 ${(isBioA || isBioB || isBioG) ? `
                 <button class="subject-tab-btn ${currentTab === 'bioguide' ? 'active' : ''}" id="tab-btn-bioguide" onclick="switchSubjectTab('bioguide')">
                     <span class="tab-icon">📋</span>
@@ -857,6 +858,12 @@ function renderQuizSelection(classKey, subjectKey) {
         ` : ''}
         ${subjectKey === 'geography' ? `
         <!-- GEOGRAPHY: BYZANTINE BATTLES MAP -->
+        <div class="tab-panel" id="tab-panel-geoguide" style="display: ${currentTab === 'geoguide' ? 'block' : 'none'};">
+            <div id="geoguide-mount"></div>
+        </div>
+        <div class="tab-panel" id="tab-panel-geomosaic" style="display: ${currentTab === 'geomosaic' ? 'block' : 'none'};">
+            <div id="geomosaic-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-byz" style="display: ${currentTab === 'byz' ? 'block' : 'none'};">
             <div id="byz-mount"></div>
         </div>
@@ -1001,6 +1008,14 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'bioarch') {
         const m = document.getElementById('bioarch-mount');
         if (m && window.SurvivalSlides) window.SurvivalSlides.render(m, 'bioarch');
+    }
+    if (currentTab === 'geoguide') {
+        const m = document.getElementById('geoguide-mount');
+        if (m && window.GeoDeck) window.GeoDeck.render(m);
+    }
+    if (currentTab === 'geomosaic') {
+        const m = document.getElementById('geomosaic-mount');
+        if (m && window.SurvivalSlides) window.SurvivalSlides.render(m, 'geomosaic');
     }
     if (currentTab === 'celldive') {
         const m = document.getElementById('celldive-mount');
@@ -1266,6 +1281,11 @@ const BIO_A_GROUPS = [
         { tab: 'bioguide', label: 'Συνοπτικός οδηγός ύλης' },
         { tab: 'cell', label: 'Εξερεύνηση κυττάρου' } ] }
 ];
+const GEO_GROUPS = [
+    { id: 'geotheory', icon: '📖', label: 'Θεωρία', items: [
+        { tab: 'geoguide', label: 'Παρουσίαση της εξεταστέας ύλης' },
+        { tab: 'geomosaic', label: 'Το θαλάσσιο ψηφιδωτό της Ευρώπης (διαφάνειες)' } ] }
+];
 function closeTabMenus() {
     document.querySelectorAll('.sg-wrap.open').forEach((w) => { w.classList.remove('open'); const b = w.querySelector('.sg-btn'); if (b) b.setAttribute('aria-expanded', 'false'); });
 }
@@ -1278,7 +1298,7 @@ function toggleTabMenu(btn, ev) {
 document.addEventListener('click', (e) => { if (!e.target.closest('.sg-wrap')) closeTabMenus(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTabMenus(); });
 function updateTabGroups(tabKey) {
-    PHYS_G_GROUPS.concat(BIO_G_GROUPS, BIO_B_GROUPS, CHEM_G_GROUPS, PHYS_A_GROUPS, BIO_A_GROUPS).forEach((g) => {
+    PHYS_G_GROUPS.concat(BIO_G_GROUPS, BIO_B_GROUPS, CHEM_G_GROUPS, PHYS_A_GROUPS, BIO_A_GROUPS, GEO_GROUPS).forEach((g) => {
         const btn = document.querySelector('.sg-btn[data-group="' + g.id + '"]');
         if (!btn) return;
         const hit = g.id === 'syl' ? tabKey === 'syllabus' : g.items.find((it) => it.tab === tabKey);
@@ -1321,7 +1341,7 @@ function switchSubjectTab(tabKey) {
     // 'topics:bt3' = the deep-focus page opened at its topic bt3 (used by the Biology B menu)
     if (typeof tabKey === 'string' && tabKey.indexOf('topics:') === 0) { AppState.topicSel = tabKey.slice(7); AppState.pendingTopic = AppState.topicSel; tabKey = 'topics'; }
     else if (tabKey !== 'topics') AppState.topicSel = null;
-    if (PHYS_G_GROUPS.concat(BIO_G_GROUPS, BIO_B_GROUPS, CHEM_G_GROUPS, PHYS_A_GROUPS, BIO_A_GROUPS).some((g) => g.items.some((it) => it.tab === tabKey && it.locked))) return;   // locked tabs (not released yet) cannot be opened
+    if (PHYS_G_GROUPS.concat(BIO_G_GROUPS, BIO_B_GROUPS, CHEM_G_GROUPS, PHYS_A_GROUPS, BIO_A_GROUPS, GEO_GROUPS).some((g) => g.items.some((it) => it.tab === tabKey && it.locked))) return;   // locked tabs (not released yet) cannot be opened
     AppState.currentSubjectTab = tabKey;
     updateTabGroups(tabKey === 'topics' && AppState.topicSel ? 'topics:' + AppState.topicSel : tabKey);
     const hl = document.getElementById('phys-home-link'); if (hl) hl.style.display = tabKey === 'quizzes' ? 'none' : 'inline-flex';
@@ -1494,6 +1514,26 @@ function switchSubjectTab(tabKey) {
             musPanel.style.animation = 'fadeIn 0.3s ease';
             const mvm = document.getElementById('musvideo-mount');
             if (mvm && !mvm.hasChildNodes() && window.SeriesVideo) window.SeriesVideo.renderMusculo(mvm);
+        }
+    }
+    const ggPanel = document.getElementById('tab-panel-geoguide');
+    if (ggPanel) {
+        ggPanel.style.display = tabKey === 'geoguide' ? 'block' : 'none';
+        if (tabKey === 'geoguide') {
+            ggPanel.style.animation = 'fadeIn 0.3s ease';
+            const ggm = document.getElementById('geoguide-mount');
+            if (ggm && !ggm.hasChildNodes() && window.GeoDeck) window.GeoDeck.render(ggm);
+        }
+    }
+    const gmPanel = document.getElementById('tab-panel-geomosaic');
+    if (gmPanel) {
+        gmPanel.style.display = tabKey === 'geomosaic' ? 'block' : 'none';
+        if (tabKey === 'geomosaic') {
+            gmPanel.style.animation = 'fadeIn 0.3s ease';
+            const gmm = document.getElementById('geomosaic-mount');
+            if (gmm && !gmm.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(gmm, 'geomosaic');
+        } else if (window.SurvivalSlides && gmPanel.querySelector('.ss-wrap')) {
+            window.SurvivalSlides.stop();
         }
     }
     const baPanel = document.getElementById('tab-panel-bioarch');

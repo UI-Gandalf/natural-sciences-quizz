@@ -7,6 +7,7 @@ window.SurvivalSlides = (function () {
     'use strict';
     const SETS = {
         survival: { n: 14, dir: 'survival/s', title: 'Οδηγός επιβίωσης: ηλεκτρικά κυκλώματα', intro: '14 διαφάνειες για τη <strong>σειρά</strong>, τα <strong>παράλληλα</strong> και το <strong>βραχυκύκλωμα</strong>.' },
+        geomosaic: { n: 11, dir: 'geomosaic/g', title: 'Το θαλάσσιο ψηφιδωτό της Ευρώπης', intro: '11 διαφάνειες για τις θάλασσες της Ευρώπης: καταγωγή, Βόρεια Θάλασσα, Βαλτική, Μεσόγειος και ο άνθρωπος.' },
         bioarch: { n: 15, dir: 'bioarch/b', title: 'Στήριξη & Κίνηση: η αρχιτεκτονική της ζωής', intro: '15 διαφάνειες για τη <strong>στήριξη</strong> και την <strong>κίνηση</strong>: από τους μονοκύτταρους οργανισμούς και τα φυτά, μέχρι τα ζώα και το ανθρώπινο μυοσκελετικό σύστημα.' }
     };
     let N = 14, src = (i) => 'assets/images/survival/s' + String(i + 1).padStart(2, '0') + '.jpg';
