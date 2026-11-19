@@ -1236,7 +1236,7 @@ const CHEM_G_GROUPS = [
 const BIO_B_GROUPS = [
     { id: 'biobtheory', icon: '📖', label: 'Θεωρία', items: [
         { tab: 'bioguide', label: 'Συνοπτικός οδηγός ύλης' },
-        { tab: 'bioarch', label: 'Στήριξη & Κίνηση: αρχιτεκτονική της ζωής (διαφάνειες)' },
+        { tab: 'bioarch', label: 'Στήριξη & Κίνηση (διαφάνειες)' },
         { tab: 'topics:bt1', label: 'Υδροστατικός σκελετός' },
         { tab: 'topics:bt2', label: 'Αρθρόποδα και έκδυση' },
         { tab: 'topics:bt3', label: 'Εξωσκελετός' },
