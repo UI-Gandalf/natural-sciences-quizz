@@ -785,6 +785,9 @@ function renderQuizSelection(classKey, subjectKey) {
             <div id="intro3d-mount"></div>
         </div>
         <!-- PHYSICS Γ: 3D CIRCUIT WITH TWO RESISTORS IN SERIES -->
+        <div class="tab-panel" id="tab-panel-physarch" style="display: ${currentTab === 'physarch' ? 'block' : 'none'};">
+            <div id="physarch-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-survival" style="display: ${currentTab === 'survival' ? 'block' : 'none'};">
             <div id="survival-mount"></div>
         </div>
@@ -1031,6 +1034,10 @@ function renderQuizSelection(classKey, subjectKey) {
         const m = document.getElementById('bioalife-mount');
         if (m && window.SurvivalSlides) window.SurvivalSlides.render(m, 'bioalife');
     }
+    if (currentTab === 'physarch') {
+        const m = document.getElementById('physarch-mount');
+        if (m && window.SurvivalSlides) window.SurvivalSlides.render(m, 'physarch');
+    }
     if (currentTab === 'celldive') {
         const m = document.getElementById('celldive-mount');
         if (m && window.CellDive) window.CellDive.render(m);
@@ -1222,6 +1229,7 @@ const PHYS_G_GROUPS = [
     { id: 'theory', icon: '📖', label: 'Θεωρία', items: [
         { tab: 'theory', label: 'Συνοπτικός οδηγός μελέτης και πρωτόκολλο επίλυσης' },
         { tab: 'survival', label: 'Οδηγός επιβίωσης (διαφάνειες)' },
+        { tab: 'physarch', label: 'Αρχιτεκτονική ηλεκτρικών κυκλωμάτων (διαφάνειες)' },
         { tab: 'seriesvideo', label: 'Βίντεο: κύκλωμα σειράς (ελληνικοί υπότιτλοι)' },
         { tab: 'faultsvideo', label: 'Βίντεο: βλάβες και βραχυκυκλώματα σε σειρά (ελληνικοί υπότιτλοι)' },
         { tab: 'parallelvideo', label: 'Βίντεο: παράλληλο κύκλωμα γενικά (ελληνικοί υπότιτλοι)' } ] },
@@ -1571,6 +1579,17 @@ function switchSubjectTab(tabKey) {
             const blm = document.getElementById('bioalife-mount');
             if (blm && !blm.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(blm, 'bioalife');
         } else if (window.SurvivalSlides && blPanel.querySelector('.ss-wrap')) {
+            window.SurvivalSlides.stop();
+        }
+    }
+    const paPanel = document.getElementById('tab-panel-physarch');
+    if (paPanel) {
+        paPanel.style.display = tabKey === 'physarch' ? 'block' : 'none';
+        if (tabKey === 'physarch') {
+            paPanel.style.animation = 'fadeIn 0.3s ease';
+            const pam = document.getElementById('physarch-mount');
+            if (pam && !pam.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(pam, 'physarch');
+        } else if (window.SurvivalSlides && paPanel.querySelector('.ss-wrap')) {
             window.SurvivalSlides.stop();
         }
     }
