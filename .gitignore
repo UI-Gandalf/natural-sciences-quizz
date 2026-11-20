@@ -69,3 +69,7 @@ __pycache__/
 # Claude Code personal settings (permissions)
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
+
+# Local secrets & API keys
+.env
+.env.*
