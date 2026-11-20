@@ -825,6 +825,9 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-bioguide" style="display: ${currentTab === 'bioguide' ? 'block' : 'none'};">
             <div id="bioguide-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-bioalife" style="display: ${currentTab === 'bioalife' ? 'block' : 'none'};">
+            <div id="bioalife-mount"></div>
+        </div>
         ` : ''}
         ${isBioB ? `
         <!-- BIOLOGY Β: JOINTS IN 3D -->
@@ -1023,6 +1026,10 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'chemslides' && subjectKey === 'chemistry') {
         const m = document.getElementById('chemslides-mount');
         if (m && window.SurvivalSlides) window.SurvivalSlides.render(m, 'chemacid');
+    }
+    if (currentTab === 'bioalife') {
+        const m = document.getElementById('bioalife-mount');
+        if (m && window.SurvivalSlides) window.SurvivalSlides.render(m, 'bioalife');
     }
     if (currentTab === 'celldive') {
         const m = document.getElementById('celldive-mount');
@@ -1287,6 +1294,7 @@ const PHYS_A_GROUPS = [
 const BIO_A_GROUPS = [
     { id: 'bioatheory', icon: '📖', label: 'Θεωρία', items: [
         { tab: 'bioguide', label: 'Συνοπτικός οδηγός ύλης' },
+        { tab: 'bioalife', label: 'Η αρχιτεκτονική της ζωής (διαφάνειες)' },
         { tab: 'cell', label: 'Εξερεύνηση κυττάρου' } ] }
 ];
 const GEO_GROUPS = [
@@ -1552,6 +1560,17 @@ function switchSubjectTab(tabKey) {
             const csm = document.getElementById('chemslides-mount');
             if (csm && !csm.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(csm, 'chemacid');
         } else if (window.SurvivalSlides && csPanel.querySelector('.ss-wrap')) {
+            window.SurvivalSlides.stop();
+        }
+    }
+    const blPanel = document.getElementById('tab-panel-bioalife');
+    if (blPanel) {
+        blPanel.style.display = tabKey === 'bioalife' ? 'block' : 'none';
+        if (tabKey === 'bioalife') {
+            blPanel.style.animation = 'fadeIn 0.3s ease';
+            const blm = document.getElementById('bioalife-mount');
+            if (blm && !blm.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(blm, 'bioalife');
+        } else if (window.SurvivalSlides && blPanel.querySelector('.ss-wrap')) {
             window.SurvivalSlides.stop();
         }
     }
