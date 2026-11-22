@@ -1227,6 +1227,7 @@ function renderSimulationView() {
 // ---- Physics Γ: the many tabs are collected in 4 pop-up menus ----
 const PHYS_G_GROUPS = [
     { id: 'theory', icon: '📖', label: 'Θεωρία', items: [
+        { tab: 'syllabus', label: 'Εξεταστέα ύλη (σχολικό βιβλίο)' },
         { tab: 'theory', label: 'Συνοπτικός οδηγός μελέτης και πρωτόκολλο επίλυσης' },
         { tab: 'survival', label: 'Οδηγός επιβίωσης (διαφάνειες)' },
         { tab: 'physarch', label: 'Αρχιτεκτονική ηλεκτρικών κυκλωμάτων (διαφάνειες)' },
@@ -1237,8 +1238,7 @@ const PHYS_G_GROUPS = [
         { tab: 'intro3d', label: '3D εισαγωγή στο απλό ιδανικό κύκλωμα' },
         { tab: 'series3d', label: '3D κύκλωμα με δύο αντιστάτες σε σειρά' },
         { tab: 'analogy', label: 'Βαρυτικό ανάλογο: δύο αντιστάτες σε σειρά' },
-        { tab: 'simulation', label: '2D πλήρης προσομοίωση' } ] },
-    { id: 'syl', icon: '📚', label: 'Εξεταστέα ύλη (σχολικό βιβλίο)', items: [ { tab: 'syllabus', label: '' } ] }
+        { tab: 'simulation', label: '2D πλήρης προσομοίωση' } ] }
 ];
 function physGroupsHtml(currentTab, classKey, subjectKey, quizzes, groups) {
     const cur = (currentTab === 'topics' && AppState.topicSel) ? 'topics:' + AppState.topicSel : currentTab;
