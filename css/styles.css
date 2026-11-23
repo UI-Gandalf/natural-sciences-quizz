@@ -9912,8 +9912,9 @@ button.exam-opt-pill:active:not(:disabled) {
 .fs-toggle-btn.nav-fs-btn:hover { background: var(--btn-secondary-hover); }
 @media (max-width: 700px) { .fs-toggle-btn.nav-fs-btn { padding: 6px 10px; font-size: 0.75rem; } }
 html.is-fullscreen { scrollbar-width: thin; }
-#fs-float { display: none; position: fixed; top: 12px; right: 12px; z-index: 9999; background: rgba(8, 15, 30, 0.88); color: #fff; border: 1px solid #fbbf24; border-radius: 999px; padding: 8px 16px; font: inherit; font-weight: 700; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5); }
-html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
+#fs-float { display: none; position: fixed; top: 14px; right: 14px; z-index: 2147483647; min-height: 44px; background: rgba(8, 15, 30, 0.9); color: #fff; border: 2px solid #fbbf24; border-radius: 999px; padding: 10px 18px; font: inherit; font-weight: 800; font-size: 0.95rem; cursor: pointer; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55); touch-action: manipulation; }
+#fs-float:hover, #fs-float:active { background: #dc2626; border-color: #fff; }
+:fullscreen > #fs-float { display: block; }
 .cell-svg .c-lead-w { stroke: #ffffff; stroke-width: 5; stroke-linecap: round; pointer-events: none; }
 .cell-svg .c-lead { stroke: #0f172a; stroke-width: 2.2; stroke-linecap: round; pointer-events: none; }
 .cell-svg .c-lead-dot { fill: #0f172a; stroke: #ffffff; stroke-width: 2; pointer-events: none; }
@@ -10889,10 +10890,10 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 [data-theme="light"] .sv-head p { color: #334155; }
 .sv-player { position: relative; background: #000; border-radius: 14px; overflow: hidden; --sv-fs: 1.15; }
 .sv-video { display: block; width: 100%; max-height: 68vh; background: #000; }
-.sv-sub { display: none; position: absolute; left: 50%; bottom: 62px; transform: translateX(-50%); width: min(92%, 860px); text-align: center; padding: 6px 14px; border-radius: 8px; background: rgba(0, 0, 0, 0.78); color: #fff; font-weight: 700; font-size: calc(1rem * var(--sv-fs)); line-height: 1.4; pointer-events: none; text-shadow: 0 1px 3px #000; }
+.sv-sub { display: none; position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); width: min(94%, 920px); text-align: center; padding: 5px 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.72); color: #fff; font-weight: 700; font-size: calc(1rem * var(--sv-fs)); line-height: 1.35; pointer-events: none; text-shadow: 0 1px 3px #000; z-index: 10; }
 .sv-player:fullscreen { display: flex; align-items: center; justify-content: center; width: 100vw; height: 100vh; border-radius: 0; }
 .sv-player:fullscreen .sv-video { max-height: 100vh; height: 100vh; }
-.sv-player:fullscreen .sv-sub { bottom: 78px; font-size: calc(1.5rem * var(--sv-fs)); }
+.sv-player:fullscreen .sv-sub { bottom: 22px; font-size: calc(1.4rem * var(--sv-fs)); z-index: 10; }
 .sv-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 12px 0; padding: 10px 14px; border-radius: 12px; background: rgba(8, 15, 30, 0.82); border: 1px solid var(--card-border); }
 [data-theme="light"] .sv-bar { background: rgba(255, 255, 255, 0.92); }
 .sv-btn { padding: 9px 16px; border-radius: 999px; border: 2px solid #64748b; background: rgba(100, 116, 139, 0.2); color: inherit; font: inherit; font-weight: 800; cursor: pointer; }
@@ -10910,7 +10911,6 @@ html.is-fullscreen:not(:has(.quiz-top-actions)) #fs-float { display: block; }
 .sv-line b { color: #fbbf24; margin-right: 6px; }
 [data-theme="light"] .sv-line b { color: #b45309; }
 .sv-btn small { display: block; font-weight: 600; opacity: 0.85; }
-.sv-sub { bottom: 70px; }
 
 /* Physics Γ: survival-guide slide show */
 .ss-wrap { max-width: 1000px; margin: 0 auto; }

@@ -27,12 +27,12 @@ window.SeriesVideo = (function () {
             '<div class="sv-head"><h2>🎬 ' + cfg.title + '</h2>' +
             '<p>Ένα σύντομο βίντεο (περίπου ' + cfg.min + ' λεπτά) που εξηγεί <strong>βήμα προς βήμα</strong> ' + cfg.lead + '. Το βίντεο είναι στα <strong>αγγλικά</strong>. Με το κουμπί <strong>«Υπότιτλοι»</strong> εμφανίζονται οι <strong>ελληνικοί υπότιτλοι</strong>.</p>' + (cfg.warn ? '<p class="sv-warn">⚠ ' + cfg.warn + '</p>' : '') + '</div>' +
             '<div class="sv-player" id="sv-player">' +
-            '<video id="sv-video" class="sv-video" src="' + cfg.src + '" controls preload="metadata" playsinline controlslist="nodownload"></video>' +
+            '<video id="sv-video" class="sv-video" src="' + cfg.src + '" controls preload="metadata" playsinline disablepictureinpicture controlslist="nodownload nofullscreen"></video>' +
             '<div class="sv-sub" id="sv-sub" aria-live="off"></div><div class="sv-fix" id="sv-fix"></div></div>' +
             '<div class="sv-bar"><button type="button" class="sv-btn on" id="sv-cc" aria-pressed="true">✅ Υπότιτλοι ελληνικά: ΕΜΦΑΝΙΖΟΝΤΑΙ <small>(πάτα για να κρυφτούν)</small></button>' +
             '<label class="sv-size">Μέγεθος γραμμάτων <select id="sv-fs"><option value="0.9">Μικρά</option><option value="1.15" selected>Κανονικά</option><option value="1.5">Μεγάλα</option></select></label>' +
             '<button type="button" class="sv-btn" id="sv-full">⛶ Πλήρης οθόνη</button>' +
-            '<span class="sv-note">Αν το βίντεο δεν παίζει, δοκίμασε άλλον περιηγητή ή ξαναφόρτωσε τη σελίδα.</span></div>' +
+            '<span class="sv-note">💡 Από το μενού <strong>⋮</strong> κάτω δεξιά του βίντεο μπορείς να αλλάξεις την <strong>ταχύτητα αναπαραγωγής</strong> (οι υπότιτλοι ακολουθούν αυτόματα) ή να κάνεις <strong>Cast</strong> σε άλλη οθόνη. Αν το βίντεο δεν παίζει, δοκίμασε άλλον περιηγητή ή ξαναφόρτωσε τη σελίδα.</span></div>' +
             '<details class="sv-tx"><summary>📄 Δες όλο το κείμενο των υποτίτλων (ελληνικά)</summary><div class="sv-tx-body" id="sv-tx-body"></div></details>' +
             '</div>';
         if (cfg.greek) {                      // the video is already in Greek: no subtitle controls
@@ -54,17 +54,45 @@ window.SeriesVideo = (function () {
             sub.textContent = c ? c[2] : '';
             sub.style.display = c ? 'block' : 'none';
         };
-        v.addEventListener('timeupdate', show); v.addEventListener('seeked', show); v.addEventListener('play', show);
+        v.addEventListener('timeupdate', show); v.addEventListener('seeked', show); v.addEventListener('play', show); v.addEventListener('playing', show);
         cc.addEventListener('click', () => {
             on = !on; cc.classList.toggle('on', on); cc.setAttribute('aria-pressed', String(on));
             cc.innerHTML = on ? '✅ Υπότιτλοι ελληνικά: ΕΜΦΑΝΙΖΟΝΤΑΙ <small>(πάτα για να κρυφτούν)</small>' : '🚫 Υπότιτλοι ελληνικά: ΚΡΥΦΤΟΙ <small>(πάτα για να εμφανιστούν)</small>'; show();
         });
         mount.querySelector('#sv-fs').addEventListener('change', (e) => { box.style.setProperty('--sv-fs', e.target.value); });
         box.style.setProperty('--sv-fs', '1.15');
+        const enterBoxFs = () => {
+            const req = box.requestFullscreen || box.webkitRequestFullscreen;
+            if (req) {
+                try { const p = req.call(box); if (p && p.catch) p.catch(() => {}); } catch (e) {}
+            }
+        };
         mount.querySelector('#sv-full').addEventListener('click', () => {
-            if (document.fullscreenElement) document.exitFullscreen();
-            else if (box.requestFullscreen) box.requestFullscreen().catch(() => {});
+            const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+            if (fsEl === box) {
+                const ex = document.exitFullscreen || document.webkitExitFullscreen;
+                if (ex) ex.call(document);
+            } else {
+                enterBoxFs();
+            }
         });
+        // If user triggers native <video> fullscreen (e.g. double-click), promote #sv-player instead so subtitles stay visible
+        const onFsChange = () => {
+            if (!box.isConnected) {
+                document.removeEventListener('fullscreenchange', onFsChange);
+                document.removeEventListener('webkitfullscreenchange', onFsChange);
+                return;
+            }
+            const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+            if (fsEl === v) {
+                enterBoxFs();
+                return;
+            }
+            show();
+            showFix();
+        };
+        document.addEventListener('fullscreenchange', onFsChange);
+        document.addEventListener('webkitfullscreenchange', onFsChange);
         // clickable transcript: a line jumps to its place in the video
         const tx = mount.querySelector('#sv-tx-body');
         tx.innerHTML = cues.map((c, i) => '<button type="button" class="sv-line" data-i="' + i + '"><b>' + fmt(c[0]) + '</b> ' + c[2] + '</button>').join('');

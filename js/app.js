@@ -60,8 +60,9 @@ function toggleFullscreen() {
 }
 
 function syncFullscreenButtons() {
-    if (!document.getElementById('fs-float')) {   // floating "back to normal view" button for simulations / presentations (quizzes have their own)
-        const f = document.createElement('button');
+    let f = document.getElementById('fs-float');
+    if (!f) {   // floating "back to normal view" button for slides, videos, simulations & presentations (touch-friendly for whiteboards)
+        f = document.createElement('button');
         f.id = 'fs-float';
         f.type = 'button';
         f.className = 'fs-toggle-btn';
@@ -69,7 +70,11 @@ function syncFullscreenButtons() {
         document.body.appendChild(f);
     }
     const supported = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
-    const on = isFullscreenNow();
+    const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    const on = !!fsEl;
+    // Re-parent #fs-float into the active fullscreen element so it stays visible inside slides, videos, 3D & infographics
+    const targetParent = (fsEl && fsEl !== document.documentElement && fsEl.tagName !== 'VIDEO' && fsEl.tagName !== 'IMG') ? fsEl : document.body;
+    if (f.parentNode !== targetParent) targetParent.appendChild(f);
     document.documentElement.classList.toggle('is-fullscreen', on);
     document.querySelectorAll('.fs-toggle-btn').forEach(b => {
         b.style.display = supported ? '' : 'none';
