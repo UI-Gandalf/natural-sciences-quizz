@@ -28,6 +28,99 @@
         ['moon', 'Επιφάνεια της Σελήνης', 1.6]
     ];
 
+    const EXT_WORLDS = {
+        earth: {
+            label: '🌍 Γη', g: 10, gStr: '10', g0: 10, g0Str: '10', m: 6, prec: false,
+            intro: 'Στην επιφάνεια της Γης (στρογγυλοποιημένη τιμή g = 10 N/kg) το σώμα μάζας 6 kg έχει βάρος W = 6 · 10 = 60 N:',
+            balNote: 'Στον αριστερό δίσκο το σώμα δέχεται βάρος 60 N και στον δεξιό τα σταθμά των 6 kg δέχονται επίσης 60 N. Ο ζυγός ισορροπεί οριζόντια και μετρά σωστά τη μάζα 6 kg.',
+            dynNote: 'Η βαρυτική δύναμη των 60 N τεντώνει το ελατήριο μέχρι την ένδειξη 60 N, που είναι το πραγματικό βάρος του σώματος στη Γη.',
+            digNote: 'Ο αισθητήρας μετρά τη δύναμη πίεσης 60 N και την διαιρεί με την τιμή βαθμονόμησης της Γης (g₀ = 10 N/kg): 60 ÷ 10 = 6,00 kg. Δείχνει σωστή μάζα επειδή το τοπικό g ταυτίζεται με της βαθμονόμησης.',
+            balStatus: 'ok', balText: '✅ 6,0 kg (σωστή μάζα)',
+            dynStatus: 'ok', dynText: '✅ 60 N (πραγματικό βάρος)',
+            digStatus: 'ok', digText: '✅ 6,00 kg (σωστό — g = g₀ Γης)'
+        },
+        moon: {
+            label: '🌕 Σελήνη', g: 1.6, gStr: '1,6', g0: 10, g0Str: '10', m: 6, prec: false,
+            intro: 'Στη Σελήνη η βαρύτητα είναι ~6 φορές ασθενέστερη από της Γης, οπότε το βάρος του ίδιου σώματος (6 kg) πέφτει στα W = 6 · 1,6 = 9,6 N:',
+            balNote: 'Το βάρος μειώνεται αναλογικά και στους δύο δίσκους (9,6 N στο σώμα και 9,6 N στα σταθμά των 6 kg). Επειδή το g απλοποιείται (m·g = m<sub>σταθμά</sub>·g), ο ζυγός ισορροπεί ξανά σωστά στα 6 kg.',
+            dynNote: 'Το ελατήριο τεντώνεται πολύ λιγότερο από ό,τι στη Γη και δείχνει σωστά το πραγματικό, μικρότερο βάρος στη Σελήνη (9,6 N).',
+            digNote: 'Η ζυγαριά μετρά την πραγματική δύναμη (9,6 N), αλλά επειδή παραμένει βαθμονομημένη για το g της Γης (g₀ = 10), διαιρεί 9,6 ÷ 10 = 0,96 kg. Δίνει λανθασμένη μάζα (~6× μικρότερη) επειδή δεν έχει επαναβαθμονομηθεί για το g της Σελήνης.',
+            balStatus: 'ok', balText: '✅ 6,0 kg (το g απλοποιείται!)',
+            dynStatus: 'ok', dynText: '✅ 9,6 N (πραγματικό βάρος στη Σελήνη)',
+            digStatus: 'bad', digText: '❌ 0,96 kg (λάθος — βαθμονομημένη για g₀ = 10)'
+        },
+        mars: {
+            label: '🔴 Άρης', g: 3.7, gStr: '3,7', g0: 10, g0Str: '10', m: 6, prec: false,
+            intro: 'Στον Άρη η βαρύτητα είναι περίπου στο 37% της γήινης, άρα το σώμα των 6 kg έχει βάρος W = 6 · 3,7 = 22,2 N:',
+            balNote: 'Τόσο το σώμα όσο και τα σταθμά των 6 kg ζυγίζουν 22,2 N. Η αναλογία παραμένει ίδια, οπότε ο ζυγός ισορροπεί ξανά και δείχνει σωστά μάζα 6 kg.',
+            dynNote: 'Το ελατήριο επιμηκύνεται ανάλογα με την αρειανή βαρύτητα και δείχνει σωστά το πραγματικό βάρος στον Άρη (22,2 N).',
+            digNote: 'Ο αισθητήρας καταγράφει δύναμη 22,2 N και τη διαιρεί με το g της Γης (10): 22,2 ÷ 10 = 2,22 kg. Εμφανίζει λανθασμένη μάζα επειδή δεν έχει επαναβαθμονομηθεί για το g του Άρη.',
+            balStatus: 'ok', balText: '✅ 6,0 kg (το g απλοποιείται!)',
+            dynStatus: 'ok', dynText: '✅ 22,2 N (πραγματικό βάρος στον Άρη)',
+            digStatus: 'bad', digText: '❌ 2,22 kg (λάθος — βαθμονομημένη για g₀ = 10)'
+        },
+        jupiter: {
+            label: '🪐 Δίας', g: 25, gStr: '25', g0: 10, g0Str: '10', m: 6, prec: false,
+            intro: 'Στον Δία η βαρύτητα είναι 2,5 φορές ισχυρότερη από της Γης, οπότε το βάρος του ίδιου σώματος (6 kg) αυξάνεται στα W = 6 · 25 = 150 N:',
+            balNote: 'Το βάρος γίνεται 2,5 φορές μεγαλύτερο εξίσου και στους δύο δίσκους (150 N = 150 N). Το g απλοποιείται ξανά και ο ζυγός μετρά σωστά μάζα 6 kg με τα ίδια σταθμά.',
+            dynNote: 'Το ελατήριο τεντώνεται πολύ έντονα και δείχνει σωστά το μεγάλο, πραγματικό βάρος στον Δία (150 N).',
+            digNote: 'Η ζυγαριά μετρά δύναμη 150 N, αλλά με την ίδια γήινη βαθμονόμηση (÷ 10) υπολογίζει 150 ÷ 10 = 15,00 kg. Δίνει λανθασμένη μάζα (2,5× μεγαλύτερη) για τον ίδιο ακριβώς λόγο: δεν έχει επαναβαθμονομηθεί για το g του Δία.',
+            balStatus: 'ok', balText: '✅ 6,0 kg (το g απλοποιείται!)',
+            dynStatus: 'ok', dynText: '✅ 150 N (πραγματικό βάρος στον Δία)',
+            digStatus: 'bad', digText: '❌ 15,00 kg (λάθος — βαθμονομημένη για g₀ = 10)'
+        },
+        space: {
+            label: '🚀 Διάστημα', g: 0, gStr: '0', g0: 10, g0Str: '10', m: 6, prec: false,
+            intro: 'Σε συνθήκες έλλειψης βαρύτητας (π.χ. Διεθνής Διαστημικός Σταθμός, g = 0) το βάρος μηδενίζεται (W = 6 · 0 = 0 N), ενώ η μάζα παραμένει κανονικά 6 kg:',
+            balNote: 'Δεν υπάρχει βαρυτική έλξη για να τραβήξει τους δίσκους προς τα κάτω (0 N και στις δύο πλευρές). Ο ζυγός αιωρείται και δεν μπορεί να μετρήσει μάζα.',
+            dynNote: 'Το ελατήριο δεν τεντώνεται καθόλου και δείχνει σωστά ότι το βάρος είναι 0 N.',
+            digNote: 'Το σώμα δεν πιέζει την πλατφόρμα (δύναμη 0 N → ένδειξη 0,00 kg). Κανένα από τα τρία όργανα δεν μετρά μάζα στο διάστημα — γι’ αυτό οι αστροναύτες χρησιμοποιούν αδρανειακό ζυγό (ταλάντωση με ελατήριο).',
+            balStatus: 'warn', balText: '⚠️ Δεν λειτουργεί (αιωρείται, g = 0)',
+            dynStatus: 'ok', dynText: '✅ 0 N (μηδενικό βάρος)',
+            digStatus: 'warn', digText: '⚠️ 0,00 kg (μηδενική δύναμη στην πλατφόρμα)'
+        },
+        sea: {
+            label: '🌊 Γη · Επίπεδο θάλασσας (μέσο πλάτος)', g: 9.80, gStr: '9,80', g0: 9.80, g0Str: '9,80', m: 6, prec: true,
+            intro: 'Χρησιμοποιούμε ηλεκτρονική ζυγαριά ακριβείας βαθμονομημένη σε μέσο γεωγραφικό πλάτος (π.χ. Ελλάδα) στο επίπεδο της θάλασσας (g₀ = 9,80 N/kg). Το βάρος των 6 kg είναι W = 6 · 9,80 = 58,80 N:',
+            balNote: 'Και οι δύο δίσκοι δέχονται ακριβώς 58,80 N. Ο ζυγός ισορροπεί και μετρά με ακρίβεια τη μάζα 6,000 kg.',
+            dynNote: 'Δείχνει το ακριβές πραγματικό βάρος του σώματος στον τόπο αυτό: 58,80 N.',
+            digNote: 'Μετρά δύναμη 58,80 N και τη διαιρεί με το τοπικό g βαθμονόμησης (9,80): 58,80 ÷ 9,80 = 6,000 kg. Η ένδειξη είναι απόλυτα σωστή επειδή βρισκόμαστε στον τόπο βαθμονόμησης.',
+            balStatus: 'ok', balText: '✅ 6,000 kg (σωστή μάζα)',
+            dynStatus: 'ok', dynText: '✅ 58,80 N (πραγματικό βάρος)',
+            digStatus: 'ok', digText: '✅ 6,000 kg (σωστό — g = g₀ = 9,80)'
+        },
+        equator: {
+            label: '🧭 Γη · Ισημερινός', g: 9.78, gStr: '9,78', g0: 9.80, g0Str: '9,80', m: 6, prec: true,
+            intro: 'Στον Ισημερινό το g είναι ελαφρώς μικρότερο (9,78 N/kg) λόγω της μεγαλύτερης απόστασης από το κέντρο της Γης και της περιστροφής της. Το βάρος των 6 kg γίνεται W = 6 · 9,78 = 58,68 N:',
+            balNote: 'Και οι δύο δίσκοι δέχονται εξίσου ελαφρώς μικρότερο βάρος (58,68 N = 58,68 N). Το g απλοποιείται, άρα ο ζυγός σύγκρισης παραμένει 100% ακριβής στα 6,000 kg!',
+            dynNote: 'Δείχνει σωστά το ελαφρώς μικρότερο πραγματικό βάρος στον Ισημερινό: 58,68 N (0,12 N λιγότερο από το μέσο πλάτος).',
+            digNote: 'Χωρίς επαναβαθμονόμηση, διαιρεί τα 58,68 N με το παλιό g₀ = 9,80 → 5,988 kg (σφάλμα −12 g, δηλαδή ~−0,2%). Σε ζυγό ακριβείας απαιτείται επαναβαθμονόμηση για το νέο γεωγραφικό πλάτος!',
+            balStatus: 'ok', balText: '✅ 6,000 kg (ανεπηρέαστος από το πλάτος)',
+            dynStatus: 'ok', dynText: '✅ 58,68 N (ελαφρώς μικρότερο βάρος)',
+            digStatus: 'warn', digText: '⚠️ 5,988 kg (−12 g · βαθμονόμηση g₀ = 9,80)'
+        },
+        poles: {
+            label: '🧊 Γη · Πόλοι', g: 9.83, gStr: '9,83', g0: 9.80, g0Str: '9,80', m: 6, prec: true,
+            intro: 'Στους Πόλους το g παίρνει τη μεγαλύτερη τιμή του στη Γη (9,83 N/kg) λόγω της ελαφριάς πεπλάτυνσης της Γης. Το βάρος των 6 kg αυξάνεται στα W = 6 · 9,83 = 58,98 N:',
+            balNote: 'Και το σώμα και τα σταθμά δέχονται εξίσου ελαφρώς μεγαλύτερο βάρος (58,98 N = 58,98 N). Ο ζυγός σύγκρισης δεν επηρεάζεται καθόλου και δείχνει ακριβώς 6,000 kg!',
+            dynNote: 'Δείχνει σωστά το ελαφρώς μεγαλύτερο πραγματικό βάρος στους Πόλους: 58,98 N (+0,30 N σε σχέση με τον Ισημερινό).',
+            digNote: 'Χωρίς επαναβαθμονόμηση, διαιρεί τα 58,98 N με το g₀ = 9,80 → 6,018 kg (σφάλμα +18 g, ή +30 g αν είχε βαθμονομηθεί στον Ισημερινό!). Πρόκειται για την ίδια ακριβώς πηγή σφάλματος με τη Σελήνη/Δία, απλώς σε μικρότερη κλίμακα.',
+            balStatus: 'ok', balText: '✅ 6,000 kg (ανεπηρέαστος από το πλάτος)',
+            dynStatus: 'ok', dynText: '✅ 58,98 N (ελαφρώς μεγαλύτερο βάρος)',
+            digStatus: 'warn', digText: '⚠️ 6,018 kg (+18 g · βαθμονόμηση g₀ = 9,80)'
+        },
+        everest: {
+            label: '🏔️ Γη · Κορυφή Έβερεστ (8.849 m)', g: 9.77, gStr: '9,77', g0: 9.80, g0Str: '9,80', m: 6, prec: true,
+            intro: 'Σε πολύ μεγάλο υψόμετρο (κορυφή Έβερεστ, ~8,85 km) αυξάνεται η απόσταση από το κέντρο της Γης και το g πέφτει περίπου στα 9,77 N/kg. Το βάρος των 6 kg γίνεται W = 6 · 9,77 = 58,62 N:',
+            balNote: 'Το βάρος μειώνεται αναλογικά και στους δύο δίσκους (58,62 N = 58,62 N). Ο ζυγός σύγκρισης λειτουργεί αλάνθαστα και δείχνει 6,000 kg σε οποιοδήποτε υψόμετρο!',
+            dynNote: 'Καταγράφει σωστά το ελαφρώς μειωμένο πραγματικό βάρος στο βουνό: 58,62 N (0,18 N λιγότερο από το επίπεδο της θάλασσας).',
+            digNote: 'Με την ίδια βαθμονόμηση επιπέδου θάλασσας (g₀ = 9,80), υπολογίζει 58,62 ÷ 9,80 = 5,982 kg (σφάλμα −18 g, ~−0,3%). Ένας ζυγός ακριβείας που μεταφέρεται σε μεγάλο υψόμετρο χρειάζεται επίσης επαναβαθμονόμηση.',
+            balStatus: 'ok', balText: '✅ 6,000 kg (ανεπηρέαστος από το υψόμετρο)',
+            dynStatus: 'ok', dynText: '✅ 58,62 N (μικρότερο βάρος σε ύψος)',
+            digStatus: 'warn', digText: '⚠️ 5,982 kg (−18 g · βαθμονόμηση g₀ = 9,80)'
+        }
+    };
+
     function fmtN(x, d) {
         let s = (Math.round(x * Math.pow(10, d)) / Math.pow(10, d)).toString();
         return s.replace('.', ',');
@@ -141,7 +234,150 @@
         '<div class="pa-box"><p><strong>Ερώτηση 3.</strong> Αν πάμε στη Σελήνη έναν ζυγό σύγκρισης με ίσους βραχίονες και θελήσουμε να ζυγίσουμε ένα αντικείμενο μάζας 2 kg, θα χρειαστούμε τα ίδια σταθμά (βαράκια) που θα χρειαζόμασταν στη Γη ή διαφορετικά; Αιτιολογήστε την απάντησή σας.</p>' +
         '<button type="button" class="pa-btn" data-act="sol" data-t="c3">Δείτε την απάντηση</button>' +
         '<div class="pm-sol" id="c3" hidden><p>Θα χρειαστούμε <strong>ακριβώς τα ίδια σταθμά</strong>. Ο ζυγός σύγκρισης λειτουργεί συγκρίνοντας τις μάζες και όχι τα βάρη. Η βαρύτητα της Σελήνης (που είναι 1/6 της γήινης) θα ασκήσει μικρότερη δύναμη (βάρος) τόσο στο αντικείμενο όσο και στα σταθμά, αλλά θα τα επηρεάσει και τα δύο αναλογικά. Έτσι η ισορροπία θα επιτευχθεί με την ίδια ακριβώς μάζα σταθμών που θα χρειαζόταν και στη Γη.</p></div></div>' +
+        '</section>' +
+
+        /* Σύνδεσμος προς την ξεχωριστή καρτέλα Επέκτασης */
+        '<section class="pa-card pm-ext-card" id="pm-ext">' +
+        '<div class="pm-ext-top">' +
+        '<div><span class="pm-ext-badge">✨ ΕΠΕΚΤΑΣΗ · ΕΜΒΑΘΥΝΣΗ</span>' +
+        '<h3>🔬 Γιατί κάθε όργανο είναι κατάλληλο για τη μέτρηση μάζας ή βάρους;</h3>' +
+        '<p class="pm-ext-sub">Διαδραστικό πείραμα με <strong>ζυγό σύγκρισης</strong>, <strong>δυναμόμετρο</strong> και <strong>ηλεκτρονική ζυγαριά</strong> σε Γη, Σελήνη, Δία και Διάστημα.</p></div>' +
+        '<button type="button" class="pa-btn pa-btn-main pm-ext-toggle" data-act="goto-ext">🔬 Άνοιγμα επέκτασης →</button>' +
+        '</div></section></div>';
+    }
+
+    function instrumentsTabHtml() {
+        return '' +
+        '<div class="pa-wrap pm-wrap">' +
+        '<header class="pa-head"><div class="pa-kicker">Φυσική Α΄ Γυμνασίου · ✨ Επέκταση / Εμβάθυνση</div>' +
+        '<h2>🔬 Όργανα μέτρησης μάζας & βάρους</h2>' +
+        '<p>Γιατί ο <strong>ζυγός σύγκρισης</strong> μετρά μάζα, γιατί το <strong>δυναμόμετρο</strong> μετρά βάρος και γιατί η <strong>ηλεκτρονική ζυγαριά</strong> δίνει λανθασμένη ένδειξη όταν αλλάζει η τιμή του <em>g</em> στον τόπο μέτρησης;</p>' +
+        '<div class="pa-tools"><button type="button" class="pa-btn" data-act="back-mass">← Επιστροφή στον οδηγό «Μάζα και Βάρος»</button></div></header>' +
+
+        '<section class="pa-card pm-ext-card pm-inst-stage" id="pm-inst-stage">' +
+        '<div class="pm-inst-top"><h3 style="margin:0">🧪 Διαδραστικό πείραμα: το ίδιο σώμα (6 kg) σε πλανήτες, γεωγραφικά πλάτη & υψόμετρα</h3>' +
+        '<button type="button" class="pa-btn pm-inst-fs-btn" data-act="inst-fs" title="Προβολή πειράματος σε πλήρη οθόνη">⛶ Πλήρης οθόνη</button></div>' +
+        '<p class="pm-inst-lead">Επίλεξε τόπο και παρατήρησε ταυτόχρονα πώς αντιδρούν και τα τρία όργανα για το <strong>ίδιο σώμα μάζας 6 kg</strong>:</p>' +
+        '<div class="pm-world-groups">' +
+        '<div class="pm-world-row"><span class="pm-wgrp-lbl">🌌 Ουράνια σώματα (g₀ = 10):</span><div class="pm-world-bar" role="group" aria-label="Ουράνια σώματα">' +
+        '<button type="button" class="pm-wbtn active" data-act="world" data-w="earth">🌍 Γη (g = 10)</button>' +
+        '<button type="button" class="pm-wbtn" data-act="world" data-w="moon">🌕 Σελήνη (g = 1,6)</button>' +
+        '<button type="button" class="pm-wbtn" data-act="world" data-w="mars">🔴 Άρης (g = 3,7)</button>' +
+        '<button type="button" class="pm-wbtn" data-act="world" data-w="jupiter">🪐 Δίας (g = 25)</button>' +
+        '<button type="button" class="pm-wbtn" data-act="world" data-w="space">🚀 Διάστημα (g = 0)</button>' +
+        '</div></div>' +
+        '<div class="pm-world-row"><span class="pm-wgrp-lbl">📍 Εντός Γης · πλάτος & υψόμετρο (g₀ = 9,80):</span><div class="pm-world-bar" role="group" aria-label="Γεωγραφικά πλάτη και υψόμετρα στη Γη">' +
+        '<button type="button" class="pm-wbtn" data-act="world" data-w="sea">🌊 Επίπ. θάλασσας (9,80)</button>' +
+        '<button type="button" class="pm-wbtn" data-act="world" data-w="equator">🧭 Ισημερινός (9,78)</button>' +
+        '<button type="button" class="pm-wbtn" data-act="world" data-w="poles">🧊 Πόλοι (9,83)</button>' +
+        '<button type="button" class="pm-wbtn" data-act="world" data-w="everest">🏔️ Έβερεστ (9,77)</button>' +
+        '</div></div></div>' +
+        '<div class="pm-inst-grid" id="pm-inst-grid"></div>' +
+        '<div class="pm-inst-note" id="pm-inst-note"></div>' +
+        '</section>' +
+
+        '<section class="pa-card"><h3>📊 Τι μετρά πραγματικά το κάθε όργανο;</h3>' +
+        '<div class="pm-tablewrap"><table class="pm-table"><thead><tr><th>Όργανο</th><th>Πώς λειτουργεί</th><th>Τι μετρά πραγματικά</th><th>Όταν αλλάζει το g του τόπου</th></tr></thead><tbody>' +
+        '<tr><td>⚖️ Ζυγός σύγκρισης (ίσων βραχιόνων)</td><td>Συγκρίνει το βάρος του σώματος με το βάρος γνωστών σταθμών στον ίδιο τόπο: <em>m<sub>σώμα</sub>·g = m<sub>σταθμά</sub>·g</em>.</td><td><strong>Μάζα (kg)</strong>, επειδή το <em>g</em> υπάρχει και στις δύο πλευρές και απλοποιείται.</td><td><strong>Δουλεύει σωστά παντού</strong> με τα ίδια σταθμά (εκτός από το διάστημα όπου g = 0).</td></tr>' +
+        '<tr><td>🔽 Δυναμόμετρο (ελατήριο)</td><td>Η βαρυτική δύναμη τεντώνει ένα ελατήριο ανάλογα με το μέγεθός της (W = m · g).</td><td><strong>Βάρος / Δύναμη (N)</strong> απευθείας, χωρίς να βασίζεται στο g συγκεκριμένου τόπου.</td><td><strong>Δουλεύει σωστά παντού</strong>: δείχνει το πραγματικό βάρος στον εκάστοτε τόπο.</td></tr>' +
+        '<tr><td>📟 Ηλεκτρονική ζυγαριά (σπιτιού / καταστήματος)</td><td>Περιέχει αισθητήρα δύναμης (σαν «κρυμμένο δυναμόμετρο»), αλλά είναι <strong>βαθμονομημένη για συγκεκριμένο g</strong> (διαιρεί εσωτερικά τη δύναμη με το g βαθμονόμησης).</td><td>Μετρά <strong>δύναμη (βάρος)</strong>, αλλά εμφανίζει σωστή <strong>μάζα (kg)</strong> μόνο όπου το g ταυτίζεται με της βαθμονόμησης.</td><td><strong>Δίνει λανθασμένη μάζα</strong> όποτε αλλάζει το g (έντονα στη Σελήνη/Άρη/Δία, αλλά και ελαφρώς πάνω στη Γη), αν δεν επαναβαθμονομηθεί.</td></tr>' +
+        '</tbody></table></div>' +
+        '<div class="pa-box pa-a pm-lat-box"><h4>🌍 Συμβαίνει το ίδιο και πάνω στη Γη; (Γεωγραφικό πλάτος & υψόμετρο)</h4>' +
+        '<p><strong>Ναι — με την ίδια ακριβώς αιτία (τη βαθμονόμηση της ηλεκτρονικής ζυγαριάς), απλώς σε μικρότερη κλίμακα:</strong></p>' +
+        '<ul class="pm-note-list">' +
+        '<li><strong>🧭 Γεωγραφικό πλάτος:</strong> Το <em>g</em> αυξάνεται από τον Ισημερινό (<strong>9,78 N/kg</strong>) προς τους Πόλους (<strong>9,83 N/kg</strong>) — διαφορά ~<strong>0,5%</strong>. Αν μια ηλεκτρονική ζυγαριά βαθμονομηθεί στον Ισημερινό και μεταφερθεί στους Πόλους χωρίς επαναβαθμονόμηση, για ένα σώμα <strong>100 kg</strong> θα δείξει ~<strong>100,5 kg</strong> (και για το σώμα των 6 kg περίπου <strong>6,03 kg</strong>).</li>' +
+        '<li><strong>🏔️ Υψόμετρο:</strong> Όσο ανεβαίνουμε ψηλότερα (π.χ. κορυφή Έβερεστ, ~8,85 km), το <em>g</em> ελαττώνεται (~<strong>9,77 N/kg</strong>), οπότε μια ζυγαριά βαθμονομημένη στο επίπεδο της θάλασσας (9,80 N/kg) δείχνει ~<strong>0,3% μικρότερη μάζα</strong> (~5,982 kg αντί για 6,000 kg).</li>' +
+        '<li><strong>⚖️ Πρακτική συνέπεια:</strong> Στις απλές οικιακές ζυγαριές η διαφορά είναι μικρή, όμως σε <strong>ηλεκτρονικούς ζυγούς ακριβείας</strong> (εργαστηρίων, χρυσοχοείων, βιομηχανίας) απαιτείται επαναβαθμονόμηση στον τόπο χρήσης. Αντίθετα, ο <strong>ζυγός σύγκρισης</strong> δεν επηρεάζεται καθόλου!</li>' +
+        '</ul></div>' +
+        '<div class="pa-box pa-good pm-iss-box"><h4>🚀 Και στον Διεθνή Διαστημικό Σταθμό (g ≈ 0); Πώς ζυγίζονται οι αστροναύτες;</h4>' +
+        '<p>Όταν το βάρος μηδενίζεται, ούτε το δυναμόμετρο ούτε ο ζυγός σύγκρισης μπορούν να λειτουργήσουν. Παρ’ όλα αυτά, οι αστροναύτες έχουν κανονικά τη <strong>μάζα</strong> τους — και άρα την <strong>αδράνειά</strong> τους! Για να τη μετρήσουν, κάθονται σε ένα ειδικό κάθισμα συνδεδεμένο με <strong>ελατήριο (αδρανειακός ζυγός)</strong> που τους ταλαντώνει μπρος–πίσω: όσο μεγαλύτερη είναι η μάζα του αστροναύτη, τόσο μεγαλύτερη η αδράνειά του και τόσο πιο αργά ταλαντώνεται. Έτσι η μάζα μετριέται καθαρά από τον χρόνο ταλάντωσης, χωρίς καθόλου βαρύτητα!</p></div>' +
         '</section></div>';
+    }
+
+    function renderInstruments(worldKey) {
+        const w = EXT_WORLDS[worldKey] || EXT_WORLDS.earth;
+        const W = w.m * w.g;
+        const digKg = W / w.g0;
+        const wTxt = (w.prec ? W.toFixed(2).replace('.', ',') : fmtN(W, 1)) + ' N';
+        const digTxt = (w.prec ? digKg.toFixed(3) : digKg.toFixed(2)).replace('.', ',') + ' kg';
+        const calibSub = w.prec ? ('Βαθμονόμηση g₀ = ' + w.g0Str) : ('Βαθμονόμηση Γης (÷' + w.g0Str + ')');
+
+        // 1. Balance scale SVG
+        const arrowLen = w.g === 0 ? 0 : Math.max(22, Math.min(44, Math.round(W * 0.22 + 18)));
+        const floatY = w.g === 0 ? -12 : 0;
+        const tilt = w.g === 0 ? ' rotate(-9 100 54)' : '';
+        const smDefs = '<defs><marker id="pm-iarr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,1 L9,5 L0,9 Z" fill="#f59e0b"/></marker></defs>';
+        const balArrows = w.g === 0
+            ? '<text x="100" y="150" text-anchor="middle" class="pm-i-sub">0 N · έλλειψη βαρύτητας</text>'
+            : '<line x1="48" y1="108" x2="48" y2="' + (108 + arrowLen) + '" class="pm-i-arr" marker-end="url(#pm-iarr)"/>' +
+              '<line x1="152" y1="108" x2="152" y2="' + (108 + arrowLen) + '" class="pm-i-arr" marker-end="url(#pm-iarr)"/>' +
+              '<text x="48" y="' + (124 + arrowLen) + '" text-anchor="middle" class="pm-i-sub">' + wTxt + '</text>' +
+              '<text x="152" y="' + (124 + arrowLen) + '" text-anchor="middle" class="pm-i-sub">' + wTxt + '</text>';
+        const svgBal = '<svg viewBox="0 0 200 176" class="pm-inst-svg" role="img" aria-label="Ζυγός σύγκρισης">' + smDefs +
+            '<polygon points="84,162 116,162 104,126 96,126" class="pm-i-base"/>' +
+            '<line x1="100" y1="54" x2="100" y2="128" class="pm-i-pole"/>' +
+            '<g transform="translate(0,' + floatY + ')' + tilt + '">' +
+            '<line x1="42" y1="54" x2="158" y2="54" class="pm-i-beam"/>' +
+            '<circle cx="100" cy="54" r="4" class="pm-i-pivot"/>' +
+            '<line x1="48" y1="54" x2="36" y2="96" class="pm-i-rope"/><line x1="48" y1="54" x2="60" y2="96" class="pm-i-rope"/>' +
+            '<line x1="152" y1="54" x2="140" y2="96" class="pm-i-rope"/><line x1="152" y1="54" x2="164" y2="96" class="pm-i-rope"/>' +
+            '<path d="M28,96 Q48,108 68,96 Z" class="pm-i-pan"/><path d="M132,96 Q152,108 172,96 Z" class="pm-i-pan"/>' +
+            '<rect x="36" y="74" width="24" height="22" rx="3" class="pm-i-obj"/><text x="48" y="89" text-anchor="middle" class="pm-i-objt">6 kg</text>' +
+            '<rect x="141" y="76" width="22" height="20" rx="2" class="pm-i-wt"/><text x="152" y="90" text-anchor="middle" class="pm-i-objt">6 kg</text>' +
+            '</g>' + balArrows + '</svg>';
+
+        // 2. Dynamometer SVG (spring stretches proportionally to W)
+        const stretch = Math.round(W * 0.42); // 0 -> 0px, 9.6 -> 4px, 60 -> 25px, 150 -> 63px
+        const topY = 24, coils = 7, botY = 66 + stretch;
+        const step = (botY - topY) / coils;
+        let sp = 'M100,' + (topY - 8) + ' L100,' + topY;
+        for (let k = 0; k < coils; k++) {
+            const y1 = topY + k * step + step * 0.25;
+            const y2 = topY + k * step + step * 0.75;
+            const y3 = topY + (k + 1) * step;
+            sp += ' L112,' + y1.toFixed(1) + ' L88,' + y2.toFixed(1) + ' L100,' + y3.toFixed(1);
+        }
+        sp += ' L100,' + (botY + 10);
+        const svgDyn = '<svg viewBox="0 0 200 176" class="pm-inst-svg" role="img" aria-label="Δυναμόμετρο">' +
+            '<rect x="74" y="10" width="52" height="8" rx="3" class="pm-i-base"/>' +
+            '<rect x="82" y="18" width="36" height="122" rx="6" class="pm-i-tube"/>' +
+            '<path d="' + sp + '" class="pm-i-spring"/>' +
+            '<line x1="118" y1="' + botY + '" x2="132" y2="' + botY + '" class="pm-i-ptr"/>' +
+            '<text x="136" y="' + (botY + 4) + '" class="pm-s-wt">' + wTxt + '</text>' +
+            '<rect x="84" y="' + (botY + 10) + '" width="32" height="24" rx="4" class="pm-i-obj"/>' +
+            '<text x="100" y="' + (botY + 26) + '" text-anchor="middle" class="pm-i-objt">6 kg</text>' +
+            '</svg>';
+
+        // 3. Electronic scale SVG (calibrated for Earth g=10)
+        const press = w.g === 0 ? -10 : Math.min(6, Math.round(W / 28));
+        const svgDig = '<svg viewBox="0 0 200 176" class="pm-inst-svg" role="img" aria-label="Ηλεκτρονική ζυγαριά">' +
+            '<rect x="74" y="' + (48 + press) + '" width="52" height="36" rx="5" class="pm-i-obj"/>' +
+            '<text x="100" y="' + (71 + press) + '" text-anchor="middle" class="pm-i-objt">6 kg</text>' +
+            '<rect x="44" y="' + (86 + Math.max(0, press)) + '" width="112" height="10" rx="3" class="pm-i-pan"/>' +
+            '<rect x="20" y="100" width="160" height="58" rx="10" class="pm-i-scale"/>' +
+            '<rect x="46" y="111" width="108" height="27" rx="5" class="pm-i-lcd"/>' +
+            '<text x="100" y="130" text-anchor="middle" class="pm-i-lcdt ' + w.digStatus + '">' + digTxt + '</text>' +
+            '<text x="100" y="150" text-anchor="middle" class="pm-i-sub">' + calibSub + '</text>' +
+            '</svg>';
+
+        const card = (title, svg, st, txt) =>
+            '<div class="pm-inst-card"><div class="pm-inst-title">' + title + '</div>' + svg +
+            '<div class="pm-inst-res ' + st + '">' + txt + '</div></div>';
+
+        const noteHtml =
+            '<div class="pm-note-head"><strong>' + w.label + ' (g = ' + w.gStr + ' N/kg):</strong> ' + w.intro + '</div>' +
+            '<ul class="pm-note-list">' +
+            '<li><strong>⚖️ Ζυγός σύγκρισης:</strong> ' + w.balNote + '</li>' +
+            '<li><strong>🔽 Δυναμόμετρο:</strong> ' + w.dynNote + '</li>' +
+            '<li><strong>📟 Ηλεκτρονική ζυγαριά:</strong> ' + w.digNote + '</li>' +
+            '</ul>';
+
+        return {
+            grid: card('⚖️ Ζυγός σύγκρισης', svgBal, w.balStatus, w.balText) +
+                  card('🔽 Δυναμόμετρο', svgDyn, w.dynStatus, w.dynText) +
+                  card('📟 Ηλεκτρονική ζυγαριά', svgDig, w.digStatus, w.digText),
+            note: noteHtml
+        };
     }
 
     /* shared arrow marker (fixed size, independent of the line width) */
@@ -249,6 +485,7 @@
             if (!b) return;
             const act = b.dataset.act;
             if (act === 'wcalc') wcalc();
+            else if (act === 'goto-ext') { if (typeof window.switchSubjectTab === 'function') window.switchSubjectTab('massinst'); }
             else if (act === 'sol') { const el = root.querySelector('#' + b.dataset.t); el.hidden = !el.hidden; b.textContent = el.hidden ? (b.textContent.replace('Κρύψτε', 'Δείτε')) : b.textContent.replace('Δείτε', 'Κρύψτε'); }
             else if (act === 'open-sol') root.querySelectorAll('.pm-sol').forEach(el => { el.hidden = false; });
             else if (act === 'close-sol') root.querySelectorAll('.pm-sol').forEach(el => { el.hidden = true; });
@@ -276,5 +513,81 @@
         wcalc();
     }
 
-    window.PhysAMass = { render };
+    function renderInstrumentsTab(mount) {
+        mount.innerHTML = instrumentsTabHtml();
+        const root = mount.querySelector('.pm-wrap');
+        const stage = root.querySelector('#pm-inst-stage');
+
+        function setWorld(wKey) {
+            const gEl = root.querySelector('#pm-inst-grid');
+            const nEl = root.querySelector('#pm-inst-note');
+            if (!gEl || !nEl) return;
+            const res = renderInstruments(wKey);
+            gEl.innerHTML = res.grid;
+            nEl.innerHTML = res.note;
+            root.querySelectorAll('.pm-wbtn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.w === wKey);
+            });
+        }
+
+        function toggleStageFs() {
+            if (!stage) return;
+            const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+            if (fsEl === stage) {
+                const exit = document.exitFullscreen || document.webkitExitFullscreen;
+                if (exit) exit.call(document);
+            } else if (stage.classList.contains('pm-inst-fs')) {
+                stage.classList.remove('pm-inst-fs');
+                const btn = root.querySelector('.pm-inst-fs-btn');
+                if (btn) btn.textContent = '⛶ Πλήρης οθόνη';
+            } else {
+                const req = stage.requestFullscreen || stage.webkitRequestFullscreen;
+                if (req) {
+                    try {
+                        const r = req.call(stage);
+                        if (r && r.catch) r.catch(() => {
+                            stage.classList.add('pm-inst-fs');
+                            const btn = root.querySelector('.pm-inst-fs-btn');
+                            if (btn) btn.textContent = '✕ Έξοδος από πλήρη οθόνη';
+                        });
+                    } catch (err) {
+                        stage.classList.add('pm-inst-fs');
+                        const btn = root.querySelector('.pm-inst-fs-btn');
+                        if (btn) btn.textContent = '✕ Έξοδος από πλήρη οθόνη';
+                    }
+                } else {
+                    stage.classList.add('pm-inst-fs');
+                    const btn = root.querySelector('.pm-inst-fs-btn');
+                    if (btn) btn.textContent = '✕ Έξοδος από πλήρη οθόνη';
+                }
+            }
+        }
+
+        function onFsChange() {
+            if (!root.isConnected) {
+                document.removeEventListener('fullscreenchange', onFsChange);
+                document.removeEventListener('webkitfullscreenchange', onFsChange);
+                return;
+            }
+            const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+            const isFs = fsEl === stage;
+            if (stage) stage.classList.toggle('pm-inst-fs', isFs);
+            const btn = root.querySelector('.pm-inst-fs-btn');
+            if (btn) btn.textContent = isFs ? '✕ Έξοδος από πλήρη οθόνη' : '⛶ Πλήρης οθόνη';
+        }
+        document.addEventListener('fullscreenchange', onFsChange);
+        document.addEventListener('webkitfullscreenchange', onFsChange);
+
+        root.addEventListener('click', e => {
+            const b = e.target.closest('[data-act]');
+            if (!b) return;
+            const act = b.dataset.act;
+            if (act === 'world') setWorld(b.dataset.w);
+            else if (act === 'inst-fs') toggleStageFs();
+            else if (act === 'back-mass' && typeof window.switchSubjectTab === 'function') window.switchSubjectTab('mass');
+        });
+        setWorld('earth');
+    }
+
+    window.PhysAMass = { render, renderInstrumentsTab };
 })();

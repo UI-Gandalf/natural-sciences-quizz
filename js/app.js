@@ -422,7 +422,7 @@ function renderQuizSelection(classKey, subjectKey) {
     const isBioA = subjectKey === 'biology' && classKey === 'Α';
     const isBioB = subjectKey === 'biology' && classKey === 'Β';
     const isBioG = subjectKey === 'biology' && (classKey === 'Γ' || (classKey && classKey.startsWith('Γ')));
-    if (subjectKey === 'physics' && !isPhysG && !(isPhysA && (currentTab === 'time' || currentTab === 'mass' || currentTab === 'length' || currentTab === 'pendvideo' || currentTab === 'measvideo' || currentTab === 'massinfo' || currentTab === 'massgeo' || currentTab === 'accaudio')) && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
+    if (subjectKey === 'physics' && !isPhysG && !(isPhysA && (currentTab === 'time' || currentTab === 'mass' || currentTab === 'massinst' || currentTab === 'length' || currentTab === 'pendvideo' || currentTab === 'measvideo' || currentTab === 'massinfo' || currentTab === 'massgeo' || currentTab === 'accaudio')) && currentTab !== 'quizzes') { currentTab = 'quizzes'; AppState.currentSubjectTab = 'quizzes'; }
 
     let html = `
         <button class="back-btn" onclick="navigateTo('class/${classKey}')">
@@ -923,6 +923,10 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-mass" style="display: ${currentTab === 'mass' ? 'block' : 'none'};">
             <div id="mass-mount"></div>
         </div>
+        <!-- PHYSICS Α: MASS & WEIGHT INSTRUMENTS EXPANSION -->
+        <div class="tab-panel" id="tab-panel-massinst" style="display: ${currentTab === 'massinst' ? 'block' : 'none'};">
+            <div id="massinst-mount"></div>
+        </div>
         ` : ''}
         ${isPhysG ? `
         <!-- TAB 4: SIMULATION PANEL -->
@@ -1091,6 +1095,10 @@ function renderQuizSelection(classKey, subjectKey) {
     if (currentTab === 'mass') {
         const mm = document.getElementById('mass-mount');
         if (mm && window.PhysAMass) window.PhysAMass.render(mm);
+    }
+    if (currentTab === 'massinst') {
+        const mim = document.getElementById('massinst-mount');
+        if (mim && window.PhysAMass && window.PhysAMass.renderInstrumentsTab) window.PhysAMass.renderInstrumentsTab(mim);
     }
 
     if (currentTab === 'simulation' && subjectKey === 'physics') {
@@ -1300,6 +1308,7 @@ const PHYS_A_GROUPS = [
         { tab: 'time', label: 'Μέτρηση χρόνου: κρίσιμα σημεία' },
         { tab: 'pendvideo', label: 'Βίντεο: μέτρηση της περιόδου εκκρεμούς (ελληνικοί υπότιτλοι)' },
         { tab: 'mass', label: 'Μάζα και Βάρος' },
+        { tab: 'massinst', label: 'Επέκταση: Όργανα μέτρησης μάζας & βάρους' },
         { tab: 'massinfo', label: 'Infographic: μάζα και βάρος' },
         { tab: 'massgeo', label: 'Βίντεο: γεωγραφικές συντεταγμένες, μάζα και βάρος (ελληνικοί υπότιτλοι)' },
         { tab: 'accaudio', label: 'Ήχος: ακρίβεια εναντίον αξιοπιστίας στις μετρήσεις (συζήτηση, 17 λεπτά)' } ] }
@@ -1703,6 +1712,18 @@ function switchSubjectTab(tabKey) {
             massPanel.style.animation = 'fadeIn 0.3s ease';
             const mm = document.getElementById('mass-mount');
             if (mm && !mm.hasChildNodes() && window.PhysAMass) window.PhysAMass.render(mm);
+        }
+    }
+
+    const massInstPanel = document.getElementById('tab-panel-massinst');
+    if (massInstPanel) {
+        massInstPanel.style.display = tabKey === 'massinst' ? 'block' : 'none';
+        if (tabKey === 'massinst') {
+            massInstPanel.style.animation = 'fadeIn 0.3s ease';
+            const mim = document.getElementById('massinst-mount');
+            if (mim && !mim.hasChildNodes() && window.PhysAMass && window.PhysAMass.renderInstrumentsTab) {
+                window.PhysAMass.renderInstrumentsTab(mim);
+            }
         }
     }
 
