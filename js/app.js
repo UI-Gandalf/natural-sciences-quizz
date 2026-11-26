@@ -793,6 +793,9 @@ function renderQuizSelection(classKey, subjectKey) {
         <div class="tab-panel" id="tab-panel-physarch" style="display: ${currentTab === 'physarch' ? 'block' : 'none'};">
             <div id="physarch-mount"></div>
         </div>
+        <div class="tab-panel" id="tab-panel-physfaults" style="display: ${currentTab === 'physfaults' ? 'block' : 'none'};">
+            <div id="physfaults-mount"></div>
+        </div>
         <div class="tab-panel" id="tab-panel-survival" style="display: ${currentTab === 'survival' ? 'block' : 'none'};">
             <div id="survival-mount"></div>
         </div>
@@ -1047,6 +1050,10 @@ function renderQuizSelection(classKey, subjectKey) {
         const m = document.getElementById('physarch-mount');
         if (m && window.SurvivalSlides) window.SurvivalSlides.render(m, 'physarch');
     }
+    if (currentTab === 'physfaults') {
+        const m = document.getElementById('physfaults-mount');
+        if (m && window.SurvivalSlides) window.SurvivalSlides.render(m, 'physfaults');
+    }
     if (currentTab === 'celldive') {
         const m = document.getElementById('celldive-mount');
         if (m && window.CellDive) window.CellDive.render(m);
@@ -1244,6 +1251,7 @@ const PHYS_G_GROUPS = [
         { tab: 'theory', label: 'Συνοπτικός οδηγός μελέτης και πρωτόκολλο επίλυσης' },
         { tab: 'survival', label: 'Οδηγός επιβίωσης (διαφάνειες)' },
         { tab: 'physarch', label: 'Αρχιτεκτονική ηλεκτρικών κυκλωμάτων (διαφάνειες)' },
+        { tab: 'physfaults', label: 'Αρχιτεκτονική κυκλωμάτων & σενάρια βλάβης (διαφάνειες)' },
         { tab: 'seriesvideo', label: 'Βίντεο: κύκλωμα σειράς (ελληνικοί υπότιτλοι)' },
         { tab: 'faultsvideo', label: 'Βίντεο: βλάβες και βραχυκυκλώματα σε σειρά (ελληνικοί υπότιτλοι)' },
         { tab: 'parallelvideo', label: 'Βίντεο: παράλληλο κύκλωμα γενικά (ελληνικοί υπότιτλοι)' } ] },
@@ -1470,7 +1478,7 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'survival') {
             suPanel.style.animation = 'fadeIn 0.3s ease';
             const um = document.getElementById('survival-mount');
-            if (um && !um.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(um);
+            if (um && window.SurvivalSlides) { if (!um.hasChildNodes()) window.SurvivalSlides.render(um); else window.SurvivalSlides.reset(um); }
         } else if (window.SurvivalSlides) {
             window.SurvivalSlides.stop();          // leaving the tab stops the automatic play
         }
@@ -1569,7 +1577,7 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'geomosaic') {
             gmPanel.style.animation = 'fadeIn 0.3s ease';
             const gmm = document.getElementById('geomosaic-mount');
-            if (gmm && !gmm.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(gmm, 'geomosaic');
+            if (gmm && window.SurvivalSlides) { if (!gmm.hasChildNodes()) window.SurvivalSlides.render(gmm, 'geomosaic'); else window.SurvivalSlides.reset(gmm); }
         } else if (window.SurvivalSlides && gmPanel.querySelector('.ss-wrap')) {
             window.SurvivalSlides.stop();
         }
@@ -1580,7 +1588,7 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'chemslides') {
             csPanel.style.animation = 'fadeIn 0.3s ease';
             const csm = document.getElementById('chemslides-mount');
-            if (csm && !csm.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(csm, 'chemacid');
+            if (csm && window.SurvivalSlides) { if (!csm.hasChildNodes()) window.SurvivalSlides.render(csm, 'chemacid'); else window.SurvivalSlides.reset(csm); }
         } else if (window.SurvivalSlides && csPanel.querySelector('.ss-wrap')) {
             window.SurvivalSlides.stop();
         }
@@ -1591,7 +1599,7 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'bioalife') {
             blPanel.style.animation = 'fadeIn 0.3s ease';
             const blm = document.getElementById('bioalife-mount');
-            if (blm && !blm.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(blm, 'bioalife');
+            if (blm && window.SurvivalSlides) { if (!blm.hasChildNodes()) window.SurvivalSlides.render(blm, 'bioalife'); else window.SurvivalSlides.reset(blm); }
         } else if (window.SurvivalSlides && blPanel.querySelector('.ss-wrap')) {
             window.SurvivalSlides.stop();
         }
@@ -1602,8 +1610,19 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'physarch') {
             paPanel.style.animation = 'fadeIn 0.3s ease';
             const pam = document.getElementById('physarch-mount');
-            if (pam && !pam.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(pam, 'physarch');
+            if (pam && window.SurvivalSlides) { if (!pam.hasChildNodes()) window.SurvivalSlides.render(pam, 'physarch'); else window.SurvivalSlides.reset(pam); }
         } else if (window.SurvivalSlides && paPanel.querySelector('.ss-wrap')) {
+            window.SurvivalSlides.stop();
+        }
+    }
+    const pfPanel = document.getElementById('tab-panel-physfaults');
+    if (pfPanel) {
+        pfPanel.style.display = tabKey === 'physfaults' ? 'block' : 'none';
+        if (tabKey === 'physfaults') {
+            pfPanel.style.animation = 'fadeIn 0.3s ease';
+            const pfm = document.getElementById('physfaults-mount');
+            if (pfm && window.SurvivalSlides) { if (!pfm.hasChildNodes()) window.SurvivalSlides.render(pfm, 'physfaults'); else window.SurvivalSlides.reset(pfm); }
+        } else if (window.SurvivalSlides && pfPanel.querySelector('.ss-wrap')) {
             window.SurvivalSlides.stop();
         }
     }
@@ -1613,7 +1632,7 @@ function switchSubjectTab(tabKey) {
         if (tabKey === 'bioarch') {
             baPanel.style.animation = 'fadeIn 0.3s ease';
             const bam = document.getElementById('bioarch-mount');
-            if (bam && !bam.hasChildNodes() && window.SurvivalSlides) window.SurvivalSlides.render(bam, 'bioarch');
+            if (bam && window.SurvivalSlides) { if (!bam.hasChildNodes()) window.SurvivalSlides.render(bam, 'bioarch'); else window.SurvivalSlides.reset(bam); }
         } else if (window.SurvivalSlides && baPanel.querySelector('.ss-wrap') && !document.getElementById('tab-panel-survival')) {
             window.SurvivalSlides.stop();
         }
